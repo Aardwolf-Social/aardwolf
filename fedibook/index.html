@@ -1,0 +1,77 @@
+<!-- CSS GRID Layout. SOURCE: https://www.smashingmagazine.com/2017/06/building-production-ready-css-grid-layout/ -->
+<html lang="en-US">
+<head>
+	<title>Fedibook - Developer Template</title>
+	<meta charset="UTF-8" />
+	<link rel="stylesheet" type="text/css" href="grid.css" />
+	<link rel="stylesheet" type="text/css" href="tabs.css" />	
+</head>
+<div class="site">
+    <a class="skip-link screen-reader-text" href="#content">Skip to content</a>
+
+    <header class="masthead">
+        <h2 class="site-title">Standard two-column layout</h2>
+    </header><!-- .masthead -->
+	
+    <main id="content" class="main-content">
+        <h2>Main content area</h2>
+        <p>The main content area is where the magic happens. Right now, the main content is on the left and the sidebar is on the right. If you go into the markup for this document and add <code>dir="rtl"</code> to the <code>html</code> element, the two elements will swap spaces because CSS Grid honors text direction.</p>
+
+			<!-- CSS/Tabs block. SOURCE: https://css-tricks.com/functional-css-tabs-revisited/ -->		
+			<div class="tabs">
+			   <div class="tab">
+				   <input type="radio" id="tab-1" name="tab-group-1" checked>
+				   <label for="tab-1">Home</label>
+				   
+				   <div class="content">
+					   stuff
+				   </div> 
+			   </div>
+				
+			   <div class="tab">
+				   <input type="radio" id="tab-2" name="tab-group-1">
+				   <label for="tab-2">Local</label>
+				   
+				   <div class="content">
+					   stuff
+				   </div> 
+			   </div>
+				
+				<div class="tab">
+				   <input type="radio" id="tab-3" name="tab-group-1">
+				   <label for="tab-3">Federated Timeline</label>
+				 
+				   <div class="content">
+					   stuff
+				   </div> 
+			   </div>
+				
+			</div>
+			<!-- End CSS/Tabs -->		
+		
+    </main>
+
+    <aside class="sidebar">
+        <h3>The Sidebar</h3>
+        <p>The sidebar typically contains things like:</p>
+        <ul>
+            <li>Links</li>
+            <li>Menus</li>
+            <li>Ads</li>
+        </ul>
+    </aside>
+
+    <aside class="twin">
+        This should take up half the space
+    </aside>
+    <aside class="twin">
+        This should take up the other half of the space
+    </aside>
+
+    <footer class="colophon grid">
+        <aside>Content, layout, design: <a href="https://twitter.com/mor10" target="_blank" rel="nofollow">Morten Rand-Hendriksen</a>.</aside>
+    </footer>
+
+</div>
+
+</html>
