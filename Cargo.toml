@@ -1,7 +1,7 @@
 [package]
 name = "fedibook"
 version = "0.0.0"
-authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Peter Alexander <pipnflinx@gmail.com>", "Elijah Mark Anderson <kd0bpv@gmail.com>"]
+authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Peter Alexander <drbanjofox@protonmail.com>", "Elijah Mark Anderson <kd0bpv@gmail.com>"]
 
 [dependencies]
 
