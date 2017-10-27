@@ -1,4 +1,30 @@
 [root]
 name = "fedibook"
 version = "0.0.0"
+dependencies = [
+ "libxml 0.0.7481 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
+[[package]]
+name = "gcc"
+version = "0.3.54"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "libc"
+version = "0.1.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "libxml"
+version = "0.0.7481"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "gcc 0.3.54 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.1.12 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[metadata]
+"checksum gcc 0.3.54 (registry+https://github.com/rust-lang/crates.io-index)" = "5e33ec290da0d127825013597dbdfc28bee4964690c7ce1166cbc2a7bd08b1bb"
+"checksum libc 0.1.12 (registry+https://github.com/rust-lang/crates.io-index)" = "e32a70cf75e5846d53a673923498228bbec6a8624708a9ea5645f075d6276122"
+"checksum libxml 0.0.7481 (registry+https://github.com/rust-lang/crates.io-index)" = "9db47ba61ecba4a0d1d2bbe36dd69e34d49fca711bd915d45ae0c7c411a6f90f"
