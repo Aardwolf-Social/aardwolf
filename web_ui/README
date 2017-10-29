@@ -1,0 +1,13 @@
+#
+# This is where all of the web resources live.
+#
+
+--Directory Structure--
+/stylesheet - Compiled SASS
+/sass - SASS source
+../_base
+../_etc
+../_etc
+/images - Image assets
+/javascript - Javascript
+
