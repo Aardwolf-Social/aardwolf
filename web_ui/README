@@ -1,6 +1,4 @@
-#
 # This is where all of the web resources live.
-#
 
 --Directory Structure--
 /stylesheet - Compiled SASS
@@ -10,4 +8,7 @@
 ../_etc
 /images - Image assets
 /javascript - Javascript
+/themes - Interface themes
+/emojo - Place for emojo images
+/rocket - Rocket files
 
