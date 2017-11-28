@@ -24,10 +24,18 @@ rocket_codegen = "0.3.3"
 serde = "1.0.21"
 serde_derive = "1.0.21"
 
+[dependencies.chrono]
+version = "0.4"
+features = ["serde"]
+
+[dependencies.uuid]
+version = "0.5"
+features = ["v4"]
+
 [dependencies.diesel]
 version = "0.16"
 default-features = false
-features = ["postgres", "uuid"]
+features = ["postgres", "uuid", "chrono"]
 
 [dependencies.diesel_codegen]
 version = "0.16"
