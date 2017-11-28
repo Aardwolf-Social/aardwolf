@@ -1,7 +1,30 @@
 [package]
 name = "fedibook"
-version = "0.0.0"
-authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Peter Alexander <drbanjofox@protonmail.com>", "Elijah Mark Anderson <kd0bpv@gmail.com>"]
+version = "0.1.0"
+authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Peter Alexander <drbanjofox@protonmail.com>", "Elijah Mark Anderson <kd0bpv@gmail.com>", "Paul Woolcock <paul@woolcock.us>"]
+
+[lib]
+name = "_fedibook"
+path = "src/fedibook/lib.rs"
+
+[[bin]]
+name = "fedibook-server"
+path = "src/bin/main.rs"
 
 [dependencies]
+collection_macros = "0.2.0"
+derive_builder = "0.5.0"
+diesel = "0.16.0"
+diesel_codegen = "0.16.0"
+failure = "0.1.0"
+failure_derive = "0.1.1"
 libxml = "0.0.7481"
+rocket = "0.3.3"
+rocket_codegen = "0.3.3"
+serde = "1.0.21"
+serde_derive = "1.0.21"
+
+[dependencies.rocket_contrib]
+version = "0.3.3"
+default-features = false
+features = ["handlebars_templates", "json"]
