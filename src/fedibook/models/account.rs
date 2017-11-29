@@ -5,7 +5,7 @@ use schema::fedibook::accounts;
 
 #[derive(Queryable)]
 pub(crate) struct Account {
-    id: Uuid,
+    pub id: Uuid,
     username: String,
     domain: Option<String>,
     display_name: String,
@@ -16,7 +16,5 @@ pub(crate) struct Account {
 #[derive(Insertable)]
 #[table_name="accounts"]
 pub(crate) struct NewAccount {
-    username: String,
-    domain: Option<String>,
-    display_name: String,
+    pub username: String,
 }

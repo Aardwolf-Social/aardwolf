@@ -1,16 +1,16 @@
 CREATE TABLE IF NOT EXISTS fedibook.users (
     id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email                   VARCHAR NOT NULL DEFAULT '',
-    encrypted_password      VARCHAR NOT NULL DEFAULT '',
+    encrypted_password      VARCHAR NOT NULL,
     account_id              UUID NOT NULL,
 
     -- flags
-    admin                   BOOLEAN NOT NULL,
-    disabled                BOOLEAN NOT NULL,
+    admin                   BOOLEAN NOT NULL DEFAULT false,
+    disabled                BOOLEAN NOT NULL DEFAULT false,
 
     -- confirmation stuff
     unconfirmed_email       VARCHAR NOT NULL DEFAULT '',
-    confirmation_token      VARCHAR NOT NULL DEFAULT '',
+    confirmation_token      BYTEA NOT NULL,
     confirmed_at            TIMESTAMP WITHOUT TIME ZONE,
     confirmation_sent_at    TIMESTAMP WITHOUT TIME ZONE,
 

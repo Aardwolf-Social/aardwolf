@@ -1,22 +1,14 @@
-use rocket::response::Redirect;
+use ring::rand::SystemRandom;
+use rocket::State;
+use rocket::response::{self, Redirect};
 use rocket::request::Form;
 use rocket_contrib::Template;
+use diesel::pg::PgConnection;
+use r2d2;
+use r2d2_diesel::ConnectionManager;
 
-#[derive(Debug, Clone, PartialEq, FromForm)]
-struct SignUpForm {
-    csrf_token: String,
-    username: String,
-    email: String,
-    password: String,
-    password_confirmation: String,
-}
-
-#[derive(Debug, Clone, PartialEq, FromForm)]
-struct SignInForm {
-    csrf_token: String,
-    email: String,
-    password: String,
-}
+use DbConn;
+use forms::auth::{SignUpForm, SignInForm};
 
 #[get("/auth/sign_up")]
 fn sign_up_form() -> Template {
@@ -31,13 +23,44 @@ fn sign_in_form() -> Template {
 }
 
 #[post("/auth", data = "<form>")]
-fn sign_up(form: Form<SignUpForm>) -> Redirect {
-    println!("got sign up form: {:#?}", form.into_inner());
-    Redirect::to("/auth/sign_in")
+fn sign_up(form: Form<SignUpForm>, gen: State<SystemRandom>, db: DbConn) -> Redirect {
+    use controllers::auth;
+
+    match auth::create_user_and_account(form.into_inner(), gen.inner(), &db) {
+        Ok(_) => Redirect::to("/auth/sign_in"),
+        Err(e) => {
+            // this is obviously inadequate for now, we'll need
+            // to send an error message up to the user as well
+            println!("unable to create account: {:#?}", e);
+            Redirect::to("/auth/sign_up")
+        }
+    }
 }
 
 #[post("/auth/sign_in", data = "<form>")]
 fn sign_in(form: Form<SignInForm>) -> Redirect {
     println!("got sign in form: {:#?}", form.into_inner());
     Redirect::to("/app")
+}
+
+#[derive(FromForm)]
+struct ConfirmToken {
+    pub token: String,
+}
+
+#[derive(Debug, Fail)]
+#[fail(display = "Failed to confirm account")]
+struct ConfirmError;
+
+#[get("/auth/confirmation?<token>")]
+fn confirm(token: ConfirmToken, db: DbConn) -> Result<Redirect, ConfirmError> {
+    use controllers::auth;
+
+    Ok(match auth::confirm_account(&token.token, &db) {
+        Ok(_) => Redirect::to("/auth/sign_in"),
+        Err(e) => {
+            println!("unable to confirm account: {:#?}", e);
+            return Err(ConfirmError);
+        }
+    })
 }

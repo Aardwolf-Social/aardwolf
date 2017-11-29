@@ -9,10 +9,12 @@ extern crate rocket_contrib;
 extern crate serde;
 extern crate r2d2;
 extern crate r2d2_diesel;
+extern crate ring;
 extern crate diesel;
 
 extern crate _fedibook as fedibook;
 
+use ring::rand::SystemRandom;
 use rocket::Rocket;
 use rocket_contrib::Template;
 use diesel::pg::PgConnection;
@@ -37,8 +39,10 @@ fn app() -> Rocket {
             fedibook::routes::auth::sign_in_form,
             fedibook::routes::auth::sign_up,
             fedibook::routes::auth::sign_in,
+            fedibook::routes::auth::confirm,
         ])
-        .attach(Template::fairing());
+        .attach(Template::fairing())
+        .manage(SystemRandom::new());
 
     // we need an instance of the app to access the config values in Rocket.toml,
     // so we pass it to the db_pool function, get the pool, and _then_ return the instance
