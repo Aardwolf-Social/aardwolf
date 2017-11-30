@@ -1,0 +1,8 @@
+[development]
+port = 7878 # https://twitter.com/ag_dubs/status/852559264510070784
+database_url = "postgres://localhost/fedibook_development"
+
+[staging]
+
+[production]
+
