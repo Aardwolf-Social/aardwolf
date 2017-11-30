@@ -1,0 +1,12 @@
+<!doctype html>
+<html>
+<body>
+<h1>Sign In</h1>
+<form method="POST" action="/auth/sign_in">
+    <input type="hidden" name="csrf_token" value="{{ token }}">
+    <input type="email" name="email" id="email" placeholder="E-mail address">
+    <input type="password" name="password" id="password" placeholder="Password">
+    <button>Log In</button>
+</form>
+</body>
+</html>
