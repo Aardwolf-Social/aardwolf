@@ -1,13 +1,23 @@
+use std::sync::Arc;
+
+use rocket::{Outcome, Request, State};
+use rocket::http::Status;
+use rocket::request::{self, FromRequest};
+use rocket::outcome::IntoOutcome;
+use diesel::prelude::*;
 use uuid::Uuid;
 use chrono::{Utc, NaiveDateTime};
 
+use {DbConn, Pool};
+use models::account::Account;
 use schema::fedibook::users;
 
-#[derive(Queryable, Identifiable, AsChangeset, Debug)]
+#[derive(Queryable, Identifiable, AsChangeset, Associations, Debug)]
+#[belongs_to(Account, foreign_key = "account_id")]
 pub(crate) struct User {
-    id: Uuid,
-    email: String,
-    encrypted_password: String,
+    pub id: Uuid,
+    pub email: String,
+    pub encrypted_password: String,
     account_id: Uuid,
     admin: bool,
     disabled: bool,
@@ -24,6 +34,32 @@ impl User {
         self.email = self.unconfirmed_email.clone();
         self.confirmed_at = Some(Utc::now().naive_utc());
         self
+    }
+
+    pub(crate) fn get(id: &str, db: &PgConnection) -> Option<User> {
+        use schema::fedibook::users::dsl::*;
+        users.find(id).first(db).ok()
+    }
+}
+
+impl<'l, 'r> FromRequest<'l, 'r> for User {
+    type Error = ();
+
+    fn from_request(request: &'l Request<'r>) -> request::Outcome<Self, Self::Error> {
+
+        let pool = request.guard::<State<Pool>>()?;
+        let db = match pool.get() {
+            Ok(p) => p,
+            Err(_) => return Outcome::Failure((Status::ServiceUnavailable, ()))
+        };
+        println!("Got db conn");
+        let user_id = request.cookies()
+            .get_private("user_id")
+            .and_then(|c| Some(c.value().to_string()));
+        println!("got user id {:#?}", &user_id);
+        let user = user_id.and_then(|id| User::get(&id, &db));
+        println!("got user {:#?}", &user);
+        user.or_forward(())
     }
 }
 

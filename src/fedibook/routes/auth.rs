@@ -1,5 +1,6 @@
 use ring::rand::SystemRandom;
 use rocket::State;
+use rocket::http::{Cookie, Cookies};
 use rocket::response::{self, Redirect};
 use rocket::request::Form;
 use rocket_contrib::Template;
@@ -38,9 +39,20 @@ fn sign_up(form: Form<SignUpForm>, gen: State<SystemRandom>, db: DbConn) -> Redi
 }
 
 #[post("/auth/sign_in", data = "<form>")]
-fn sign_in(form: Form<SignInForm>) -> Redirect {
-    println!("got sign in form: {:#?}", form.into_inner());
-    Redirect::to("/app")
+fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redirect {
+    use controllers::auth;
+    match auth::sign_in(&form.into_inner(), &db) {
+        Ok(user) => {
+            let mut cookie = Cookie::new("user_id", user.id.to_string());
+            cookie.set_http_only(true);
+            cookies.add_private(cookie);
+            Redirect::to("/web")
+        },
+        Err(e) => {
+            println!("unable to log in: {:#?}", e);
+            Redirect::to("/auth/sign_in")
+        }
+    }
 }
 
 #[derive(FromForm)]

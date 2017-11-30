@@ -3,7 +3,7 @@ use chrono::NaiveDateTime;
 
 use schema::fedibook::accounts;
 
-#[derive(Queryable)]
+#[derive(Queryable, Identifiable)]
 pub(crate) struct Account {
     pub id: Uuid,
     username: String,

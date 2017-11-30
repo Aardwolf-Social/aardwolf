@@ -1,5 +1,5 @@
 use base64;
-use bcrypt::{DEFAULT_COST, hash};
+use bcrypt::{DEFAULT_COST, hash, verify};
 use ring::rand::SecureRandom;
 use diesel;
 use diesel::LoadDsl;
@@ -8,7 +8,8 @@ use diesel::prelude::*;
 use failure::Error;
 use chrono::Utc;
 
-use forms::auth::SignUpForm;
+use Pool;
+use forms::auth::{SignInForm, SignUpForm};
 use models::account::{Account, NewAccount};
 use models::user::{NewUser, User};
 use schema::fedibook::{accounts, users};
@@ -107,7 +108,40 @@ fn hash_password(password: &str) -> Result<String, SignUpFail> {
     })
 }
 
+fn check_password(password: &str, hash: &str) -> Result<(), SignInFail> {
+    if let Err(e) = verify(password, hash) {
+        return Err(SignInFail::WrongPassword);
+    }
+    Ok(())
+}
+
 fn generate_token<T: SecureRandom>(gen: &T, buffer: &mut [u8]) -> Result<(), SignUpFail> {
     gen.fill(buffer);
     Ok(())
+}
+
+#[derive(Fail, Debug)]
+pub(crate) enum SignInFail {
+    #[fail(display = "user not found")]
+    UserNotFound,
+    #[fail(display = "password is incorrect")]
+    WrongPassword,
+}
+
+pub(crate) fn sign_in(form: &SignInForm, db: &PgConnection) -> Result<User, SignInFail> {
+    use schema::fedibook::users::dsl::*;
+
+    // check csrf token
+
+    let user = match users.filter(email.eq(&form.email)).first::<User>(db) {
+        Ok(user) => user,
+        Err(e) => {
+            println!("user {} not found", &form.email);
+            return Err(SignInFail::UserNotFound);
+        },
+    };
+
+    check_password(&form.password, &user.encrypted_password)?;
+
+    Ok(user)
 }

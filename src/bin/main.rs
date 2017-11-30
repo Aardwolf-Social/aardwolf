@@ -1,4 +1,3 @@
-#![feature(try_from)]
 #![feature(plugin)]
 #![feature(custom_derive)]
 #![plugin(rocket_codegen)]
@@ -40,6 +39,9 @@ fn app() -> Rocket {
             fedibook::routes::auth::sign_up,
             fedibook::routes::auth::sign_in,
             fedibook::routes::auth::confirm,
+
+            fedibook::routes::app::home,
+            fedibook::routes::app::home_redirect,
         ])
         .attach(Template::fairing())
         .manage(SystemRandom::new());

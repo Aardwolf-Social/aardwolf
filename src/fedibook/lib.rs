@@ -35,7 +35,7 @@ pub mod forms;
 pub mod routes;
 pub mod schema;
 
-type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
+pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
 pub struct DbConn(pub r2d2::PooledConnection<ConnectionManager<PgConnection>>);
 
