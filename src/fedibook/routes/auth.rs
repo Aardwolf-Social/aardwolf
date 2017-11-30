@@ -9,6 +9,7 @@ use r2d2;
 use r2d2_diesel::ConnectionManager;
 
 use DbConn;
+use models::user::User;
 use forms::auth::{SignUpForm, SignInForm};
 
 #[get("/auth/sign_up")]
@@ -75,4 +76,10 @@ fn confirm(token: ConfirmToken, db: DbConn) -> Result<Redirect, ConfirmError> {
             return Err(ConfirmError);
         }
     })
+}
+
+#[post("/auth/sign_out")]
+fn sign_out(user: User, mut cookies: Cookies) -> Redirect {
+    cookies.remove_private(Cookie::named("user_id"));
+    Redirect::to("/auth/sign_in")
 }

@@ -52,13 +52,10 @@ impl<'l, 'r> FromRequest<'l, 'r> for User {
             Ok(p) => p,
             Err(_) => return Outcome::Failure((Status::ServiceUnavailable, ()))
         };
-        println!("Got db conn");
         let user_id = request.cookies()
             .get_private("user_id")
             .and_then(|c| Some(c.value().to_string()));
-        println!("got user id {:#?}", &user_id);
         let user = user_id.and_then(|id| User::get(&id, &db));
-        println!("got user {:#?}", &user);
         user.or_forward(())
     }
 }

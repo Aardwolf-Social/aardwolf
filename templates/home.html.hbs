@@ -1,5 +1,8 @@
 <!doctype html>
 <html>
 <body>
-<p>Welcome, {{ email }}</p>
+    <form method="post" action="/auth/sign_out">
+        <button type="submit">Logout</button>
+    </form>
+    <p>Welcome, {{ email }}</p>
 </html>

@@ -39,6 +39,7 @@ fn app() -> Rocket {
             fedibook::routes::auth::sign_up,
             fedibook::routes::auth::sign_in,
             fedibook::routes::auth::confirm,
+            fedibook::routes::auth::sign_out,
 
             fedibook::routes::app::home,
             fedibook::routes::app::home_redirect,
