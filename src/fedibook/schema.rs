@@ -42,7 +42,7 @@ pub mod fedibook {
             updated_at -> Timestamp,
         }
     }
-    
+
     table! {
         /// Representation of the `fedibook.users` table.
         ///
@@ -122,6 +122,11 @@ pub mod fedibook {
             updated_at -> Timestamp,
         }
     }
-    
+
     joinable!(users -> accounts (account_id));
+
+    allow_tables_to_appear_in_same_query!(
+        accounts,
+        users,
+    );
 }
