@@ -4,9 +4,9 @@
 #![feature(custom_derive)]
 #![plugin(rocket_codegen)]
 
-extern crate base64;
 extern crate bcrypt;
 extern crate chrono;
+extern crate hex;
 extern crate ring;
 extern crate rocket;
 extern crate failure;

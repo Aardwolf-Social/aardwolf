@@ -214,7 +214,6 @@ dependencies = [
 name = "fedibook"
 version = "0.1.0"
 dependencies = [
- "base64 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "bcrypt 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "chrono 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "collection_macros 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -223,6 +222,7 @@ dependencies = [
  "diesel_codegen 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "hex 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "libxml 0.0.7481 (registry+https://github.com/rust-lang/crates.io-index)",
  "r2d2 0.7.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "r2d2-diesel 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -274,6 +274,11 @@ dependencies = [
  "serde 1.0.21 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_json 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
+
+[[package]]
+name = "hex"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "httparse"
@@ -893,6 +898,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum gcc 0.3.54 (registry+https://github.com/rust-lang/crates.io-index)" = "5e33ec290da0d127825013597dbdfc28bee4964690c7ce1166cbc2a7bd08b1bb"
 "checksum glob 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)" = "8be18de09a56b60ed0edf84bc9df007e30040691af7acd1c41874faac5895bfb"
 "checksum handlebars 0.27.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ef7567daf271a32e60301e4821fcb5b51a5b535167115d1ce04f46c3f0a15f0b"
+"checksum hex 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "459d3cf58137bb02ad4adeef5036377ff59f066dbb82517b7192e3a5462a2abc"
 "checksum httparse 1.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "af2f2dd97457e8fb1ae7c5a420db346af389926e36f43768b96f101546b04a07"
 "checksum hyper 0.10.13 (registry+https://github.com/rust-lang/crates.io-index)" = "368cb56b2740ebf4230520e2b90ebb0461e69034d85d1945febd9b3971426db2"
 "checksum idna 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)" = "014b298351066f1512874135335d62a789ffe78a9974f94b43ed5621951eaf7d"
