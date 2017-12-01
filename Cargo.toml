@@ -20,7 +20,7 @@ failure = "0.1.0"
 failure_derive = "0.1.1"
 libxml = "0.0.7481"
 r2d2 = "0.7"
-r2d2-diesel = "0.16"
+r2d2-diesel = "0.99"
 ring = "0.11"
 rocket = "0.3.3"
 rocket_codegen = "0.3.3"
@@ -36,14 +36,9 @@ version = "0.5"
 features = ["v4"]
 
 [dependencies.diesel]
-version = "0.16"
+version = "0.99"
 default-features = false
 features = ["postgres", "uuid", "chrono"]
-
-[dependencies.diesel_codegen]
-version = "0.16"
-default-features = false
-features = ["postgres"]
 
 [dependencies.rocket_contrib]
 version = "0.3.3"
