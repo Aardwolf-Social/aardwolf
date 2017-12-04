@@ -1,8 +1,0 @@
-total 20
--rw-rw-r-- 1 quixote quixote    0 Dec  1 22:31 list.txt
--rw-rw-r-- 1 quixote quixote  767 Dec  1 21:14 nav_friends_groups.html.hbs
--rw-rw-r-- 1 quixote quixote  767 Dec  1 21:14 nav_settings.html.hbs
--rw-rw-r-- 1 quixote quixote    0 Dec  1 22:20 README.md
--rw-rw-r-- 1 quixote quixote  752 Dec  1 21:37 toot_input.html.hbs
--rw-rw-r-- 1 quixote quixote 1086 Dec  1 21:19 toot_single_example.html.hbs
--rw-rw-r-- 1 quixote quixote 2976 Dec  1 21:19 toots_sample_conversation.html.hbs
