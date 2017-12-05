@@ -4,7 +4,7 @@
 #![feature(custom_derive)]
 #![plugin(rocket_codegen)]
 
-extern crate base64;
+extern crate bs58;
 extern crate bcrypt;
 extern crate chrono;
 extern crate ring;
