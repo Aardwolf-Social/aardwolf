@@ -1,1 +1,0 @@
-company-blue: #1875e7
