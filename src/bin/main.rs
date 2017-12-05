@@ -10,6 +10,7 @@ extern crate r2d2;
 extern crate r2d2_diesel;
 extern crate ring;
 extern crate diesel;
+extern crate config;
 
 extern crate _fedibook as fedibook;
 
@@ -54,6 +55,6 @@ fn app() -> Rocket {
 }
 
 fn main() {
+    let mut config = Config::default();
     app().launch();
 }
-

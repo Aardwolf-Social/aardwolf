@@ -26,6 +26,7 @@ rocket = "0.3.3"
 rocket_codegen = "0.3.3"
 serde = "1.0.21"
 serde_derive = "1.0.21"
+config = "0.7.0"
 
 [dependencies.chrono]
 version = "0.4"
