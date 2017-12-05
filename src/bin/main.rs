@@ -23,9 +23,8 @@ type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
 fn db_pool(rocket: &Rocket) -> Pool {
     let database_url = rocket.config().get_str("database_url").expect("Must set DATABASE_URL");
-    let config = r2d2::Config::default();
     let manager = ConnectionManager::<PgConnection>::new(database_url);
-    r2d2::Pool::new(config, manager).expect("Could not get DB connection pool")
+    r2d2::Pool::builder().build(manager).expect("Could not get DB connection pool")
 }
 
 fn app() -> Rocket {

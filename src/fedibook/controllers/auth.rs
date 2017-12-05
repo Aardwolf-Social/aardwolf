@@ -34,7 +34,7 @@ pub(crate) fn create_user_and_account<T: SecureRandom>(form: SignUpForm, gen: &T
     let account = NewAccount {
         username: form.username,
     };
-    let account: Account = match diesel::insert(&account).into(accounts::table).get_result(db) {
+    let account: Account = match diesel::insert_into(accounts::table).values(&account).get_result(db) {
         Ok(account) => account,
         Err(e) => return Err(SignUpFail::AccountCreateError),
     };
@@ -54,7 +54,7 @@ pub(crate) fn create_user_and_account<T: SecureRandom>(form: SignUpForm, gen: &T
         confirmation_sent_at: now,
     };
 
-    let user: User = match diesel::insert(&user).into(users::table).get_result(db) {
+    let user: User = match diesel::insert_into(users::table).values(&user).get_result(db) {
         Ok(user) => user,
         Err(e) => return Err(SignUpFail::UserCreateError),
     };
