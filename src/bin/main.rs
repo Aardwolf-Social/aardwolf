@@ -19,6 +19,7 @@ use rocket::Rocket;
 use rocket_contrib::Template;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
+use config::{Config};
 
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
@@ -56,5 +57,9 @@ fn app() -> Rocket {
 
 fn main() {
     let mut config = Config::default();
-    app().launch();
+    config.merge(config::File::with_name("tests/resources/config")).unwrap();
+
+    println!("Configured username: {:?}", config.get_str("Database.username").unwrap());
+
+    //app().launch();
 }
