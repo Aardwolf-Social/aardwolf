@@ -1,109 +1,57 @@
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Fedibook - Login</title>
+    <title>Fedibook - Create Account</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.min.css">
-    <!-- This is a hacky CSS that really needs to be fixed/replaced. I'm just putting it here to see if I can improve the styling until proper Bulma implementation -->
-    <link rel="stylesheet" media="screen" href="../web_ui/stylesheets/scratchpad.css">
   </head>
   <body>
   <!-- Does Bulma even understand "semantic web" stuff? Let's find out! -->
   <!-- Begin Page Header -->
-	  <section class="hero is-dark">
-		  <!-- Hero head: will stick at the top -->
-		  <div class="hero-head">
-		  <h1 class="title">
-			Goddamnit why are all the good names taken already!?
-		  </h1>
-		  <h2 class="subtitle">
-			Codename: Fedibook
-		  </h2>
-		</div>
-	  <div class="hero-foot is-right">
-		<div class="container">
-			<a href="sign_up.html" style="float: right">Need an Account? - Create one!</a>
-		</div>
-	  </div>
-	</section>
+  <header>
+    <h2 class="title">Fedibook (Codename: Gojira)</h2>
+    <div style="text-align: right">
+    <a href="login.html">Have an Account? - Login</a>
+    </div>
+  </header>
   <!-- End Page Header -->
-    <section class="section">
-<div class="tile is-ancestor">
-  <div class="tile is-6 is-parent">
-    <div class="tile is-child box">
+  <section class="section">
+    <div class="container">
       <h1 class="title">
         About Fedibook
       </h1>
       <p class="subtitle">
         This is what <strong>Codename: Gojira</strong> is all about!
-        <figure class="image is-128x128" style="float: right;">
-           <img src="../web_ui/images/GojiChan-logo.png" alt="Logo">
-        </figure>
-        </p>
-
+      </p>
 		<p>Spicy jalapeno bacon ipsum dolor amet strip steak ground round beef ribs pork belly fatback, t-bone bresaola flank pancetta. Salami jerky short loin, doner pig picanha kielbasa beef ribs bacon pork belly turkey turducken venison ball tip brisket. Biltong chuck ball tip, swine flank alcatra t-bone. Filet mignon salami pork chop, short ribs tenderloin t-bone swine pig pork pork belly. Strip steak fatback pastrami pork belly shankle pork chop tail kevin picanha corned beef jerky. Meatloaf pork belly pig pancetta, jerky prosciutto bacon sausage turducken frankfurter. Capicola boudin kielbasa, shoulder leberkas ham hock pastrami tongue chuck sirloin.</p>
 
 		<p>Ham beef spare ribs beef ribs bresaola sirloin rump sausage short ribs hamburger pork loin short loin salami jerky pork. Leberkas ball tip tri-tip, cow tenderloin tail andouille burgdoggen kevin corned beef ribeye beef ribs fatback. Alcatra doner drumstick tri-tip, ham chicken capicola frankfurter pork chop meatball porchetta ribeye. Ham hock corned beef t-bone sausage andouille doner flank hamburger shank cupim short loin boudin bacon ribeye ham.</p>
-
     </div>
-  </div>
-  <div class="tile is-parent">
-    <div class="tile is-child box">
+  </section>
+    <section class="section">
+    <div class="container">
       <h1 class="title">
-        Welcome Back Friend!
+        Create an Account
       </h1>
       <p class="subtitle">
-        Login below
+        Feel free to sign up!
       </p>
 	  This is a much improved form, and I know it. - Banjo
 	  
-	<form method="POST" action="/auth/sign_in">
-		<div class="field">
-		  <p class="control has-icons-left has-icons-right">
-			<input type="hidden" name="csrf_token" value="{{ token }}">
-			<input class="input" type="email" placeholder="Email">
-			<span class="icon is-small is-left">
-			  <i class="fa fa-envelope"></i>
-			</span>
-			<span class="icon is-small is-right">
-			  <i class="fa fa-check"></i>
-			</span>
-		  </p>
-		</div>
-		<div class="field">
-		  <p class="control has-icons-left">
-			<input class="input" type="password" placeholder="Password">
-			<span class="icon is-small is-left">
-			  <i class="fa fa-lock"></i>
-			</span>
-		  </p>
-		</div>
-		<div class="field">
-		  <p class="control">
-			<button class="button is-success">
-			  Login
-			</button>
-		  </p>
-		</div>
-	</form>
+	  <form method="POST" action="/auth/sign_in">
+	 	 <input type="hidden" name="csrf_token" value="{{ token }}">
+		 <input type="email" name="email" id="email" placeholder="E-mail address">
+		 <input type="password" name="password" id="password" placeholder="Password">
+		 <button>Log In</button>
+	  </form>
+	  
     </div>
-  </div>
-</div>
   </section>
   </body>
   <!-- Does Bulma even understand "semantic web" stuff? Let's find out! -->
   <!-- Begin Page Footer -->
-  <footer class="footer">
-    <div class="container">
-		<div class="content has-text-centered">
-			<a href="termsofservice.html" class="footerBox">Terms of Service</a>
-			<span class="verticalLine"/>
-			<span class="footerBox">Copyright - 2017</span>
-			<span class="verticalLine" />
-			<a href="https://github.com/BanjoFox/fedibook" class="footerBox">Check us out on GitHub!</a>
-		</div>
-	</div>
-  </footer>
+	{{ footer }}
   <!-- End Page Footer -->
 </html>
