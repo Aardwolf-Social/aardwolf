@@ -1,17 +1,18 @@
 # Installation instructions
 
-Theoretically, fedibook should run anywhere that Rust and Postgresql
+Theoretically, fedibook should run anywhere that Rust and PostgreSQL
 run, though at the moment it has only been tested on linux and OSX.
 
 ## Installing Requirements
 
+### Installing PostgreSQL
 In order to run the fedibook backend, you will need to have access to a
-[Postgresql]() database. There are a few options for doing this, but for
+[PostgreSQL]() database. There are a few options for doing this, but for
 this guide we're going to assume you are running the database on your
 development machine.
 
-If you're on a Ubuntu-like machine, you should be able to install
-postgres like this:
+If you're on an Ubuntu-like machine, you should be able to install
+PostgreSQL like this:
 
     $ sudo apt-get update
     $ sudo apt-get install postgresql postgresql-contrib
@@ -21,6 +22,18 @@ If you're on OSX and using `brew`, do
     $ brew update
     $ brew install postgres
 
+For Gentoo (eselect-postgresql is optional),
+
+    # emerge --sync
+    # emerge -av postgresql eselect-postgresql
+
+### Installing Rust toolchain
+
+> Note: Rustup managed installations do appear to co-exist with system
+ installations on Gentoo, and should work on most other distributions.
+ If not, please file an issue with the Rust and Rustup teams or your distribution's
+ managers.
+
 Next, you'll need to have the [Rust](https://rust-lang.org/) toolchain
 installed. The best way to do this is to install
 [rustup](https://rustup.rs), which is a Rust toolchain manager. To
@@ -29,9 +42,8 @@ install, open your terminal and run the following command:
     $ curl https://sh.rustup.rs -sSf | sh
 
 For those who are (understandably) uncomfortable with piping a shell
-script from the internet directly into `sh`, you can also go here:
-https://github.com/rust-lang-nursery/rustup.rs/#other-installation-methods
-and use an alternative method.
+script from the internet directly into `sh`, you can also
+[use an alternate installation method](https://github.com/rust-lang-nursery/rustup.rs/#other-installation-methods).
 
 Once you have `rustup` installed, make sure you have the `nightly` rust
 toolchain installed:
