@@ -1,4 +1,4 @@
-use base64;
+use bs58;
 use bcrypt::{DEFAULT_COST, hash, verify};
 use ring::rand::SecureRandom;
 use diesel;
@@ -34,14 +34,14 @@ pub(crate) fn create_user_and_account<T: SecureRandom>(form: SignUpForm, gen: &T
     let account = NewAccount {
         username: form.username,
     };
-    let account: Account = match diesel::insert(&account).into(accounts::table).get_result(db) {
+    let account: Account = match diesel::insert_into(accounts::table).values(&account).get_result(db) {
         Ok(account) => account,
         Err(e) => return Err(SignUpFail::AccountCreateError),
     };
 
     let mut token: Vec<u8> = vec![0; 16];
     generate_token(gen, &mut token)?;
-    let strtoken = base64::encode(&token);
+    let strtoken = bs58::encode(&token).into_string();
 
     let now = Utc::now().naive_utc();
 
@@ -54,7 +54,7 @@ pub(crate) fn create_user_and_account<T: SecureRandom>(form: SignUpForm, gen: &T
         confirmation_sent_at: now,
     };
 
-    let user: User = match diesel::insert(&user).into(users::table).get_result(db) {
+    let user: User = match diesel::insert_into(users::table).values(&user).get_result(db) {
         Ok(user) => user,
         Err(e) => return Err(SignUpFail::UserCreateError),
     };
@@ -71,7 +71,7 @@ pub(crate) enum ConfirmAccountFail {
     #[fail(display = "token was not found")]
     TokenNotFound,
     #[fail(display = "failed to decode confirmation token")]
-    Base64DecodeError,
+    Base58DecodeError,
     #[fail(display = "failed to update the user record")]
     UpdateFail,
 }
@@ -79,9 +79,9 @@ pub(crate) enum ConfirmAccountFail {
 pub(crate) fn confirm_account(token: &str, db: &PgConnection) -> Result<User, ConfirmAccountFail> {
     use schema::fedibook::users::dsl::*;
 
-    let token = match base64::decode(token) {
+    let token = match bs58::decode(token).into_vec() {
         Ok(t) => t,
-        Err(_) => return Err(ConfirmAccountFail::Base64DecodeError),
+        Err(_) => return Err(ConfirmAccountFail::Base58DecodeError),
     };
     let mut user = match users.filter(confirmation_token.eq(token)).first::<User>(db) {
         Ok(user) => user,
