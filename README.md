@@ -1,5 +1,4 @@
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
-[![Coverage Status](https://coveralls.io/repos/github/BanjoFox/fedibook/badge.svg?branch=master)](https://coveralls.io/github/BanjoFox/fedibook?branch=master)
 [![Build Status](https://travis-ci.org/BanjoFox/fedibook.svg?branch=web-dev)](https://travis-ci.org/BanjoFox/fedibook)
 
 # Fedibook
