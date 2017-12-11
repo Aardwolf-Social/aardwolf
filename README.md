@@ -6,6 +6,10 @@ A macroblogging companion to Mastodon (a **free, open-source social network serv
 
 The back-end is built on **Rust** with **Rocket**. Currently we are using Bulma as our SASS/CSS Framework, and have considered Intercooler.js for the other parts of the Front-End.
 
+**Discussion Forum**
+There is a [Flarum](http://flarum.org) discussion board installed on the domain below (GitHub/OAuth works). This is a *temporary* domain until we can finalize the project name, and move it to a proper .social
+URL: [Fedibook Discussion Board](http://www.jaggedskybrewing.com)
+
 ### Contributing
 If you would like to give us a hand that would be awesome! :D 
 Right now, we need a bit of everythig, and I am trying to create issues/milestones accordingly. Please take a look around the project, and see what you might want to work on. Even the documentation/wiki needs help. Grab a fork, and start hacking away :D
