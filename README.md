@@ -13,6 +13,6 @@ Right now, we need a bit of everythig, and I am trying to create issues/mileston
 ### Getting in Touch
 Banjo is the official "public" face of the project, so it is perhaps best if you reach out to him.<br />
 <br />
-Mastodon: @banjofox@dev.glitch.social
-Discord: #2731 (BanjoFox)
+Mastodon: @banjofox@dev.glitch.social<br />
+Discord: #2731 (BanjoFox)<br />
 E-mail: drbanjofox AT protonmail DOT com
