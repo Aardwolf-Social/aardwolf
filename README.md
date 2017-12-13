@@ -1,4 +1,4 @@
-[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
 [![Build Status](https://travis-ci.org/BanjoFox/fedibook.svg?branch=web-dev)](https://travis-ci.org/BanjoFox/fedibook)
 
 # Fedibook
