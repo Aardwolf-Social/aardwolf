@@ -9,7 +9,7 @@ The back-end is built on [Rust](https://www.rust-lang.org/) with [Rocket](https:
 ## Discussion
 Project discussion happens in our forum, temporarily at http://www.jaggedskybrewing.com (you can login with your GitHub account). 
 
-We will be moving to a new domain when we [finalize the project name](http://www.jaggedskybrewing.com/d/1-project-branding). Take our poll and [vote for the new name](https://www.strawpoll.me/14599933)!
+We will be moving to a new domain when we [finalize the project name](http://www.jaggedskybrewing.com/d/1-project-branding).
 
 ## Contributing
 If you would like to give us a hand that would be awesome!
