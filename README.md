@@ -4,7 +4,7 @@
 # Fedibook
 A macroblogging companion to [Mastodon](https://joinmastodon.org/) (a **free, open-source social network server**). Designed from the ground-up with **privacy, security, and freedom** in mind. Our goals is to be fully-compatible with Mastodon, while adding functionality seen in other popular social media sites. Decentralizing the system means anyone can build, and customize, their own server instance thereby granting them greater control over content. Instances can then be connected to one another (federated) thus allowing users on one instance to interact with individuals on another. The more federation, the broader the userbase becomes. 
 
-The back-end is built on [Rust](https://www.rust-lang.org/) with [Rocket](https://rocket.rs/). Currently we are using [Bulma](https://bulma.io/) as our SASS/CSS Framework, and have considered [intercooler.js](http://intercoolerjs.org/) for the other parts of the front end design.
+The back-end is built on [Rust](https://www.rust-lang.org/) with [Rocket](https://rocket.rs/). Currently we are using [Bulma](https://bulma.io/) as our SASS/CSS Framework, and have selected [Intercooler.js](http://intercoolerjs.org/) as our preferred JavaScript framework.
 
 ## Discussion
 Project discussion happens in our forum, temporarily at http://www.jaggedskybrewing.com (you can login with your GitHub account). 
