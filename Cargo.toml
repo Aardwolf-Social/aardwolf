@@ -1,14 +1,14 @@
 [package]
-name = "fedibook"
+name = "aardwolf"
 version = "0.1.0"
 authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Peter Alexander <drbanjofox@protonmail.com>", "Elijah Mark Anderson <kd0bpv@gmail.com>", "Paul Woolcock <paul@woolcock.us>"]
 
 [lib]
-name = "_fedibook"
-path = "src/fedibook/lib.rs"
+name = "_aardwolf"
+path = "src/aardwolf/lib.rs"
 
 [[bin]]
-name = "fedibook-server"
+name = "aardwolf-server"
 path = "src/bin/main.rs"
 
 [dependencies]
@@ -25,6 +25,7 @@ rocket = "0.3.3"
 rocket_codegen = "0.3.3"
 serde = "1.0.21"
 serde_derive = "1.0.21"
+config = "0.7.0"
 
 [dependencies.chrono]
 version = "0.4"

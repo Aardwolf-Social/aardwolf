@@ -10,7 +10,7 @@ use chrono::{Utc, NaiveDateTime};
 
 use {DbConn, Pool};
 use models::account::Account;
-use schema::fedibook::users;
+use schema::aardwolf::users;
 
 #[derive(Queryable, Identifiable, AsChangeset, Associations, Debug)]
 #[belongs_to(Account, foreign_key = "account_id")]
@@ -37,7 +37,7 @@ impl User {
     }
 
     pub(crate) fn get(id: &str, db: &PgConnection) -> Option<User> {
-        use schema::fedibook::users::dsl::*;
+        use schema::aardwolf::users::dsl::*;
         users.find(id).first(db).ok()
     }
 }

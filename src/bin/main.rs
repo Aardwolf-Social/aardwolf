@@ -10,14 +10,17 @@ extern crate r2d2;
 extern crate r2d2_diesel;
 extern crate ring;
 extern crate diesel;
+extern crate config;
 
-extern crate _fedibook as fedibook;
+extern crate _aardwolf as aardwolf;
 
 use ring::rand::SystemRandom;
 use rocket::Rocket;
 use rocket_contrib::Template;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
+use config::{Config, Environment};
+use std::path::PathBuf;
 
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
@@ -30,18 +33,18 @@ fn db_pool(rocket: &Rocket) -> Pool {
 fn app() -> Rocket {
     let r = rocket::ignite()
         .mount("/api/v1", routes![
-            fedibook::routes::applications::register_application
+            aardwolf::routes::applications::register_application
         ])
         .mount("/", routes![
-            fedibook::routes::auth::sign_up_form,
-            fedibook::routes::auth::sign_in_form,
-            fedibook::routes::auth::sign_up,
-            fedibook::routes::auth::sign_in,
-            fedibook::routes::auth::confirm,
-            fedibook::routes::auth::sign_out,
+            aardwolf::routes::auth::sign_up_form,
+            aardwolf::routes::auth::sign_in_form,
+            aardwolf::routes::auth::sign_up,
+            aardwolf::routes::auth::sign_in,
+            aardwolf::routes::auth::confirm,
+            aardwolf::routes::auth::sign_out,
 
-            fedibook::routes::app::home,
-            fedibook::routes::app::home_redirect,
+            aardwolf::routes::app::home,
+            aardwolf::routes::app::home_redirect,
         ])
         .attach(Template::fairing())
         .manage(SystemRandom::new());
@@ -53,6 +56,18 @@ fn app() -> Rocket {
 }
 
 fn main() {
+    // Set defaults
+    let mut config = Config::default();
+    config.set_default::<&str>("cfg_file", "/etc/aardwolf/config.toml").unwrap();
+
+    // Merge environment variables
+    config.merge(Environment::with_prefix("aardwolf")).unwrap();
+
+    // Parse and merge arguments
+
+    // Merge config file.
+    let cfg_file: PathBuf = PathBuf::from(config.get_str("cfg_file").unwrap());
+    config.merge(config::File::with_name(cfg_file.to_str().unwrap())).unwrap();
+
     app().launch();
 }
-
