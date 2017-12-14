@@ -19,7 +19,8 @@ use rocket::Rocket;
 use rocket_contrib::Template;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
-use config::{Config};
+use config::{Config, Environment};
+use std::path::PathBuf;
 
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
@@ -56,10 +57,18 @@ fn app() -> Rocket {
 }
 
 fn main() {
+    // Set defaults
     let mut config = Config::default();
-    config.merge(config::File::with_name("tests/resources/config")).unwrap();
+    config.set_default::<&str>("cfg_file", "/etc/aardwolf/config.toml").unwrap();
 
-    println!("Configured username: {:?}", config.get_str("Database.username").unwrap());
+    // Merge environment variables
+    config.merge(Environment::with_prefix("aardwolf")).unwrap();
 
-    //app().launch();
+    // Parse and merge arguments
+
+    // Merge config file.
+    let cfg_file: PathBuf = PathBuf::from(config.get_str("cfg_file").unwrap());
+    config.merge(config::File::with_name(cfg_file.to_str().unwrap())).unwrap();
+
+    app().launch();
 }
