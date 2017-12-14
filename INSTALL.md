@@ -96,7 +96,9 @@ environment variable so `diesel` will know how to connect to postgres:
 
 Fill in your own values for `username`, `password`, `host`, and `port`. You also
 don't *have* to call the database `fedibook_development`, but that is
-standard.
+standard. For local development this will likely look something like:
+
+    export DATABASE_URL="postgres://aardwolf:password@localhost/aardwolf_development"
 
 Next, run the follow to create the database:
 
@@ -105,6 +107,9 @@ Next, run the follow to create the database:
 If this command succeeded, run the migrations:
 
     $ diesel migration run
+
+Edit `Rocket.toml` and update the `database_url` with the same value used for
+the `DATABASE_URL` environment variable above.
 
 ## Running the server
 
