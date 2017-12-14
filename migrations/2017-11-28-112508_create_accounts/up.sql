@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS fedibook.accounts (
+CREATE TABLE IF NOT EXISTS aardwolf.accounts (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username        VARCHAR NOT NULL DEFAULT '',
     domain          VARCHAR,
@@ -8,5 +8,5 @@ CREATE TABLE IF NOT EXISTS fedibook.accounts (
     updated_at      TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT (now() at time zone 'utc')
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS id_idx ON fedibook.accounts (id);
-CREATE UNIQUE INDEX IF NOT EXISTS username_domain_unique_idx ON fedibook.accounts (username, domain);
+CREATE UNIQUE INDEX IF NOT EXISTS id_idx ON aardwolf.accounts (id);
+CREATE UNIQUE INDEX IF NOT EXISTS username_domain_unique_idx ON aardwolf.accounts (username, domain);

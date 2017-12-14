@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS fedibook.users (
+CREATE TABLE IF NOT EXISTS aardwolf.users (
     id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email                   VARCHAR NOT NULL DEFAULT '',
     encrypted_password      VARCHAR NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS fedibook.users (
     created_at              TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT (now() at time zone 'utc'),
     updated_at              TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT (now() at time zone 'utc'),
 
-    FOREIGN KEY (account_id) REFERENCES fedibook.accounts (id)
+    FOREIGN KEY (account_id) REFERENCES aardwolf.accounts (id)
 );
 
-CREATE INDEX IF NOT EXISTS email_idx ON fedibook.users (email);
+CREATE INDEX IF NOT EXISTS email_idx ON aardwolf.users (email);
