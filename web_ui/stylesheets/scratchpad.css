@@ -1,19 +1,8 @@
-.Site {
-  display: flex;
-  min-height: 100vh;
-  flex-direction: column;
-}
-
-.Site-content {
-  flex: 1;
-  justify-content: center;
-}
 .verticalLine {
   border-left: 2px solid #000;
 }
 
 /* Flaired edges, by Tomas Theunissen */
-
 hr.style-seven {
     overflow: visible; /* For IE */
     height: 20px;
@@ -32,22 +21,6 @@ hr.style-seven:before { /* Not really supposed to work, but does */
     border-color: black;
     border-width: 0 0 1px 0;
     border-radius: 10px;
-}
-
-#leftPane {
-  float: left;
-  text-align: justify;
-  width: 40%;
-  /* top | right | bottom | left */
-  padding: 4px 1em 4px 2em;
-}
-
-#rightPane {
-  float: left;
-  text-align: justify;
-  width: 40%;
-  /* top | right | bottom | left */
-  padding: 4px 1em 4px 2em;
 }
 
 footer {
