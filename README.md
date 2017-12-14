@@ -1,5 +1,5 @@
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
-[![Build Status](https://travis-ci.org/BanjoFox/aardwolf.svg?branch=web-dev)](https://travis-ci.org/BanjoFox/aardwolf)
+[![Build Status](https://travis-ci.org/BanjoFox/aardwolf.svg?branch=web-dev)](https://travis-ci.org/BanjoFox/Aardwolf)
 
 # Aardwolf
 A macroblogging companion to [Mastodon](https://joinmastodon.org/) (a **free, open-source social network server**). Designed from the ground-up with **privacy, security, and freedom** in mind. Our goals is to be fully-compatible with Mastodon, while adding functionality seen in other popular social media sites. Decentralizing the system means anyone can build, and customize, their own server instance thereby granting them greater control over content. Instances can then be connected to one another (federated) thus allowing users on one instance to interact with individuals on another. The more federation, the broader the userbase becomes. 
