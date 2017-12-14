@@ -12,7 +12,7 @@ use Pool;
 use forms::auth::{SignInForm, SignUpForm};
 use models::account::{Account, NewAccount};
 use models::user::{NewUser, User};
-use schema::fedibook::{accounts, users};
+use schema::aardwolf::{accounts, users};
 
 #[derive(Fail, Debug)]
 pub(crate) enum SignUpFail {
@@ -77,7 +77,7 @@ pub(crate) enum ConfirmAccountFail {
 }
 
 pub(crate) fn confirm_account(token: &str, db: &PgConnection) -> Result<User, ConfirmAccountFail> {
-    use schema::fedibook::users::dsl::*;
+    use schema::aardwolf::users::dsl::*;
 
     let token = match base64::decode(token) {
         Ok(t) => t,
@@ -129,7 +129,7 @@ pub(crate) enum SignInFail {
 }
 
 pub(crate) fn sign_in(form: &SignInForm, db: &PgConnection) -> Result<User, SignInFail> {
-    use schema::fedibook::users::dsl::*;
+    use schema::aardwolf::users::dsl::*;
 
     // check csrf token
 

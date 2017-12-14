@@ -12,7 +12,7 @@ extern crate ring;
 extern crate diesel;
 extern crate config;
 
-extern crate _fedibook as fedibook;
+extern crate _aardwolf as aardwolf;
 
 use ring::rand::SystemRandom;
 use rocket::Rocket;
@@ -34,18 +34,18 @@ fn db_pool(rocket: &Rocket) -> Pool {
 fn app() -> Rocket {
     let r = rocket::ignite()
         .mount("/api/v1", routes![
-            fedibook::routes::applications::register_application
+            aardwolf::routes::applications::register_application
         ])
         .mount("/", routes![
-            fedibook::routes::auth::sign_up_form,
-            fedibook::routes::auth::sign_in_form,
-            fedibook::routes::auth::sign_up,
-            fedibook::routes::auth::sign_in,
-            fedibook::routes::auth::confirm,
-            fedibook::routes::auth::sign_out,
+            aardwolf::routes::auth::sign_up_form,
+            aardwolf::routes::auth::sign_in_form,
+            aardwolf::routes::auth::sign_up,
+            aardwolf::routes::auth::sign_in,
+            aardwolf::routes::auth::confirm,
+            aardwolf::routes::auth::sign_out,
 
-            fedibook::routes::app::home,
-            fedibook::routes::app::home_redirect,
+            aardwolf::routes::app::home,
+            aardwolf::routes::app::home_redirect,
         ])
         .attach(Template::fairing())
         .manage(SystemRandom::new());

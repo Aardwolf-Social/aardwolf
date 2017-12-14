@@ -1,7 +1,7 @@
 use uuid::Uuid;
 use chrono::NaiveDateTime;
 
-use schema::fedibook::accounts;
+use schema::aardwolf::accounts;
 
 #[derive(Queryable, Identifiable)]
 pub(crate) struct Account {
