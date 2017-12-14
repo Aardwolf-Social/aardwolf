@@ -1,4 +1,9 @@
+[Listen]
+address = "127.0.0.1"
+port = 7878
+
 [Database]
+address = "127.0.0.1"
 username = "bob"
 password = "god"
 port = 123
