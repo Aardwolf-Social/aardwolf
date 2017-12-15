@@ -2,23 +2,31 @@
 [![Build Status](https://travis-ci.org/BanjoFox/Aardwolf.svg?branch=master)](https://travis-ci.org/BanjoFox/Aardwolf)
 
 # Aardwolf
-A macroblogging companion to [Mastodon](https://joinmastodon.org/) (a **free, open-source social network server**). Designed from the ground-up with **privacy, security, and freedom** in mind. Our goals is to be fully-compatible with Mastodon, while adding functionality seen in other popular social media sites. Decentralizing the system means anyone can build, and customize, their own server instance thereby granting them greater control over content. Instances can then be connected to one another (federated) thus allowing users on one instance to interact with individuals on another. The more federation, the broader the userbase becomes. 
 
-The back-end is built on [Rust](https://www.rust-lang.org/) with [Rocket](https://rocket.rs/). Currently we are using [Bulma](https://bulma.io/) as our SASS/CSS Framework, and have selected [Intercooler.js](http://intercoolerjs.org/) as our preferred JavaScript framework.
+### Powerful, Social, Connected Communities
 
-## Discussion
+Aardwolf is a platform for creating new social networks, connected across the web. While existing social media sites work to funnel the world into a single shared experience (and advertising marketplace), we recognize that we are all individuals with different identities and interests.
+
+**Aardwolf is the engine behind a new Facebook-like social platform, [wearesocial.space](http://wearesocial.space).**
+
+Aardwolf shares a philosophy and underlying protocols with [Mastodon](http://joinmastodon.org), a federated microblogging platform with over a 100 independently-run servers, hosting more than one million active users.
+
+
+### What's Different About Aardwolf?
+
+Aardwolf is a social platform, meaning that each server hosts it's own community of users who are posting, sharing pictures, links, etc. They are replying and "liking" each other's posts, and re-sharing the ones they like best.
+
+Event better, Aardwolf is a *connected* (the technical term is "federated") platform: users are not limited to only interacting with other users on their service: they can follow users on other sites that are powered by Aardwolf just as if they were on their own site. They can even connect with users on other platforms, if -- like the microblogging service [Mastodon](http://joinmastodon.org) -- they implement the same open protocols Aardwolf is built on.
+
+Finally, Aardwolf is [open source](https://github.com/banjofox/aardwolf), so developers who want to contribute or understand how it works can dig in and do so.
+
+
+### Project Status
+
+The scaffolding is still being built, but the pieces are coming together much quicker than originally anticipated! A sample of the web interface should be online soon.
+
+
+### Development
+
 Project discussion happens in our forum [WeAreSocial.tech](http://wearesocial.tech/) (you can login with your GitHub account). 
 
-We will be moving to a new domain when we [finalize the project name](http://wearesocial.tech/d/1-project-branding).
-
-## Contributing
-If you would like to give us a hand that would be awesome!
-
-Right now, we need a bit of everything, and we are creating [issues](https://github.com/BanjoFox/aardwolf/issues) and [milestones](https://github.com/BanjoFox/aardwolf/milestones) accordingly. Please take a look around the project, and see what you want to work on. Even the [documentation wiki](https://github.com/BanjoFox/aardwolf/wiki) needs help. Grab a fork, and start hacking away :D
-
-## Getting in Touch
-Banjo is the official "public" face of the project, and can be contacted at the following places:
-
-Mastodon: [@banjofox@dev.glitch.social](https://dev.glitch.social/@banjofox)  
-Discord: #2731 (BanjoFox)  
-E-mail: drbanjofox AT protonmail DOT com
