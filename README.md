@@ -7,9 +7,9 @@ A macroblogging companion to [Mastodon](https://joinmastodon.org/) (a **free, op
 The back-end is built on [Rust](https://www.rust-lang.org/) with [Rocket](https://rocket.rs/). Currently we are using [Bulma](https://bulma.io/) as our SASS/CSS Framework, and have selected [Intercooler.js](http://intercoolerjs.org/) as our preferred JavaScript framework.
 
 ## Discussion
-Project discussion happens in our forum, temporarily at http://www.jaggedskybrewing.com (you can login with your GitHub account). 
+Project discussion happens in our forum [WeAreSocial.tech](http://wearesocial.tech/) (you can login with your GitHub account). 
 
-We will be moving to a new domain when we [finalize the project name](http://www.jaggedskybrewing.com/d/1-project-branding).
+We will be moving to a new domain when we [finalize the project name](http://wearesocial.tech/d/1-project-branding).
 
 ## Contributing
 If you would like to give us a hand that would be awesome!
