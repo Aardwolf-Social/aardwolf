@@ -16,7 +16,7 @@ Aardwolf shares a philosophy and underlying protocols with [Mastodon](http://joi
 
 Aardwolf is a social platform, meaning that each server hosts it's own community of users who are posting, sharing pictures, links, etc. They are replying and "liking" each other's posts, and re-sharing the ones they like best.
 
-Event better, Aardwolf is a *connected* (the technical term is "federated") platform: users are not limited to only interacting with other users on their service: they can follow users on other sites that are powered by Aardwolf just as if they were on their own site. They can even connect with users on other platforms, if -- like the microblogging service [Mastodon](http://joinmastodon.org) -- they implement the same open protocols Aardwolf is built on.
+Even better, Aardwolf is a *connected* (the technical term is "federated") platform: users are not limited to only interacting with other users on their service: they can follow users on other sites that are powered by Aardwolf just as if they were on their own site. They can even connect with users on other platforms, if -- like the microblogging service [Mastodon](http://joinmastodon.org) -- they implement the same open protocols Aardwolf is built on.
 
 Finally, Aardwolf is [open source](https://github.com/banjofox/aardwolf), so developers who want to contribute or understand how it works can dig in and do so.
 
