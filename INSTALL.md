@@ -7,7 +7,7 @@ run, though at the moment it has only been tested on linux and OSX.
 
 ### Installing PostgreSQL
 In order to run the aardwolf backend, you will need to have access to a
-[PostgreSQL]() database. There are a few options for doing this, but for
+[PostgreSQL](https://www.postgresql.org/) database. There are a few options for doing this, but for
 this guide we're going to assume you are running the database on your
 development machine.
 
