@@ -3,8 +3,9 @@ address = "127.0.0.1"
 port = 7878
 
 [Database]
-address = "127.0.0.1"
+type = "postgresql"
+host = "127.0.0.1"
+port = 5432
 username = "bob"
 password = "god"
-port = 123
 database = "test"
