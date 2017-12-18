@@ -111,11 +111,18 @@ If this command succeeded, run the migrations:
 Edit `Rocket.toml` and update the `database_url` with the same value used for
 the `DATABASE_URL` environment variable above.
 
+## Configuring the server
+
+Currently, Aardwolf only supports running from Linux-like operating systems and
+expects aardwolf.toml to be in the root of the project directory. To get started,
+copy [`tests/resources/config.toml`](blob/master/tests/resources/config.toml) to `./aardwolf.toml` and adjust the values accordingly. The same values you used in
+setting up the database should be used.
+
 ## Running the server
 
 Finally, we get to actually run the darn thing! To run the server, do
 
-    $ cargo run --bin fedibook-server
+    $ cargo run --bin aardwolf-server
 
 and wait until you see *"Rocket has launched from http://localhost:7878"*
 in the console. Now you're ready to go!
