@@ -12,3 +12,4 @@ Here's the quick, braindump, version
 
 ### MISC
 - Logo 
+- Accessibility/a11y testing (medium-high priority)
