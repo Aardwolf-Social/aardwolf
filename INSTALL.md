@@ -17,6 +17,15 @@ PostgreSQL like this:
     $ sudo apt-get update
     $ sudo apt-get install postgresql postgresql-contrib
 
+If you see an error like: 
+
+     = note: /usr/bin/ld: cannot find -lpq
+          collect2: error: ld returned 1 exit statusb
+
+Then you may need to install the libpq (PostgreSQL C-library) package as well : 
+
+    $ sudo apt-get install libpq-dev
+
 If you're on OSX and using `brew`, do
 
     $ brew update
