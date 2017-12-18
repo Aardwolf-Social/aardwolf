@@ -1,12 +1,12 @@
 # Installation instructions
 
-Theoretically, fedibook should run anywhere that Rust and PostgreSQL
+Theoretically, aardwolf should run anywhere that Rust and PostgreSQL
 run, though at the moment it has only been tested on linux and OSX.
 
 ## Installing Requirements
 
 ### Installing PostgreSQL
-In order to run the fedibook backend, you will need to have access to a
+In order to run the aardwolf backend, you will need to have access to a
 [PostgreSQL]() database. There are a few options for doing this, but for
 this guide we're going to assume you are running the database on your
 development machine.
@@ -50,7 +50,7 @@ toolchain installed:
 
     $ rustup toolchain install nightly
 
-Next, you need to install a command for managing the fedibook database.
+Next, you need to install a command for managing the aardwolf database.
 We use a rust library called `diesel` for managing database migrations,
 among other things.
 
@@ -68,18 +68,18 @@ require some additional support libraries.
 
 To get the source, use `git` to checkout this repo:
 
-    $ git checkout https://github.com/BanjoFox/fedibook
+    $ git checkout https://github.com/BanjoFox/aardwolf
 
 Then, `cd` into the source directory
 
-    $ cd fedibook
+    $ cd aardwolf
 
 ## Setting the Rust toolchain version
 
 We could continue to use the `+nightly` feature whenever we run a
 `cargo` command, but why do the extra typing? Let's set up a `rustup`
 override so cargo will know to use nightly by default whenever we're in
-our project directory. In the `fedibook` directory, run
+our project directory. In the `aardwolf` directory, run
 
     $ rustup override add nightly
 
@@ -92,10 +92,10 @@ Now it's time to get the database set up. We'll use the `diesel` command
 to set up the database and run the migrations. First, export an
 environment variable so `diesel` will know how to connect to postgres:
 
-    $ export DATABASE_URL="postgres://username:password@host:port/fedibook_development"
+    $ export DATABASE_URL="postgres://username:password@host:port/aardwolf_development"
 
 Fill in your own values for `username`, `password`, `host`, and `port`. You also
-don't *have* to call the database `fedibook_development`, but that is
+don't *have* to call the database `aardwolf_development`, but that is
 standard. For local development this will likely look something like:
 
     export DATABASE_URL="postgres://aardwolf:password@localhost/aardwolf_development"
@@ -108,14 +108,19 @@ If this command succeeded, run the migrations:
 
     $ diesel migration run
 
-Edit `Rocket.toml` and update the `database_url` with the same value used for
-the `DATABASE_URL` environment variable above.
+## Configuring the server
+
+Currently, Aardwolf expects aardwolf.toml to be in the root of the project
+directory. To get started, copy
+[`tests/resources/config.toml`](tests/resources/config.toml) to
+`./aardwolf.toml` and adjust the values accordingly. The same values you used in
+setting up the database should be used unless you know what you're doing.
 
 ## Running the server
 
 Finally, we get to actually run the darn thing! To run the server, do
 
-    $ cargo run --bin fedibook-server
+    $ cargo run --bin aardwolf-server
 
 and wait until you see *"Rocket has launched from http://localhost:7878"*
 in the console. Now you're ready to go!
