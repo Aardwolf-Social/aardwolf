@@ -5,7 +5,7 @@ port = 7878
 [Database]
 type = "postgresql"
 host = "127.0.0.1"
-port = 123
+port = 5432
 username = "bob"
 password = "god"
 database = "test"
