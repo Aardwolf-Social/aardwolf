@@ -33,7 +33,7 @@ fn db_pool(rocket: &Rocket) -> Pool {
 fn app(config: config::Config) -> Rocket {
     let mut db_url = String::new();
     match config.get_str("Database.type").unwrap().to_lowercase().as_str() {
-        "postgresql" => db_url.push_str("postgres://"),
+        "postgresql" | "postgres" => db_url.push_str("postgres://"),
 
         // If we reach this case, it's an error.
         // TODO: Handle it.
