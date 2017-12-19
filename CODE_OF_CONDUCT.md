@@ -25,7 +25,7 @@
 
 ## Moderation
 
-These are the policies for upholding our community's standards of conduct. If you feel that a thread needs moderation, please contact a member of the development team. These policies apply to any mediums used for the project development communications, including but not limited to [Github](https://github.com/BanjoFox/Aardwolf) and [the discussion forum](http://www.jaggedskybrewing.com/).
+These are the policies for upholding our community's standards of conduct. If you feel that a thread needs moderation, please contact a member of the development team. These policies apply to any mediums used for the project development communications, including but not limited to [Github](https://github.com/BanjoFox/Aardwolf) and [the discussion forum](http://wearesocial.tech/).
 
 1. Remarks that violate standards of conduct, including hateful, hurtful, oppressive, or exclusionary remarks, are not allowed. (Cursing is allowed, but never targeting another user, and never in a hateful manner.)
 2. Remarks that moderators find inappropriate, whether listed in the code of conduct or not, are also not allowed.
