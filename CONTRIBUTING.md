@@ -12,4 +12,5 @@ Here's the quick, braindump, version
 
 ### MISC
 - Logo 
-- Accessibility/a11y testing (medium-high priority)
+- Ensure that app includes accessibility features
+- Test the accessibility features
