@@ -7,7 +7,7 @@ run, though at the moment it has only been tested on linux and OSX.
 
 ### Installing PostgreSQL
 In order to run the aardwolf backend, you will need to have access to a
-[PostgreSQL]() database. There are a few options for doing this, but for
+[PostgreSQL](https://www.postgresql.org/) database. There are a few options for doing this, but for
 this guide we're going to assume you are running the database on your
 development machine.
 
@@ -16,6 +16,15 @@ PostgreSQL like this:
 
     $ sudo apt-get update
     $ sudo apt-get install postgresql postgresql-contrib
+
+If you see an error like: 
+
+     = note: /usr/bin/ld: cannot find -lpq
+          collect2: error: ld returned 1 exit statusb
+
+Then you may need to install the libpq (PostgreSQL C-library) package as well : 
+
+    $ sudo apt-get install libpq-dev
 
 If you're on OSX and using `brew`, do
 
