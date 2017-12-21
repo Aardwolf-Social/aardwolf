@@ -7,7 +7,7 @@
 
 Aardwolf is a platform for creating new social networks, connected across the web. While existing social media sites work to funnel the world into a single shared experience (and advertising marketplace), we recognize that we are all individuals with different identities and interests.
 
-**Aardwolf is the engine behind a new Facebook-like social platform, [wearesocial.space](http://wearesocial.space).**
+**Aardwolf is the engine behind a new Facebook-like social platform, our first -planned- instance of the engine will be hosted on [wearesocial.space](http://wearesocial.space).**
 
 Aardwolf shares a philosophy and underlying protocols with [Mastodon](http://joinmastodon.org), a federated microblogging platform with over a 100 independently-run servers, hosting more than one million active users.
 
