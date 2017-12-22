@@ -21,6 +21,7 @@ use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
 use config::{Config, Environment};
 use std::path::PathBuf;
+use std::env;
 
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
@@ -83,14 +84,15 @@ fn app(config: config::Config) -> Rocket {
 fn main() {
     // Set defaults
     let mut config = Config::default();
-    config.set_default::<&str>("cfg_file", "aardwolf.toml").unwrap();
+    config.set_default::<&str>("cfg_file", concat!(env!("CARGO_PKG_NAME"), ".toml")).unwrap();
     config.set_default::<&str>("Listen.address", "127.0.0.1").unwrap();
     config.set_default("Listen.port", 7878).unwrap();
 
     // Merge environment variables
-    config.merge(Environment::with_prefix("aardwolf")).unwrap();
+    config.merge(Environment::with_prefix(env!("CARGO_PKG_NAME"))).unwrap();
 
     // Parse and merge arguments
+    let argv: Vec<String> = env::args().collect();
 
     // Merge config file.
     let cfg_file: PathBuf = PathBuf::from(config.get_str("cfg_file").unwrap());
