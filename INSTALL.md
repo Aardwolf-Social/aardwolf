@@ -77,7 +77,7 @@ require some additional support libraries.
 
 To get the source, use `git` to checkout this repo:
 
-    $ git checkout https://github.com/BanjoFox/aardwolf
+    $ git clone https://github.com/BanjoFox/aardwolf
 
 Then, `cd` into the source directory
 
