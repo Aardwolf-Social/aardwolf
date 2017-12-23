@@ -1,0 +1,21 @@
+name: aardwolf-server
+version: unknown
+author: Please see README for credits
+about: Powering connected social communities with open software.
+args:
+    - config:
+        short: c
+        long: config
+        value_name: CFG_FILE
+        help: Sets a custom config file
+        takes_value: true
+    - log:
+        short: l
+        long: log
+        value_name: LOG_FILE
+        help: Sets logging destination
+        takes_value: true
+    - verbose:
+        short: v
+        multiple: true
+        help: Sets the level of verbosity

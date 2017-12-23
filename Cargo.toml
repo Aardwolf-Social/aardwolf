@@ -2,6 +2,7 @@
 name = "aardwolf"
 version = "0.1.0"
 authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Peter Alexander <drbanjofox@protonmail.com>", "Elijah Mark Anderson <kd0bpv@gmail.com>", "Paul Woolcock <paul@woolcock.us>"]
+description = "Powering connected social communities with open software."
 
 [lib]
 name = "_aardwolf"
@@ -26,6 +27,7 @@ rocket_codegen = "0.3.3"
 serde = "1.0.21"
 serde_derive = "1.0.21"
 config = "0.7.0"
+clap = {version = "2.29", features = ["yaml"]}
 
 [dependencies.chrono]
 version = "0.4"
