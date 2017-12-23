@@ -11,3 +11,6 @@
 
 # Ignore all SASS compilation files
 .sass-cache
+
+# Ignore aardwolf.toml
+aardwolf.toml
