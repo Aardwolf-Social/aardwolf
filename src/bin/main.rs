@@ -11,6 +11,8 @@ extern crate r2d2_diesel;
 extern crate ring;
 extern crate diesel;
 extern crate config;
+#[macro_use]
+extern crate clap;
 
 extern crate _aardwolf as aardwolf;
 
@@ -19,7 +21,8 @@ use rocket::Rocket;
 use rocket_contrib::Template;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
-use config::{Config, Environment};
+use config::Config;
+use clap::App;
 use std::path::PathBuf;
 use std::env;
 
@@ -81,22 +84,43 @@ fn app(config: config::Config) -> Rocket {
     r.manage(pool)
 }
 
-fn main() {
+fn configure() -> Config {
     // Set defaults
     let mut config = Config::default();
     config.set_default::<&str>("cfg_file", concat!(env!("CARGO_PKG_NAME"), ".toml")).unwrap();
+    config.set_default::<&str>("log_file", concat!(env!("CARGO_PKG_NAME"), ".log")).unwrap();
     config.set_default::<&str>("Listen.address", "127.0.0.1").unwrap();
     config.set_default("Listen.port", 7878).unwrap();
 
-    // Merge environment variables
-    config.merge(Environment::with_prefix(env!("CARGO_PKG_NAME"))).unwrap();
+    // Parse arguments
+    let yaml = load_yaml!("cli.yml");
+    let args = App::from_yaml(yaml)
+        .name(env!("CARGO_PKG_NAME"))
+        .version(env!("CARGO_PKG_VERSION"))
+        .author(env!("CARGO_PKG_AUTHORS"))
+        .about(env!("CARGO_PKG_DESCRIPTION"))
+        .get_matches();
 
-    // Parse and merge arguments
-    let argv: Vec<String> = env::args().collect();
+    // Determine config file
+    match env::var("AARDWOLF_CONFIG") {
+        Ok(c) => {config.set("cfg_file", c).unwrap();},
+        Err(_) => {}
+    }
 
-    // Merge config file.
+    match args.value_of("config") {
+        Some(c) => {config.set("cfg_file", c).unwrap();},
+        None => {}
+    }
+
+    // Merge config file and apply over-rides
     let cfg_file: PathBuf = PathBuf::from(config.get_str("cfg_file").unwrap());
     config.merge(config::File::with_name(cfg_file.to_str().unwrap())).unwrap();
+
+    config
+}
+
+fn main() {
+    let config = configure();
 
     app(config).launch();
 }
