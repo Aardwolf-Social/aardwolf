@@ -11,6 +11,6 @@ Here's the quick, braindump, version
 - Find an appropriate ROCA JS Framework
 
 ### MISC
-- Logo 
+- Logo
 - Ensure that app includes accessibility features
 - Test the accessibility features
