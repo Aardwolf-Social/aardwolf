@@ -102,6 +102,7 @@ fn configure() -> Config {
         .get_matches();
 
     // Determine config file
+    // TODO: Is there a better way to handle this?
     match env::var("AARDWOLF_CONFIG") {
         Ok(c) => {config.set("cfg_file", c).unwrap();},
         Err(_) => {}
@@ -115,6 +116,17 @@ fn configure() -> Config {
     // Merge config file and apply over-rides
     let cfg_file: PathBuf = PathBuf::from(config.get_str("cfg_file").unwrap());
     config.merge(config::File::with_name(cfg_file.to_str().unwrap())).unwrap();
+
+    //  TODO: Is there a better way to handle this?
+    match env::var("AARDWOLF_LOG") {
+        Ok(l) => {config.set("log_file", l).unwrap();},
+        Err(_) => {}
+    }
+
+    match args.value_of("log") {
+        Some(l) => {config.set("log_file", l).unwrap();},
+        None => {}
+    }
 
     config
 }
