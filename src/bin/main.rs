@@ -102,7 +102,10 @@ fn configure() -> Config {
         .get_matches();
 
     // Determine config file
+<<<<<<< HEAD
     // TODO: Is there a better way to handle this?
+=======
+>>>>>>> e5f41102321ceb65d8423c6817f79d0e9943ec3d
     match env::var("AARDWOLF_CONFIG") {
         Ok(c) => {config.set("cfg_file", c).unwrap();},
         Err(_) => {}
@@ -117,6 +120,7 @@ fn configure() -> Config {
     let cfg_file: PathBuf = PathBuf::from(config.get_str("cfg_file").unwrap());
     config.merge(config::File::with_name(cfg_file.to_str().unwrap())).unwrap();
 
+<<<<<<< HEAD
     //  TODO: Is there a better way to handle this?
     match env::var("AARDWOLF_LOG") {
         Ok(l) => {config.set("log_file", l).unwrap();},
@@ -128,6 +132,8 @@ fn configure() -> Config {
         None => {}
     }
 
+=======
+>>>>>>> e5f41102321ceb65d8423c6817f79d0e9943ec3d
     config
 }
 
