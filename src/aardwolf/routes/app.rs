@@ -18,3 +18,13 @@ fn home(user: User, db: DbConn) -> Template {
 fn home_redirect() -> Redirect {
     Redirect::to("/auth/sign_in")
 }
+
+// Adding route to /
+#[get("/")]
+fn index() -> &'static str {
+     "
+      This is Banjo's Dummy Index because he's not sure how to use Template::render yet
+      ...
+      Soon though...maybe?
+    "
+}
