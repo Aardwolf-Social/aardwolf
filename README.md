@@ -1,5 +1,5 @@
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
-[![Build Status](https://travis-ci.org/BanjoFox/Aardwolf.svg?branch=master)](https://travis-ci.org/BanjoFox/Aardwolf)
+[![Build Status](https://travis-ci.org/BanjoFox/aardwolf.svg?branch=master)](https://travis-ci.org/BanjoFox/aardwolf)
 
 # Aardwolf
 
