@@ -55,8 +55,8 @@ fn app(config: config::Config) -> Rocket {
     db_url.push_str(config.get_str("Database.database").unwrap().as_str());
 
     let c = rocket::Config::build(rocket::config::Environment::Development)
-        .address(config.get_str("Listen.address").unwrap())
-        .port(config.get::<u16>("Listen.port").unwrap())
+        .address(config.get_str("Web.Listen.address").unwrap())
+        .port(config.get::<u16>("Web.Listen.port").unwrap())
         .extra("database_url", db_url.as_str())
         .unwrap();
 
@@ -89,8 +89,8 @@ fn configure() -> Config {
     let mut config = Config::default();
     config.set_default::<&str>("cfg_file", concat!(env!("CARGO_PKG_NAME"), ".toml")).unwrap();
     config.set_default::<&str>("log_file", concat!(env!("CARGO_PKG_NAME"), ".log")).unwrap();
-    config.set_default::<&str>("Listen.address", "127.0.0.1").unwrap();
-    config.set_default("Listen.port", 7878).unwrap();
+    config.set_default::<&str>("Web.Listen.address", "127.0.0.1").unwrap();
+    config.set_default("Web.Listen.port", 7878).unwrap();
 
     // Parse arguments
     let yaml = load_yaml!("cli.yml");
