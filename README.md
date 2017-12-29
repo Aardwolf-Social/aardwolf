@@ -32,5 +32,5 @@ Project discussion happens in our forum [WeAreSocial.tech](http://wearesocial.te
 
 ### Donating to the cause
 
-For those who would prefer to help us in a monetary fashion you may do so here: [liberapay.com/BanjoFox](https://liberapay.com/BanjoFox)
+For those who would prefer to help us in a monetary fashion you may do so here: [liberapay.com/Aardwolf](https://liberapay.com/Aardwolf)
 Please do not be afraid to ask questions. There are a lot of things that Banjo would appreciate help with. Even if you do not know Rust, there may be other ways to participate! :D
