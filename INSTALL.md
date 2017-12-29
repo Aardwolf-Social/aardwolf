@@ -3,6 +3,10 @@
 Theoretically, Aardwolf should run anywhere that Rust and PostgreSQL
 run, though at the moment it has only been tested on linux and OSX.
 
+> NOTE: These instructions may help in installing a production version, but are
+intended for developers to be able to build and test their changes. If in doubt,
+seek out documentation from your distribution package or from [the `doc` folder](doc).
+
 ## Installing Requirements
 
 ### Installing PostgreSQL
