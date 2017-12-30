@@ -125,7 +125,7 @@ If this command succeeded, run the migrations:
 
 Currently, Aardwolf expects aardwolf.toml to be in the root of the project
 directory. To get started, copy
-[`tests/resources/config.toml`](tests/resources/config.toml) to
+[`config/example.toml`](config/example.toml) to
 `./aardwolf.toml` and adjust the values accordingly. The same values you used in
 setting up the database should be used unless you know what you’re doing.
 
