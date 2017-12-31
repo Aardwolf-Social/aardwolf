@@ -5,10 +5,8 @@ use diesel;
 use diesel::LoadDsl;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
-use failure::Error;
 use chrono::Utc;
 
-use Pool;
 use forms::auth::{SignInForm, SignUpForm};
 use models::account::{Account, NewAccount};
 use models::user::{NewUser, User};
@@ -24,6 +22,8 @@ pub(crate) enum SignUpFail {
     UserCreateError,
     #[fail(display = "Failed to hash password")]
     PasswordHashError,
+    #[fail(display = "Failed to create confirmation token")]
+    CreateTokenError,
 }
 
 pub(crate) fn create_user_and_account<T: SecureRandom>(form: SignUpForm, gen: &T, db: &PgConnection) -> Result<(), SignUpFail> {
@@ -36,7 +36,7 @@ pub(crate) fn create_user_and_account<T: SecureRandom>(form: SignUpForm, gen: &T
     };
     let account: Account = match diesel::insert_into(accounts::table).values(&account).get_result(db) {
         Ok(account) => account,
-        Err(e) => return Err(SignUpFail::AccountCreateError),
+        Err(_) => return Err(SignUpFail::AccountCreateError),
     };
 
     let mut token: Vec<u8> = vec![0; 16];
@@ -54,9 +54,8 @@ pub(crate) fn create_user_and_account<T: SecureRandom>(form: SignUpForm, gen: &T
         confirmation_sent_at: now,
     };
 
-    let user: User = match diesel::insert_into(users::table).values(&user).get_result(db) {
-        Ok(user) => user,
-        Err(e) => return Err(SignUpFail::UserCreateError),
+    if let Err(_) = diesel::insert_into(users::table).values(&user).get_result::<User>(db) {
+        return Err(SignUpFail::UserCreateError);
     };
 
     // just printing this out for now so we can copy/paste into the browser to confirm accounts,
@@ -104,19 +103,21 @@ pub(crate) fn confirm_account(token: &str, db: &PgConnection) -> Result<User, Co
 fn hash_password(password: &str) -> Result<String, SignUpFail> {
     Ok(match hash(password, DEFAULT_COST) {
         Ok(h) => h,
-        Err(e) => return Err(SignUpFail::PasswordHashError),
+        Err(_) => return Err(SignUpFail::PasswordHashError),
     })
 }
 
 fn check_password(password: &str, hash: &str) -> Result<(), SignInFail> {
-    if let Err(e) = verify(password, hash) {
+    if let Err(_) = verify(password, hash) {
         return Err(SignInFail::WrongPassword);
     }
     Ok(())
 }
 
 fn generate_token<T: SecureRandom>(gen: &T, buffer: &mut [u8]) -> Result<(), SignUpFail> {
-    gen.fill(buffer);
+    if let Err(_) = gen.fill(buffer) {
+        return Err(SignUpFail::CreateTokenError);
+    }
     Ok(())
 }
 
@@ -135,7 +136,7 @@ pub(crate) fn sign_in(form: &SignInForm, db: &PgConnection) -> Result<User, Sign
 
     let user = match users.filter(email.eq(&form.email)).first::<User>(db) {
         Ok(user) => user,
-        Err(e) => {
+        Err(_) => {
             println!("user {} not found", &form.email);
             return Err(SignInFail::UserNotFound);
         },

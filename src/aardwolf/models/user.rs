@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use rocket::{Outcome, Request, State};
 use rocket::http::Status;
 use rocket::request::{self, FromRequest};
@@ -8,7 +6,7 @@ use diesel::prelude::*;
 use uuid::Uuid;
 use chrono::{Utc, NaiveDateTime};
 
-use {DbConn, Pool};
+use Pool;
 use models::account::Account;
 use schema::aardwolf::users;
 
@@ -36,9 +34,8 @@ impl User {
         self
     }
 
-    pub(crate) fn get(id: &str, db: &PgConnection) -> Option<User> {
-        use schema::aardwolf::users::dsl::*;
-        users.find(id).first(db).ok()
+    pub fn get(id: &Uuid, db: &PgConnection) -> Option<User> {
+        users::table.find(id).first(db).ok()
     }
 }
 
@@ -55,7 +52,9 @@ impl<'l, 'r> FromRequest<'l, 'r> for User {
         let user_id = request.cookies()
             .get_private("user_id")
             .and_then(|c| Some(c.value().to_string()));
-        let user = user_id.and_then(|id| User::get(&id, &db));
+        let user = user_id
+            .and_then(|id| Uuid::parse_str(&id).ok())
+            .and_then(|id| User::get(&id, &db));
         user.or_forward(())
     }
 }
