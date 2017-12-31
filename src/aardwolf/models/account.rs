@@ -4,7 +4,6 @@ use chrono::NaiveDateTime;
 use schema::aardwolf::accounts;
 
 #[derive(Queryable, Identifiable)]
-#[allow(unused_must_use, dead_code)]
 pub(crate) struct Account {
     pub id: Uuid,
     username: String,
