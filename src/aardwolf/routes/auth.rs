@@ -1,12 +1,9 @@
 use ring::rand::SystemRandom;
 use rocket::State;
 use rocket::http::{Cookie, Cookies};
-use rocket::response::{self, Redirect};
+use rocket::response::Redirect;
 use rocket::request::Form;
 use rocket_contrib::Template;
-use diesel::pg::PgConnection;
-use r2d2;
-use r2d2_diesel::ConnectionManager;
 
 use DbConn;
 use models::user::User;
@@ -79,7 +76,7 @@ fn confirm(token: ConfirmToken, db: DbConn) -> Result<Redirect, ConfirmError> {
 }
 
 #[post("/auth/sign_out")]
-fn sign_out(user: User, mut cookies: Cookies) -> Redirect {
+fn sign_out(_user: User, mut cookies: Cookies) -> Redirect {
     cookies.remove_private(Cookie::named("user_id"));
     Redirect::to("/auth/sign_in")
 }

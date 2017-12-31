@@ -1,13 +1,11 @@
-use rocket::http::{Cookie, Cookies};
-use rocket::response::{self, Redirect};
-use rocket::request::Form;
+use rocket::response::Redirect;
 use rocket_contrib::Template;
 
 use models::user::User;
 use DbConn;
 
 #[get("/web")]
-fn home(user: User, db: DbConn) -> Template {
+fn home(user: User, _db: DbConn) -> Template {
     let map = hashmap!{
         "email" => user.email,
     };
