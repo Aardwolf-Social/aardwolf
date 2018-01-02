@@ -75,14 +75,10 @@ logout in a browser. Assuming that rust, postgres, and diesel are
 already installed, the workflow goes like this:
 
   * start postgres. make sure you can successfully connect to it
-  * cd into the aardwolf directory and set up the database (this is only
-    necessary the first time):
-    * make sure diesel can connect to your database:
-      `export DATABASE_URL="postgres://user:pass@host/dbname"`
-    * `diesel setup` should create the database
-    * `diesel migration run` should run all the migrations
-  * start the app: `cargo run` (or `cargo run --bin aardwolf-server` if
-    you want to be explicit)
+  * cd into the aardwolf directory and copy `config/example.toml` to `./aardwolf.toml`
+  * open `aardwolf.toml` and set the database connection details
+  * setup the aardwolf database by running `cargo run --bin setup`
+  * start the app: `cargo run --bin aardwolf-server`
   * When you see "Rocket has launched from http://...." you should be
     able to connect to the running app
   * Assuming you run the app on `localhost` and use the `7878` port, you

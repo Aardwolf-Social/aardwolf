@@ -99,35 +99,19 @@ our project directory. In the `aardwolf` directory, run
 From now on, you won't have to use `+nightly` to run the correct
 toolchain version.
 
-## Setting up the database
-
-Now it's time to get the database set up. We’ll use the `diesel` command
-to set up the database and run the migrations. First, export an
-environment variable so `diesel` will know how to connect to postgres:
-
-    $ export DATABASE_URL="postgres://username:password@host:port/aardwolf_development"
-
-Fill in your own values for `username`, `password`, `host`, and `port`. You also
-don’t *have* to call the database `aardwolf_development`, but that is
-standard. For local development this will likely look something like:
-
-    export DATABASE_URL="postgres://aardwolf:password@localhost/aardwolf_development"
-
-Next, run the follow to create the database:
-
-    $ diesel setup
-
-If this command succeeded, run the migrations:
-
-    $ diesel migration run
-
 ## Configuring the server
 
 Currently, Aardwolf expects aardwolf.toml to be in the root of the project
 directory. To get started, copy
 [`config/example.toml`](config/example.toml) to
-`./aardwolf.toml` and adjust the values accordingly. The same values you used in
-setting up the database should be used unless you know what you’re doing.
+`./aardwolf.toml` and adjust the values accordingly. 
+
+## Setting up the database
+
+Once the database connection values are set in `aardwolf.toml`, run the
+following command to set up the aardwolf database:
+
+    $ cargo run --bin setup
 
 ## Running the server
 
