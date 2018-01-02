@@ -24,10 +24,7 @@ use rocket::Rocket;
 use rocket_contrib::Template;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
-use config::Config;
 use clap::App;
-use std::path::PathBuf;
-use std::env;
 
 mod common;
 
