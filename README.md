@@ -30,6 +30,8 @@ The scaffolding is still being built, but the pieces are coming together much qu
 
 Project discussion happens in our forum [WeAreSocial.tech](http://wearesocial.tech/) (you can login with your GitHub account). 
 
+Occasionally we also try to hang out on Matrix chat which is [#aardwolf-discussion:matrix.org](https://riot.im/app/#/room/#aardwolf-discussion:matrix.org)
+
 ### Donating to the cause
 
 For those who would prefer to help us in a monetary fashion you may do so here: [liberapay.com/Aardwolf](https://liberapay.com/Aardwolf)

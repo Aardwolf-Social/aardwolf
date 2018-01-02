@@ -1,0 +1,16 @@
+name: aardwolf-setup
+version: unknown
+author: Please see README for credits
+about: development setup utility
+args:
+    - config:
+        short: c
+        long: config
+        value_name: CFG_FILE
+        help: Sets a custom config file
+        takes_value: true
+    - verbose:
+        short: v
+        multiple: true
+        help: Sets the level of verbosity
+
