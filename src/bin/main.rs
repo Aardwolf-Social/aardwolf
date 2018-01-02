@@ -2,6 +2,7 @@
 #![feature(custom_derive)]
 #![plugin(rocket_codegen)]
 
+extern crate yaml_rust;
 extern crate rocket;
 extern crate failure;
 extern crate rocket_contrib;
@@ -16,6 +17,8 @@ extern crate clap;
 
 extern crate _aardwolf as aardwolf;
 
+use common::{db_conn_str, configure};
+
 use ring::rand::SystemRandom;
 use rocket::Rocket;
 use rocket_contrib::Template;
@@ -26,6 +29,8 @@ use clap::App;
 use std::path::PathBuf;
 use std::env;
 
+mod common;
+
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
 fn db_pool(rocket: &Rocket) -> Pool {
@@ -35,24 +40,7 @@ fn db_pool(rocket: &Rocket) -> Pool {
 }
 
 fn app(config: config::Config) -> Rocket {
-    let mut db_url = String::new();
-    match config.get_str("Database.type").unwrap().to_lowercase().as_str() {
-        "postgresql" | "postgres" => db_url.push_str("postgres://"),
-
-        // If we reach this case, it's an error.
-        // TODO: Handle it.
-        _ => {}
-    }
-
-    db_url.push_str(config.get_str("Database.username").unwrap().as_str());
-    db_url.push(':');
-    db_url.push_str(config.get_str("Database.password").unwrap().as_str());
-    db_url.push('@');
-    db_url.push_str(config.get_str("Database.host").unwrap().as_str());
-    db_url.push(':');
-    db_url.push_str(config.get_str("Database.port").unwrap().as_str());
-    db_url.push('/');
-    db_url.push_str(config.get_str("Database.database").unwrap().as_str());
+    let db_url = db_conn_str(&config);
 
     let c = rocket::Config::build(rocket::config::Environment::Development)
         .address(config.get_str("Web.Listen.address").unwrap())
@@ -87,55 +75,18 @@ fn app(config: config::Config) -> Rocket {
     r.manage(pool)
 }
 
-fn configure() -> Config {
-    // Set defaults
-    let mut config = Config::default();
-    config.set_default::<&str>("cfg_file", concat!(env!("CARGO_PKG_NAME"), ".toml")).unwrap();
-    config.set_default::<&str>("log_file", concat!(env!("CARGO_PKG_NAME"), ".log")).unwrap();
-    config.set_default::<&str>("Web.Listen.address", "127.0.0.1").unwrap();
-    config.set_default("Web.Listen.port", 7878).unwrap();
-
-    // Parse arguments
-    let yaml = load_yaml!("cli.yml");
-    let args = App::from_yaml(yaml)
+fn cli<'a, 'b>(yaml: &'a yaml_rust::yaml::Yaml) -> App<'a, 'b> {
+    App::from_yaml(yaml)
         .name(env!("CARGO_PKG_NAME"))
         .version(env!("CARGO_PKG_VERSION"))
         .author(env!("CARGO_PKG_AUTHORS"))
         .about(env!("CARGO_PKG_DESCRIPTION"))
-        .get_matches();
-
-    // Determine config file
-    // TODO: Is there a better way to handle this?
-    match env::var("AARDWOLF_CONFIG") {
-        Ok(c) => {config.set("cfg_file", c).unwrap();},
-        Err(_) => {}
-    }
-
-    match args.value_of("config") {
-        Some(c) => {config.set("cfg_file", c).unwrap();},
-        None => {}
-    }
-
-    // Merge config file and apply over-rides
-    let cfg_file: PathBuf = PathBuf::from(config.get_str("cfg_file").unwrap());
-    config.merge(config::File::with_name(cfg_file.to_str().unwrap())).unwrap();
-
-    //  TODO: Is there a better way to handle this?
-    match env::var("AARDWOLF_LOG") {
-        Ok(l) => {config.set("log_file", l).unwrap();},
-        Err(_) => {}
-    }
-
-    match args.value_of("log") {
-        Some(l) => {config.set("log_file", l).unwrap();},
-        None => {}
-    }
-
-    config
 }
 
 fn main() {
-    let config = configure();
+    let yaml = load_yaml!("cli.yml");
+    let cli = cli(&yaml);
+    let config = configure(cli);
 
     app(config).launch();
 }

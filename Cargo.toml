@@ -12,6 +12,10 @@ path = "src/aardwolf/lib.rs"
 name = "aardwolf-server"
 path = "src/bin/main.rs"
 
+[[bin]]
+name = "setup"
+path = "src/bin/setup.rs"
+
 [dependencies]
 bs58 = "0.2"
 bcrypt = "0.1"
@@ -28,6 +32,7 @@ serde = "1.0.21"
 serde_derive = "1.0.21"
 config = "0.7.0"
 clap = {version = "2.29", features = ["yaml"]}
+yaml-rust = "0.3.5"
 
 [dependencies.chrono]
 version = "0.4"
