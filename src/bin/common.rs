@@ -17,14 +17,12 @@ pub fn configure(app: App) -> Config {
 
     // Determine config file
     // TODO: Is there a better way to handle this?
-    match env::var("AARDWOLF_CONFIG") {
-        Ok(c) => {config.set("cfg_file", c).unwrap();},
-        Err(_) => {}
+    if let Ok(c) = env::var("AARDWOLF_CONFIG") {
+        config.set("cfg_file", c).expect("failed to set cfg_file from the environment variable AARDWOLF_CONFIG");
     }
 
-    match args.value_of("config") {
-        Some(c) => {config.set("cfg_file", c).unwrap();},
-        None => {}
+    if let Some(c) = args.value_of("config") {
+        config.set("cfg_file", c).expect("failed to set cfg_file from the --config argument");
     }
 
     // Merge config file and apply over-rides
@@ -32,14 +30,12 @@ pub fn configure(app: App) -> Config {
     config.merge(config::File::with_name(cfg_file.to_str().unwrap())).unwrap();
 
     //  TODO: Is there a better way to handle this?
-    match env::var("AARDWOLF_LOG") {
-        Ok(l) => {config.set("log_file", l).unwrap();},
-        Err(_) => {}
+    if let Ok(l) = env::var("AARDWOLF_LOG") {
+        config.set("log_file", l).expect("failed to set log_file from the environment variable AARDWOLF_LOG");
     }
 
-    match args.value_of("log") {
-        Some(l) => {config.set("log_file", l).unwrap();},
-        None => {}
+    if let Some(l) = args.value_of("log") {
+        config.set("log_file", l).expect("failed to set log_file from the --log argument");
     }
 
     config
