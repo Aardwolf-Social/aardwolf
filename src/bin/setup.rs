@@ -2,12 +2,33 @@
 extern crate config;
 
 use std::error::Error as StdError;
-use std::io::ErrorKind;
-use std::process::{self, Command};
+use std::io::{self, ErrorKind};
+use std::process::{self, Command, Output};
 
 use clap::App;
 
 mod common;
+
+fn check_out(output: &Result<Output, io::Error>) {
+    match output {
+        &Ok(ref o) if !o.status.success() => {
+            eprintln!("got non-zero exit code, output was:\n\tstdout:\n{}\n\tstderr:\n{}",
+                    String::from_utf8_lossy(&o.stdout),
+                    String::from_utf8_lossy(&o.stderr));
+            process::exit(255);
+        },
+        &Err(ref e) => {
+            match e.kind() {
+                ErrorKind::NotFound => {
+                    eprintln!("Could not find `diesel` binary, please use `cargo install diesel_cli` to install it");
+                },
+                _ => eprintln!("got error {}", e.description()),
+            }
+            process::exit(255);
+        },
+        &Ok(_) => {},
+    }
+}
 
 fn main() {
     let yaml = load_yaml!("setup.yml");
@@ -21,25 +42,14 @@ fn main() {
         .arg("setup")
         .env("DATABASE_URL", &db_url)
         .output();
-    if let Err(e) = output {
-        match e.kind() {
-            ErrorKind::NotFound => {
-                eprintln!("Could not find `diesel` binary, please use `cargo install diesel_cli` to install it");
-            },
-            _ => eprintln!("got error {}", e.description()),
-        }
-        process::exit(255);
-    }
+    check_out(&output);
     println!("database successfully set up, running migrations");
     let output = Command::new("diesel")
         .arg("migration")
         .arg("run")
         .env("DATABASE_URL", &db_url)
         .output();
-    if let Err(e) = output {
-        eprintln!("got error {}", e.description());
-        process::exit(255);
-    }
+    check_out(&output);
     println!("database migrations were successfully run, you're ready to go!");
 }
 
