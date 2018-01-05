@@ -1,7 +1,7 @@
 # Installation instructions
 
 Theoretically, Aardwolf should run anywhere that Rust and PostgreSQL
-run, though at the moment it has only been tested on linux and OSX.
+run. At the moment it has only been tested on linux, OSX, and Windows 10.
 
 > NOTE: These instructions may help in installing a production version, but are
 intended for developers to be able to build and test their changes. If in doubt,
@@ -14,6 +14,8 @@ In order to run the Aardwolf backend, you will need to have access to a
 [PostgreSQL](https://www.postgresql.org/) database. There are a few options for doing this, but for
 this guide we’re going to assume you are running the database on your
 development machine.
+
+#### Linux/OSX Instructions
 
 If you're on an Ubuntu-like machine, you should be able to install
 PostgreSQL like this:
@@ -40,7 +42,11 @@ For Gentoo (eselect-postgresql is optional),
     # emerge --sync
     # emerge -av postgresql eselect-postgresql
 
-### Installing Rust toolchain
+#### Windows Instructions
+
+For Windows, just download the installer [here](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads#windows) and run it. After installing, make sure to add the <POSTGRES INSTALL PATH>/lib directory to your PATH system variable.
+
+### Installing rustup
 
 > Note: Rustup managed installations do appear to co-exist with system
  installations on Gentoo, and should work on most other distributions.
@@ -49,14 +55,25 @@ For Gentoo (eselect-postgresql is optional),
 
 Next, you’ll need to have the [Rust](https://rust-lang.org/) toolchain
 installed. The best way to do this is to install
-[rustup](https://rustup.rs), which is a Rust toolchain manager. To
-install, open your terminal and run the following command:
+[rustup](https://rustup.rs), which is a Rust toolchain manager.
+
+#### Linux/OSX Instructions
+
+Open your terminal and run the following command:
 
     $ curl https://sh.rustup.rs -sSf | sh
 
 For those who are (understandably) uncomfortable with piping a shell
 script from the internet directly into `sh`, you can also
 [use an alternate installation method](https://github.com/rust-lang-nursery/rustup.rs/#other-installation-methods).
+
+#### Windows Instructions
+
+If you don't already have them, download and install the [Visual C++ 2015 Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools).
+
+Then, download the [rustup installer](https://www.rust-lang.org/en-US/install.html) and run it. That's it!
+
+### Installing Rust Toolchain
 
 Once you have `rustup` installed, make sure you have the `nightly` rust
 toolchain installed:
