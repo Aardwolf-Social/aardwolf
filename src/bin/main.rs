@@ -51,7 +51,9 @@ fn app(config: config::Config) -> Rocket {
         ])
         .mount("/", routes![
             aardwolf::routes::auth::sign_up_form,
+            aardwolf::routes::auth::sign_up_form_with_error,
             aardwolf::routes::auth::sign_in_form,
+            aardwolf::routes::auth::sign_in_form_with_error,
             aardwolf::routes::auth::sign_up,
             aardwolf::routes::auth::sign_in,
             aardwolf::routes::auth::confirm,
