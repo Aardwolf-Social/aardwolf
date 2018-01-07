@@ -7,15 +7,18 @@ use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use chrono::Utc;
 
-use forms::auth::{SignInForm, SignUpForm};
+use forms::auth::{SignInForm, SignUpForm, SignUpFormValidationFail, SignInFormValidationFail};
+use forms::traits::Validate;
 use models::account::{Account, NewAccount};
 use models::user::{NewUser, User};
 use schema::aardwolf::{accounts, users};
 
 #[derive(Fail, Debug)]
 pub(crate) enum SignUpFail {
-    #[fail(display = "Passwords do not match")]
-    PasswordMatchError,
+    #[fail(display = "{}", error)]
+    ValidationError {
+        error: SignUpFormValidationFail,
+    },
     #[fail(display = "Failed to insert account into database")]
     AccountCreateError,
     #[fail(display = "Failed to insert user into database")]
@@ -28,8 +31,8 @@ pub(crate) enum SignUpFail {
 
 pub(crate) fn create_user_and_account<T: SecureRandom>(form: SignUpForm, gen: &T, db: &PgConnection) -> Result<(), SignUpFail> {
     // validation goes here
-    if form.password != form.password_confirmation {
-        return Err(SignUpFail::PasswordMatchError);
+    if let Err(validation_error) = form.validate() {
+        return Err(SignUpFail::ValidationError { error: validation_error })
     }
     let account = NewAccount {
         username: form.username,
@@ -109,7 +112,7 @@ fn hash_password(password: &str) -> Result<String, SignUpFail> {
 
 fn check_password(password: &str, hash: &str) -> Result<(), SignInFail> {
     if let Err(_) = verify(password, hash) {
-        return Err(SignInFail::WrongPassword);
+        return Err(SignInFail::GenericLoginError);
     }
     Ok(())
 }
@@ -123,14 +126,21 @@ fn generate_token<T: SecureRandom>(gen: &T, buffer: &mut [u8]) -> Result<(), Sig
 
 #[derive(Fail, Debug)]
 pub(crate) enum SignInFail {
-    #[fail(display = "user not found")]
-    UserNotFound,
-    #[fail(display = "password is incorrect")]
-    WrongPassword,
+    #[fail(display = "{}", error)]
+    ValidationError {
+        error: SignInFormValidationFail
+    },
+    // this is the generic "login failed" error the user will see
+    #[fail(display = "Invalid username or password")]
+    GenericLoginError
 }
 
 pub(crate) fn sign_in(form: &SignInForm, db: &PgConnection) -> Result<User, SignInFail> {
     use schema::aardwolf::users::dsl::*;
+
+    if let Err(validation_error) = form.validate() {
+        return Err(SignInFail::ValidationError { error: validation_error });
+    }
 
     // check csrf token
 
@@ -138,7 +148,7 @@ pub(crate) fn sign_in(form: &SignInForm, db: &PgConnection) -> Result<User, Sign
         Ok(user) => user,
         Err(_) => {
             println!("user {} not found", &form.email);
-            return Err(SignInFail::UserNotFound);
+            return Err(SignInFail::GenericLoginError);
         },
     };
 

@@ -44,8 +44,7 @@
       <p class="subtitle">
         Feel free to sign up!
       </p>
-	  This is a much improved form, and I know it. - Banjo
-
+    <span style="color: red;">{{ error_msg }}</span>
 	  <form method="POST" action="/auth">
 		<input type="hidden" name="csrf_token" value="{{ token }}">
 		<span class="icon icon-user"></span>
