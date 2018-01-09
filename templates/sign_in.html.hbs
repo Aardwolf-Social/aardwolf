@@ -44,8 +44,7 @@
       <p class="subtitle">
         Welcome back!
       </p>
-	  This is a much improved form, and I know it. - Banjo
-
+	  <span style="color: red;">{{ error_msg }}</span>
 	  <form method="POST" action="/auth/sign_in">
 	 	 <input type="hidden" name="csrf_token" value="{{ token }}">
 		 <input type="email" name="email" id="email" placeholder="E-mail address">
