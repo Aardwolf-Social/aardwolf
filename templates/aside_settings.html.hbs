@@ -1,30 +1,26 @@
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <aside class="menu">
   <p class="menu-label">
-    <a class="fa fa-chevron-left"> Back to Aardwolf</a>
+    <a class="fa fa-chevron-left"> {{ return }}</a>
   </p>	
   <p class="menu-label">
-    <span class="fa fa-gears"> Settings</span>
+    <span class="fa fa-gears"> {{ settings }}</span>
   </p>
   <ul class="menu-list">
-    <li><a class="fa fa-user"> Edit Profile</a></li>
-    <li><a class="fa fa-sliders"> Preferences</a></li>
-    <li><a class="fa fa-volume-off"> Muted Keywords</a></li>
-    <li><a class="fa fa-bell"> Notifications</a></li>
-    <li><a class="fa fa-lok"> Security</a></li>
-    <li><a class="fa fa-mobile"> Two-Factor Authentication</a></li>
-    <li><a class="fa fa-cloud-upload"> Data Import</a></li>
-    <li><a class="fa fa-cloud-download"> Data Export</a></li>
-    <li><a class="fa fa-list"> Authorized Apps</a></li>
-    <li><a class="fa fa-users"> Authorized Followers</a></li>        
+    <li><a class="fa fa-user"> {{ editProfile }}</a></li>
+    <li><a class="fa fa-sliders"> {{ preferences }}</a></li>
+    <li><a class="fa fa-volume-off"> {{ muteWords }}</a></li>
+    <li><a class="fa fa-volume-off"> {{ muteUsers }}</a></li>	
+    <li><a class="fa fa-bell"> {{ notifications }}</a></li>
+    <li><a class="fa fa-lok"> {{ security }}</a></li>
+    <li><a class="fa fa-cloud-upload"> {{ dataImport }}</a></li>
+    <li><a class="fa fa-cloud-download"> {{ dataExport }}</a></li>
+    <li><a class="fa fa-list"> {{ authApps }}</a></li>
+    <li><a class="fa fa-users"> {{ authFollow }}</a></li>        
   </ul>
   <p class="menu-label">
-    <a class="fa fa-user-plus"> Invite People</a>
+    <a class="fa fa-user-plus"> {{ invites }}</a>
   </p>
   <p class="menu-label">
-    <a class="fa fa-code"> Development</a>
-  </p>
-  <p class="menu-label">
-    <a class="fa fa-logout" {{logout}}> Logout</a>
+    <a class="fa fa-logout" {{ logout }}> Logout</a>
   </p>
 </aside>
