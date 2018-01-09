@@ -48,9 +48,9 @@ profileHeaderFileName = "No file chosen"
 profileHeaderSubText = "PNG, GIF or JPG. At most 2MB. Will be downscaled to 700x335px"
 
 [messaging]
-enterPost = "Press enter to post"
-post = "Post"
-reply = "Reply"
+enterPost = "Press enter to awoo"
+post = "Awoo"
+reply = "Rewoo"
 
 [footer]
 terms = "Terms of Service"
