@@ -42,6 +42,10 @@ For Gentoo (eselect-postgresql is optional),
     # emerge --sync
     # emerge -av postgresql eselect-postgresql
 
+For Fedora/CentOS/RHEL, do
+
+    # dnf install postgresql-server postgresql-contrib
+
 #### Windows Instructions
 
 For Windows, just download the installer [here](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads#windows) and run it. After installing, make sure to add the <POSTGRES INSTALL PATH>/lib directory to your PATH system variable.
