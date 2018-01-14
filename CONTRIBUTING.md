@@ -4,7 +4,7 @@ Contributors are always welcome! We are looking for help from technical and non-
 
 ## Frontend - non-technical
 - A logo!
-- Color scheme (colorblind- and low-vision-friendly. **TIP:** [use a contrast checker](https://webaim.org/resources/contrastchecker/))
+- Color scheme (colorblind- and low-vision-friendly). **TIP:** [use a contrast checker](https://webaim.org/resources/contrastchecker/)
 - Clarify and beautify Github documentation. **TIP:** check out [Github's Markdown Guide](https://guides.github.com/features/mastering-markdown/)
 
 ## Frontend - technical
@@ -35,5 +35,5 @@ Contributors are always welcome! We are looking for help from technical and non-
 ## Communication
 
 - Most of the core contributors use Riot/Matrix room [#aardwolf-discussion:matrix.org](https://riot.im/app/#/room/#aardwolf-discussion:matrix.org)
-- You can also join the [`aardwolf-development` mailing list](https://lists.riseup.net/www/info/aardwolf-development).
-- @-Mentioning someone on Github will also receive a prompt response.
+- You can also join the [aardwolf-development mailing list](https://lists.riseup.net/www/info/aardwolf-development).
+- @-Mentioning someone here will also receive a prompt response.
