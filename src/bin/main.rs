@@ -64,6 +64,9 @@ fn app(config: config::Config) -> Rocket {
 
             // Adding route to / 
             aardwolf::routes::app::index,
+
+            // assets
+            aardwolf::routes::app::assets,
         ])
         .attach(Template::fairing())
         .manage(SystemRandom::new());

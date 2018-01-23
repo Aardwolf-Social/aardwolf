@@ -1,4 +1,7 @@
-use rocket::response::Redirect;
+use std::path::{Path, PathBuf};
+
+use rocket::response::{NamedFile, Redirect};
+use rocket::response::status::NotFound;
 use rocket_contrib::Template;
 
 use models::user::User;
@@ -25,4 +28,10 @@ fn index() -> &'static str {
       ...
       Soon though...maybe?
     "
+}
+
+#[get("/assets/<file..>")]
+fn assets(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
+    let path = Path::new("web/").join(file);
+    NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
 }
