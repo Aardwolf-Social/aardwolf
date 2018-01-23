@@ -45,29 +45,36 @@ fn app(config: config::Config) -> Rocket {
         .extra("database_url", db_url.as_str())
         .unwrap();
 
+    let mut routes = Vec::new();
+
+    routes.extend(routes![
+        aardwolf::routes::auth::sign_up_form,
+        aardwolf::routes::auth::sign_up_form_with_error,
+        aardwolf::routes::auth::sign_in_form,
+        aardwolf::routes::auth::sign_in_form_with_error,
+        aardwolf::routes::auth::sign_up,
+        aardwolf::routes::auth::sign_in,
+        aardwolf::routes::auth::confirm,
+        aardwolf::routes::auth::sign_out,
+
+        aardwolf::routes::app::home,
+        aardwolf::routes::app::home_redirect,
+
+        // Adding route to /
+        aardwolf::routes::app::index,
+    ]);
+
+    #[cfg(debug_assertions)]
+    routes.extend(routes![
+        // assets
+        aardwolf::routes::app::assets,
+    ]);
+
     let r = rocket::custom(c, true)
         .mount("/api/v1", routes![
             aardwolf::routes::applications::register_application
         ])
-        .mount("/", routes![
-            aardwolf::routes::auth::sign_up_form,
-            aardwolf::routes::auth::sign_up_form_with_error,
-            aardwolf::routes::auth::sign_in_form,
-            aardwolf::routes::auth::sign_in_form_with_error,
-            aardwolf::routes::auth::sign_up,
-            aardwolf::routes::auth::sign_in,
-            aardwolf::routes::auth::confirm,
-            aardwolf::routes::auth::sign_out,
-
-            aardwolf::routes::app::home,
-            aardwolf::routes::app::home_redirect,
-
-            // Adding route to / 
-            aardwolf::routes::app::index,
-
-            // assets
-            aardwolf::routes::app::assets,
-        ])
+        .mount("/", routes)
         .attach(Template::fairing())
         .manage(SystemRandom::new());
 
