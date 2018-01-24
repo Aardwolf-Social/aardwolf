@@ -11,26 +11,36 @@
   </head>
   <body>
 
-	{{ mainNavTop }}
+	{{#> main_nav_top}}
+	  Main nav top
+	{{/main_nav_top}}
   
   <section class="section">  
 	<!-- Does this need to be in a <div class="container> ?? -->
 	<!-- For now I would say no, because making it a container brings it to left-center -->
 
-	{{ mainAside }}
+	{{#> aside_shortcuts}}
+	   Main aside
+	{{/aside_shortcuts}}
 	
 	</section>	
   <section class="section">
     <div class="container">
 
-	{{ newPost }}
-
-	{{ mainFeed }}
+	{{#>new_post}}
+	   New post
+	{{/new_post}}
+	
+	{{#> main_feed}}
+	   Main feed
+	{{/main_feed}}
 	
     </div><!-- End page body container-->
   </section><!-- End page body -->
   </body>
 
-  {{ mainFooter }}
+  {{#> main_footer}}
+     Main footer
+  {{/main_footer}}
   
 </html>
