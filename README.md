@@ -26,11 +26,13 @@ Finally, Aardwolf is [open source](https://github.com/banjofox/aardwolf), so dev
 The scaffolding is still being built, but the pieces are coming together much quicker than originally anticipated! A sample of the web interface should be online soon.
 
 
-### Development
+### Contact Us / Getting Help
 
 Project discussion happens in our forum [WeAreSocial.tech](http://wearesocial.tech/) (you can login with your GitHub account). 
 
 Occasionally we also try to hang out on Matrix chat which is [#aardwolf-discussion:matrix.org](https://riot.im/app/#/room/#aardwolf-discussion:matrix.org)
+
+Also if you ned specific help on something or simply don't feel like setting up your own environment reach out to Banjo, and he will **build a VM** for you! If you need it to be Windows please make sure that you have a -legal- licence for it ;)
 
 ### Donating to the cause
 

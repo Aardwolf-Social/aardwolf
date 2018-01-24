@@ -42,6 +42,10 @@ For Gentoo (eselect-postgresql is optional),
     # emerge --sync
     # emerge -av postgresql eselect-postgresql
 
+For Fedora/CentOS/RHEL, do
+
+    # dnf install postgresql-server postgresql-contrib
+
 #### Windows Instructions
 
 For Windows, just download the installer [here](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads#windows) and run it. After installing, make sure to add the <POSTGRES INSTALL PATH>/lib directory to your PATH system variable.
@@ -78,7 +82,11 @@ Then, download the [rustup installer](https://www.rust-lang.org/en-US/install.ht
 Once you have `rustup` installed, make sure you have the `nightly` rust
 toolchain installed:
 
-    $ rustup toolchain install nightly
+    $ rustup toolchain install nightly-2017-12-18
+
+> #### EXTREMELY IMPORTANT NOTE! 
+> Some stuff with rocket broke in late December versions of Rust nightly. Therefore we need to use the version specified above.
+> Welcome to Nightly builds ;)
 
 Next, you need to install a command for managing the Aardwolf database.
 We use a Rust library called `diesel` for managing database migrations,
