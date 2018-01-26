@@ -46,7 +46,9 @@ pub fn configure(app: App) -> Result<Config, Error> {
 }
 
 pub fn db_conn_str(config: &Config) -> Result<String, Error> {
-    Ok(DatabaseSetupOptions::new(config).to_database_setup()?.to_string())
+    Ok(DatabaseSetupOptions::new(config)
+        .to_database_setup()?
+        .to_string())
 }
 
 #[derive(Debug)]
@@ -79,9 +81,15 @@ impl fmt::Display for Error {
         match *self {
             Error::R2D2(ref r2_err) => r2_err.fmt(f),
             Error::RocketConfig(ref rc) => rc.fmt(f),
-            Error::UnsupportedDbScheme(ref scheme) => write!(f, "Unsupported db scheme {}, only 'postgres' and 'postgresql' are supported", scheme),
+            Error::UnsupportedDbScheme(ref scheme) => write!(
+                f,
+                "Unsupported db scheme {}, only 'postgres' and 'postgresql' are supported",
+                scheme
+            ),
             Error::Config(ref cfg_err) => cfg_err.fmt(f),
-            Error::ConfigMissingKeys(ref keys) => write!(f, "Could not find required keys: [{}]", keys.join(", ")),
+            Error::ConfigMissingKeys(ref keys) => {
+                write!(f, "Could not find required keys: [{}]", keys.join(", "))
+            }
             Error::ConfigImmutable => write!(f, "Config object is immutable"),
         }
     }
@@ -92,7 +100,9 @@ impl StdError for Error {
         match *self {
             Error::R2D2(_) => "Error when interacting with db pool",
             Error::RocketConfig(_) => "Error configuring Rocket",
-            Error::UnsupportedDbScheme(_) => "Unsupported db scheme, only 'postgres' and 'postgresql' are supported",
+            Error::UnsupportedDbScheme(_) => {
+                "Unsupported db scheme, only 'postgres' and 'postgresql' are supported"
+            }
             Error::Config(ref cfg_err) => cfg_err.description(),
             Error::ConfigMissingKeys(_) => "Could not find required keys",
             Error::ConfigImmutable => "Config object is immutable",
@@ -153,26 +163,36 @@ struct DatabaseSetupOptions(Vec<Result<String, ConfigError>>);
 
 impl DatabaseSetupOptions {
     fn new(config: &Config) -> Self {
-        let keys = vec!["Database.type", "Database.username", "Database.password", "Database.host", "Database.port", "Database.database"];
+        let keys = vec![
+            "Database.type",
+            "Database.username",
+            "Database.password",
+            "Database.host",
+            "Database.port",
+            "Database.database",
+        ];
 
         DatabaseSetupOptions(keys.into_iter().map(|key| config.get_str(key)).collect())
     }
 
     fn to_database_setup(self) -> Result<DatabaseSetup, Error> {
-        let (string_vec, error_vec) = self.0.into_iter().fold((Vec::new(), Vec::new()), |(mut string_vec, mut error_vec), res| {
-            match res {
-                Ok(string) => string_vec.push(string),
-                Err(error) => match error {
-                    ConfigError::NotFound(key) => error_vec.push(GetError(key)),
-                    _ => (),
+        let (string_vec, error_vec) = self.0.into_iter().fold(
+            (Vec::new(), Vec::new()),
+            |(mut string_vec, mut error_vec), res| {
+                match res {
+                    Ok(string) => string_vec.push(string),
+                    Err(error) => match error {
+                        ConfigError::NotFound(key) => error_vec.push(GetError(key)),
+                        _ => (),
+                    },
                 }
-            }
 
-            (string_vec, error_vec)
-        });
+                (string_vec, error_vec)
+            },
+        );
 
         if !error_vec.is_empty() {
-            return Err(error_vec.into())
+            return Err(error_vec.into());
         }
 
         let db_setup = DatabaseSetup {
@@ -204,12 +224,14 @@ struct DatabaseSetup {
 
 impl DatabaseSetup {
     fn to_string(&self) -> String {
-        format!("{scheme}://{username}:{password}@{host}:{port}/{database}",
-                scheme=self.scheme,
-                username=self.username,
-                password=self.password,
-                host=self.host,
-                port=self.port,
-                database=self.database)
+        format!(
+            "{scheme}://{username}:{password}@{host}:{port}/{database}",
+            scheme = self.scheme,
+            username = self.username,
+            password = self.password,
+            host = self.host,
+            port = self.port,
+            database = self.database
+        )
     }
 }
