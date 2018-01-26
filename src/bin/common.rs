@@ -45,10 +45,49 @@ pub fn configure(app: App) -> Result<Config, Error> {
     Ok(config)
 }
 
-pub fn db_conn_str(config: &Config) -> Result<String, Error> {
-    Ok(DatabaseSetupOptions::new(config)
-        .to_database_setup()?
-        .to_string())
+pub fn db_conn_string(config: &Config) -> Result<String, Error> {
+    let keys = vec![
+        "Database.type",
+        "Database.username",
+        "Database.password",
+        "Database.host",
+        "Database.port",
+        "Database.database",
+    ];
+
+    let (string_vec, error_vec) = keys.into_iter().map(|key| config.get_str(key)).fold(
+        (Vec::new(), Vec::new()),
+        |(mut string_vec, mut error_vec), res| {
+            match res {
+                Ok(string) => string_vec.push(string),
+                Err(error) => match error {
+                    ConfigError::NotFound(key) => error_vec.push(GetError(key)),
+                    _ => (),
+                },
+            }
+
+            (string_vec, error_vec)
+        },
+    );
+
+    if !error_vec.is_empty() {
+        return Err(error_vec.into());
+    }
+
+    match string_vec[0].as_ref() {
+        "postgres" | "postgresql" => (),
+        kind => return Err(Error::UnsupportedDbScheme(kind.to_owned())),
+    }
+
+    Ok(format!(
+        "{scheme}://{username}:{password}@{host}:{port}/{database}",
+        scheme = string_vec[0],
+        username = string_vec[1],
+        password = string_vec[2],
+        host = string_vec[3],
+        port = string_vec[4],
+        database = string_vec[5],
+    ))
 }
 
 #[derive(Debug)]
@@ -156,82 +195,5 @@ impl From<R2D2Error> for Error {
 impl From<rocket::config::ConfigError> for Error {
     fn from(e: rocket::config::ConfigError) -> Self {
         Error::RocketConfig(e)
-    }
-}
-
-struct DatabaseSetupOptions(Vec<Result<String, ConfigError>>);
-
-impl DatabaseSetupOptions {
-    fn new(config: &Config) -> Self {
-        let keys = vec![
-            "Database.type",
-            "Database.username",
-            "Database.password",
-            "Database.host",
-            "Database.port",
-            "Database.database",
-        ];
-
-        DatabaseSetupOptions(keys.into_iter().map(|key| config.get_str(key)).collect())
-    }
-
-    fn to_database_setup(self) -> Result<DatabaseSetup, Error> {
-        let (string_vec, error_vec) = self.0.into_iter().fold(
-            (Vec::new(), Vec::new()),
-            |(mut string_vec, mut error_vec), res| {
-                match res {
-                    Ok(string) => string_vec.push(string),
-                    Err(error) => match error {
-                        ConfigError::NotFound(key) => error_vec.push(GetError(key)),
-                        _ => (),
-                    },
-                }
-
-                (string_vec, error_vec)
-            },
-        );
-
-        if !error_vec.is_empty() {
-            return Err(error_vec.into());
-        }
-
-        let db_setup = DatabaseSetup {
-            scheme: string_vec[0].clone(),
-            username: string_vec[1].clone(),
-            password: string_vec[2].clone(),
-            host: string_vec[3].clone(),
-            port: string_vec[4].clone(),
-            database: string_vec[5].clone(),
-        };
-
-        match db_setup.scheme.as_ref() {
-            "postgres" | "postgresql" => (),
-            kind => return Err(Error::UnsupportedDbScheme(kind.to_owned())),
-        }
-
-        Ok(db_setup)
-    }
-}
-
-struct DatabaseSetup {
-    scheme: String,
-    username: String,
-    password: String,
-    host: String,
-    port: String,
-    database: String,
-}
-
-impl DatabaseSetup {
-    fn to_string(&self) -> String {
-        format!(
-            "{scheme}://{username}:{password}@{host}:{port}/{database}",
-            scheme = self.scheme,
-            username = self.username,
-            password = self.password,
-            host = self.host,
-            port = self.port,
-            database = self.database
-        )
     }
 }

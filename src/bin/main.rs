@@ -17,7 +17,7 @@ extern crate clap;
 
 extern crate _aardwolf as aardwolf;
 
-use common::{db_conn_str, configure};
+use common::{db_conn_string, configure};
 
 use ring::rand::SystemRandom;
 use rocket::Rocket;
@@ -39,7 +39,7 @@ fn db_pool(rocket: &Rocket) -> Result<Pool, Error> {
 }
 
 fn app(config: config::Config) -> Result<Rocket, Error> {
-    let db_url = db_conn_str(&config)?;
+    let db_url = db_conn_string(&config)?;
 
     let c = rocket::Config::build(rocket::config::Environment::Development)
         .address(config.get_str("Web.Listen.address")?)

@@ -38,7 +38,7 @@ fn main() {
         .version(env!("CARGO_PKG_VERSION"))
         .author(env!("CARGO_PKG_AUTHORS"));
     let config = common::configure(app).unwrap();
-    let db_url = common::db_conn_str(&config).unwrap();
+    let db_url = common::db_conn_string(&config).unwrap();
     println!("using database url `{}' to setup the aardwolf database", &db_url);
     let output = Command::new("diesel")
         .arg("setup")
