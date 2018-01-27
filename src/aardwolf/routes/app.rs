@@ -30,6 +30,7 @@ fn index() -> &'static str {
     "
 }
 
+#[cfg(debug_assertions)]
 #[get("/assets/<file..>")]
 fn assets(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
     let path = Path::new("web/").join(file);
