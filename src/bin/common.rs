@@ -1,5 +1,4 @@
 use std::env;
-use std::error::Error as StdError;
 use std::fmt;
 
 use clap::App;
@@ -107,20 +106,9 @@ pub fn db_conn_string(config: &Config) -> Result<String, Error> {
     ))
 }
 
-#[derive(Debug)]
+#[derive(Debug, Fail)]
+#[fail(display = "Configuration was missing exected keys: [{:?}]", _0)]
 pub struct MissingKeys(Vec<String>);
-
-impl fmt::Display for MissingKeys {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Could not find required keys: [{}]", self.0.join(", "))
-    }
-}
-
-impl StdError for MissingKeys {
-    fn description(&self) -> &str {
-        "Could not find required keys"
-    }
-}
 
 #[derive(Debug)]
 pub struct CommonError {
