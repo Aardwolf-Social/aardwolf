@@ -76,7 +76,21 @@ fn app(config: config::Config) -> Result<Rocket, Error> {
         .mount("/api/v1", routes![
             aardwolf::routes::applications::register_application
         ])
-        .mount("/", routes)
+     
+        .mount("/", routes![
+            aardwolf::routes::auth::sign_up_form,
+            aardwolf::routes::auth::sign_up_form_with_error,
+            aardwolf::routes::auth::sign_in_form,
+            aardwolf::routes::auth::sign_in_form_with_error,
+            aardwolf::routes::auth::sign_up,
+            aardwolf::routes::auth::sign_in,
+            aardwolf::routes::auth::confirm,
+            aardwolf::routes::auth::sign_out,
+
+            aardwolf::routes::app::home,
+            aardwolf::routes::app::home_redirect,
+        ])
+
         .attach(Template::fairing())
         .manage(SystemRandom::new());
 
