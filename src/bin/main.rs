@@ -60,9 +60,6 @@ fn app(config: config::Config) -> Result<Rocket, Error> {
 
         aardwolf::routes::app::home,
         aardwolf::routes::app::home_redirect,
-
-        // Adding route to /
-        aardwolf::routes::app::index,
     ]);
 
     #[cfg(debug_assertions)]
