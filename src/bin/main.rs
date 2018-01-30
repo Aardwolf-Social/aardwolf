@@ -4,6 +4,7 @@
 
 extern crate yaml_rust;
 extern crate rocket;
+#[macro_use]
 extern crate failure;
 extern crate rocket_contrib;
 extern crate serde;
@@ -17,18 +18,16 @@ extern crate clap;
 
 extern crate _aardwolf as aardwolf;
 
+mod common;
 use common::{db_conn_string, configure};
 
+use failure::Error;
 use ring::rand::SystemRandom;
 use rocket::Rocket;
 use rocket_contrib::Template;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
 use clap::App;
-
-mod common;
-
-use common::Error;
 
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 

@@ -1,5 +1,7 @@
 #[macro_use] extern crate clap;
 extern crate config;
+#[macro_use]
+extern crate failure;
 extern crate r2d2;
 extern crate rocket;
 

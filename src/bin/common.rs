@@ -4,16 +4,23 @@ use std::fmt;
 
 use clap::App;
 use config::{self, Config, ConfigError};
-use r2d2::Error as R2D2Error;
-use rocket;
+use failure::{Backtrace, Context, Error, Fail, ResultExt};
 
 pub fn configure(app: App) -> Result<Config, Error> {
     // Set defaults
     let mut config = Config::default();
-    config.set_default::<&str>("cfg_file", concat!(env!("CARGO_PKG_NAME"), ".toml"))?;
-    config.set_default::<&str>("log_file", concat!(env!("CARGO_PKG_NAME"), ".log"))?;
-    config.set_default::<&str>("Web.Listen.address", "127.0.0.1")?;
-    config.set_default("Web.Listen.port", 7878)?;
+    config
+        .set_default::<&str>("cfg_file", concat!(env!("CARGO_PKG_NAME"), ".toml"))
+        .context(ErrorKind::ConfigImmutable)?;
+    config
+        .set_default::<&str>("log_file", concat!(env!("CARGO_PKG_NAME"), ".log"))
+        .context(ErrorKind::ConfigImmutable)?;
+    config
+        .set_default::<&str>("Web.Listen.address", "127.0.0.1")
+        .context(ErrorKind::ConfigImmutable)?;
+    config
+        .set_default("Web.Listen.port", 7878)
+        .context(ErrorKind::ConfigImmutable)?;
 
     // Parse arguments
     let args = app.get_matches();
@@ -21,25 +28,35 @@ pub fn configure(app: App) -> Result<Config, Error> {
     // Determine config file
     // TODO: Is there a better way to handle this?
     if let Ok(c) = env::var("AARDWOLF_CONFIG") {
-        config.set("cfg_file", c)?;
+        config
+            .set("cfg_file", c)
+            .context(ErrorKind::ConfigImmutable)?;
     }
 
     if let Some(c) = args.value_of("config") {
-        config.set("cfg_file", c)?;
+        config
+            .set("cfg_file", c)
+            .context(ErrorKind::ConfigImmutable)?;
     }
 
     // Merge config file and apply over-rides
-    let cfg_file_string = config.get_str("cfg_file")?;
+    let cfg_file_string = config
+        .get_str("cfg_file")
+        .context(ErrorKind::ConfigMissingKeys)?;
     let cfg_file = config::File::with_name(&cfg_file_string);
-    config.merge(cfg_file)?;
+    config.merge(cfg_file).context(ErrorKind::ConfigImmutable)?;
 
     //  TODO: Is there a better way to handle this?
     if let Ok(l) = env::var("AARDWOLF_LOG") {
-        config.set("log_file", l)?;
+        config
+            .set("log_file", l)
+            .context(ErrorKind::ConfigImmutable)?;
     }
 
     if let Some(l) = args.value_of("log") {
-        config.set("log_file", l)?;
+        config
+            .set("log_file", l)
+            .context(ErrorKind::ConfigImmutable)?;
     }
 
     Ok(config)
@@ -61,7 +78,7 @@ pub fn db_conn_string(config: &Config) -> Result<String, Error> {
             match res {
                 Ok(string) => string_vec.push(string),
                 Err(error) => match error {
-                    ConfigError::NotFound(key) => error_vec.push(GetError(key)),
+                    ConfigError::NotFound(key) => error_vec.push(key),
                     _ => (),
                 },
             }
@@ -71,12 +88,12 @@ pub fn db_conn_string(config: &Config) -> Result<String, Error> {
     );
 
     if !error_vec.is_empty() {
-        return Err(error_vec.into());
+        Err(MissingKeys(error_vec).context(ErrorKind::ConfigMissingKeys))?;
     }
 
     match string_vec[0].as_ref() {
         "postgres" | "postgresql" => (),
-        kind => return Err(Error::UnsupportedDbScheme(kind.to_owned())),
+        _ => Err(ErrorKind::UnsupportedDbScheme)?,
     }
 
     Ok(format!(
@@ -91,109 +108,59 @@ pub fn db_conn_string(config: &Config) -> Result<String, Error> {
 }
 
 #[derive(Debug)]
-pub struct GetError(String);
+pub struct MissingKeys(Vec<String>);
 
-impl fmt::Display for GetError {
+impl fmt::Display for MissingKeys {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Could not find required key: {}", self.0)
+        write!(f, "Could not find required keys: [{}]", self.0.join(", "))
     }
 }
 
-impl StdError for GetError {
+impl StdError for MissingKeys {
     fn description(&self) -> &str {
-        "Could not find a required key"
+        "Could not find required keys"
     }
 }
 
 #[derive(Debug)]
-pub enum Error {
-    R2D2(R2D2Error),
-    RocketConfig(rocket::config::ConfigError),
-    UnsupportedDbScheme(String),
-    Config(ConfigError),
-    ConfigMissingKeys(Vec<String>),
-    ConfigImmutable,
+pub struct CommonError {
+    inner: Context<ErrorKind>,
 }
 
-impl fmt::Display for Error {
+impl Fail for CommonError {
+    fn cause(&self) -> Option<&Fail> {
+        self.inner.cause()
+    }
+
+    fn backtrace(&self) -> Option<&Backtrace> {
+        self.inner.backtrace()
+    }
+}
+
+impl fmt::Display for CommonError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Error::R2D2(ref r2_err) => r2_err.fmt(f),
-            Error::RocketConfig(ref rc) => rc.fmt(f),
-            Error::UnsupportedDbScheme(ref scheme) => write!(
-                f,
-                "Unsupported db scheme {}, only 'postgres' and 'postgresql' are supported",
-                scheme
-            ),
-            Error::Config(ref cfg_err) => cfg_err.fmt(f),
-            Error::ConfigMissingKeys(ref keys) => {
-                write!(f, "Could not find required keys: [{}]", keys.join(", "))
-            }
-            Error::ConfigImmutable => write!(f, "Config object is immutable"),
+        fmt::Display::fmt(&self.inner, f)
+    }
+}
+
+impl From<ErrorKind> for CommonError {
+    fn from(e: ErrorKind) -> Self {
+        CommonError {
+            inner: Context::new(e),
         }
     }
 }
 
-impl StdError for Error {
-    fn description(&self) -> &str {
-        match *self {
-            Error::R2D2(_) => "Error when interacting with db pool",
-            Error::RocketConfig(_) => "Error configuring Rocket",
-            Error::UnsupportedDbScheme(_) => {
-                "Unsupported db scheme, only 'postgres' and 'postgresql' are supported"
-            }
-            Error::Config(ref cfg_err) => cfg_err.description(),
-            Error::ConfigMissingKeys(_) => "Could not find required keys",
-            Error::ConfigImmutable => "Config object is immutable",
-        }
-    }
-
-    fn cause(&self) -> Option<&StdError> {
-        match *self {
-            Error::R2D2(ref r2_err) => Some(r2_err),
-            Error::RocketConfig(ref rc) => Some(rc),
-            Error::Config(ref cfg_err) => Some(cfg_err),
-            _ => None,
-        }
+impl From<Context<ErrorKind>> for CommonError {
+    fn from(e: Context<ErrorKind>) -> Self {
+        CommonError { inner: e }
     }
 }
 
-impl From<ConfigError> for Error {
-    fn from(e: ConfigError) -> Self {
-        match e {
-            ConfigError::Frozen => Error::ConfigImmutable,
-            ConfigError::NotFound(key) => GetError(key).into(),
-            other => Error::Config(other),
-        }
-    }
-}
-
-impl From<GetError> for Error {
-    fn from(error: GetError) -> Self {
-        Error::ConfigMissingKeys(vec![error.0])
-    }
-}
-
-impl From<Vec<GetError>> for Error {
-    fn from(errors: Vec<GetError>) -> Self {
-        let keys = errors.into_iter().fold(Vec::new(), |mut acc, err| {
-            acc.push(err.0);
-
-            acc
-        });
-
-        Error::ConfigMissingKeys(keys)
-    }
-}
-
-impl From<R2D2Error> for Error {
-    fn from(e: R2D2Error) -> Self {
-        Error::R2D2(e)
-    }
-}
-
-impl From<rocket::config::ConfigError> for Error {
-    fn from(e: rocket::config::ConfigError) -> Self {
-        Error::RocketConfig(e)
-    }
+#[derive(Clone, Copy, Debug, Eq, Fail, Hash, PartialEq)]
+pub enum ErrorKind {
+    #[fail(display = "Unsupported database scheme, only 'postgres' and 'postgresql' are allowed.")]
+    UnsupportedDbScheme,
+    #[fail(display = "Configuration was missing expected keys")] ConfigMissingKeys,
+    #[fail(display = "Config struct cannot be modified")] ConfigImmutable,
 }
