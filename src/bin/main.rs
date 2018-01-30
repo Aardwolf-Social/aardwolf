@@ -2,24 +2,24 @@
 #![feature(custom_derive)]
 #![plugin(rocket_codegen)]
 
-extern crate yaml_rust;
-extern crate rocket;
+#[macro_use]
+extern crate clap;
+extern crate config;
+extern crate diesel;
 #[macro_use]
 extern crate failure;
-extern crate rocket_contrib;
-extern crate serde;
 extern crate r2d2;
 extern crate r2d2_diesel;
 extern crate ring;
-extern crate diesel;
-extern crate config;
-#[macro_use]
-extern crate clap;
+extern crate rocket;
+extern crate rocket_contrib;
+extern crate serde;
+extern crate yaml_rust;
 
 extern crate _aardwolf as aardwolf;
 
 mod common;
-use common::{db_conn_string, configure};
+use common::{configure, db_conn_string};
 
 use failure::Error;
 use ring::rand::SystemRandom;
@@ -57,7 +57,6 @@ fn app(config: config::Config) -> Result<Rocket, Error> {
         aardwolf::routes::auth::sign_in,
         aardwolf::routes::auth::confirm,
         aardwolf::routes::auth::sign_out,
-
         aardwolf::routes::app::home,
         aardwolf::routes::app::home_redirect,
     ]);
@@ -69,24 +68,11 @@ fn app(config: config::Config) -> Result<Rocket, Error> {
     ]);
 
     let r = rocket::custom(c, true)
-        .mount("/api/v1", routes![
-            aardwolf::routes::applications::register_application
-        ])
-     
-        .mount("/", routes![
-            aardwolf::routes::auth::sign_up_form,
-            aardwolf::routes::auth::sign_up_form_with_error,
-            aardwolf::routes::auth::sign_in_form,
-            aardwolf::routes::auth::sign_in_form_with_error,
-            aardwolf::routes::auth::sign_up,
-            aardwolf::routes::auth::sign_in,
-            aardwolf::routes::auth::confirm,
-            aardwolf::routes::auth::sign_out,
-
-            aardwolf::routes::app::home,
-            aardwolf::routes::app::home_redirect,
-        ])
-
+        .mount(
+            "/api/v1",
+            routes![aardwolf::routes::applications::register_application],
+        )
+        .mount("/", routes)
         .attach(Template::fairing())
         .manage(SystemRandom::new());
 
