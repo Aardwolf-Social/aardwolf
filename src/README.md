@@ -82,19 +82,19 @@ already installed, the workflow goes like this:
   * When you see "Rocket has launched from http://...." you should be
     able to connect to the running app
   * Assuming you run the app on `localhost` and use the `7878` port, you
-    can browse to `http://localhost:7878/auth/sign_up` and register a
+    can browse to `http://localhost:7878/sign_up` and register a
     user account
   * If the registration succeeds, it will redirect you to
-    `http://localhost:7878/auth/sign_in`. You won't actually be able to
+    `http://localhost:7878/sign_in`. You won't actually be able to
     sign in yet, you have to confirm your account.
   * Go back to the command line, you should see a message that has a
     path at the end with the token to confirm your account.
   * Go to `http://localhost:7878<the path from the console>` in your
     browser
   * If the confirmation succeeded, it should redirect you back to the
-    `/auth/sign_in` page, where you should be able to log in now.
-  * If the log in succeeds, it should redirect you to `/web` and show
+    `/sign_in` page, where you should be able to log in now.
+  * If the log in succeeds, it should redirect you to `/` and show
     you a message, and a "logout" button
 
-Going to `/web` without logging in should redirect you to the login page
+Going to `/` without logging in should redirect you to the login page
 
