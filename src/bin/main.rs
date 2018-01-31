@@ -78,7 +78,7 @@ fn app(config: config::Config) -> Result<Rocket, Error> {
 
     // we need an instance of the app to access the config values in Rocket.toml,
     // so we pass it to the db_pool function, get the pool, and _then_ return the instance
-    let pool = db_pool(&r);
+    let pool = db_pool(&r)?;
     Ok(r.manage(pool))
 }
 

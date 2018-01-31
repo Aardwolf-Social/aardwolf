@@ -1,0 +1,40 @@
+<nav class="navbar">
+  <div class="container">
+	<div class="navbar-brand">
+	  <a class="navbar-item">
+		<img src="../images/aardwolf-logo.jpg" alt="Aardwolf">
+	  </a>
+	  <span class="navbar-burger burger" data-target="navbarMenuHeroA">
+		<span></span>
+		<span></span>
+		<span></span>
+	  </span>
+	</div>
+	<div id="navbarMenuHeroA" class="navbar-menu">
+	  <div class="navbar-end">
+		<a class="navbar-item is-active">
+		  {{ home }}
+		</a>
+		<a class="navbar-item">
+		  {{ profile }}
+		</a>
+		<a class="navbar-item">
+		  {{ messages }}
+		</a>
+		<span class="navbar-item">
+		  <a class="button is-primary is-inverted">
+			<span class="icon">
+			  <i class="fa fa-github"></i>
+			</span>
+			<span>Download</span>
+		  </a>
+		</span>
+		<span class="navbar-item">          
+	            <form method="post" action="sign_out">
+			<input class="button is-dark" type="submit" value="Logout">
+	            </form>    
+		</span>    
+	  </div>
+	</div>
+  </div>
+</nav>

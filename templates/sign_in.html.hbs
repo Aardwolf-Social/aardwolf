@@ -43,7 +43,7 @@
       </p>
 	  <span style="color: red;">{{ error_msg }}</span>
 	  <form method="POST" action="/sign_in">
-	 	 <input type="hidden" name="csrf_token" value="{{ token }}">
+		 <input type="hidden" name="csrf_token" value="{{ token }}">
 		 <input type="email" name="email" id="email" placeholder="E-mail address">
 		 <input type="password" name="password" id="password" placeholder="Password">
 		 <button>Log In</button>
@@ -55,6 +55,6 @@
   </body>
   <!-- Does Bulma even understand "semantic web" stuff? Let's find out! -->
   <!-- Begin Page Footer -->
-	{{> main_footer }}
+	{{> home_footer }}
   <!-- End Page Footer -->
 </html>
