@@ -63,7 +63,7 @@ pub(crate) fn create_user_and_account<T: SecureRandom>(form: SignUpForm, gen: &T
 
     // just printing this out for now so we can copy/paste into the browser to confirm accounts,
     // but obviously this will need to be emailed to the user
-    println!("confirmation token url: /confirmation?token={}", &strtoken);
+    println!("confirmation token url: /auth/confirmation?token={}", &strtoken);
 
     Ok(())
 }

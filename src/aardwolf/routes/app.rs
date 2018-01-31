@@ -17,7 +17,7 @@ fn home(user: User, _db: DbConn) -> Template {
 
 #[get("/", rank = 2)]
 fn home_redirect() -> Redirect {
-    Redirect::to("/sign_in")
+    Redirect::to("/auth/sign_in")
 }
 
 #[cfg(debug_assertions)]

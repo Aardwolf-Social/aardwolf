@@ -9,7 +9,7 @@
   <header>
     <h2 class="title">{{ instanceTitle }}</h2>
     <div style="text-align: right">
-    <a href="sign_in">Have an Account? - Login</a>
+    <a href="sign_up">Need an Account? - Create one!</a>
     </div>
   </header>
   <!-- End Page Header -->
@@ -42,7 +42,7 @@
         Welcome back!
       </p>
 	  <span style="color: red;">{{ error_msg }}</span>
-	  <form method="POST" action="/sign_in">
+	  <form method="POST" action="/auth/sign_in">
 		 <input type="hidden" name="csrf_token" value="{{ token }}">
 		 <input type="email" name="email" id="email" placeholder="E-mail address">
 		 <input type="password" name="password" id="password" placeholder="Password">
