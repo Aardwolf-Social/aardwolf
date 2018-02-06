@@ -27,10 +27,9 @@ The scaffolding is still being built, but the pieces are coming together much qu
 
 
 ### Contact Us / Getting Help
+Lately we have been hanging out on Matrix chat which is [#aardwolf-discussion:matrix.org](https://riot.im/app/#/room/#aardwolf-discussion:matrix.org), and doing almost all of our discussion there.
 
-Project discussion happens in our forum [WeAreSocial.tech](http://wearesocial.tech/) (you can login with your GitHub account). 
-
-Occasionally we also try to hang out on Matrix chat which is [#aardwolf-discussion:matrix.org](https://riot.im/app/#/room/#aardwolf-discussion:matrix.org)
+We also have a forum [WeAreSocial.tech](http://wearesocial.tech/) (you can login with your GitHub account), and a [mailing list](https://lists.riseup.net/www/info/aardwolf-development), both of which have been super quiet. 
 
 Also if you ned specific help on something or simply don't feel like setting up your own environment reach out to Banjo, and he will **build a VM** for you! If you need it to be Windows please make sure that you have a -legal- licence for it ;)
 
