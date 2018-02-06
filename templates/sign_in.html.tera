@@ -9,7 +9,7 @@
   <body>
   <!-- Begin Page Header -->
   <header>
-    <h2 class="title">{{ instanceTitle }}</h2>
+    <h2 class="title">{{ instance_title }}</h2>
     <div style="text-align: right">
     <a href="sign_up">Need an Account? - Create one!</a>
     </div>

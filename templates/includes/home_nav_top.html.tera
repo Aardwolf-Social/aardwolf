@@ -4,13 +4,13 @@
 	  <a class="navbar-item">
 		<img src="/images/aardwolf-logo.png" alt="Aardwolf">
 	  </a>
-	  <span class="navbar-burger burger" data-target="navbarMenuHeroA">
+	  <span class="navbar-burger burger" data-target="navbar_menu_hero_a">
 		<span></span>
 		<span></span>
 		<span></span>
 	  </span>
 	</div>
-	<div id="navbarMenuHeroA" class="navbar-menu">
+	<div id="navbar_menu_hero_a" class="navbar-menu">
 	  <div class="navbar-end">
 		<a class="navbar-item is-active">
 		  {{ home }}
