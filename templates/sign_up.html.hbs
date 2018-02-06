@@ -1,24 +1,23 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Aardwolf - Create Account</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.min.css">
-  </head>
+
+  {{> htmlHead }}
+
   <body>
   <!-- Does Bulma even understand "semantic web" stuff? Let's find out! -->
   <!-- Begin Page Header -->
   <header>
-    <h2 class="title">Aardwolf</h2>
+    <h2 class="title">{{ instanceTitle }}</h2>
     <div style="text-align: right">
     <a href="sign_in">Have an Account? - Login</a>
     </div>
   </header>
   <!-- End Page Header -->
   <section class="section">
-    <div class="container">
+  <div class="container">
+      
+  <div class="columns is-mobile">
+    <div class="column">
       <h1 class="title">
         About Aardwolf
       </h1>
@@ -35,10 +34,8 @@
 
 		<p>Finally, <a href="https://github.com/banjofox/aardwolf">Aardwolf</a> is open source, so developers who want to contribute or understand how it works can dig in and do so.</p>
     </div>
-  </section>
-    <section class="section">
-    <div class="container">
-      <h1 class="title">
+    <div class="column">
+          <h1 class="title">
         Create an Account
       </h1>
       <p class="subtitle">
@@ -58,10 +55,12 @@
 		<button>Sign Up</button>
 	  </form>
     </div>
-  </section>
+  </div>
+</div>
+</section>
   </body>
   <!-- Does Bulma even understand "semantic web" stuff? Let's find out! -->
   <!-- Begin Page Footer -->
-	{{ footer }}
+	{{> home_footer }}
   <!-- End Page Footer -->
 </html>

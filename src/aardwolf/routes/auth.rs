@@ -64,7 +64,7 @@ fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redirect
             let mut cookie = Cookie::new("user_id", user.id.to_string());
             cookie.set_http_only(true);
             cookies.add_private(cookie);
-            Redirect::to("/web")
+            Redirect::to("/")
         },
         Err(e) => {
             println!("unable to log in: {:#?}", e);
