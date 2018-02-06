@@ -2,15 +2,15 @@
   <div class="container">
 	<div class="navbar-brand">
 	  <a class="navbar-item">
-		<img src="../images/aardwolf-logo.jpg" alt="Aardwolf">
+		<img src="/images/aardwolf-logo.png" alt="Aardwolf">
 	  </a>
-	  <span class="navbar-burger burger" data-target="navbarMenuHeroA">
+	  <span class="navbar-burger burger" data-target="navbar_menu_hero_a">
 		<span></span>
 		<span></span>
 		<span></span>
 	  </span>
 	</div>
-	<div id="navbarMenuHeroA" class="navbar-menu">
+	<div id="navbar_menu_hero_a" class="navbar-menu">
 	  <div class="navbar-end">
 		<a class="navbar-item is-active">
 		  {{ home }}
@@ -29,11 +29,14 @@
 			<span>Download</span>
 		  </a>
 		</span>
-		<span class="navbar-item">          
-	            <form method="post" action="/auth/sign_out">
-					<input class="button is-dark" type="submit" value="Logout">
-	            </form>    
-		</span>    
+		<span class="navbar-item">
+			<a class="button is-dark" href="/auth/sign_out">
+				<span class="icon">
+					<i class="fas fa-logout"></i>
+				</span>
+				Logout
+			</a>
+		</span>   
 	  </div>
 	</div>
   </div>

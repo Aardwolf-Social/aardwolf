@@ -6,16 +6,16 @@
     <span class="fa fa-gears"> {{ settings }}</span>
   </p>
   <ul class="menu-list">
-    <li><a class="fa fa-user"> {{ editProfile }}</a></li>
+    <li><a class="fa fa-user"> {{ edit_profile }}</a></li>
     <li><a class="fa fa-sliders"> {{ preferences }}</a></li>
-    <li><a class="fa fa-volume-off"> {{ muteWords }}</a></li>
-    <li><a class="fa fa-volume-off"> {{ muteUsers }}</a></li>	
+    <li><a class="fa fa-volume-off"> {{ mute_words }}</a></li>
+    <li><a class="fa fa-volume-off"> {{ mute_users }}</a></li>	
     <li><a class="fa fa-bell"> {{ notifications }}</a></li>
     <li><a class="fa fa-lok"> {{ security }}</a></li>
-    <li><a class="fa fa-cloud-upload"> {{ dataImport }}</a></li>
-    <li><a class="fa fa-cloud-download"> {{ dataExport }}</a></li>
-    <li><a class="fa fa-list"> {{ authApps }}</a></li>
-    <li><a class="fa fa-users"> {{ authFollow }}</a></li>        
+    <li><a class="fa fa-cloud-upload"> {{ data_import }}</a></li>
+    <li><a class="fa fa-cloud-download"> {{ data_export }}</a></li>
+    <li><a class="fa fa-list"> {{ auth_apps }}</a></li>
+    <li><a class="fa fa-users"> {{ auth_follow }}</a></li>        
   </ul>
   <p class="menu-label">
     <a class="fa fa-user-plus"> {{ invites }}</a>

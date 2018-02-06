@@ -19,6 +19,6 @@
 	<span class="fa fa-lightbulb-o" aria-hidden="true"> {{create}}</span>
   </p>
   <ul class="menu-list">
-	<li><a class="fa fa-calendar-plus-o" aria-hidden="true"> {{newEvent}}</a></li>
-	<li><a class="fa fa-users" aria-hidden="true"> {{newGroup}}</a></li>
+	<li><a class="fa fa-calendar-plus-o" aria-hidden="true"> {{new_event}}</a></li>
+	<li><a class="fa fa-users" aria-hidden="true"> {{new_group}}</a></li>
 </aside>

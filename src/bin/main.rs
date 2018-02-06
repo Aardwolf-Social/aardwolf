@@ -65,6 +65,18 @@ fn app(config: config::Config) -> Result<Rocket, Error> {
     routes.extend(routes![
         // assets
         aardwolf::routes::app::assets,
+        // webroot/favicon
+        aardwolf::routes::app::webroot,
+        // emoji
+        aardwolf::routes::app::emoji,
+        // images
+        aardwolf::routes::app::images,
+        // javascript
+        aardwolf::routes::app::javascript,
+        // stylesheets
+        aardwolf::routes::app::stylesheets,
+        // themes
+        aardwolf::routes::app::themes,
     ]);
 
     let r = rocket::custom(c, true)

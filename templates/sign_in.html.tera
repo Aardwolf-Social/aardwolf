@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
 
-  {{> htmlHead }}
+    {% block html_head %}
+    <link rel="stylesheet" href="style.css" />
+    <title>{% block title %}{% endblock title %} - My Webpage</title>
+    {% endblock html_head %}
 
   <body>
-  <!-- Does Bulma even understand "semantic web" stuff? Let's find out! -->
   <!-- Begin Page Header -->
   <header>
-    <h2 class="title">{{ instanceTitle }}</h2>
+    <h2 class="title">{{ instance_title }}</h2>
     <div style="text-align: right">
     <a href="sign_up">Need an Account? - Create one!</a>
     </div>
@@ -53,8 +55,8 @@
 </div>
 </section>
   </body>
-  <!-- Does Bulma even understand "semantic web" stuff? Let's find out! -->
+
   <!-- Begin Page Footer -->
-	{{> home_footer }}
+	{% block home_footer %}{% endblock home_footer %}
   <!-- End Page Footer -->
 </html>
