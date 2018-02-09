@@ -20,9 +20,50 @@ fn home_redirect() -> Redirect {
     Redirect::to("/auth/sign_in")
 }
 
+//
+// These are specific routes for static asset folders
+// ideally they will be handled by Nginx/Apache/Web server
+// but for development purposes we can handle them in Rocket :D
+//
+
 #[cfg(debug_assertions)]
-#[get("/assets/<file..>")]
-fn assets(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
+#[get("/web/<file..>")]
+fn webroot(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
     let path = Path::new("web/").join(file);
+    NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
+}
+
+#[cfg(debug_assertions)]
+#[get("/emoji/<file..>")]
+fn emoji(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
+    let path = Path::new("emoji/").join(file);
+    NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
+}
+
+#[cfg(debug_assertions)]
+#[get("/images/<file..>")]
+fn images(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
+    let path = Path::new("web/images/").join(file);
+    NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
+}
+
+#[cfg(debug_assertions)]
+#[get("/javascript/<file..>")]
+fn javascript(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
+    let path = Path::new("web/javascript/").join(file);
+    NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
+}
+
+#[cfg(debug_assertions)]
+#[get("/stylesheets/<file..>")]
+fn stylesheets(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
+    let path = Path::new("web/stylesheets/").join(file);
+    NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
+}
+
+#[cfg(debug_assertions)]
+#[get("/themes/<file..>")]
+fn themes(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
+    let path = Path::new("web/themes/").join(file);
     NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
 }
