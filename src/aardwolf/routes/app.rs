@@ -41,6 +41,13 @@ fn emoji(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
 }
 
 #[cfg(debug_assertions)]
+#[get("/Fork-Awesome-1.0.10/<file..>")]
+fn fork_awesome(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
+    let path = Path::new("Fork-Awesome-1.0.10/").join(file);
+    NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
+}
+
+#[cfg(debug_assertions)]
 #[get("/images/<file..>")]
 fn images(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
     let path = Path::new("web/images/").join(file);
