@@ -4,7 +4,6 @@
   <title>{{ instance_title }} - Create Account</title>
   <link rel="stylesheet" type="text/css" href="/stylesheets/bulma.min.0.6.2.css">
   <link rel="stylesheet" type="text/css" href="/stylesheets/bulma.min.0.6.2.css.map">
+  <link rel="stylesheet" type="text/css" href="/Fork-Awesome-1.0.10/css/fork-awesome.min.css">
   <link rel="stylesheet" type="text/css" href="/stylesheets/scratchpad.css">
-  <script defer src="/javascript/fontawesome.all.5.0.0.js"></script>
-
 </head>
