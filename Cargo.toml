@@ -1,7 +1,7 @@
 [package]
 name = "aardwolf"
 version = "0.1.0"
-authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Peter Alexander <drbanjofox@protonmail.com>", "Elijah Mark Anderson <kd0bpv@gmail.com>", "Paul Woolcock <paul@woolcock.us>"]
+authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Banjo Fox <drbanjofox@protonmail.com>", "Elijah Mark Anderson <kd0bpv@gmail.com>", "Paul Woolcock <paul@woolcock.us>"]
 description = "Powering connected social communities with open software."
 
 [lib]
