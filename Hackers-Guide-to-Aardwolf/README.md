@@ -8,7 +8,7 @@ The idea here is to have a UNIFIED place to keep track of TODO's so that we can 
 We use Rocket to render the application UI templates are HTML-based, and Bulma CSS framework for styling.  Fork-Awesome is also there to provide cool icons for things.
 
 
-### The "Tour" (AKA: Where to FIND things
+### The "Tour" (AKA: Where to FIND things)
 
  - **General Project Documentation** -- Ideally documentation will go into the [wiki](https://github.com/BanjoFox/aardwolf/wiki) there is also the public-facing [homepage](https://aardwolf.social)
  - **Technical Documentation** -- The [INSTALL.md](https://github.com/BanjoFox/aardwolf/blob/master/INSTALL.md) is the resource for getting an Aardwolf instance up, and running.  Supporting documentation can be found in the [/doc](https://github.com/BanjoFox/aardwolf/tree/master/doc) directory.
