@@ -31,7 +31,4 @@ Completed tasks will be struckthrough with tildes like ~~this~~.  Or maybe we sh
 - [ ] 5. Data flow diagrams.  How does data move through the application?  This will help to visualize connections between code segments.
 - [ ] 6. API to connect the front-end to the back-end
 - [ ] 7. Implementing more I/O to create a shoutbox-like demo for the live server. 
-- [ ] 8. Implement more of the "Mastodon Protocol".
-
-
- 
+- [ ] 8. Implement more of the ActivityPub & Mastodon-compatible functionality.
