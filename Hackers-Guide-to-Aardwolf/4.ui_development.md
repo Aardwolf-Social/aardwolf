@@ -1,0 +1,29 @@
+## 4.  UI Development
+
+Most of the UI development (at least for now) can be done independently of the Rust/backend development.  In fact a separate repository has been created for any individual that would like to focus on HTML/CSS/Front-end type activities (we have non-technical ones too ;D trust me).
+The [aardwolf-interface](https://github.com/BanjoFox/aardwolf-interface) repository is where that work is being tracked (mostly).  It is very likely that this repository will remain as a permanent project fixture.  Even as features are ported over to the main repository it will still be nice to have a place for people to test layouts.
+
+/templates -- is where the bulk of the Tera-syntax HTML lives.  Please feel free to use filler-text for testing layouts.  
+/web -- is where the static assets should reside.
+
+Hopefully the sub-folders are self-explanitory...(unlikely x.X, but will fix later)
+
+### Tera Syntax (40,000-foot-view)
+
+Reusable text that goes into the Language/translation files looks like this: 
+'''{{ variable_name }}'''
+
+Templates can be included as part of another page (think PHP include()) as such:
+
+'''{% block file_name %}{% endblock file_name %}'''
+Where file_name is the actual name of the *.html.tera file.  File paths are not required (IIRC) because Rocket will find them.
+You can also have "fallback" html for those times when a block becomes broken:
+
+'''
+{% block new_post %}
+  <p>This will render even if "new_post" will not!</p>  
+{% endblock new_post %}
+'''
+
+Tera documentation is found here:
+[Tera Templates](https://tera.netlify.com/docs/installation/)
