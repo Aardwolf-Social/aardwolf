@@ -68,7 +68,7 @@ fn app(config: config::Config) -> Result<Rocket, Error> {
         // emoji
         aardwolf::routes::app::emoji,
         // fork_awesome
-        aardwolf::routes::app::fork_awesome, 
+        aardwolf::routes::app::fork_awesome,
         // images
         aardwolf::routes::app::images,
         // javascript
