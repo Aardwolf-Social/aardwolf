@@ -1,0 +1,18 @@
+.DS_Store
+_site/
+
+.sass-cache
+node_modules
+
+.ruby-version
+
+# don't need these in the npm package.
+src/
+_config.yml
+_config-deploy.yml
+bower.json
+component.json
+composer.json
+CONTRIBUTING.md
+Gemfile
+Gemfile.lock

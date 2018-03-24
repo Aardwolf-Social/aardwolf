@@ -1,0 +1,22 @@
+{
+  "name": "fork-awesome",
+  "description": "Fork Awesome",
+  "keywords": ["font", "fork", "awesome", "icon" ],
+  "homepage": "http://forkawesome.github.io/Fork-Awesome",
+  "dependencies": {},
+  "devDependencies": {},
+  "license": ["OFL-1.1", "MIT", "CC-BY-3.0"],
+  "main": [
+    "less/fork-awesome.less",
+    "scss/fork-awesome.scss"
+  ],
+  "ignore": [
+    "*/.*",
+    "*.json",
+    "src",
+    "*.yml",
+    "Gemfile",
+    "Gemfile.lock",
+    "*.md"
+  ]
+}

@@ -26,6 +26,7 @@ fn home_redirect() -> Redirect {
 // but for development purposes we can handle them in Rocket :D
 //
 
+// Web root
 #[cfg(debug_assertions)]
 #[get("/web/<file..>")]
 fn webroot(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
@@ -33,6 +34,7 @@ fn webroot(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
     NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
 }
 
+// Emoji folder
 #[cfg(debug_assertions)]
 #[get("/emoji/<file..>")]
 fn emoji(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
@@ -40,6 +42,15 @@ fn emoji(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
     NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
 }
 
+// Fork-Awesome folder
+#[cfg(debug_assertions)]
+#[get("/Fork-Awesome-1.0.10/<file..>")]
+fn fork_awesome(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
+    let path = Path::new("Fork-Awesome-1.0.10/").join(file);
+    NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
+}
+
+// Images folder
 #[cfg(debug_assertions)]
 #[get("/images/<file..>")]
 fn images(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
@@ -47,6 +58,7 @@ fn images(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
     NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
 }
 
+// Javascript folder
 #[cfg(debug_assertions)]
 #[get("/javascript/<file..>")]
 fn javascript(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
@@ -54,6 +66,7 @@ fn javascript(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
     NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
 }
 
+// Stylesheets folder
 #[cfg(debug_assertions)]
 #[get("/stylesheets/<file..>")]
 fn stylesheets(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
@@ -61,6 +74,7 @@ fn stylesheets(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
     NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
 }
 
+// Themes folder
 #[cfg(debug_assertions)]
 #[get("/themes/<file..>")]
 fn themes(file: PathBuf) -> Result<NamedFile, NotFound<String>> {

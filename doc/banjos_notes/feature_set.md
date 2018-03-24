@@ -33,3 +33,5 @@
  - Search groups (if visible)
  - Search news (global)
  - Search trending (global)
+ - ADMIN/INSTANCE PRIV: "Participate in Global Search?" 
+   (Exposes a rate-limited search endpoint for the whole instance, however user-level search privacy will still be honored)
