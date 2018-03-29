@@ -39,7 +39,10 @@ pub(crate) fn create_user_and_account<T: SecureRandom>(form: SignUpForm, gen: &T
     };
     let account: Account = match diesel::insert_into(accounts::table).values(&account).get_result(db) {
         Ok(account) => account,
-        Err(_) => return Err(SignUpFail::AccountCreateError),
+        Err(e) => {
+            println!("Err: {:#?}", e);
+            return Err(SignUpFail::AccountCreateError)
+        },
     };
 
     let mut token: Vec<u8> = vec![0; 16];
