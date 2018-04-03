@@ -5,14 +5,22 @@ We welcome help from technical, as well as non-technical equally.  Even if you d
 Please do not hesitate to ask questions, or volunteer for things that you might be interested in poking at.
 
 --------
-
-### Frontend - semi-technical
+## Requirements for Minimum Viable Product
+- Web-interface that uses language/locales as started in a-i18n-langages branch
+- Basic user profiles
+- "Just enough" API to create, and read messages on the "local timeline"
+- Templates for web interface (prioritizing accessibility. **TIP:** [use the Web Accessibility Evaluation Tool (WAVE)](http://wave.webaim.org/))
 - Color scheme (colorblind- and low-vision-friendly). **TIP:** [use a contrast checker](https://webaim.org/resources/contrastchecker/)
 - Clarify and beautify Github documentation. **TIP:** check out [Github's Markdown Guide](https://guides.github.com/features/mastering-markdown/)
 
-### Frontend - technical
-- Templates for web interface (prioritizing accessibility. **TIP:** [use the Web Accessibility Evaluation Tool (WAVE)](http://wave.webaim.org/))
-- API 
+## Requirements for Alpha-build
+- ActivityPub implementation (as best we can)
+- That other stuff X.x
 
-### Backend
-- ActivityPub implementation
+## Stretch Goals
+- Bridge connection to Matrix (or similar) for chat service
+- Bridge connection to [PeerTube](https://github.com/Chocobozzz/PeerTube) for video sharing
+
+## Other items under consideration
+- End-to-End Encryption
+- IP FileSystem for file sharing (?)
