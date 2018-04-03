@@ -5,6 +5,8 @@ We welcome help from technical, as well as non-technical folks equally.  Even if
 
 Please do not hesitate to ask questions, or volunteer for things that you might be interested in poking at.
 
+(( Still debating whether or not we should have detailed stuff here, or over in [The Hackers Guide to Aardwolf](https://github.com/BanjoFox/aardwolf/tree/master/Hackers-Guide-to-Aardwolf) ))
+
 --------
 ## Requirements for Minimum Viable Product
 - Web-interface that uses language/locales as started in a-i18n-langages branch
