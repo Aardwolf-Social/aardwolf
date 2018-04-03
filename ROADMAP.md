@@ -1,7 +1,8 @@
 # Welcome Future Contributor!
 Our vision is to create a social-networking platform that mirrors the functionality of Facebook while also considering the needs of the community.  We hope to be one of many federated applications working towards a better, friendlier, social Internet.
 
-We welcome help from technical, as well as non-technical equally.  Even if you do not code, there is a growing list of items that you may still be able to help out with.
+We welcome help from technical, as well as non-technical folks equally.  Even if you do not code, there is a growing list of items that you may still be able to help out with. <br />
+
 Please do not hesitate to ask questions, or volunteer for things that you might be interested in poking at.
 
 --------
