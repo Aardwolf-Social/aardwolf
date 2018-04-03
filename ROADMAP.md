@@ -7,13 +7,12 @@ Please do not hesitate to ask questions, or volunteer for things that you might 
 --------
 
 ### Frontend - semi-technical
-- A logo!
 - Color scheme (colorblind- and low-vision-friendly). **TIP:** [use a contrast checker](https://webaim.org/resources/contrastchecker/)
 - Clarify and beautify Github documentation. **TIP:** check out [Github's Markdown Guide](https://guides.github.com/features/mastering-markdown/)
 
 ### Frontend - technical
 - Templates for web interface (prioritizing accessibility. **TIP:** [use the Web Accessibility Evaluation Tool (WAVE)](http://wave.webaim.org/))
-- Find an appropriate [Resource-Oriented Client Architecture (ROCA)](http://roca-style.org/index.html) JavaScript Framework
+- API 
 
 ### Backend
 - ActivityPub implementation
