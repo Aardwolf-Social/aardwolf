@@ -3,6 +3,12 @@
 
 # Aardwolf
 
+## Welcome!
+Greetings friend! 
+:tada: Guten Tag! :balloon: Cześć! :sparkles: Здравствуйте! :star2:
+
+This is the main software repository for the Aardwolf Project. Please feel free to look around, ask questions, and leave comments. We gladly welcome community participation while we grow, and expand.
+
 ### Powerful, Social, Connected Communities With Free Software
 
 Aardwolf is a platform for creating new social networks, connected across the web. While existing social media sites work to funnel the world into a single shared experience (and advertising marketplace), we recognize that we are all individuals with different identities and interests.
