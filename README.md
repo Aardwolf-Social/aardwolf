@@ -7,18 +7,26 @@
 Greetings friend! 
 :tada: Guten Tag! :balloon: Cześć! :sparkles: Здравствуйте! :star2:
 
-This is the main software repository for the Aardwolf Project. Please feel free to look around, ask questions, and leave comments. We gladly welcome community participation while we grow, and expand.
+If you are unfamiliar with GitHub (nice to have you here!), the document you are reading currently is the main README.md, and serves as a general index Aardwolf Project.  
 
-### Powerful, Social, Connected Communities With Free Software
+Please feel free to look around, ask questions, and leave comments. We gladly welcome community participation while we grow, and expand.  
+Use the list below to jump to a specific section, or simply scroll down.
 
-Aardwolf is a platform for creating new social networks, connected across the web. While existing social media sites work to funnel the world into a single shared experience (and advertising marketplace), we recognize that we are all individuals with different identities and interests.
+* [About Aardwolf](#about-aardwolf)
+* [What is Different About Aardwolf?](#what-is-different-about-aardwolf)
+* [Project Status](#project-status)
+* [Contact Us](#contact-us)
+* [Getting Help](#getting-help)
+* [Donating to the cause](#donating-to-the-cause)
 
-**Aardwolf is the engine behind a new Facebook-like social platform, our first -planned- instance of the engine will be hosted on [wearesocial.space](http://wearesocial.space).**
 
-Aardwolf shares a philosophy and underlying protocols with [Mastodon](http://joinmastodon.org), a federated microblogging platform with over a 1000 independently-run servers, hosting more than one million active users.
+### About Aardwolf
 
+Aardwolf is a platform for creating new social networks, connected across the web. While existing social media sites work to funnel the world into a single shared experience (and advertising marketplace), we recognize that we are all individuals with different identities and interests. 
 
-### What's Different About Aardwolf?
+Our vision is to create a social-networking platform that mirrors the functionality of Facebook while also considering the needs of the community.  We hope to be one of many federated applications working towards a better, friendlier, social Internet.
+
+### What is Different About Aardwolf?
 
 Aardwolf is a social platform, meaning that each server hosts its own community of users who are posting, sharing pictures, links, etc. They are replying and “liking” each other’s posts, and re-sharing the ones they like best.
 
@@ -29,15 +37,17 @@ Finally, Aardwolf is [free software](https://github.com/banjofox/aardwolf), so d
 
 ### Project Status
 
-The scaffolding is still being built, but the pieces are coming together much quicker than originally anticipated! A sample of the web interface should be online soon.
+The scaffolding is still being built, but the pieces are coming together much quicker than originally anticipated! A sample of the web interface should be online soon.  There are many ways for folks to contribute
 
-
-### Contact Us / Getting Help
+### Contact Us
 Lately we have been hanging out on Matrix chat which is [#aardwolf-discussion:matrix.org](https://riot.im/app/#/room/#aardwolf-discussion:matrix.org), and doing almost all of our discussion there.
 
 We also have a forum [WeAreSocial.tech](http://wearesocial.tech/) (you can login with your GitHub account), and a [mailing list](https://lists.riseup.net/www/info/aardwolf-development), both of which have been super quiet. 
 
-Also if you ned specific help on something or simply don't feel like setting up your own environment reach out to Banjo, and he will **build a VM** for you! If you need it to be Windows please make sure that you have a -legal- licence for it ;)
+If you would like to get in touch with the project lead (Banjo), please checkout his homepage at [banjo.codes](http://banjo.codes) for a detailed list of contact methods. 
+
+### Getting Help
+Please feel free to use any of the contact methods as listed above.  Someone will gladly provide assistance, or answer questions that you may have regarding the project.
 
 ### Donating to the cause
 
