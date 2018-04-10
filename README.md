@@ -3,6 +3,13 @@
 
 # Aardwolf
 
+<p align="center">
+  <img alt="banner" src="/images/WiFi_front_product.jpg/" width="600">
+</p>
+<p align="center" href="">
+  Make programming with OpenBCI reliable, easy, research grade and fun!
+</p>
+
 ## Welcome!
 Greetings friend! 
 :tada: Guten Tag! :balloon: Cześć! :sparkles: Здравствуйте! :star2:
@@ -12,44 +19,53 @@ If you are unfamiliar with GitHub (nice to have you here!), the document you are
 Please feel free to look around, ask questions, and leave comments. We gladly welcome community participation while we grow, and expand.  
 Use the list below to jump to a specific section, or simply scroll down.
 
-* [About Aardwolf](#about-aardwolf)
-* [What is Different About Aardwolf?](#what-is-different-about-aardwolf)
-* [Project Status](#project-status)
-* [Contact Us](#contact-us)
-* [Getting Help](#getting-help)
-* [Donating to the cause](#donating-to-the-cause)
+* [What is Aardwolf?](#what-is-aardwolf?)
+* [Who are we?](#who-are-we?)
+* [What do we need?](#what-do-we-need)
+* [How can you get involved?](#get-involved)
+* [Get in touch](#contact-us)
+* [Find out more](#find-out-more)
+* [Buy us a coffee?](#donations)
+* [License Info](#license)
 
-
-### About Aardwolf
+### What is Aardwolf?
 
 Aardwolf is a platform for creating new social networks, connected across the web. While existing social media sites work to funnel the world into a single shared experience (and advertising marketplace), we recognize that we are all individuals with different identities and interests. 
 
 Our vision is to create a social-networking platform that mirrors the functionality of Facebook while also considering the needs of the community.  We hope to be one of many federated applications working towards a better, friendlier, social Internet.
 
-### What is Different About Aardwolf?
+### Who are we?
+We are a group of friends that met on Mastodon to collaborate on building a better social networking application.  Despite our busy lives we are all able to share our multitude of talents with one another to bring this project to life, one small contribution at a time.  While the core group have years of development experience, several of them have not used Rust until this project.  Others, such as Banjo, have never done any significant development work, but are able to take on other responsibilities such as project management, documentation, or even creating artwork (yes there is plenty of non-technical work that needs doing ;D).
 
-Aardwolf is a social platform, meaning that each server hosts its own community of users who are posting, sharing pictures, links, etc. They are replying and “liking” each other’s posts, and re-sharing the ones they like best.
+Banjo is currently working as an Information Security Engineer, but his primary background is in computer hardware, and Linux system administration.  He can usually be found elbows deep in some project or another, be it home DIY, planning or making beer/mead, fishing, or gaming.  To date, Aardwolf is also the first development project he has ever managed, but is having a lot of fun, and learning a heck of a lot about web applications get built.  Someday he hopes to have enough "free time" to go back to learning Rust.
 
-Even better, Aardwolf is a *connected* (the technical term is “federated”) platform: users are not limited to only interacting with other users on their service: they can follow users on other sites that are powered by Aardwolf just as if they were on their own site. They can even connect with users on other platforms, if -- like the microblogging service [Mastodon](http://joinmastodon.org) -- they implement the same free protocols Aardwolf is built on.
+###  What do we need?
+TBD
 
-Finally, Aardwolf is [free software](https://github.com/banjofox/aardwolf), so developers who want to contribute or understand how it works can dig in and do so.
+### Get involved
+If you think you can help in any of the areas listed above (and we bet you can) or in any of the many areas that we haven't yet thought of (and here we're sure you can) then please check out our contributors' guidelines and our roadmap.
 
-
-### Project Status
-
-The scaffolding is still being built, but the pieces are coming together much quicker than originally anticipated! A sample of the web interface should be online soon.  There are many ways for folks to contribute
+Please note that it's very important to us that we maintain a positive and supportive environment for everyone who wants to participate. When you join us we ask that you follow our code of conduct in all interactions both on and offline.
 
 ### Contact Us
 Lately we have been hanging out on Matrix chat which is [#aardwolf-discussion:matrix.org](https://riot.im/app/#/room/#aardwolf-discussion:matrix.org), and doing almost all of our discussion there.
 
 We also have a forum [WeAreSocial.tech](http://wearesocial.tech/) (you can login with your GitHub account), and a [mailing list](https://lists.riseup.net/www/info/aardwolf-development), both of which have been super quiet. 
 
-If you would like to get in touch with the project lead (Banjo), please checkout his homepage at [banjo.codes](http://banjo.codes) for a detailed list of contact methods. 
+If you would like to get in touch with the project lead (Banjo), please checkout his homepage at [banjo.codes](http://banjo.codes) for a long list of contact methods. 
 
-### Getting Help
-Please feel free to use any of the contact methods as listed above.  Someone will gladly provide assistance, or answer questions that you may have regarding the project.
+### Find out more
+* [Contributor's guidelines](https://github.com/BanjoFox/aardwolf/blob/master/CONTRIBUTING.md)
+* [Hackers Guide to Aardwolf](https://github.com/BanjoFox/aardwolf/tree/master/Hackers-Guide-to-Aardwolf)
+* [Roadmap](https://github.com/BanjoFox/aardwolf/blob/master/ROADMAP.md)
+* Open Canvass(WIP)
+* [Building, and installation guide](https://github.com/BanjoFox/aardwolf/blob/master/INSTALL.md)
 
-### Donating to the cause
+### Donations
+If you like what we are doing but would prefer to provide support by keeping our coffee mugs full we have set up a LiberaPay site.
+Everyone on the core team get's an equal stake (Except for Banjo who is opting-out of donations at this time).
+[liberapay.com/Aardwolf](https://liberapay.com/Aardwolf)
 
-For those who would prefer to help us in a monetary fashion you may do so here: [liberapay.com/Aardwolf](https://liberapay.com/Aardwolf)
-Please do not be afraid to ask questions. There are a lot of things that Banjo would appreciate help with. Even if you do not know Rust, there may be other ways to participate! :D
+### License
+All Aardwolf software is licensed under the GNU Affero General Public License 
+[License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
