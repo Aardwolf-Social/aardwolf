@@ -4,10 +4,10 @@
 # Aardwolf
 
 <p align="center">
-  <img alt="banner" src="/images/WiFi_front_product.jpg/" width="600">
+  <img alt="banner" src="/doc/images/Mozsprint-houses.png/" width="550">
 </p>
 <p align="center" href="">
-  Make programming with OpenBCI reliable, easy, research grade and fun!
+  Aardwolf, building social communities with open software.
 </p>
 
 ## Welcome!
@@ -55,11 +55,11 @@ We also have a forum [WeAreSocial.tech](http://wearesocial.tech/) (you can login
 If you would like to get in touch with the project lead (Banjo), please checkout his homepage at [banjo.codes](http://banjo.codes) for a long list of contact methods. 
 
 ### Find out more
-* [Contributor's guidelines](https://github.com/BanjoFox/aardwolf/blob/master/CONTRIBUTING.md)
-* [Hackers Guide to Aardwolf](https://github.com/BanjoFox/aardwolf/tree/master/Hackers-Guide-to-Aardwolf)
-* [Roadmap](https://github.com/BanjoFox/aardwolf/blob/master/ROADMAP.md)
+* [Contributor's guidelines](/CONTRIBUTING.md)
+* [Hackers Guide to Aardwolf](/Hackers-Guide-to-Aardwolf)
+* [Roadmap](ROADMAP.md)
 * Open Canvass(WIP)
-* [Building, and installation guide](https://github.com/BanjoFox/aardwolf/blob/master/INSTALL.md)
+* [Building, and installation guide](/INSTALL.md)
 
 ### Donations
 If you like what we are doing but would prefer to provide support by keeping our coffee mugs full we have set up a LiberaPay site.
