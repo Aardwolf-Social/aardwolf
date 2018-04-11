@@ -10,6 +10,7 @@
   Aardwolf, building social communities with open software.
 </p>
 
+
 ## Welcome!
 Greetings friend! 
 :tada: Guten Tag! :balloon: Cześć! :sparkles: Здравствуйте! :star2:

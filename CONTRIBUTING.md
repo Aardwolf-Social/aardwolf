@@ -1,12 +1,12 @@
 # Contributing to aardwolf
 
-Contributors are always welcome! Hopefully this guide will provide some pointers :D
+Contributors are always welcome! This guide aims to provide some pointers :D If you have any questions, reach us on [#aardwolf-discussion:matrix.org](https://riot.im/app/#/room/#aardwolf-discussion:matrix.org) and we'll happily answer them! We're happy to support your professional development.
 
 ## Getting started
 
 High level approach:
 
-1. Find something to fix/improve
+1. Find something to fix/improve (hint: the [issues tagged with 'help wanted'](https://github.com/BanjoFox/aardwolf/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22))
 2. Change code (Rust code lives in /src/, WebUI lives in /templates/`)
 3. Run the app to verify (cargo run --bin aardwolf-server), make changes until it works
 4. Open a PR (also can be done between 2. and 3. if you run into problems)
@@ -20,11 +20,11 @@ given feedback for changes that would be required. All contributions should
 follow this format, even those from core contributors.
 
 Should you wish to work on an issue, please claim it first by commenting on
-the GitHub issue that you want to work on it. This is to prevent duplicated
+the GitHub [issue](https://github.com/BanjoFox/aardwolf/issues) that you want to work on it. This is to prevent duplicated
 efforts from contributors on the same issue.
 
-Head over to [Aardwolf Starter Issues](TBD) to find good tasks to start with. 
-If you come across words or jargon that do not make sense, please feel free to ask. 
+Head over to [Aardwolf Starter Issues](https://github.com/BanjoFox/aardwolf/issues?q=is%3Aissue+is%3Aopen+label%3Amozsprint) to find good tasks to start with. 
+If you come across words or jargon that do not make sense, please feel free to ask on [#aardwolf-discussion:matrix.org](https://riot.im/app/#/room/#aardwolf-discussion:matrix.org).
 We will probably be working on a proper glossary at some point after get a proper 
 application running. 
 
@@ -47,11 +47,11 @@ application running.
   guide](https://github.com/servo/servo/wiki/Testing) for more information.
 
 For specific git instructions, see [GitHub workflow 101](https://github.com/servo/servo/wiki/Github-workflow).
-(( Yes this links to a different repo but I like how it reads so :P ))
+(( Github has the best documentation :P ))
 
-## Conduct
+## Code of Conduct
 
-Please be mindful of our [Code of Conduct](/CODE_OF_CONDUCT.md)
+We want all feel welcome so please be mindful of our [Code of Conduct](/CODE_OF_CONDUCT.md).
 
 ## Communication
 
