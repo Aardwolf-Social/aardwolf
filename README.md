@@ -13,7 +13,7 @@
 
 ## Welcome!
 Greetings friend! 
-:tada: Guten Tag! :balloon: Cześć! :sparkles: Здравствуйте! :star2:
+:tada: Guten Tag! :balloon: Cześć! :sparkles: Здравствуйте! :star2: こんにちは! :bow:
 
 If you are unfamiliar with GitHub (nice to have you here!), the document you are reading currently is the main README.md, and serves as a general index Aardwolf Project.  
 
