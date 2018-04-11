@@ -29,7 +29,6 @@ Use the list below to jump to a specific section, or simply scroll down.
 * [License Info](#license)
 
 ### What is Aardwolf?
-
 Aardwolf is a platform for creating new social networks, connected across the web. While existing social media sites work to funnel the world into a single shared experience (and advertising marketplace), we recognize that we are all individuals with different identities and interests. 
 
 Our vision is to create a social-networking platform that mirrors the functionality of Facebook while also considering the needs of the community.  We hope to be one of many federated applications working towards a better, friendlier, social Internet.
@@ -40,7 +39,17 @@ We are a group of friends that met on Mastodon to collaborate on building a bett
 Banjo is currently working as an Information Security Engineer, but his primary background is in computer hardware, and Linux system administration.  He can usually be found elbows deep in some project or another, be it home DIY, planning or making beer/mead, fishing, or gaming.  To date, Aardwolf is also the first development project he has ever managed, but is having a lot of fun, and learning a heck of a lot about web applications get built.  Someday he hopes to have enough "free time" to go back to learning Rust.
 
 ###  What do we need?
-TBD
+There are a lot of moving pieces right now, but this list should remain relatively stable.  In -all- cases we are NOT looking for expert developers.  Even if you are **new** to any of the topics below thats okay!  For a lot of us this is a learning experience, and we like to help each other out.  Do not be afraid to ask :)
+
+  _ProTip: Working on a project is a great way to learn programming ;)_
+
+* People to help with [Rust](https://www.rust-lang.org) 
+* HTML/CSS folks that want to help with the [Aardwolf Interface](https://github.com/BanjoFox/aardwolf-interface)
+* Designers/artists for the graphical bits (website layouts, color schemes, look-and-feel images)
+* Documentation help.  Proofreading, organization, update wiki, add more things
+* Docker containers/VM's.  At one time we'd considered building ready-to-deploy development environments to help speed up the process for those that wanted/needed it.
+* PostGRE database admins.  Since PostGREs is our current DB of choice, it'd be nice to make sure that we're doing things right ;)
+* User inputs.  What would **you** like to see in a Facebook replacement?
 
 ### Get involved
 If you think you can help in any of the areas listed above (and we bet you can) or in any of the many areas that we haven't yet thought of (and here we're sure you can) then please check out our contributors' guidelines and our roadmap.
