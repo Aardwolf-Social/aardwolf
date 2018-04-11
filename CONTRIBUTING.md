@@ -51,7 +51,7 @@ For specific git instructions, see [GitHub workflow 101](https://github.com/serv
 
 ## Code of Conduct
 
-We want all feel welcome so please be mindful of our [Code of Conduct](CODE_OF_CONDUCT).
+We want all feel welcome so please be mindful of our [Code of Conduct](/CODE_OF_CONDUCT).
 
 ## Communication
 
