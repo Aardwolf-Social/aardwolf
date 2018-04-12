@@ -1,52 +1,9 @@
-[package]
-name = "aardwolf"
-version = "0.1.0"
-authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Elijah Mark Anderson <kd0bpv@gmail.com>", "Paul Woolcock <paul@woolcock.us>", "Asonix <asonix.dev@gmail.com>"]
-description = "Powering connected social communities with free software."
+[workspace]
 
-[lib]
-name = "_aardwolf"
-path = "src/aardwolf/lib.rs"
-
-[[bin]]
-name = "aardwolf-server"
-path = "src/bin/main.rs"
-
-[[bin]]
-name = "setup"
-path = "src/bin/setup.rs"
+members = [
+    "aardwolf-server",
+    "aardwolf-models",
+]
 
 [dependencies]
-bs58 = "0.2"
-bcrypt = "0.1"
-collection_macros = "0.2.0"
-derive_builder = "0.5.0"
-failure = "0.1.1"
-r2d2 = "0.8"
-r2d2-diesel = "0.99"
-ring = "0.11"
-rocket = "=0.3.5"
-rocket_codegen = "=0.3.5"
-serde = "1.0.21"
-serde_derive = "1.0.21"
-config = "0.7.0"
-clap = {version = "2.29", features = ["yaml"]}
-yaml-rust = "0.3.5"
-
-[dependencies.chrono]
-version = "0.4"
-features = ["serde"]
-
-[dependencies.uuid]
-version = "0.5"
-features = ["v4"]
-
-[dependencies.diesel]
-version = "0.99"
-default-features = false
-features = ["postgres", "uuid", "chrono"]
-
-[dependencies.rocket_contrib]
-version = "=0.3.5"
-default-features = false
-features = ["handlebars_templates", "json"]
+rocket = "=0.3.8"
