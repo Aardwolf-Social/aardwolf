@@ -67,14 +67,6 @@ fn app(config: config::Config) -> Result<Rocket, Error> {
         aardwolf::routes::app::webroot,
         // emoji
         aardwolf::routes::app::emoji,
-        // fork_awesome
-        aardwolf::routes::app::fork_awesome,
-        // images
-        aardwolf::routes::app::images,
-        // javascript
-        aardwolf::routes::app::javascript,
-        // stylesheets
-        aardwolf::routes::app::stylesheets,
         // themes
         aardwolf::routes::app::themes,
     ]);

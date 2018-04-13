@@ -149,6 +149,8 @@ impl From<Context<ErrorKind>> for CommonError {
 pub enum ErrorKind {
     #[fail(display = "Unsupported database scheme, only 'postgres' and 'postgresql' are allowed.")]
     UnsupportedDbScheme,
-    #[fail(display = "Configuration was missing expected keys")] ConfigMissingKeys,
-    #[fail(display = "Config struct cannot be modified")] ConfigImmutable,
+    #[fail(display = "Configuration was missing expected keys")]
+    ConfigMissingKeys,
+    #[fail(display = "Config struct cannot be modified")]
+    ConfigImmutable,
 }
