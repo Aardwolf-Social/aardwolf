@@ -1,14 +1,18 @@
 use chrono::DateTime;
 use chrono::offset::Utc;
+use diesel;
+use diesel::pg::PgConnection;
 
 use serde_json::Value;
 
+pub mod direct_post;
 pub mod post;
 pub mod reaction;
 
 use base_actor::BaseActor;
 use file::image::Image;
 use schema::base_posts;
+use self::direct_post::DirectPost;
 use sql_types::{Mime, PostVisibility};
 
 #[derive(Debug, Queryable, QueryableByName)]
@@ -52,6 +56,19 @@ impl BasePost {
 
     pub fn original_json(&self) -> &Value {
         &self.original_json
+    }
+
+    pub fn is_visible_by(
+        &self,
+        actor: &BaseActor,
+        conn: &PgConnection,
+    ) -> Result<bool, diesel::result::Error> {
+        match self.visibility {
+            PostVisibility::Public => Ok(true),
+            PostVisibility::FollowersOnly => actor.is_following_id(self.posted_by, conn),
+            PostVisibility::ListedPeopleOnly => DirectPost::exists(actor, self, conn),
+            _ => Ok(false),
+        }
     }
 }
 

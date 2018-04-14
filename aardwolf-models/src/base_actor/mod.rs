@@ -8,6 +8,7 @@ use sql_types::{FollowPolicy, Url};
 
 pub mod follow_request;
 pub mod follower;
+pub mod group;
 pub mod persona;
 
 use schema::base_actors;
@@ -156,6 +157,14 @@ pub struct NewBaseActor {
 }
 
 impl NewBaseActor {
+    pub fn insert(self, conn: &PgConnection) -> Result<BaseActor, diesel::result::Error> {
+        use diesel::prelude::*;
+
+        diesel::insert_into(base_actors::table)
+            .values(&self)
+            .get_result(conn)
+    }
+
     pub fn new<U: UserLike>(
         display_name: String,
         profile_url: Url,

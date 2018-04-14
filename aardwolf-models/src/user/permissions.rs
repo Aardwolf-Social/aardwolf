@@ -2,12 +2,14 @@ use chrono::offset::Utc;
 use diesel;
 use diesel::pg::PgConnection;
 use serde_json::Value;
+use url::Url as SrcUrl;
 
 use file::File;
 use file::image::Image;
-use base_actor::BaseActor;
+use base_actor::{BaseActor, NewBaseActor};
 use base_actor::follow_request::{FollowRequest, NewFollowRequest};
 use base_actor::follower::{Follower, NewFollower};
+use base_actor::persona::{NewPersona, Persona};
 use base_post::{BasePost, NewBasePost};
 use base_post::post::{NewPost, Post};
 use base_post::post::media_post::{MediaPost, NewMediaPost};
@@ -39,7 +41,7 @@ pub type PermissionResult<T> = Result<T, PermissionError>;
 ///
 /// This way, permission checking would be enforced by the compiler, since "making a post" or
 /// "configuring the instance" would not be possible without calling these methods.
-pub trait PermissionedUser: UserLike {
+pub trait PermissionedUser: UserLike + Sized {
     fn can_post<'a>(
         &self,
         base_actor: &'a BaseActor,
@@ -47,7 +49,7 @@ pub trait PermissionedUser: UserLike {
     ) -> PermissionResult<PostMaker<'a>> {
         self.with_actor(base_actor).and_then(|actor| {
             self.has_permission(Permission::MakePost, conn)
-                .map(|_| PostMaker::new(actor))
+                .map(|_| PostMaker(actor))
         })
     }
 
@@ -58,7 +60,7 @@ pub trait PermissionedUser: UserLike {
     ) -> PermissionResult<MediaPostMaker<'a>> {
         self.with_actor(base_actor).and_then(|actor| {
             self.has_permission(Permission::MakeMediaPost, conn)
-                .map(|_| MediaPostMaker::new(actor))
+                .map(|_| MediaPostMaker(actor))
         })
     }
 
@@ -74,7 +76,7 @@ pub trait PermissionedUser: UserLike {
     ) -> PermissionResult<CommentMaker<'a>> {
         self.with_actor(base_actor).and_then(|actor| {
             self.has_permission(Permission::MakeComment, conn)
-                .map(|_| CommentMaker::new(actor))
+                .map(|_| CommentMaker(actor))
         })
     }
 
@@ -85,12 +87,13 @@ pub trait PermissionedUser: UserLike {
     ) -> PermissionResult<ActorFollower<'a>> {
         self.with_actor(base_actor).and_then(|actor| {
             self.has_permission(Permission::FollowUser, conn)
-                .map(|_| ActorFollower::new(actor))
+                .map(|_| ActorFollower(actor))
         })
     }
 
-    fn can_make_persona(&self, conn: &PgConnection) -> PermissionResult<()> {
+    fn can_make_persona(&self, conn: &PgConnection) -> PermissionResult<LocalPersonaCreator<Self>> {
         self.has_permission(Permission::MakePersona, conn)
+            .map(|_| LocalPersonaCreator(self))
     }
 
     fn can_manage_follow_requests<'a>(
@@ -100,7 +103,7 @@ pub trait PermissionedUser: UserLike {
     ) -> PermissionResult<FollowRequestManager<'a>> {
         self.with_actor(base_actor).and_then(|actor| {
             self.has_permission(Permission::ManageFollowRequest, conn)
-                .map(|_| FollowRequestManager::new(actor))
+                .map(|_| FollowRequestManager(actor))
         })
     }
 
@@ -240,10 +243,6 @@ impl RoleRevoker {
 pub struct PostMaker<'a>(&'a BaseActor);
 
 impl<'a> PostMaker<'a> {
-    pub(crate) fn new(base_actor: &BaseActor) -> PostMaker {
-        PostMaker(base_actor)
-    }
-
     pub fn make_post(
         &self,
         name: Option<String>,
@@ -282,10 +281,6 @@ impl<'a> PostMaker<'a> {
 pub struct MediaPostMaker<'a>(&'a BaseActor);
 
 impl<'a> MediaPostMaker<'a> {
-    pub(crate) fn new(base_actor: &BaseActor) -> MediaPostMaker {
-        MediaPostMaker(base_actor)
-    }
-
     pub fn make_media_post(
         &self,
         name: Option<String>,
@@ -302,7 +297,7 @@ impl<'a> MediaPostMaker<'a> {
         use diesel::prelude::*;
 
         conn.transaction(|| {
-            PostMaker::new(self.0)
+            PostMaker(self.0)
                 .make_post(
                     name,
                     media_type,
@@ -326,13 +321,6 @@ impl<'a> MediaPostMaker<'a> {
 pub struct CommentMaker<'a>(&'a BaseActor);
 
 impl<'a> CommentMaker<'a> {
-    pub(crate) fn new(base_actor: &BaseActor) -> CommentMaker {
-        CommentMaker(base_actor)
-    }
-
-    /// TODO: Handle ListOnly visibility
-    ///
-    /// This will require possibly another table in the database
     pub fn make_comment(
         &self,
         name: Option<String>,
@@ -353,10 +341,7 @@ impl<'a> CommentMaker<'a> {
             .filter(base_posts::dsl::id.eq(conversation.base_post()))
             .get_result(conn)?;
 
-        if !(conversation_base.visibility() == PostVisibility::Public)
-            && !self.0.is_following_id(conversation_base.posted_by(), conn)?
-        {
-            // Bail if conversation post isn't public and user isn't following author
+        if !conversation_base.is_visible_by(self.0, conn)? {
             return Err(CommentError::Permission);
         }
 
@@ -365,16 +350,13 @@ impl<'a> CommentMaker<'a> {
                 .filter(base_posts::dsl::id.eq(parent.base_post()))
                 .get_result(conn)?;
 
-            if !(parent_base.visibility() == PostVisibility::Public)
-                && !self.0.is_following_id(parent_base.posted_by(), conn)?
-            {
-                // Bail if parent post isn't pubilc and user isn't following author
+            if !parent_base.is_visible_by(self.0, conn)? {
                 return Err(CommentError::Permission);
             }
         }
 
         conn.transaction(|| {
-            PostMaker::new(self.0)
+            PostMaker(self.0)
                 .make_post(
                     name,
                     media_type,
@@ -412,10 +394,6 @@ impl From<diesel::result::Error> for CommentError {
 pub struct ActorFollower<'a>(&'a BaseActor);
 
 impl<'a> ActorFollower<'a> {
-    pub(crate) fn new(base_actor: &BaseActor) -> ActorFollower {
-        ActorFollower(base_actor)
-    }
-
     pub fn follow_actor(
         &self,
         target_actor: &BaseActor,
@@ -453,10 +431,6 @@ impl From<diesel::result::Error> for FollowError {
 pub struct FollowRequestManager<'a>(&'a BaseActor);
 
 impl<'a> FollowRequestManager<'a> {
-    pub(crate) fn new(base_actor: &BaseActor) -> FollowRequestManager {
-        FollowRequestManager(base_actor)
-    }
-
     pub fn accept_follow_request(
         &self,
         follow_request: FollowRequest,
@@ -510,5 +484,45 @@ pub enum FollowRequestManagerError {
 impl From<diesel::result::Error> for FollowRequestManagerError {
     fn from(e: diesel::result::Error) -> Self {
         FollowRequestManagerError::Diesel(e)
+    }
+}
+
+pub struct LocalPersonaCreator<'a, U: UserLike + 'a>(&'a U);
+
+impl<'a, U: UserLike> LocalPersonaCreator<'a, U> {
+    pub fn create_persona(
+        &self,
+        display_name: String,
+        profile_url: SrcUrl,
+        inbox_url: SrcUrl,
+        follow_policy: FollowPolicy,
+        default_visibility: PostVisibility,
+        is_searchable: bool,
+        avatar: Option<&Image>,
+        shortname: String,
+        conn: &PgConnection,
+    ) -> Result<(BaseActor, Persona), diesel::result::Error> {
+        use diesel::Connection;
+
+        conn.transaction(|| {
+            NewBaseActor::new(
+                display_name,
+                profile_url.into(),
+                inbox_url.into(),
+                Some(self.0),
+                follow_policy,
+                json!({}),
+            ).insert(conn)
+                .and_then(|base_actor| {
+                    NewPersona::new(
+                        default_visibility,
+                        is_searchable,
+                        avatar,
+                        shortname,
+                        &base_actor,
+                    ).insert(conn)
+                        .map(|persona| (base_actor, persona))
+                })
+        })
     }
 }
