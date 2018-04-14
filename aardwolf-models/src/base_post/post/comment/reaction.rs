@@ -1,9 +1,11 @@
 use chrono::DateTime;
 use chrono::offset::Utc;
+use diesel;
+use diesel::pg::PgConnection;
 
-use base_post::post::comment::Comment;
 use schema::reactions;
 use sql_types::ReactionType;
+use super::Comment;
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "reactions"]
@@ -37,10 +39,40 @@ pub struct NewReaction {
 }
 
 impl NewReaction {
+    pub fn insert(self, conn: &PgConnection) -> Result<Reaction, diesel::result::Error> {
+        use diesel::prelude::*;
+
+        diesel::insert_into(reactions::table)
+            .values(&self)
+            .get_result(conn)
+    }
+
     pub fn new(reaction_type: ReactionType, comment: &Comment) -> Self {
         NewReaction {
             reaction_type,
             comment_id: comment.id(),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use test_helper::*;
+
+    #[test]
+    fn create_reaction() {
+        with_connection(|conn| {
+            make_post(conn, |conversation_post| {
+                make_post(conn, |comment_post| {
+                    with_comment(
+                        conn,
+                        &conversation_post,
+                        &conversation_post,
+                        &comment_post,
+                        |comment| with_reaction(conn, &comment, |_| Ok(())),
+                    )
+                })
+            })
+        })
     }
 }

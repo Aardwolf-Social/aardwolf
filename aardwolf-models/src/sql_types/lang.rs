@@ -1,7 +1,7 @@
+use std::error::Error as StdError;
 use std::fmt;
 use std::io::Write;
 use std::str::FromStr;
-use std::error::Error as StdError;
 
 use diesel::backend::Backend;
 use diesel::serialize;

@@ -258,19 +258,13 @@ impl Create for Password {
 
 #[cfg(test)]
 mod tests {
-    use super::{Create, Password, PlaintextPassword, Validate, Verify};
-    use serde_json;
-
-    #[derive(Deserialize)]
-    struct Payload {
-        password: PlaintextPassword,
-    }
+    use super::{Create, Password, Validate, Verify};
+    use test_helper::create_plaintext_password;
 
     #[test]
     fn create_and_verify_password() {
-        let json = r#"{"password":"testpass"}"#;
-
-        let Payload { password } = serde_json::from_str(json).unwrap();
+        let pass = "testpass";
+        let password = create_plaintext_password(pass).unwrap();
 
         let hashed_password = Password::create(password);
         assert!(
@@ -279,7 +273,7 @@ mod tests {
         );
         let hashed_password = hashed_password.unwrap();
 
-        let Payload { password } = serde_json::from_str(json).unwrap();
+        let password = create_plaintext_password(pass).unwrap();
 
         assert!(
             hashed_password.verify(password).is_ok(),
@@ -289,9 +283,7 @@ mod tests {
 
     #[test]
     fn dont_verify_bad_password() {
-        let json = r#"{"password":"testpass"}"#;
-
-        let Payload { password } = serde_json::from_str(json).unwrap();
+        let password = create_plaintext_password("testpass").unwrap();
 
         let hashed_password = Password::create(password);
         assert!(
@@ -300,9 +292,7 @@ mod tests {
         );
         let hashed_password = hashed_password.unwrap();
 
-        let json2 = r#"{"password":"anotherthing"}"#;
-
-        let Payload { password } = serde_json::from_str(json2).unwrap();
+        let password = create_plaintext_password("not the same password").unwrap();
 
         assert!(
             hashed_password.verify(password).is_err(),
@@ -312,9 +302,7 @@ mod tests {
 
     #[test]
     fn validate_long_password() {
-        let json = r#"{"password":"testpass"}"#;
-
-        let Payload { password } = serde_json::from_str(json).unwrap();
+        let password = create_plaintext_password("testpass").unwrap();
 
         assert!(
             password.validate().is_ok(),
@@ -324,9 +312,7 @@ mod tests {
 
     #[test]
     fn dont_validate_short_password() {
-        let json = r#"{"password":"testpas"}"#;
-
-        let Payload { password } = serde_json::from_str(json).unwrap();
+        let password = create_plaintext_password("short").unwrap();
 
         assert!(
             password.validate().is_err(),
@@ -336,29 +322,23 @@ mod tests {
 
     #[test]
     fn validate_same_password() {
-        let json = r#"{"password":"testpass"}"#;
-
-        let Payload { password } = serde_json::from_str(json).unwrap();
-        let pass1 = password;
-        let Payload { password } = serde_json::from_str(json).unwrap();
+        let pass = "testpass";
+        let pass1 = create_plaintext_password(pass).unwrap();
+        let pass2 = create_plaintext_password(pass).unwrap();
 
         assert!(
-            password.compare(pass1).is_ok(),
+            pass1.compare(pass2).is_ok(),
             "Identical passwords should pass validation"
         );
     }
 
     #[test]
     fn dont_validate_different_password() {
-        let json = r#"{"password":"testpass"}"#;
-
-        let Payload { password } = serde_json::from_str(json).unwrap();
-        let pass1 = password;
-        let json2 = r#"{"password":"anotherthing"}"#;
-        let Payload { password } = serde_json::from_str(json2).unwrap();
+        let pass1 = create_plaintext_password("testpass").unwrap();
+        let pass2 = create_plaintext_password("not the same password").unwrap();
 
         assert!(
-            password.compare(pass1).is_err(),
+            pass1.compare(pass2).is_err(),
             "Different passwords should not pass validation"
         );
     }

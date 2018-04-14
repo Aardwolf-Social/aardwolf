@@ -1,5 +1,7 @@
 use chrono::DateTime;
 use chrono::offset::Utc;
+use diesel;
+use diesel::pg::PgConnection;
 
 use base_actor::BaseActor;
 use base_actor::follow_request::FollowRequest;
@@ -37,6 +39,14 @@ pub struct NewFollower {
 }
 
 impl NewFollower {
+    pub fn insert(self, conn: &PgConnection) -> Result<Follower, diesel::result::Error> {
+        use diesel::prelude::*;
+
+        diesel::insert_into(followers::table)
+            .values(&self)
+            .get_result(conn)
+    }
+
     pub fn new(follower: &BaseActor, follows: &BaseActor) -> Self {
         NewFollower {
             follower: follower.id(),
@@ -51,5 +61,21 @@ impl From<FollowRequest> for NewFollower {
             follower: follow_request.follower(),
             follows: follow_request.requested_follow(),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use test_helper::*;
+
+    #[test]
+    fn create_follower() {
+        with_connection(|conn| {
+            with_base_actor(conn, |follower| {
+                with_base_actor(conn, |follows| {
+                    with_follower(conn, &follower, &follows, |_| Ok(()))
+                })
+            })
+        })
     }
 }
