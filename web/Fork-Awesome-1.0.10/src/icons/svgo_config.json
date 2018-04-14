@@ -1,7 +1,0 @@
-{
-  "plugins": [
-    { "removeAttrs": { "attrs": "(glyph-name|unicode)" } },
-    { "removeScriptElement": true },
-    { "removeRasterImages": true }
-  ]
-}
