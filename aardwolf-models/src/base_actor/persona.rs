@@ -1,5 +1,7 @@
 use chrono::DateTime;
 use chrono::offset::Utc;
+use diesel;
+use diesel::pg::PgConnection;
 
 use base_actor::BaseActor;
 use file::image::Image;
@@ -56,6 +58,14 @@ pub struct NewPersona {
 }
 
 impl NewPersona {
+    pub fn insert(self, conn: &PgConnection) -> Result<Persona, diesel::result::Error> {
+        use diesel::prelude::*;
+
+        diesel::insert_into(personas::table)
+            .values(&self)
+            .get_result(conn)
+    }
+
     pub fn new(
         default_visibility: PostVisibility,
         is_searchable: bool,
