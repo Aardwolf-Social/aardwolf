@@ -54,3 +54,21 @@ impl NewGroupBaseActor {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use test_helper::*;
+
+    #[test]
+    fn create_group_base_actor() {
+        with_connection(|conn| {
+            with_base_actor(conn, |base_group| {
+                with_group(conn, &base_group, |group| {
+                    with_base_actor(conn, |base_actor| {
+                        with_group_base_actor(conn, &group, &base_actor, |_| Ok(()))
+                    })
+                })
+            })
+        });
+    }
+}

@@ -1,9 +1,12 @@
 use chrono::DateTime;
 use chrono::offset::Utc;
 use chrono_tz::Tz;
+use diesel;
+use diesel::pg::PgConnection;
 
 use base_actor::persona::Persona;
 use schema::events;
+use sql_types::Timezone;
 use timer::Timer;
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
@@ -13,7 +16,7 @@ pub struct Event {
     owner: i32,      // foreign key to Persona
     start_date: i32, // foreign key to Timer
     end_date: i32,   // foreign key to Timer
-    timezone: Tz,
+    timezone: Timezone,
     title: String,
     description: String,
     created_at: DateTime<Utc>,
@@ -38,7 +41,7 @@ impl Event {
     }
 
     pub fn timezone(&self) -> Tz {
-        self.timezone
+        self.timezone.0
     }
 
     pub fn title(&self) -> &str {
@@ -56,12 +59,20 @@ pub struct NewEvent {
     owner: i32,
     start_date: i32,
     end_date: i32,
-    timezone: String,
+    timezone: Timezone,
     title: String,
     description: String,
 }
 
 impl NewEvent {
+    pub fn insert(self, conn: &PgConnection) -> Result<Event, diesel::result::Error> {
+        use diesel::prelude::*;
+
+        diesel::insert_into(events::table)
+            .values(&self)
+            .get_result(conn)
+    }
+
     pub fn new(
         owner: &Persona,
         start_date: &Timer,
@@ -69,14 +80,85 @@ impl NewEvent {
         timezone: Tz,
         title: String,
         description: String,
-    ) -> Self {
-        NewEvent {
+    ) -> Result<Self, EventCreationError> {
+        if start_date.fire_time() > end_date.fire_time() {
+            return Err(EventCreationError);
+        }
+
+        Ok(NewEvent {
             owner: owner.id(),
             start_date: start_date.id(),
             end_date: end_date.id(),
-            timezone: timezone.name().to_owned(),
+            timezone: timezone.into(),
             title,
             description,
-        }
+        })
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, Fail, PartialEq)]
+#[fail(display = "Start time must be before end time")]
+pub struct EventCreationError;
+
+#[cfg(test)]
+mod tests {
+    use chrono_tz::Tz;
+
+    use super::NewEvent;
+    use test_helper::*;
+
+    #[test]
+    fn create_event() {
+        with_connection(|conn| {
+            with_timer(conn, |t1| {
+                with_timer(conn, |t2| {
+                    let (start, end) = if t1.fire_time() < t2.fire_time() {
+                        (t1, t2)
+                    } else {
+                        (t2, t1)
+                    };
+
+                    with_base_actor(conn, |owner_base| {
+                        with_persona(conn, &owner_base, |owner| {
+                            with_event(conn, &owner, &start, &end, |_| Ok(()))
+                        })
+                    })
+                })
+            })
+        })
+    }
+
+    #[test]
+    fn dont_create_event_with_invalid_times() {
+        with_connection(|conn| {
+            with_timer(conn, |t1| {
+                with_timer(conn, |t2| {
+                    let (start, end) = if t1.fire_time() < t2.fire_time() {
+                        (t1, t2)
+                    } else {
+                        (t2, t1)
+                    };
+
+                    with_base_actor(conn, |owner_base| {
+                        with_persona(conn, &owner_base, |owner| {
+                            let new_event = NewEvent::new(
+                                &owner,
+                                &end,
+                                &start,
+                                Tz::UTC,
+                                gen_string()?,
+                                gen_string()?,
+                            );
+
+                            assert!(
+                                new_event.is_err(),
+                                "Should not have created event with invalid start and end times"
+                            );
+                            Ok(())
+                        })
+                    })
+                })
+            })
+        })
     }
 }

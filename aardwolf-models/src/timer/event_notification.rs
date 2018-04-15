@@ -1,5 +1,7 @@
 use chrono::DateTime;
 use chrono::offset::Utc;
+use diesel;
+use diesel::pg::PgConnection;
 
 use timer::event::Event;
 use schema::event_notifications;
@@ -37,10 +39,57 @@ pub struct NewEventNotification {
 }
 
 impl NewEventNotification {
+    pub fn insert(self, conn: &PgConnection) -> Result<EventNotification, diesel::result::Error> {
+        use diesel::prelude::*;
+
+        diesel::insert_into(event_notifications::table)
+            .values(&self)
+            .get_result(conn)
+    }
+
+    /// TODO: Maybe fail if notification is scheduled after event starts
     pub fn new(event: &Event, timer: &Timer) -> Self {
         NewEventNotification {
             event_id: event.id(),
             timer_id: timer.id(),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use test_helper::*;
+
+    #[test]
+    fn create_event() {
+        with_connection(|conn| {
+            with_timer(conn, |t1| {
+                with_timer(conn, |t2| {
+                    with_timer(conn, |t3| {
+                        let (start, end) = if t1.fire_time() < t2.fire_time() {
+                            (t1, t2)
+                        } else {
+                            (t2, t1)
+                        };
+
+                        let (notif, start, end) = if t3.fire_time() < start.fire_time() {
+                            (t3, start, end)
+                        } else if t3.fire_time() < end.fire_time() {
+                            (start, t3, end)
+                        } else {
+                            (start, end, t3)
+                        };
+
+                        with_base_actor(conn, |owner_base| {
+                            with_persona(conn, &owner_base, |owner| {
+                                with_event(conn, &owner, &start, &end, |event| {
+                                    with_event_notification(conn, &event, &notif, |_| Ok(()))
+                                })
+                            })
+                        })
+                    })
+                })
+            })
+        })
     }
 }
