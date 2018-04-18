@@ -8,7 +8,6 @@ use types::apps::{App, AppId};
 use controllers;
 
 mod deser_scope {
-    use std::convert::TryFrom;
     use types::scope::Scope;
     use serde::{self, Deserialize, Deserializer};
 
@@ -17,7 +16,7 @@ mod deser_scope {
         D: Deserializer<'de>,
     {
         let s = String::deserialize(deserializer)?;
-        TryFrom::try_from(s).map_err(serde::de::Error::custom)
+        s.parse::<Scope>().map_err(serde::de::Error::custom)
     }
 }
 
