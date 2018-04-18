@@ -79,3 +79,26 @@ impl StdError for FollowPolicyParseError {
         None
     }
 }
+
+mod rocket {
+    use std::str::Utf8Error;
+
+    use rocket::http::RawStr;
+    use rocket::request::FromFormValue;
+
+    use super::{FollowPolicy, FollowPolicyParseError};
+
+    impl<'v> FromFormValue<'v> for FollowPolicy {
+        type Error = FollowPolicyParseError;
+
+        fn from_form_value(form_value: &'v RawStr) -> Result<Self, Self::Error> {
+            Ok(form_value.url_decode()?.parse()?)
+        }
+    }
+
+    impl From<Utf8Error> for FollowPolicyParseError {
+        fn from(_: Utf8Error) -> Self {
+            FollowPolicyParseError
+        }
+    }
+}

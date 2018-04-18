@@ -3,7 +3,6 @@ use diesel;
 use diesel::pg::PgConnection;
 use mime::Mime as OrigMime;
 use serde_json::Value;
-use url::Url as OrigUrl;
 
 use file::File;
 use file::image::Image;
@@ -15,7 +14,7 @@ use base_post::{BasePost, NewBasePost};
 use base_post::post::{NewPost, Post};
 use base_post::post::media_post::{MediaPost, NewMediaPost};
 use base_post::post::comment::{Comment, NewComment};
-use sql_types::{FollowPolicy, Permission, PostVisibility, Role};
+use sql_types::{FollowPolicy, Permission, PostVisibility, Role, Url};
 use super::UserLike;
 
 #[derive(Debug, Fail)]
@@ -65,11 +64,6 @@ pub trait PermissionedUser: UserLike + Sized {
         })
     }
 
-    /// TODO: Maybe do more verification here. Is this actor allowed to comment on this post?
-    ///
-    /// check the target post's visibility,
-    /// check whether user follows target post's author,
-    /// check whether parent post is in the same thread as conversation post
     fn can_post_comment<'a>(
         &self,
         base_actor: &'a BaseActor,
@@ -494,9 +488,9 @@ impl<'a, U: UserLike> LocalPersonaCreator<'a, U> {
     pub fn create_persona(
         &self,
         display_name: String,
-        profile_url: OrigUrl,
-        inbox_url: OrigUrl,
-        outbox_url: OrigUrl,
+        profile_url: Url,
+        inbox_url: Url,
+        outbox_url: Url,
         follow_policy: FollowPolicy,
         default_visibility: PostVisibility,
         is_searchable: bool,

@@ -37,7 +37,7 @@ use user::email::{CreationError as EmailCreationError, EmailToken, EmailVerifica
                   VerifiedEmail};
 use user::local_auth::{LocalAuth, NewLocalAuth, PasswordCreationError, PlaintextPassword,
                        VerificationError as PasswordVerificationError};
-use sql_types::{FollowPolicy, PostVisibility, ReactionType};
+use sql_types::{FollowPolicy, PostVisibility, ReactionType, Url};
 use user::QueriedUser;
 
 #[derive(Debug, Fail)]
@@ -156,12 +156,12 @@ pub fn gen_string() -> Result<String, GenericError> {
     Ok(rng.gen_ascii_chars().take(10).collect())
 }
 
-pub fn gen_url() -> Result<OrigUrl, GenericError> {
-    let mut url = OrigUrl::parse("https://example.com")?;
+pub fn gen_url() -> Result<Url, GenericError> {
+    let mut url: OrigUrl = "https://example.com".parse()?;
 
     url.set_path(&gen_string()?);
 
-    Ok(url)
+    Ok(Url(url))
 }
 
 pub fn gen_bool() -> Result<bool, GenericError> {
