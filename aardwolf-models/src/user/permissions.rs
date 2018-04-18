@@ -91,6 +91,28 @@ pub trait PermissionedUser: UserLike + Sized {
             .map(|_| LocalPersonaCreator(self))
     }
 
+    fn can_switch_persona(
+        &self,
+        persona: Persona,
+        conn: &PgConnection,
+    ) -> PermissionResult<PersonaSwitcher> {
+        self.with_persona(persona, conn).and_then(|persona| {
+            self.has_permission(Permission::SwitchPersona, conn)
+                .map(|_| PersonaSwitcher(persona))
+        })
+    }
+
+    fn can_delete_persona(
+        &self,
+        persona: Persona,
+        conn: &PgConnection,
+    ) -> PermissionResult<PersonaDeleter> {
+        self.with_persona(persona, conn).and_then(|persona| {
+            self.has_permission(Permission::DeletePersona, conn)
+                .map(|_| PersonaDeleter(persona))
+        })
+    }
+
     fn can_manage_follow_requests<'a>(
         &self,
         base_actor: &'a BaseActor,
@@ -135,6 +157,19 @@ pub trait PermissionedUser: UserLike + Sized {
                 }
             })
             .ok_or(PermissionError::Permission)
+    }
+
+    fn with_persona(&self, persona: Persona, conn: &PgConnection) -> PermissionResult<Persona> {
+        persona
+            .belongs_to_user(self, conn)
+            .map_err(|_| PermissionError::Permission)
+            .and_then(|belongs| {
+                if belongs {
+                    Ok(persona)
+                } else {
+                    Err(PermissionError::Permission)
+                }
+            })
     }
 
     fn has_permission(&self, permission: Permission, conn: &PgConnection) -> PermissionResult<()> {
@@ -521,5 +556,21 @@ impl<'a, U: UserLike> LocalPersonaCreator<'a, U> {
                         .map(|persona| (base_actor, persona))
                 })
         })
+    }
+}
+
+pub struct PersonaDeleter(Persona);
+
+impl PersonaDeleter {
+    pub fn delete_persona(self, conn: &PgConnection) -> Result<(), diesel::result::Error> {
+        self.0.delete(conn)
+    }
+}
+
+pub struct PersonaSwitcher(Persona);
+
+impl PersonaSwitcher {
+    pub fn switch_persona(self) -> i32 {
+        self.0.id()
     }
 }

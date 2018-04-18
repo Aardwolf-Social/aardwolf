@@ -6,25 +6,6 @@ use url::ParseError as UrlParseError;
 
 use forms::traits::Validate;
 
-/*
- * BaseActor
- *
- * display_name: String,
- * profile_url: OrigUrl,
- * inbox_url: OrigUrl,
- * outbox_url: OrigUrl,
- * local_user: Option<&U>,
- * follow_policy: FollowPolicy,
- * original_json: Value,
- *
- * Persona
- *
- * default_visibility: PostVisibility,
- * is_searchable: bool,
- * avatar: Option<&Image>,
- * shortname: String,
- * base_actor: &BaseActor,
- */
 #[derive(Debug, FromForm)]
 pub(crate) struct PersonaCreationForm {
     display_name: String,
@@ -98,19 +79,17 @@ impl ValidatedPersonaCreationForm {
     ) -> Result<(BaseActor, Persona), PersonaCreationFail> {
         let persona_maker = user.can_make_persona(db)?;
 
-        persona_maker
-            .create_persona(
-                self.display_name,
-                self.profile_url,
-                self.inbox_url,
-                self.outbox_url,
-                self.follow_policy,
-                self.default_visibility,
-                self.is_searchable,
-                None,
-                self.shortname,
-                db,
-            )
-            .map_err(From::from)
+        Ok(persona_maker.create_persona(
+            self.display_name,
+            self.profile_url,
+            self.inbox_url,
+            self.outbox_url,
+            self.follow_policy,
+            self.default_visibility,
+            self.is_searchable,
+            None,
+            self.shortname,
+            db,
+        )?)
     }
 }
