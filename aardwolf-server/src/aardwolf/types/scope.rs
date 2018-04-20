@@ -1,4 +1,4 @@
-use std::convert::TryFrom;
+use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Scope {
@@ -15,10 +15,10 @@ pub enum Scope {
 #[fail(display = "Error decoding 'scope'")]
 pub struct ScopeDecodeError;
 
-impl TryFrom<String> for Scope {
-    type Error = ScopeDecodeError;
+impl FromStr for Scope {
+    type Err = ScopeDecodeError;
 
-    fn try_from(scope: String) -> Result<Self, Self::Error> {
+    fn from_str(scope: &str) -> Result<Self, Self::Err> {
         let mut read: bool = false;
         let mut write: bool = false;
         let mut follow: bool = false;
