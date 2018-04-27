@@ -49,7 +49,7 @@ There are a lot of moving pieces right now, but this list should remain relative
 * Designers/artists for the graphical bits (website layouts, color schemes, look-and-feel images)
 * Documentation help.  Proofreading, organization, update wiki, add more things
 * Docker containers/VM's.  At one time we'd considered building ready-to-deploy development environments to help speed up the process for those that wanted/needed it.
-* PostGRE database admins.  Since PostGREs is our current DB of choice, it'd be nice to make sure that we're doing things right ;)
+* PostgreSQL database admins.  Since Postgres is our current DB of choice, it'd be nice to make sure that we're doing things right ;)
 * User inputs.  What would **you** like to see in a Facebook replacement?
 
 ### Get involved
