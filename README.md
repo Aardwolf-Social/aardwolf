@@ -60,6 +60,8 @@ Please note that it's very important to us that we maintain a positive and suppo
 ### Contact Us
 Lately we have been hanging out on Matrix chat which is [#aardwolf-discussion:matrix.org](https://riot.im/app/#/room/#aardwolf-discussion:matrix.org), and doing almost all of our discussion there.
 
+If you would like to follow us on Mastodon you may do so using [@aardwolf@glitch.social](https://glitch.social/@aardwolf).
+
 We also have a forum [WeAreSocial.tech](http://wearesocial.tech/) (you can login with your GitHub account), and a [mailing list](https://lists.riseup.net/www/info/aardwolf-development), both of which have been super quiet. 
 
 If you would like to get in touch with the project lead (Banjo), please checkout his homepage at [banjo.codes](http://banjo.codes) for a long list of contact methods. 
