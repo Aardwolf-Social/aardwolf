@@ -82,3 +82,17 @@ impl NewPersona {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use test_helper::*;
+
+    #[test]
+    fn create_persona() {
+        with_connection(|conn| {
+            with_base_actor(conn, |base_actor| {
+                with_persona(conn, &base_actor, |_| Ok(()))
+            })
+        })
+    }
+}

@@ -1,7 +1,10 @@
-use std::path::{Path, PathBuf};
+// use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use chrono::DateTime;
 use chrono::offset::Utc;
+use diesel;
+use diesel::pg::PgConnection;
 
 pub mod image;
 
@@ -19,7 +22,7 @@ pub enum FileCreationError {
 #[table_name = "files"]
 pub struct File {
     id: i32,
-    file_path: PathBuf,
+    file_path: String,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
 }
@@ -29,18 +32,26 @@ impl File {
         self.id
     }
 
-    pub fn path(&self) -> &Path {
+    pub fn path(&self) -> &str {
         &self.file_path
     }
 }
 
 #[derive(Insertable)]
 #[table_name = "files"]
-pub struct Newfile {
+pub struct NewFile {
     file_path: String,
 }
 
-impl Newfile {
+impl NewFile {
+    pub fn insert(self, conn: &PgConnection) -> Result<File, diesel::result::Error> {
+        use diesel::prelude::*;
+
+        diesel::insert_into(files::table)
+            .values(&self)
+            .get_result(conn)
+    }
+
     pub fn new<P>(path: P) -> Result<Self, FileCreationError>
     where
         P: AsRef<Path>,
@@ -48,12 +59,30 @@ impl Newfile {
         if path.as_ref().is_file() {
             path.as_ref()
                 .to_str()
-                .map(|p| Newfile {
+                .map(|p| NewFile {
                     file_path: p.to_owned(),
                 })
                 .ok_or(FileCreationError::Utf8)
         } else {
             Err(FileCreationError::Missing)
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::NewFile;
+    use test_helper::*;
+
+    #[test]
+    fn create_file() {
+        with_connection(|conn| with_file(conn, |_| Ok(())))
+    }
+
+    #[test]
+    fn dont_create_nonexistant_file() {
+        let new_file = NewFile::new("bad-file-path.invalid");
+
+        assert!(new_file.is_err());
     }
 }

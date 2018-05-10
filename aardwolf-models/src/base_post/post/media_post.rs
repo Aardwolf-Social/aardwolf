@@ -1,5 +1,7 @@
 use chrono::DateTime;
 use chrono::offset::Utc;
+use diesel;
+use diesel::pg::PgConnection;
 
 use file::File;
 use super::Post;
@@ -37,10 +39,32 @@ pub struct NewMediaPost {
 }
 
 impl NewMediaPost {
+    pub fn insert(self, conn: &PgConnection) -> Result<MediaPost, diesel::result::Error> {
+        use diesel::prelude::*;
+
+        diesel::insert_into(media_posts::table)
+            .values(&self)
+            .get_result(conn)
+    }
+
     pub fn new(file: &File, post: &Post) -> Self {
         NewMediaPost {
             file_id: file.id(),
             post_id: post.id(),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use test_helper::*;
+
+    #[test]
+    fn create_media_post() {
+        with_connection(|conn| {
+            make_post(conn, |post| {
+                with_file(conn, |file| with_media_post(conn, &file, &post, |_| Ok(())))
+            })
+        })
     }
 }

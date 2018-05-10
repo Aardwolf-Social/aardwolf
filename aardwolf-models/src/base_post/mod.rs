@@ -2,12 +2,11 @@ use chrono::DateTime;
 use chrono::offset::Utc;
 use diesel;
 use diesel::pg::PgConnection;
-
+use mime::Mime as OrigMime;
 use serde_json::Value;
 
 pub mod direct_post;
 pub mod post;
-pub mod reaction;
 
 use base_actor::BaseActor;
 use file::image::Image;
@@ -84,9 +83,17 @@ pub struct NewBasePost {
 }
 
 impl NewBasePost {
+    pub fn insert(self, conn: &PgConnection) -> Result<BasePost, diesel::result::Error> {
+        use diesel::prelude::*;
+
+        diesel::insert_into(base_posts::table)
+            .values(&self)
+            .get_result(conn)
+    }
+
     pub fn new(
         name: Option<String>,
-        media_type: Mime,
+        media_type: OrigMime,
         posted_by: &BaseActor,
         icon: Option<&Image>,
         visibility: PostVisibility,
@@ -94,11 +101,25 @@ impl NewBasePost {
     ) -> Self {
         NewBasePost {
             name,
-            media_type,
+            media_type: media_type.into(),
             posted_by: posted_by.id(),
             icon: icon.map(|i| i.id()),
             visibility,
             original_json,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use test_helper::*;
+
+    #[test]
+    fn create_base_post() {
+        with_connection(|conn| {
+            with_base_actor(conn, |posted_by| {
+                with_base_post(conn, &posted_by, |_| Ok(()))
+            })
+        })
     }
 }
