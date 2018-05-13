@@ -1,5 +1,7 @@
 use chrono::DateTime;
 use chrono::offset::Utc;
+use diesel;
+use diesel::pg::PgConnection;
 
 use base_post::BasePost;
 use schema::posts;
@@ -45,11 +47,35 @@ pub struct NewPost {
 }
 
 impl NewPost {
+    pub fn insert(self, conn: &PgConnection) -> Result<Post, diesel::result::Error> {
+        use diesel::prelude::*;
+
+        diesel::insert_into(posts::table)
+            .values(&self)
+            .get_result(conn)
+    }
+
     pub fn new(content: String, source: Option<String>, base_post: &BasePost) -> Self {
         NewPost {
             content,
             source,
             base_post: base_post.id(),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use test_helper::*;
+
+    #[test]
+    fn create_post() {
+        with_connection(|conn| {
+            with_base_actor(conn, |posted_by| {
+                with_base_post(conn, &posted_by, |base_post| {
+                    with_post(conn, &base_post, |_| Ok(()))
+                })
+            })
+        })
     }
 }

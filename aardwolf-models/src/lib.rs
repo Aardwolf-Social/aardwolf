@@ -3,6 +3,8 @@ extern crate chrono;
 extern crate chrono_tz;
 #[macro_use]
 extern crate diesel;
+#[cfg(test)]
+extern crate dotenv;
 #[macro_use]
 extern crate failure;
 #[macro_use]
@@ -25,3 +27,6 @@ pub mod schema;
 pub mod sql_types;
 pub mod timer;
 pub mod user;
+
+#[cfg(test)]
+pub mod test_helper;

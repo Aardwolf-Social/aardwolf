@@ -25,7 +25,7 @@ efforts from contributors on the same issue.
 
 Head over to [Aardwolf Starter Issues](https://github.com/BanjoFox/aardwolf/issues?q=is%3Aissue+is%3Aopen+label%3Amozsprint) to find good tasks to start with. 
 If you come across words or jargon that do not make sense, please feel free to ask on [#aardwolf-discussion:matrix.org](https://riot.im/app/#/room/#aardwolf-discussion:matrix.org).
-We will probably be working on a proper glossary at some point after get a proper 
+We will probably be working on a proper glossary at some point after we get a proper 
 application running. 
 
 ## Pull Request Checklist

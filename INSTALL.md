@@ -133,7 +133,11 @@ directory. To get started, copy
 
 ## Setting up the database
 
-Once the database connection values are set in `aardwolf.toml`, run the
+Change to the aardwolf-server directory
+
+    $ cd aardwolf-server
+
+Once the database connection values are set in `aardwolf.toml` (and in the project root path_to_git_clone_aardwolf/), run the
 following command to set up the aardwolf database:
 
     $ cargo run --bin setup

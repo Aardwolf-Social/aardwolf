@@ -227,3 +227,30 @@ impl NewEmail {
         })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use test_helper::*;
+
+    #[test]
+    fn create_email() {
+        with_connection(|conn| {
+            with_unverified_user(conn, |user| {
+                with_unverified_email(conn, &user, |_email, _token| Ok(()))
+            })
+        })
+    }
+
+    #[test]
+    fn verify_email() {
+        with_connection(|conn| {
+            with_unverified_user(conn, |user| {
+                with_unverified_email(conn, &user, |email, token| {
+                    email.verify(token)?.store_verify(conn)?;
+
+                    Ok(())
+                })
+            })
+        })
+    }
+}

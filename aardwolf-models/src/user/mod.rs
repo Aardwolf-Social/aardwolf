@@ -341,18 +341,70 @@ pub struct NewUser {
 }
 
 impl NewUser {
-    pub fn new() -> Self {
-        NewUser {
-            created_at: Utc::now(),
-            primary_email: None,
-        }
-    }
-
     pub fn insert(self, conn: &PgConnection) -> Result<UnauthenticatedUser, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(users::table)
             .values(&self)
             .get_result(conn)
+    }
+
+    pub fn new() -> Self {
+        NewUser {
+            created_at: Utc::now(),
+            primary_email: None,
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::UnauthenticatedUser;
+    use test_helper::*;
+
+    #[test]
+    fn create_user() {
+        with_connection(|conn| with_unverified_user(conn, |_| Ok(())))
+    }
+
+    #[test]
+    fn verify_and_log_in_user() {
+        with_connection(|conn| {
+            make_verified_authenticated_user(conn, "testpass", |_user, _email| Ok(()))
+        })
+    }
+
+    #[test]
+    fn log_in_unverified_user() {
+        with_connection(|conn| {
+            with_unverified_user(conn, |user| {
+                with_unverified_email(conn, &user, |email, _token| {
+                    let password = "password";
+
+                    with_local_auth(conn, &user, password, |_| {
+                        let (user, _, auth) =
+                            UnauthenticatedUser::by_email_for_auth(email.email(), conn)?;
+
+                        user.log_in_local(auth, create_plaintext_password(password)?)?;
+
+                        Ok(())
+                    })
+                })
+            })
+        })
+    }
+
+    #[test]
+    fn log_in_verified_user() {
+        with_connection(|conn| {
+            let password = "testpass";
+            make_verified_authenticated_user(conn, password, |_user, email| {
+                let (user, _, auth) = UnauthenticatedUser::by_email_for_auth(email.email(), conn)?;
+
+                user.log_in_local(auth, create_plaintext_password(password)?)?;
+
+                Ok(())
+            })
+        })
     }
 }

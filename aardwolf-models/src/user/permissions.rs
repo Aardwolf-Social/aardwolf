@@ -1,8 +1,9 @@
 use chrono::offset::Utc;
 use diesel;
 use diesel::pg::PgConnection;
+use mime::Mime as OrigMime;
 use serde_json::Value;
-use url::Url as SrcUrl;
+use url::Url as OrigUrl;
 
 use file::File;
 use file::image::Image;
@@ -14,7 +15,7 @@ use base_post::{BasePost, NewBasePost};
 use base_post::post::{NewPost, Post};
 use base_post::post::media_post::{MediaPost, NewMediaPost};
 use base_post::post::comment::{Comment, NewComment};
-use sql_types::{FollowPolicy, Mime, Permission, PostVisibility, Role};
+use sql_types::{FollowPolicy, Permission, PostVisibility, Role};
 use super::UserLike;
 
 #[derive(Debug, Fail)]
@@ -246,7 +247,7 @@ impl<'a> PostMaker<'a> {
     pub fn make_post(
         &self,
         name: Option<String>,
-        media_type: Mime,
+        media_type: OrigMime,
         icon: Option<&Image>,
         visibility: PostVisibility,
         original_json: Value,
@@ -284,7 +285,7 @@ impl<'a> MediaPostMaker<'a> {
     pub fn make_media_post(
         &self,
         name: Option<String>,
-        media_type: Mime,
+        media_type: OrigMime,
         icon: Option<&Image>,
         visibility: PostVisibility,
         original_json: Value,
@@ -324,7 +325,7 @@ impl<'a> CommentMaker<'a> {
     pub fn make_comment(
         &self,
         name: Option<String>,
-        media_type: Mime,
+        media_type: OrigMime,
         icon: Option<&Image>,
         visibility: PostVisibility,
         original_json: Value,
@@ -493,8 +494,9 @@ impl<'a, U: UserLike> LocalPersonaCreator<'a, U> {
     pub fn create_persona(
         &self,
         display_name: String,
-        profile_url: SrcUrl,
-        inbox_url: SrcUrl,
+        profile_url: OrigUrl,
+        inbox_url: OrigUrl,
+        outbox_url: OrigUrl,
         follow_policy: FollowPolicy,
         default_visibility: PostVisibility,
         is_searchable: bool,
@@ -507,8 +509,9 @@ impl<'a, U: UserLike> LocalPersonaCreator<'a, U> {
         conn.transaction(|| {
             NewBaseActor::new(
                 display_name,
-                profile_url.into(),
-                inbox_url.into(),
+                profile_url,
+                inbox_url,
+                outbox_url,
                 Some(self.0),
                 follow_policy,
                 json!({}),

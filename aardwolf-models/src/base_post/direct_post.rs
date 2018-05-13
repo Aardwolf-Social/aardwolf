@@ -36,3 +36,45 @@ impl DirectPost {
             })
     }
 }
+
+#[derive(Debug, Insertable)]
+#[table_name = "direct_posts"]
+pub struct NewDirectPost {
+    base_post_id: i32,
+    base_actor_id: i32,
+}
+
+impl NewDirectPost {
+    pub fn insert(self, conn: &PgConnection) -> Result<DirectPost, diesel::result::Error> {
+        use diesel::prelude::*;
+
+        diesel::insert_into(direct_posts::table)
+            .values(&self)
+            .get_result(conn)
+    }
+
+    pub fn new(base_post: &BasePost, base_actor: &BaseActor) -> Self {
+        NewDirectPost {
+            base_post_id: base_post.id(),
+            base_actor_id: base_actor.id(),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use test_helper::*;
+
+    #[test]
+    fn create_direct_post() {
+        with_connection(|conn| {
+            with_base_actor(conn, |post_author| {
+                with_base_post(conn, &post_author, |base_post| {
+                    with_base_actor(conn, |viewer| {
+                        with_direct_post(conn, &base_post, &viewer, |_| Ok(()))
+                    })
+                })
+            })
+        })
+    }
+}

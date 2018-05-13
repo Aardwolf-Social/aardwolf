@@ -1,5 +1,7 @@
 use chrono::DateTime;
 use chrono::offset::Utc;
+use diesel;
+use diesel::pg::PgConnection;
 
 pub mod event;
 pub mod event_notification;
@@ -32,7 +34,25 @@ pub struct NewTimer {
 }
 
 impl NewTimer {
+    pub fn insert(self, conn: &PgConnection) -> Result<Timer, diesel::result::Error> {
+        use diesel::prelude::*;
+
+        diesel::insert_into(timers::table)
+            .values(&self)
+            .get_result(conn)
+    }
+
     pub fn new(fire_time: DateTime<Utc>) -> Self {
         NewTimer { fire_time }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use test_helper::*;
+
+    #[test]
+    fn create_timer() {
+        with_connection(|conn| with_timer(conn, |_| Ok(())))
     }
 }

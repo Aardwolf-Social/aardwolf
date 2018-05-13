@@ -141,3 +141,31 @@ impl fmt::Display for EmailVerificationToken {
         write!(f, "********")
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{create_token, EmailVerificationToken, VerifyEmail};
+    use test_helper::transmute_email_token;
+
+    #[test]
+    fn create_and_verify_token() {
+        let (email_token, hashed_token) = create_token().unwrap();
+        let verification_token = transmute_email_token(email_token).unwrap();
+
+        assert!(
+            hashed_token.verify_email(verification_token).is_ok(),
+            "Should have verified email with correct token"
+        );
+    }
+
+    #[test]
+    fn dont_verify_invalid_token() {
+        let (_email_token, hashed_token) = create_token().unwrap();
+        let fake_token = EmailVerificationToken("fake token".to_owned());
+
+        assert!(
+            hashed_token.verify_email(fake_token).is_err(),
+            "Should not have verified invalid token"
+        );
+    }
+}
