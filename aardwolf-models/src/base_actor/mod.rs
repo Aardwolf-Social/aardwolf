@@ -3,7 +3,6 @@ use chrono::offset::Utc;
 use diesel;
 use diesel::pg::PgConnection;
 use serde_json::Value;
-use url::Url as OrigUrl;
 
 use sql_types::{FollowPolicy, Url};
 
@@ -169,9 +168,9 @@ impl NewBaseActor {
 
     pub fn new<U: UserLike>(
         display_name: String,
-        profile_url: OrigUrl,
-        inbox_url: OrigUrl,
-        outbox_url: OrigUrl,
+        profile_url: Url,
+        inbox_url: Url,
+        outbox_url: Url,
         local_user: Option<&U>,
         follow_policy: FollowPolicy,
         original_json: Value,

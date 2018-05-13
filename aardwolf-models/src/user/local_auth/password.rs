@@ -1,14 +1,11 @@
 use std::fmt;
 use std::io::Write;
-use std::str::Utf8Error;
 
 use bcrypt::{hash, verify, DEFAULT_COST};
 use diesel::backend::Backend;
 use diesel::deserialize;
 use diesel::serialize;
 use diesel::sql_types::Text;
-use rocket::http::RawStr;
-use rocket::request::FromFormValue;
 
 /// Create a trait used to verify passwords.
 ///
@@ -131,11 +128,20 @@ impl ValidationError {
 #[derive(Deserialize)]
 pub struct PlaintextPassword(String);
 
-impl<'v> FromFormValue<'v> for PlaintextPassword {
-    type Error = Utf8Error;
+mod rocket {
+    use std::str::Utf8Error;
 
-    fn from_form_value(form_value: &'v RawStr) -> Result<Self, Self::Error> {
-        Ok(PlaintextPassword(form_value.url_decode()?))
+    use rocket::http::RawStr;
+    use rocket::request::FromFormValue;
+
+    use super::PlaintextPassword;
+
+    impl<'v> FromFormValue<'v> for PlaintextPassword {
+        type Error = Utf8Error;
+
+        fn from_form_value(form_value: &'v RawStr) -> Result<Self, Self::Error> {
+            Ok(PlaintextPassword(form_value.url_decode()?))
+        }
     }
 }
 

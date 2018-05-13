@@ -3,7 +3,6 @@ use diesel;
 use diesel::pg::PgConnection;
 use mime::Mime as OrigMime;
 use serde_json::Value;
-use url::Url as OrigUrl;
 
 use file::File;
 use file::image::Image;
@@ -15,7 +14,7 @@ use base_post::{BasePost, NewBasePost};
 use base_post::post::{NewPost, Post};
 use base_post::post::media_post::{MediaPost, NewMediaPost};
 use base_post::post::comment::{Comment, NewComment};
-use sql_types::{FollowPolicy, Permission, PostVisibility, Role};
+use sql_types::{FollowPolicy, Permission, PostVisibility, Role, Url};
 use super::UserLike;
 
 #[derive(Debug, Fail)]
@@ -65,11 +64,6 @@ pub trait PermissionedUser: UserLike + Sized {
         })
     }
 
-    /// TODO: Maybe do more verification here. Is this actor allowed to comment on this post?
-    ///
-    /// check the target post's visibility,
-    /// check whether user follows target post's author,
-    /// check whether parent post is in the same thread as conversation post
     fn can_post_comment<'a>(
         &self,
         base_actor: &'a BaseActor,
@@ -95,6 +89,28 @@ pub trait PermissionedUser: UserLike + Sized {
     fn can_make_persona(&self, conn: &PgConnection) -> PermissionResult<LocalPersonaCreator<Self>> {
         self.has_permission(Permission::MakePersona, conn)
             .map(|_| LocalPersonaCreator(self))
+    }
+
+    fn can_switch_persona(
+        &self,
+        persona: Persona,
+        conn: &PgConnection,
+    ) -> PermissionResult<PersonaSwitcher> {
+        self.with_persona(persona, conn).and_then(|persona| {
+            self.has_permission(Permission::SwitchPersona, conn)
+                .map(|_| PersonaSwitcher(persona))
+        })
+    }
+
+    fn can_delete_persona(
+        &self,
+        persona: Persona,
+        conn: &PgConnection,
+    ) -> PermissionResult<PersonaDeleter> {
+        self.with_persona(persona, conn).and_then(|persona| {
+            self.has_permission(Permission::DeletePersona, conn)
+                .map(|_| PersonaDeleter(persona))
+        })
     }
 
     fn can_manage_follow_requests<'a>(
@@ -141,6 +157,19 @@ pub trait PermissionedUser: UserLike + Sized {
                 }
             })
             .ok_or(PermissionError::Permission)
+    }
+
+    fn with_persona(&self, persona: Persona, conn: &PgConnection) -> PermissionResult<Persona> {
+        persona
+            .belongs_to_user(self, conn)
+            .map_err(|_| PermissionError::Permission)
+            .and_then(|belongs| {
+                if belongs {
+                    Ok(persona)
+                } else {
+                    Err(PermissionError::Permission)
+                }
+            })
     }
 
     fn has_permission(&self, permission: Permission, conn: &PgConnection) -> PermissionResult<()> {
@@ -494,9 +523,9 @@ impl<'a, U: UserLike> LocalPersonaCreator<'a, U> {
     pub fn create_persona(
         &self,
         display_name: String,
-        profile_url: OrigUrl,
-        inbox_url: OrigUrl,
-        outbox_url: OrigUrl,
+        profile_url: Url,
+        inbox_url: Url,
+        outbox_url: Url,
         follow_policy: FollowPolicy,
         default_visibility: PostVisibility,
         is_searchable: bool,
@@ -527,5 +556,21 @@ impl<'a, U: UserLike> LocalPersonaCreator<'a, U> {
                         .map(|persona| (base_actor, persona))
                 })
         })
+    }
+}
+
+pub struct PersonaDeleter(Persona);
+
+impl PersonaDeleter {
+    pub fn delete_persona(self, conn: &PgConnection) -> Result<(), diesel::result::Error> {
+        self.0.delete(conn)
+    }
+}
+
+pub struct PersonaSwitcher(Persona);
+
+impl PersonaSwitcher {
+    pub fn switch_persona(self) -> i32 {
+        self.0.id()
     }
 }
