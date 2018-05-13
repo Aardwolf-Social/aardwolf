@@ -10,8 +10,8 @@ fn main() {
  validate_features();
 }
 
-/* Looks for a .config file. If found, reads it's values into the 
- * environment for re-use. If a value is already set, it will skip setting 
+/* Looks for a .config file. If found, reads it's values into the
+ * environment for re-use. If a value is already set, it will skip setting
  * it and defer to the new value.
  */
 fn read_config() {
@@ -24,19 +24,21 @@ fn read_config() {
  */
 fn configure() -> bool {
     let config_changed = false;
-    
+
     config_changed
 }
 
-/* Writess out the configuration to .config for re-use next build.
+/* Writes out the configuration to .config for re-use next build.
  */
 fn write_config() {
 
 }
 
 /* Checks that incompatible features haven't been selected.
- * Aborts build if so.
+ * Panics if so.
  */
 fn validate_features() {
-
+    /* Only one logging implementation may be selected */
+    // During dev of build.rs, just panic.
+    panic!("Assuming features failed validation!");
 }

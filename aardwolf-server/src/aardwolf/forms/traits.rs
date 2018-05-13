@@ -1,3 +1,8 @@
-pub trait Validate<T> {
-    fn validate(&self) -> Result<(), T>;
+use failure::Fail;
+
+pub trait Validate<T, E>
+where
+    E: Fail,
+{
+    fn validate(self) -> Result<T, E>;
 }

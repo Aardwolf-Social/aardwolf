@@ -14,7 +14,7 @@ struct SignUpError {
     msg: String,
 }
 
-#[get("/auth/sign_up?<error>")]
+#[get("/sign_up?<error>")]
 fn sign_up_form_with_error(error: SignUpError) -> Template {
     let token = "some csrf token";
     Template::render(
@@ -23,7 +23,7 @@ fn sign_up_form_with_error(error: SignUpError) -> Template {
     )
 }
 
-#[get("/auth/sign_up")]
+#[get("/sign_up")]
 fn sign_up_form() -> Template {
     let token = "some csrf token";
     Template::render("sign_up", hashmap!{ "token" => token })
@@ -34,7 +34,7 @@ struct SignInError {
     msg: String,
 }
 
-#[get("/auth/sign_in?<error>")]
+#[get("/sign_in?<error>")]
 fn sign_in_form_with_error(error: SignInError) -> Template {
     let token = "some csrf token";
     Template::render(
@@ -43,7 +43,7 @@ fn sign_in_form_with_error(error: SignInError) -> Template {
     )
 }
 
-#[get("/auth/sign_in")]
+#[get("/sign_in")]
 fn sign_in_form() -> Template {
     let token = "some csrf token";
     Template::render("sign_in", hashmap!{ "token" => token })
@@ -62,7 +62,7 @@ fn sign_up(form: Form<SignUpForm>, db: DbConn) -> Redirect {
     }
 }
 
-#[post("/auth/sign_in", data = "<form>")]
+#[post("/sign_in", data = "<form>")]
 fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redirect {
     use controllers::auth;
     use aardwolf_models::user::UserLike;
@@ -91,7 +91,7 @@ struct ConfirmToken {
 #[fail(display = "Failed to confirm account")]
 struct ConfirmError;
 
-#[get("/auth/confirmation?<token>")]
+#[get("/confirmation?<token>")]
 fn confirm(token: ConfirmToken, db: DbConn) -> Result<Redirect, ConfirmError> {
     use controllers::auth;
 
@@ -104,7 +104,7 @@ fn confirm(token: ConfirmToken, db: DbConn) -> Result<Redirect, ConfirmError> {
     })
 }
 
-#[post("/auth/sign_out")]
+#[post("/sign_out")]
 fn sign_out(_user: SignedInUser, mut cookies: Cookies) -> Redirect {
     cookies.remove_private(Cookie::named("user_id"));
     Redirect::to("/auth/sign_in")

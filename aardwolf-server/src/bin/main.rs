@@ -16,6 +16,12 @@ extern crate rocket_contrib;
 extern crate serde;
 extern crate yaml_rust;
 
+#[cfg(feature = "log-syslog")]
+extern crate syslog;
+#[cfg(feature = "use-systemd")]
+extern crate systemd;
+
+
 extern crate _aardwolf as aardwolf;
 
 mod common;
@@ -46,20 +52,10 @@ fn app(config: config::Config) -> Result<Rocket, Error> {
         .extra("database_url", db_url.as_str())
         .unwrap();
 
-    let mut routes = Vec::new();
-
-    routes.extend(routes![
-        aardwolf::routes::auth::sign_up_form,
-        aardwolf::routes::auth::sign_up_form_with_error,
-        aardwolf::routes::auth::sign_in_form,
-        aardwolf::routes::auth::sign_in_form_with_error,
-        aardwolf::routes::auth::sign_up,
-        aardwolf::routes::auth::sign_in,
-        aardwolf::routes::auth::confirm,
-        aardwolf::routes::auth::sign_out,
+    let mut routes = routes![
         aardwolf::routes::app::home,
         aardwolf::routes::app::home_redirect,
-    ]);
+    ];
 
     #[cfg(debug_assertions)]
     routes.extend(routes![
@@ -71,7 +67,27 @@ fn app(config: config::Config) -> Result<Rocket, Error> {
         aardwolf::routes::app::themes,
     ]);
 
+    let auth = routes![
+        aardwolf::routes::auth::sign_up_form,
+        aardwolf::routes::auth::sign_up_form_with_error,
+        aardwolf::routes::auth::sign_in_form,
+        aardwolf::routes::auth::sign_in_form_with_error,
+        aardwolf::routes::auth::sign_up,
+        aardwolf::routes::auth::sign_in,
+        aardwolf::routes::auth::confirm,
+        aardwolf::routes::auth::sign_out,
+    ];
+
+    let personas = routes![
+        aardwolf::routes::personas::new,
+        aardwolf::routes::personas::create,
+        aardwolf::routes::personas::delete,
+        aardwolf::routes::personas::switch,
+    ];
+
     let r = rocket::custom(c, true)
+        .mount("/auth", auth)
+        .mount("/personas", personas)
         .mount(
             "/api/v1",
             routes![aardwolf::routes::applications::register_application],
