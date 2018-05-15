@@ -39,6 +39,6 @@ fn write_config() {
  */
 fn validate_features() {
     /* Only one logging implementation may be selected */
-    // During dev of build.rs, just panic.
-    panic!("Assuming features failed validation!");
+    let blah = env::var("CARGO_FEATURE_USE_SYSTEMD").unwrap();
+    panic!("Assuming features failed validation! {}", blah);
 }

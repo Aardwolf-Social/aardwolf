@@ -5,10 +5,9 @@ authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Elijah Mark Anderson
 description = "Powering connected social communities with free software."
 
 [features]
-default = []
+default = ["log-file"]
 # Integrate with Systemd, includes Journald for logging. Conflicts with log-* features.
 use-systemd = ["systemd"]
-
 # Use syslog for writing logs. Conflicts with use-systemd and log-* features.
 log-syslog = ["syslog"]
 
