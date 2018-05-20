@@ -15,12 +15,14 @@ extern crate rocket;
 extern crate rocket_contrib;
 extern crate serde;
 extern crate yaml_rust;
+extern crate log;
 
 #[cfg(feature = "log-syslog")]
 extern crate syslog;
 #[cfg(feature = "use-systemd")]
 extern crate systemd;
-
+#[cfg(feature = "log-simple")]
+extern crate simple_logging;
 
 extern crate _aardwolf as aardwolf;
 
@@ -34,6 +36,7 @@ use rocket_contrib::Template;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
 use clap::App;
+use log::LevelFilter;
 
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
@@ -114,6 +117,7 @@ fn main() {
     let yaml = load_yaml!("cli.yml");
     let cli = cli(&yaml);
     let config = configure(cli).unwrap();
-
+    #[cfg(feature = "log-simple")]
+    simple_logging::log_to_file(config.get_str("log_file").unwrap(), LevelFilter::Info); 
     app(config).unwrap().launch();
 }

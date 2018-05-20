@@ -38,7 +38,23 @@ fn write_config() {
  * Panics if so.
  */
 fn validate_features() {
-    /* Only one logging implementation may be selected */
-    let blah = env::var("CARGO_FEATURE_USE_SYSTEMD").unwrap();
-    panic!("Assuming features failed validation! {}", blah);
+    /* Exactly one logging implementation must be selected */
+    {
+        let mut numlog = 0;
+        let LogImps = vec!["log-simple", "log-syslog", "use-systemd"];
+
+        for imp in LogImps {
+            let imp = imp.to_uppercase();
+            let imp = imp.replace("-", "_");
+            let feature = "CARGO_FEATURE_".to_string() + &imp;
+            if let Ok(_) = env::var(&feature) {
+                numlog += 1;
+                println!("Feature selected: {}", feature);
+            }
+        }
+
+        if numlog != 1 {
+            panic!("CONFIG ERROR: Exactly one logging implementation must be configured.");
+        }
+    }
 }

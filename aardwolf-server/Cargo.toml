@@ -5,11 +5,15 @@ authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Elijah Mark Anderson
 description = "Powering connected social communities with free software."
 
 [features]
-default = ["log-file"]
-# Integrate with Systemd, includes Journald for logging. Conflicts with log-* features.
+default = ["log-simple"]
+# Integrate with Systemd, includes Journald for logging. Conflicts with log-*
+# features.
 use-systemd = ["systemd"]
 # Use syslog for writing logs. Conflicts with use-systemd and log-* features.
 log-syslog = ["syslog"]
+# Use simple log files or stdout/stderr. Conflicts with use-systemd and
+# log-* features.
+log-simple = ["simple-logging"]
 
 [lib]
 name = "_aardwolf"
@@ -43,6 +47,7 @@ yaml-rust = "0.3.5"
 log = "0.4.1"
 syslog = { version = "4.0.0", optional = true }
 systemd = { version = "0.2.0", optional = true }
+simple-logging = {version = "2.0.1", optional = true}
 
 [dependencies.aardwolf-models]
 version = "0.1"
