@@ -41,9 +41,9 @@ fn validate_features() {
     /* Exactly one logging implementation must be selected */
     {
         let mut numlog = 0;
-        let LogImps = vec!["log-simple", "log-syslog", "use-systemd"];
+        let log_implementations = vec!["log-simple", "log-syslog", "use-systemd"];
 
-        for imp in LogImps {
+        for imp in log_implementations {
             let imp = imp.to_uppercase();
             let imp = imp.replace("-", "_");
             let feature = "CARGO_FEATURE_".to_string() + &imp;
