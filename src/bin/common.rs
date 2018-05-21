@@ -12,7 +12,7 @@ pub fn configure(app: App) -> Result<Config, Error> {
         .set_default::<&str>("cfg_file", concat!(env!("CARGO_PKG_NAME"), ".toml"))
         .context(ErrorKind::ConfigImmutable)?;
     config
-        .set_default::<&str>("log_file", concat!(env!("CARGO_PKG_NAME"), ".log"))
+        .set_default::<&str>("log_file", "_CONSOLE_")
         .context(ErrorKind::ConfigImmutable)?;
     config
         .set_default::<&str>("Web.Listen.address", "127.0.0.1")
