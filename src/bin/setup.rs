@@ -44,16 +44,10 @@ fn main() {
     println!("using database url `{}' to setup the aardwolf database", &db_url);
     let output = Command::new("diesel")
         .arg("setup")
-        .env("DATABASE_URL", &db_url)
-        .output();
-    check_out(&output);
-    println!("database successfully set up, running migrations");
-    let output = Command::new("diesel")
-        .arg("migration")
-        .arg("run")
+        .arg("--migration-dir")
+        .arg("aardwolf-models/migrations")
         .env("DATABASE_URL", &db_url)
         .output();
     check_out(&output);
     println!("database migrations were successfully run, you're ready to go!");
 }
-
