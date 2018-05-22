@@ -49,7 +49,7 @@ fn sign_in_form() -> Template {
     Template::render("sign_in", hashmap!{ "token" => token })
 }
 
-#[post("/auth", data = "<form>")]
+#[post("/sign_up", data = "<form>")]
 fn sign_up(form: Form<SignUpForm>, db: DbConn) -> Redirect {
     use controllers::auth;
 
