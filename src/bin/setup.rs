@@ -49,5 +49,5 @@ fn main() {
         .env("DATABASE_URL", &db_url)
         .output();
     check_out(&output);
-    println!("database migrations were successfully run, you're ready to go!");*/
+    println!("database migrations were successfully run, you're ready to go!");
 }
