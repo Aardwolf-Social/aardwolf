@@ -15,6 +15,14 @@ extern crate rocket;
 extern crate rocket_contrib;
 extern crate serde;
 extern crate yaml_rust;
+extern crate log;
+
+#[cfg(feature = "log-syslog")]
+extern crate syslog;
+#[cfg(feature = "use-systemd")]
+extern crate systemd;
+#[cfg(feature = "log-simple")]
+extern crate simple_logging;
 
 extern crate _aardwolf as aardwolf;
 
@@ -28,6 +36,7 @@ use rocket_contrib::Template;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
 use clap::App;
+use log::LevelFilter;
 
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
@@ -104,10 +113,29 @@ fn cli<'a, 'b>(yaml: &'a yaml_rust::yaml::Yaml) -> App<'a, 'b> {
         .about(env!("CARGO_PKG_DESCRIPTION"))
 }
 
+#[cfg(feature = "log-simple")]
+fn begin_log(config: &config::Config) {
+    match config.get_str("log_file").unwrap().as_ref() {
+        "_CONSOLE_" => (),
+        l => simple_logging::log_to_file(l, LevelFilter::Info).unwrap(),
+    }
+}
+
+#[cfg(feature = "log-syslog")]
+fn begin_log(config: &config::Config) {
+    // TODO: Implement log-syslog:begin_log()
+}
+
+#[cfg(feature = "use-systemd")]
+fn begin_log(config: &config::Config) {
+    // TODO: Implement use-systemd:begin_log()
+}
+
 fn main() {
     let yaml = load_yaml!("cli.yml");
     let cli = cli(&yaml);
     let config = configure(cli).unwrap();
+    begin_log(&config);
 
     app(config).unwrap().launch();
 }
