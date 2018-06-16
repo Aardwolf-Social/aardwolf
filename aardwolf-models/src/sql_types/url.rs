@@ -1,5 +1,6 @@
 use std::io::Write;
 use std::error::Error as StdError;
+use std::str::FromStr;
 
 use diesel::backend::Backend;
 use diesel::deserialize;
@@ -36,5 +37,51 @@ where
 impl From<OrigUrl> for Url {
     fn from(u: OrigUrl) -> Self {
         Url(u)
+    }
+}
+
+impl FromStr for Url {
+    type Err = <OrigUrl as FromStr>::Err;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        FromStr::from_str(s).map(Url)
+    }
+}
+
+mod rocket {
+    use std::str::Utf8Error;
+
+    use rocket::http::RawStr;
+    use rocket::request::FromFormValue;
+    use url::ParseError;
+
+    use super::Url;
+
+    impl<'v> FromFormValue<'v> for Url {
+        type Error = UrlParseError;
+
+        fn from_form_value(form_value: &'v RawStr) -> Result<Self, Self::Error> {
+            Ok(Url(form_value.url_decode()?.parse()?))
+        }
+    }
+
+    #[derive(Debug, Fail)]
+    pub enum UrlParseError {
+        #[fail(display = "Failed to parse URL, {:?}", _0)]
+        Url(ParseError),
+        #[fail(display = "Failed to read bytes, {}", _0)]
+        Decode(#[cause] Utf8Error),
+    }
+
+    impl From<ParseError> for UrlParseError {
+        fn from(e: ParseError) -> Self {
+            UrlParseError::Url(e)
+        }
+    }
+
+    impl From<Utf8Error> for UrlParseError {
+        fn from(e: Utf8Error) -> Self {
+            UrlParseError::Decode(e)
+        }
     }
 }

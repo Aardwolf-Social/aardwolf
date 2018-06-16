@@ -15,4 +15,7 @@
 
 # Ignore aardwolf.toml
 aardwolf.toml
+aardwolf.log
+.config
+
 node_modules

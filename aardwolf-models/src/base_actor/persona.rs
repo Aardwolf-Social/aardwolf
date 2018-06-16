@@ -7,6 +7,7 @@ use base_actor::BaseActor;
 use file::image::Image;
 use schema::personas;
 use sql_types::PostVisibility;
+use user::UserLike;
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "personas"]
@@ -44,6 +45,42 @@ impl Persona {
 
     pub fn base_actor(&self) -> i32 {
         self.base_actor
+    }
+
+    pub fn by_id(id: i32, conn: &PgConnection) -> Result<Persona, diesel::result::Error> {
+        use diesel::prelude::*;
+
+        personas::table.find(id).first(conn)
+    }
+
+    pub fn belongs_to_user<U: UserLike>(
+        &self,
+        user: &U,
+        conn: &PgConnection,
+    ) -> Result<bool, diesel::result::Error> {
+        use schema::base_actors;
+        use diesel::prelude::*;
+
+        personas::table
+            .inner_join(base_actors::table)
+            .filter(personas::dsl::id.eq(self.id))
+            .filter(base_actors::dsl::local_user.eq(user.id()))
+            .select(personas::dsl::id)
+            .get_result(conn)
+            .map(|_: i32| true)
+            .or_else(|e| match e {
+                diesel::result::Error::NotFound => Ok(false),
+                e => Err(e),
+            })
+    }
+
+    pub fn delete(self, conn: &PgConnection) -> Result<(), diesel::result::Error> {
+        use diesel::prelude::*;
+
+        diesel::delete(personas::table)
+            .filter(personas::dsl::id.eq(self.id))
+            .execute(conn)
+            .map(|_| ())
     }
 }
 
