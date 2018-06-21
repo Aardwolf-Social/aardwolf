@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <!-- Begin Html Header -->
+  {% block html_head %}{% endblock html_head %}
+  <!-- End Html Header -->  
+
+  <body>
+  <!-- Begin Page Header -->
+  <header>
+    <h2 class="title">{{ "Aardwolf Instance" | _  }}</h2>
+    <div style="text-align: right">
+    <a href="sign_in">Have an Account? - Login</a>
+    </div>
+  </header>
+  <!-- End Page Header -->
+  <section class="section">
+  <div class="container">
+      
+  <div class="columns is-mobile">
+    <div class="column">
+      <h1 class="title">
+        About Aardwolf
+      </h1>
+      <p class="subtitle">
+        This is who we are!
+      </p>
+		<p>Aardwolf is a platform for creating new social networks, connected across the web. While existing social media sites work to funnel the world into a single shared experience (and advertising marketplace), we recognize that we are all individuals with different identities and interests.</p><br />
+
+        <p>We share a philosophy and underlying protocols with <a href="http://joinmastodon.org">Mastodon</a>, a federated microblogging platform with over a 100 independently-run servers, hosting more than one million active users.</p><br />
+
+		<p>Aardwolf is a social platform, meaning that each server hosts it's own community of users who are posting, sharing pictures, links, etc. They are replying and "liking" each other's posts, and re-sharing the ones they like best.</p><br />
+
+		<p>Even better, Aardwolf is a <em>connected</em> (the technical term is "federated") platform: users are not limited to only interacting with other users on their service: they can follow users on other sites that are powered by Aardwolf just as if they were on their own site. They can even connect with users on other platforms, if -- like the microblogging service <a href="http://joinmastodon.org">Mastodon</a> -- they implement the same open protocols Aardwolf is built on.</p><br />
+
+		<p>Finally, <a href="https://github.com/banjofox/aardwolf">Aardwolf</a> is open source, so developers who want to contribute or understand how it works can dig in and do so.</p>
+    </div>
+    <div class="column">
+          <h1 class="title">
+        Create an Account
+      </h1>
+      <p class="subtitle">
+        Feel free to sign up!
+      </p>
+    <span style="color: red;">{{ error_msg }}</span>
+	  <form method="POST" action="/auth">
+		<input type="hidden" name="csrf_token" value="{{ token }}">
+		<span class="icon icon-user"></span>
+		<input type="text" name="username" id="username" placeholder="username@aardwolf.social">
+		<span class="icon icon-envelope"></span>
+		<input type="email" name="email" id="email" placeholder="E-mail address">
+		<span class="icon icon-lock"></span>
+		<input type="password" name="password" id="password" placeholder="Password">
+		<span class="icon icon-lock"></span>
+		<input type="password" name="password_confirmation", id="password_confirmation" placeholder="Confirm password">
+		<button>Sign Up</button>
+	  </form>
+    </div>
+  </div>
+</div>
+</section>
+  </body>
+  <!-- Begin Page Footer -->
+	{% block home_footer %}{% endblock home_footer %}
+  <!-- End Page Footer -->
+</html>

@@ -1,0 +1,169 @@
+/// 
+/// These are the string values for the Polish translation
+
+//
+// multipurpose
+// These strings are used in multiple places
+//
+instanceTitle = "Instancja Aardwolfa"
+msgstr ""
+
+return = "Wróć"
+msgstr ""
+
+submit = "Wyślij"
+msgstr ""
+
+commentPlaceholder = "Dodaj komentarz…"
+msgstr ""
+
+//
+[asideSettings]
+//
+settings = "Ustawienia"
+msgstr ""
+
+editProfile = "Edytuj profil"
+msgstr ""
+
+preferences = "Preferencje"
+msgstr ""
+
+muteWords = "Wyciszone słowa"
+msgstr ""
+
+muteUsers = "Wyciszeni użytkownicy"
+msgstr ""
+
+notifications = "Powiadomienia"
+msgstr ""
+
+security = "Bezpieczeństwo"
+msgstr ""
+
+dataImport = "Importowanie danych"
+msgstr ""
+
+dataExport = "Eksportowanie danych"
+msgstr ""
+
+authApps = "Uwierzytelnione aplikacje"
+msgstr ""
+
+authFollow = "Zatwierdzeni śledzeni"
+msgstr ""
+
+invites = "Zaproś ludzi"
+msgstr ""
+
+//
+[asideShortcuts]
+//
+news = "Aktualności"
+msgstr ""
+
+messages ="Wiadomości"
+msgstr ""
+
+shortcuts = "Skróty"
+msgstr ""
+
+calendar = "Kalendarz"
+msgstr ""
+
+groups = "Groupy"
+msgstr ""
+
+lists = "Listy"
+msgstr ""
+
+photos = "Zdjęcia"
+msgstr ""
+
+favorites = "Ulubione"
+msgstr ""
+
+weather = "Pogoda"
+msgstr ""
+
+create = "Utwórz"
+msgstr ""
+
+newEvent = "Nowe wydarzenie"
+msgstr ""
+
+newGroup = "Nowa grupa"
+msgstr ""
+
+//
+[profileEdit]
+//
+
+profileTitle = "Edytuj profil"
+msgstr ""
+
+profileSubTitle = "Podpis"
+msgstr ""
+
+profileDisplayName = "Nazwa wyświetlana"
+msgstr ""
+
+profileCharRemaining = "pozostałych znaków"
+msgstr ""
+
+profileBio = "O Tobie"
+msgstr ""
+
+profileAvatarUpload = "Wyślij awatar"
+msgstr ""
+
+profileAvatarUploadBtnLabel = "Wybierz plik…"
+msgstr ""
+
+profileAvatarFileName = "Nie wybrano pliku"
+msgstr ""
+
+profileAvatarSubText = "PNG, GIF lub JPG. Co najwyżej 2MB. Zostanie pomniejszony do 120x120px"
+msgstr ""
+
+profileHeaderUpload = "Wyślij awatar"
+msgstr ""
+
+profileAvatarHeaderLabel = "Wybierz plik…"
+msgstr ""
+
+profileHeaderFileName = "Nie wybrano pliku"
+msgstr ""
+
+profileHeaderSubText = "PNG, GIF lub JPG. Co najwyżej 2MB. Zostanie pomniejszony do 700x335px"
+msgstr ""
+
+//
+[messaging]
+//
+
+enterPost = "Naciśnij, aby zawyć"
+msgstr ""
+
+post = "Awoo"
+msgstr ""
+
+reply = "Reply"
+msgstr ""
+
+//
+[footer]
+//
+
+terms = "Zasady użytkowania"
+msgstr ""
+
+copyright = "Prawa autorskie 2018"
+msgstr ""
+
+github = "Odwiedź projekt na GitHubie"
+msgstr ""
+
+donate = "Kup kawę zespołowi"
+msgstr ""
+

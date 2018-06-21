@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+    {% block html_head %}
+    <link rel="stylesheet" href="style.css" />
+    <title>{% block title %}{% endblock title %} - My Webpage</title>
+    {% endblock html_head %}
+
+  <body>
+
+	{% block home_nav_top %}{% endblock home_nav_top %}
+  
+  <section class="section">  
+	<!-- Does this need to be in a <div class="container> ?? -->
+	<!-- For now I would say no, because making it a container brings it to left-center -->
+
+	{% block aside_shortcuts %}{% endblock aside_shortcuts%}
+	
+	</section>	
+  <section class="section">
+    <div class="container">
+
+	{% block new_post %}{% endblock new_post %}
+	
+	{% block home_feed %}{% endblock home_feed %}
+	
+    </div>
+  </section><!-- End page body container-->
+  </body><!-- End page body -->
+
+	{% block home_footer %}{% endblock home_footer %}
+  
+</html>
