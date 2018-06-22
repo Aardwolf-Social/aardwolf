@@ -1,11 +1,12 @@
-/// 
-/// These are the string values for the (American) English translation
+### 
+### These are the string values for the (American) English translation
+###
 
-//
-// multipurpose
-// These strings are used in multiple places
+##
+## multipurpose
+## These strings are used in multiple places
 
-msgid "Aardwolf Instance" // Replace this with the name of your instance ;D
+msgid "Aardwolf Instance" ## Replace this with the name of your instance ;D
 msgstr ""
 
 msgid "Go back"
@@ -29,9 +30,9 @@ msgstr ""
 msgid "Logout"
 msgstr ""
 
-//
-// asides/aside_settings
-//
+##
+## asides/aside_settings
+##
 
 msgid "Settings"
 msgstr ""
@@ -69,9 +70,9 @@ msgstr ""
 msgid "Invite People"
 msgstr ""
 
-//
-// asides/aside_shortcuts
-//
+##
+## asides/aside_shortcuts
+##
 
 msgid "News Feed"
 msgstr ""
@@ -109,9 +110,9 @@ msgstr ""
 msgid "New Group"
 msgstr ""
 
-//
-// containers/containter_preferences
-//
+##
+## containers/containter_preferences
+##
 
 msgid "Preferences"
 msgstr ""
@@ -122,9 +123,9 @@ msgstr ""
 msgid "profile_bio"
 msgstr ""
 
-//
-// containers/containter_preferences (Profile Edit)
-//
+##
+## containers/containter_preferences (Profile Edit)
+##
 
 msgid "Edit Profile"
 msgstr ""
@@ -166,9 +167,9 @@ msgstr ""
 msgid "PNG, GIF or JPG. At most 2MB. Will be downscaled to 700x335px"
 msgstr ""
 
-//
-// new_post
-//
+##
+## new_post
+##
 
 msgid "Press enter to awoo"
 msgstr ""
@@ -179,9 +180,9 @@ msgstr ""
 msgid "Rewoo"
 msgstr ""
 
-//
-// includes/home_footer
-//
+##
+## includes/home_footer
+##
 
 msgid "Terms of Service"
 msgstr ""
