@@ -1,10 +1,11 @@
-/// 
-/// These are the string values for the Polish translation
+###
+### These are the string values for the Polish translation
+###
 
-//
-// multipurpose
-// These strings are used in multiple places
-//
+##
+## multipurpose
+## These strings are used in multiple places
+##
 instanceTitle = "Instancja Aardwolfa"
 msgstr ""
 
@@ -17,9 +18,9 @@ msgstr ""
 commentPlaceholder = "Dodaj komentarz…"
 msgstr ""
 
-//
+##
 [asideSettings]
-//
+##
 settings = "Ustawienia"
 msgstr ""
 
@@ -56,9 +57,9 @@ msgstr ""
 invites = "Zaproś ludzi"
 msgstr ""
 
-//
+##
 [asideShortcuts]
-//
+##
 news = "Aktualności"
 msgstr ""
 
@@ -95,9 +96,9 @@ msgstr ""
 newGroup = "Nowa grupa"
 msgstr ""
 
-//
+##
 [profileEdit]
-//
+##
 
 profileTitle = "Edytuj profil"
 msgstr ""
@@ -138,9 +139,9 @@ msgstr ""
 profileHeaderSubText = "PNG, GIF lub JPG. Co najwyżej 2MB. Zostanie pomniejszony do 700x335px"
 msgstr ""
 
-//
+##
 [messaging]
-//
+##
 
 enterPost = "Naciśnij, aby zawyć"
 msgstr ""
@@ -151,9 +152,9 @@ msgstr ""
 reply = "Reply"
 msgstr ""
 
-//
+##
 [footer]
-//
+##
 
 terms = "Zasady użytkowania"
 msgstr ""
