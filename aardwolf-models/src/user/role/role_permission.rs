@@ -1,5 +1,4 @@
-use chrono::DateTime;
-use chrono::offset::Utc;
+use chrono::{offset::Utc, DateTime};
 
 use schema::role_permissions;
 

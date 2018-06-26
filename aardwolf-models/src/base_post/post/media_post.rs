@@ -1,10 +1,8 @@
-use chrono::DateTime;
-use chrono::offset::Utc;
-use diesel;
-use diesel::pg::PgConnection;
+use chrono::{offset::Utc, DateTime};
+use diesel::{self, pg::PgConnection};
 
-use file::File;
 use super::Post;
+use file::File;
 use schema::media_posts;
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]

@@ -1,19 +1,20 @@
-use chrono::DateTime;
-use chrono::offset::Utc;
-use diesel;
-use diesel::connection::Connection;
-use diesel::pg::PgConnection;
+use chrono::{offset::Utc, DateTime};
+use diesel::{self, connection::Connection, pg::PgConnection};
 
 pub mod email;
 pub mod local_auth;
 mod permissions;
 pub mod role;
 
+use self::{
+    email::{Email, EmailVerificationToken, UnverifiedEmail, VerifiedEmail, VerifyEmail},
+    local_auth::LocalAuth,
+};
+pub use self::{
+    local_auth::{PlaintextPassword, VerificationError},
+    permissions::{PermissionError, PermissionResult, PermissionedUser},
+};
 use schema::users;
-use self::email::{Email, EmailVerificationToken, UnverifiedEmail, VerifiedEmail, VerifyEmail};
-use self::local_auth::LocalAuth;
-pub use self::local_auth::{PlaintextPassword, VerificationError};
-pub use self::permissions::{PermissionError, PermissionResult, PermissionedUser};
 use sql_types::Role;
 
 pub trait UserLike {
@@ -35,8 +36,8 @@ pub trait UserLike {
     }
 
     fn has_role(&self, name: Role, conn: &PgConnection) -> Result<bool, diesel::result::Error> {
-        use schema::{roles, user_roles};
         use diesel::prelude::*;
+        use schema::{roles, user_roles};
 
         roles::dsl::roles
             .inner_join(user_roles::dsl::user_roles)
@@ -291,8 +292,8 @@ impl UnauthenticatedUser {
         email_id: i32,
         conn: &PgConnection,
     ) -> Result<(Self, Email), diesel::result::Error> {
-        use schema::emails;
         use diesel::prelude::*;
+        use schema::emails;
 
         users::dsl::users
             .inner_join(emails::dsl::emails.on(emails::dsl::user_id.eq(users::dsl::id)))
@@ -304,8 +305,8 @@ impl UnauthenticatedUser {
         email: &str,
         conn: &PgConnection,
     ) -> Result<(Self, Email, LocalAuth), diesel::result::Error> {
-        use schema::{emails, local_auth};
         use diesel::prelude::*;
+        use schema::{emails, local_auth};
 
         users::dsl::users
             .inner_join(emails::dsl::emails.on(emails::dsl::user_id.eq(users::dsl::id)))

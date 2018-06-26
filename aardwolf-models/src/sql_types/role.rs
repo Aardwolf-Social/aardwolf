@@ -1,12 +1,6 @@
-use std::error::Error as StdError;
-use std::fmt;
-use std::io::Write;
-use std::str::FromStr;
+use std::{error::Error as StdError, fmt, io::Write, str::FromStr};
 
-use diesel::backend::Backend;
-use diesel::deserialize;
-use diesel::serialize;
-use diesel::sql_types::Text;
+use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
 
 #[derive(AsExpression, Clone, Copy, Debug, Eq, FromSqlRow, Hash, PartialEq)]
 #[sql_type = "Text"]

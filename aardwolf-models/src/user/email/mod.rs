@@ -1,13 +1,11 @@
 mod token;
 
-use chrono::DateTime;
-use chrono::offset::Utc;
-use diesel;
-use diesel::pg::PgConnection;
+use chrono::{offset::Utc, DateTime};
+use diesel::{self, pg::PgConnection};
 
-use schema::emails;
 use self::token::{create_token, HashedEmailToken};
 pub use self::token::{CreationError, EmailToken, EmailVerificationToken, VerificationError};
+use schema::emails;
 use user::{AuthenticatedUser, UnverifiedUser, UserLike};
 
 pub struct VerifiedEmail {
@@ -115,8 +113,8 @@ impl VerifyEmail {
         self,
         conn: &PgConnection,
     ) -> Result<VerifiedEmail, diesel::result::Error> {
-        use schema::emails;
         use diesel::prelude::*;
+        use schema::emails;
 
         diesel::update(emails::table)
             .set(&self)

@@ -1,11 +1,6 @@
-use std::io::Write;
-use std::error::Error as StdError;
-use std::str::FromStr;
+use std::{error::Error as StdError, io::Write, str::FromStr};
 
-use diesel::backend::Backend;
-use diesel::deserialize;
-use diesel::serialize;
-use diesel::sql_types::Text;
+use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
 use url::Url as OrigUrl;
 
 #[derive(AsExpression, Debug, FromSqlRow)]
@@ -51,8 +46,7 @@ impl FromStr for Url {
 mod rocket {
     use std::str::Utf8Error;
 
-    use rocket::http::RawStr;
-    use rocket::request::FromFormValue;
+    use rocket::{http::RawStr, request::FromFormValue};
     use url::ParseError;
 
     use super::Url;
