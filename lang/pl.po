@@ -1,169 +1,172 @@
-/// 
-/// These are the string values for the Polish translation
+###
+### These are the string values for the Polish translation
+###
 
-//
-// multipurpose
-// These strings are used in multiple places
-//
-instanceTitle = "Instancja Aardwolfa"
+##
+## multipurpose
+## These strings are used in multiple places
+##
+
+
+msgid "Instancja Aardwolfa"
 msgstr ""
 
-return = "Wróć"
+msgid "Wróć"
 msgstr ""
 
-submit = "Wyślij"
+msgid "Wyślij"
 msgstr ""
 
-commentPlaceholder = "Dodaj komentarz…"
+msgid "Dodaj komentarz…"
 msgstr ""
 
-//
-[asideSettings]
-//
-settings = "Ustawienia"
+##
+## asideSettings
+##
+msgid "Ustawienia"
 msgstr ""
 
-editProfile = "Edytuj profil"
+msgid "Edytuj profil"
 msgstr ""
 
-preferences = "Preferencje"
+msgid "Preferencje"
 msgstr ""
 
-muteWords = "Wyciszone słowa"
+msgid "Wyciszone słowa"
 msgstr ""
 
-muteUsers = "Wyciszeni użytkownicy"
+msgid "Wyciszeni użytkownicy"
 msgstr ""
 
-notifications = "Powiadomienia"
+msgid "Powiadomienia"
 msgstr ""
 
-security = "Bezpieczeństwo"
+msgid "Bezpieczeństwo"
 msgstr ""
 
-dataImport = "Importowanie danych"
+msgid "Importowanie danych"
 msgstr ""
 
-dataExport = "Eksportowanie danych"
+msgid "Eksportowanie danych"
 msgstr ""
 
-authApps = "Uwierzytelnione aplikacje"
+msgid "Uwierzytelnione aplikacje"
 msgstr ""
 
-authFollow = "Zatwierdzeni śledzeni"
+msgid "Zatwierdzeni śledzeni"
 msgstr ""
 
-invites = "Zaproś ludzi"
+msgid "Zaproś ludzi"
 msgstr ""
 
-//
-[asideShortcuts]
-//
-news = "Aktualności"
+##
+## asideShortcuts
+##
+msgid "Aktualności"
 msgstr ""
 
 messages ="Wiadomości"
 msgstr ""
 
-shortcuts = "Skróty"
+msgid "Skróty"
 msgstr ""
 
-calendar = "Kalendarz"
+msgid "Kalendarz"
 msgstr ""
 
-groups = "Groupy"
+msgid "Groupy"
 msgstr ""
 
-lists = "Listy"
+msgid "Listy"
 msgstr ""
 
-photos = "Zdjęcia"
+msgid "Zdjęcia"
 msgstr ""
 
-favorites = "Ulubione"
+msgid "Ulubione"
 msgstr ""
 
-weather = "Pogoda"
+msgid "Pogoda"
 msgstr ""
 
-create = "Utwórz"
+msgid "Utwórz"
 msgstr ""
 
-newEvent = "Nowe wydarzenie"
+msgid "Nowe wydarzenie"
 msgstr ""
 
-newGroup = "Nowa grupa"
+msgid "Nowa grupa"
 msgstr ""
 
-//
-[profileEdit]
-//
+##
+## profileEdit
+##
 
-profileTitle = "Edytuj profil"
+msgid "Edytuj profil"
 msgstr ""
 
-profileSubTitle = "Podpis"
+msgid "Podpis"
 msgstr ""
 
-profileDisplayName = "Nazwa wyświetlana"
+msgid "Nazwa wyświetlana"
 msgstr ""
 
-profileCharRemaining = "pozostałych znaków"
+msgid "pozostałych znaków"
 msgstr ""
 
-profileBio = "O Tobie"
+msgid "O Tobie"
 msgstr ""
 
-profileAvatarUpload = "Wyślij awatar"
+msgid "Wyślij awatar"
 msgstr ""
 
-profileAvatarUploadBtnLabel = "Wybierz plik…"
+msgid "Wybierz plik…"
 msgstr ""
 
-profileAvatarFileName = "Nie wybrano pliku"
+msgid "Nie wybrano pliku"
 msgstr ""
 
-profileAvatarSubText = "PNG, GIF lub JPG. Co najwyżej 2MB. Zostanie pomniejszony do 120x120px"
+msgid "PNG, GIF lub JPG. Co najwyżej 2MB. Zostanie pomniejszony do 120x120px"
 msgstr ""
 
-profileHeaderUpload = "Wyślij awatar"
+msgid "Wyślij awatar"
 msgstr ""
 
-profileAvatarHeaderLabel = "Wybierz plik…"
+msgid "Wybierz plik…"
 msgstr ""
 
-profileHeaderFileName = "Nie wybrano pliku"
+msgid "Nie wybrano pliku"
 msgstr ""
 
-profileHeaderSubText = "PNG, GIF lub JPG. Co najwyżej 2MB. Zostanie pomniejszony do 700x335px"
+msgid "PNG, GIF lub JPG. Co najwyżej 2MB. Zostanie pomniejszony do 700x335px"
 msgstr ""
 
-//
-[messaging]
-//
+##
+## messaging
+##
 
-enterPost = "Naciśnij, aby zawyć"
+msgid "Naciśnij, aby zawyć"
 msgstr ""
 
-post = "Awoo"
+msgid "Awoo"
 msgstr ""
 
-reply = "Reply"
+msgid "Reply"
 msgstr ""
 
-//
-[footer]
-//
+##
+## footer
+##
 
-terms = "Zasady użytkowania"
+msgid "Zasady użytkowania"
 msgstr ""
 
-copyright = "Prawa autorskie 2018"
+msgid "Prawa autorskie 2018"
 msgstr ""
 
-github = "Odwiedź projekt na GitHubie"
+msgid "Odwiedź projekt na GitHubie"
 msgstr ""
 
-donate = "Kup kawę zespołowi"
+msgid "Kup kawę zespołowi"
 msgstr ""
 
