@@ -1,8 +1,16 @@
 use aardwolf_models::user::email::EmailVerificationToken;
 // use ring::rand::SystemRandom;
+<<<<<<< HEAD
 use rocket::http::{Cookie, Cookies};
 use rocket::request::Form;
 use rocket::response::Redirect;
+=======
+use rocket::{
+    http::{Cookie, Cookies},
+    request::Form,
+    response::Redirect,
+};
+>>>>>>> origin/master
 use rocket_contrib::Template;
 
 use forms::auth::{SignInForm, SignUpForm};

@@ -1,6 +1,7 @@
 use std::env;
 use std::io::Error as IoError;
 
+<<<<<<< HEAD
 use chrono::offset::Utc;
 use chrono::DateTime;
 use chrono::Duration as OldDuration;
@@ -8,12 +9,18 @@ use chrono_tz::Tz;
 use diesel;
 use diesel::pg::PgConnection;
 use diesel::Connection;
+=======
+use chrono::{offset::Utc, DateTime, Duration as OldDuration};
+use chrono_tz::Tz;
+use diesel::{self, pg::PgConnection, Connection};
+>>>>>>> origin/master
 use dotenv::dotenv;
 use mime::TEXT_PLAIN;
-use rand::{OsRng, Rng};
+use rand::{distributions::Alphanumeric, Error as RandError, OsRng, Rng};
 use serde_json;
 use url::{ParseError as UrlParseError, Url as OrigUrl};
 
+<<<<<<< HEAD
 use base_actor::follow_request::{FollowRequest, NewFollowRequest};
 use base_actor::follower::{Follower, NewFollower};
 use base_actor::group::group_base_actor::{GroupBaseActor, NewGroupBaseActor};
@@ -42,6 +49,48 @@ use user::local_auth::{
 use user::QueriedUser;
 use user::{
     AuthenticatedUser, NewUser, UnauthenticatedUser, UnverifiedUser, UserLike, UserVerifyError,
+=======
+use base_actor::{
+    follow_request::{FollowRequest, NewFollowRequest},
+    follower::{Follower, NewFollower},
+    group::{
+        group_base_actor::{GroupBaseActor, NewGroupBaseActor},
+        {Group, NewGroup},
+    },
+    persona::{NewPersona, Persona},
+    {BaseActor, NewBaseActor},
+};
+use base_post::{
+    direct_post::{DirectPost, NewDirectPost},
+    post::{
+        comment::{
+            reaction::{NewReaction, Reaction},
+            {Comment, NewComment},
+        },
+        media_post::{MediaPost, NewMediaPost},
+        {NewPost, Post},
+    },
+    {BasePost, NewBasePost},
+};
+use file::{File, FileCreationError, NewFile};
+use sql_types::{FollowPolicy, PostVisibility, ReactionType, Url};
+use timer::{
+    event::{Event, EventCreationError, NewEvent},
+    event_notification::{EventNotification, NewEventNotification},
+    {NewTimer, Timer},
+};
+use user::{
+    email::{
+        CreationError as EmailCreationError, EmailToken, EmailVerificationToken, NewEmail,
+        UnverifiedEmail, VerificationError as EmailVerificationError, VerifiedEmail,
+    },
+    local_auth::{
+        LocalAuth, NewLocalAuth, PasswordCreationError, PlaintextPassword,
+        VerificationError as PasswordVerificationError,
+    },
+    QueriedUser,
+    {AuthenticatedUser, NewUser, UnauthenticatedUser, UnverifiedUser, UserLike, UserVerifyError},
+>>>>>>> origin/master
 };
 
 #[derive(Debug, Fail)]
@@ -68,6 +117,8 @@ pub enum GenericError {
     UserVerification(#[cause] UserVerifyError),
     #[fail(display = "Failed to verify password: {}", _0)]
     PasswordVerification(#[cause] PasswordVerificationError),
+    #[fail(display = "Failed to be random: {}", _0)]
+    Rand(#[cause] RandError),
     #[fail(display = "Generated time is out of bounds")]
     TimeBounds,
     #[fail(display = "Item should not be verified at this point")]
@@ -140,6 +191,12 @@ impl From<PasswordVerificationError> for GenericError {
     }
 }
 
+impl From<RandError> for GenericError {
+    fn from(e: RandError) -> Self {
+        GenericError::Rand(e)
+    }
+}
+
 pub fn create_plaintext_password(pass: &str) -> Result<PlaintextPassword, GenericError> {
     let v = serde_json::Value::String(pass.to_owned());
     let pass = serde_json::from_value(v)?;
@@ -157,7 +214,7 @@ pub fn transmute_email_token(token: EmailToken) -> Result<EmailVerificationToken
 pub fn gen_string() -> Result<String, GenericError> {
     let mut rng = OsRng::new()?;
 
-    Ok(rng.gen_ascii_chars().take(10).collect())
+    Ok(rng.sample_iter(&Alphanumeric).take(10).collect())
 }
 
 pub fn gen_url() -> Result<Url, GenericError> {

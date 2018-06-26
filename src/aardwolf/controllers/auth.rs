@@ -1,9 +1,13 @@
-use aardwolf_models::user::email::EmailVerificationToken;
-use aardwolf_models::user::{AuthenticatedUser, UnauthenticatedUser};
+use aardwolf_models::user::{
+    email::EmailVerificationToken,
+    {AuthenticatedUser, UnauthenticatedUser},
+};
 use diesel::pg::PgConnection;
 
-use forms::auth::{SignInFail, SignInForm, SignUpFail, SignUpForm};
-use forms::traits::Validate;
+use forms::{
+    auth::{SignInFail, SignInForm, SignUpFail, SignUpForm},
+    traits::Validate,
+};
 
 pub(crate) fn create_user_and_account(
     form: SignUpForm,

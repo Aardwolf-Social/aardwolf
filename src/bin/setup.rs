@@ -6,9 +6,11 @@ extern crate failure;
 extern crate r2d2;
 extern crate rocket;
 
-use std::error::Error as StdError;
-use std::io::{self, ErrorKind};
-use std::process::{self, Command, Output};
+use std::{
+    error::Error as StdError,
+    io::{self, ErrorKind},
+    process::{self, Command, Output},
+};
 
 use clap::App;
 

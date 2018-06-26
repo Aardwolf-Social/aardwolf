@@ -3,8 +3,15 @@ use failure::Error;
 use rocket_contrib::Json;
 
 use controllers;
+<<<<<<< HEAD
 use types::apps::{App, AppId};
 use types::scope::Scope;
+=======
+use types::{
+    apps::{App, AppId},
+    scope::Scope,
+};
+>>>>>>> origin/master
 
 mod deser_scope {
     use serde::{self, Deserialize, Deserializer};

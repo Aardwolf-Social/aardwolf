@@ -10,12 +10,21 @@ extern crate serde_json;
 
 use std::env;
 
+<<<<<<< HEAD
 use aardwolf_models::user::email::{EmailVerificationToken, NewEmail};
 use aardwolf_models::user::local_auth::NewLocalAuth;
 use aardwolf_models::user::local_auth::PlaintextPassword;
 use aardwolf_models::user::{NewUser, UnauthenticatedUser, UserLike};
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
+=======
+use aardwolf_models::user::{
+    email::{EmailVerificationToken, NewEmail},
+    local_auth::{NewLocalAuth, PlaintextPassword},
+    NewUser, UnauthenticatedUser, UserLike,
+};
+use diesel::{pg::PgConnection, prelude::*};
+>>>>>>> origin/master
 use dotenv::dotenv;
 
 #[derive(Deserialize)]

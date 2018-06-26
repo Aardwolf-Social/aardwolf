@@ -1,5 +1,4 @@
-use std::env;
-use std::fmt;
+use std::{env, fmt};
 
 use clap::App;
 use config::{self, Config, ConfigError};

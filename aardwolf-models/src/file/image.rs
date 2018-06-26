@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 use chrono::offset::Utc;
 use chrono::DateTime;
+=======
+use chrono::{offset::Utc, DateTime};
+>>>>>>> origin/master
 
 use file::File;
 use schema::images;

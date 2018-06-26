@@ -28,9 +28,17 @@ extern crate uuid;
 
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
+<<<<<<< HEAD
 use rocket::http::Status;
 use rocket::request::{self, FromRequest};
 use rocket::{Outcome, Request, State};
+=======
+use rocket::{
+    http::Status,
+    request::{self, FromRequest},
+    {Outcome, Request, State},
+};
+>>>>>>> origin/master
 use std::ops::Deref;
 
 pub mod controllers;

@@ -3,9 +3,13 @@ use aardwolf_models::user::{
     local_auth::{NewLocalAuth, PasswordCreationError, PlaintextPassword, ValidationError},
     {AuthenticatedUser, NewUser, UnauthenticatedUser},
 };
+<<<<<<< HEAD
 use diesel;
 use diesel::pg::PgConnection;
 use diesel::Connection;
+=======
+use diesel::{self, pg::PgConnection, Connection};
+>>>>>>> origin/master
 
 use forms::traits::Validate;
 

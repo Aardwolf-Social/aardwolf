@@ -1,7 +1,12 @@
+<<<<<<< HEAD
 use chrono::offset::Utc;
 use chrono::DateTime;
 use diesel;
 use diesel::pg::PgConnection;
+=======
+use chrono::{offset::Utc, DateTime};
+use diesel::{self, pg::PgConnection};
+>>>>>>> origin/master
 
 use base_post::BasePost;
 use schema::posts;

@@ -4,8 +4,10 @@ use aardwolf_models::{
 };
 use diesel::{pg::PgConnection, result::Error as DieselError};
 
-use forms::personas::{PersonaCreationFail, PersonaCreationForm};
-use forms::traits::Validate;
+use forms::{
+    personas::{PersonaCreationFail, PersonaCreationForm},
+    traits::Validate,
+};
 
 pub(crate) fn create(
     user: AuthenticatedUser,
