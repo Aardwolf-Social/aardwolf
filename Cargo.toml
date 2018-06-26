@@ -41,14 +41,14 @@ derive_builder = "0.5.0"
 failure = "0.1.1"
 r2d2 = "0.8"
 r2d2-diesel = "1.0"
-ring = "0.12.1"
+ring = "0.11"
 rocket = "=0.3.14"
 rocket_codegen = "=0.3.14"
 serde = "1.0.21"
 serde_derive = "1.0.21"
 url = "1.7"
 url_serde = "0.2"
-yaml-rust = "0.4.0"
+yaml-rust = "0.3.5"
 log = "0.4.1"
 syslog = { version = "4.0.0", optional = true }
 systemd = { version = "0.3.0", optional = true }
@@ -78,7 +78,7 @@ features = ["tera_templates", "json"]
 
 [dependencies.rocket_i18n]
 git = "https://github.com/BaptisteGelez/rocket_i18n"
-rev = "457b88c59ec31905a9193df43df58bee55b4b83d"
+rev = "5b4225d5bed5769482dc926a7e6d6b79f1217be6"
 
 [dependencies.uuid]
 version = "0.6"
