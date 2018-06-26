@@ -26,6 +26,12 @@ extern crate simple_logging;
 
 extern crate _aardwolf as aardwolf;
 
+//
+// Pull in the crate for i18n translation
+// Source: https://github.com/BaptisteGelez/rocket_i18n
+//
+extern crate rocket_i18n;
+
 mod common;
 use common::{configure, db_conn_string};
 
@@ -138,4 +144,22 @@ fn main() {
     begin_log(&config);
 
     app(config).unwrap().launch();
+
+//
+// Given that our app is architeturally different I DOUBT this belongs here.
+// However, until I give it a whack, and talk with everyone else, I do not 
+// know where else I should be putting it...
+
+//
+// rocket_i18n fairings
+//
+
+    rocket::ignite()
+        // Register the fairing. The parameter is the domain you want to use (the name of your app most of the time)
+        .attach(rocket_i18n::I18n::new("my_app"))
+        // Eventually register the Tera filters (only works with the master branch of Rocket)
+        .attach(rocket_contrib::Template::custom(|engines| {
+            rocket_i18n::tera(&mut engines.tera);
+        }))
+        // Register routes, etc
 }
