@@ -1,12 +1,6 @@
-use std::error::Error as StdError;
-use std::fmt;
-use std::io::Write;
-use std::str::FromStr;
+use std::{error::Error as StdError, fmt, io::Write, str::FromStr};
 
-use diesel::backend::Backend;
-use diesel::deserialize;
-use diesel::serialize;
-use diesel::sql_types::Text;
+use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
 
 #[derive(AsExpression, Clone, Copy, Debug, Eq, FromSqlRow, Hash, PartialEq)]
 #[sql_type = "Text"]
@@ -83,8 +77,7 @@ impl StdError for FollowPolicyParseError {
 mod rocket {
     use std::str::Utf8Error;
 
-    use rocket::http::RawStr;
-    use rocket::request::FromFormValue;
+    use rocket::{http::RawStr, request::FromFormValue};
 
     use super::{FollowPolicy, FollowPolicyParseError};
 

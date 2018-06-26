@@ -1,8 +1,6 @@
-use chrono::DateTime;
-use chrono::offset::Utc;
+use chrono::{offset::Utc, DateTime};
 use chrono_tz::Tz;
-use diesel;
-use diesel::pg::PgConnection;
+use diesel::{self, pg::PgConnection};
 
 use base_actor::persona::Persona;
 use schema::events;

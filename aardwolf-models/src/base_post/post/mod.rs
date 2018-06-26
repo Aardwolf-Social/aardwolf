@@ -1,7 +1,5 @@
-use chrono::DateTime;
-use chrono::offset::Utc;
-use diesel;
-use diesel::pg::PgConnection;
+use chrono::{offset::Utc, DateTime};
+use diesel::{self, pg::PgConnection};
 
 use base_post::BasePost;
 use schema::posts;

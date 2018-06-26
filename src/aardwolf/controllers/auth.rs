@@ -1,9 +1,13 @@
-use aardwolf_models::user::email::EmailVerificationToken;
-use aardwolf_models::user::{AuthenticatedUser, UnauthenticatedUser};
+use aardwolf_models::user::{
+    email::EmailVerificationToken,
+    {AuthenticatedUser, UnauthenticatedUser},
+};
 use diesel::pg::PgConnection;
 
-use forms::auth::{SignInFail, SignInForm, SignUpFail, SignUpForm};
-use forms::traits::Validate;
+use forms::{
+    auth::{SignInFail, SignInForm, SignUpFail, SignUpForm},
+    traits::Validate,
+};
 
 pub(crate) fn create_user_and_account(
     form: SignUpForm,
@@ -56,7 +60,8 @@ pub(crate) fn confirm_account(
         Err(unverified_email) => unverified_email,
     };
 
-    let (user, _email) = user.verify(email, token)
+    let (user, _email) = user
+        .verify(email, token)
         .map_err(|_| ConfirmAccountFail::Verify)?
         .store_verify(db)
         .map_err(|_| ConfirmAccountFail::Confirmed)?;

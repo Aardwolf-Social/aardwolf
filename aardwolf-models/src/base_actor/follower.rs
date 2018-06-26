@@ -1,10 +1,7 @@
-use chrono::DateTime;
-use chrono::offset::Utc;
-use diesel;
-use diesel::pg::PgConnection;
+use chrono::{offset::Utc, DateTime};
+use diesel::{self, pg::PgConnection};
 
-use base_actor::BaseActor;
-use base_actor::follow_request::FollowRequest;
+use base_actor::{follow_request::FollowRequest, BaseActor};
 use schema::followers;
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]

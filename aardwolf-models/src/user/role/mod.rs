@@ -1,5 +1,4 @@
-use chrono::DateTime;
-use chrono::offset::Utc;
+use chrono::{offset::Utc, DateTime};
 
 pub mod permission;
 pub mod role_permission;

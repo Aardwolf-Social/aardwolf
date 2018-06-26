@@ -1,11 +1,7 @@
-use std::fmt;
-use std::io::Write;
+use std::{fmt, io::Write};
 
 use bcrypt::{hash, verify, DEFAULT_COST};
-use diesel::backend::Backend;
-use diesel::deserialize;
-use diesel::serialize;
-use diesel::sql_types::Text;
+use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
 
 /// Create a trait used to verify passwords.
 ///
@@ -131,8 +127,7 @@ pub struct PlaintextPassword(String);
 mod rocket {
     use std::str::Utf8Error;
 
-    use rocket::http::RawStr;
-    use rocket::request::FromFormValue;
+    use rocket::{http::RawStr, request::FromFormValue};
 
     use super::PlaintextPassword;
 

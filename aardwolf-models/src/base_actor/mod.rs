@@ -1,7 +1,5 @@
-use chrono::DateTime;
-use chrono::offset::Utc;
-use diesel;
-use diesel::pg::PgConnection;
+use chrono::{offset::Utc, DateTime};
+use diesel::{self, pg::PgConnection};
 use serde_json::Value;
 
 use sql_types::{FollowPolicy, Url};
@@ -11,8 +9,8 @@ pub mod follower;
 pub mod group;
 pub mod persona;
 
-use schema::base_actors;
 use self::follower::Follower;
+use schema::base_actors;
 use user::UserLike;
 
 #[derive(Debug, AsChangeset)]
@@ -102,8 +100,8 @@ impl BaseActor {
         follows: i32,
         conn: &PgConnection,
     ) -> Result<bool, diesel::result::Error> {
-        use schema::followers;
         use diesel::prelude::*;
+        use schema::followers;
 
         followers::table
             .filter(followers::dsl::follower.eq(self.id))

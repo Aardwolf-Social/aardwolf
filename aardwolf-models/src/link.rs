@@ -1,5 +1,4 @@
-use chrono::DateTime;
-use chrono::offset::Utc;
+use chrono::{offset::Utc, DateTime};
 
 use base_post::BasePost;
 use schema::links;

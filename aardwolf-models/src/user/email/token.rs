@@ -1,15 +1,8 @@
-use std::io::Write;
-use std::fmt;
-use std::str::Utf8Error;
+use std::{fmt, io::Write};
 
 use bcrypt::{hash, verify, DEFAULT_COST};
-use diesel::backend::Backend;
-use diesel::deserialize;
-use diesel::serialize;
-use diesel::sql_types::Text;
-use rand::{OsRng, Rng, distributions::Alphanumeric};
-use rocket::http::RawStr;
-use rocket::request::FromFormValue;
+use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
+use rand::{distributions::Alphanumeric, OsRng, Rng};
 
 /// A trait used to verify emails
 ///
@@ -42,7 +35,8 @@ pub enum VerificationError {
 pub fn create_token() -> Result<(EmailToken, HashedEmailToken), CreationError> {
     let mut rng = OsRng::new().map_err(|_| CreationError::Rng)?;
 
-    let token = rng.sample_iter(&Alphanumeric)
+    let token = rng
+        .sample_iter(&Alphanumeric)
         .take(32)
         .map(|c| c.to_string())
         .collect::<Vec<_>>()
@@ -122,14 +116,6 @@ impl fmt::Display for EmailToken {
 #[derive(Deserialize)]
 pub struct EmailVerificationToken(String);
 
-impl<'v> FromFormValue<'v> for EmailVerificationToken {
-    type Error = Utf8Error;
-
-    fn from_form_value(form_value: &'v RawStr) -> Result<Self, Self::Error> {
-        Ok(EmailVerificationToken(form_value.url_decode()?))
-    }
-}
-
 impl fmt::Debug for EmailVerificationToken {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "********")
@@ -139,6 +125,22 @@ impl fmt::Debug for EmailVerificationToken {
 impl fmt::Display for EmailVerificationToken {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "********")
+    }
+}
+
+mod rocket {
+    use std::str::Utf8Error;
+
+    use rocket::{http::RawStr, request::FromFormValue};
+
+    use super::EmailVerificationToken;
+
+    impl<'v> FromFormValue<'v> for EmailVerificationToken {
+        type Error = Utf8Error;
+
+        fn from_form_value(form_value: &'v RawStr) -> Result<Self, Self::Error> {
+            Ok(EmailVerificationToken(form_value.url_decode()?))
+        }
     }
 }
 

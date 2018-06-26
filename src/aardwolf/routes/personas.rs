@@ -1,9 +1,9 @@
 use rocket::request::Form;
 
 use controllers::personas::PersonaDeletionFail;
-use DbConn;
 use forms::personas::{PersonaCreationFail, PersonaCreationForm};
 use types::SignedInUser;
+use DbConn;
 
 #[get("/new")]
 fn new(_user: SignedInUser) -> String {

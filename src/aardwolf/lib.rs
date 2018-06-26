@@ -26,17 +26,19 @@ extern crate url;
 extern crate url_serde;
 extern crate uuid;
 
-use std::ops::Deref;
-use rocket::http::Status;
-use rocket::request::{self, FromRequest};
-use rocket::{Outcome, Request, State};
-use r2d2_diesel::ConnectionManager;
 use diesel::pg::PgConnection;
+use r2d2_diesel::ConnectionManager;
+use rocket::{
+    http::Status,
+    request::{self, FromRequest},
+    {Outcome, Request, State},
+};
+use std::ops::Deref;
 
 pub mod controllers;
 pub mod forms;
-pub mod types;
 pub mod routes;
+pub mod types;
 
 pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
