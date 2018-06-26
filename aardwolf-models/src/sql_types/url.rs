@@ -1,5 +1,5 @@
-use std::io::Write;
 use std::error::Error as StdError;
+use std::io::Write;
 use std::str::FromStr;
 
 use diesel::backend::Backend;

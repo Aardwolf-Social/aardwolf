@@ -5,8 +5,8 @@ use std::str::FromStr;
 
 use chrono_tz::Tz;
 use diesel::backend::Backend;
-use diesel::serialize;
 use diesel::deserialize;
+use diesel::serialize;
 use diesel::sql_types::Text;
 
 #[derive(AsExpression, Clone, Copy, Debug, Eq, FromSqlRow, PartialEq)]

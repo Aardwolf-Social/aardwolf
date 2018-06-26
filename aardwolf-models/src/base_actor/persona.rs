@@ -1,5 +1,5 @@
-use chrono::DateTime;
 use chrono::offset::Utc;
+use chrono::DateTime;
 use diesel;
 use diesel::pg::PgConnection;
 
@@ -58,8 +58,8 @@ impl Persona {
         user: &U,
         conn: &PgConnection,
     ) -> Result<bool, diesel::result::Error> {
-        use schema::base_actors;
         use diesel::prelude::*;
+        use schema::base_actors;
 
         personas::table
             .inner_join(base_actors::table)

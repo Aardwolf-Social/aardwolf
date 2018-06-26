@@ -1,10 +1,11 @@
-use aardwolf_models::user::{email::{CreationError, EmailToken, NewEmail, UnverifiedEmail},
-                            local_auth::{NewLocalAuth, PasswordCreationError, PlaintextPassword,
-                                         ValidationError},
-                            {AuthenticatedUser, NewUser, UnauthenticatedUser}};
+use aardwolf_models::user::{
+    email::{CreationError, EmailToken, NewEmail, UnverifiedEmail},
+    local_auth::{NewLocalAuth, PasswordCreationError, PlaintextPassword, ValidationError},
+    {AuthenticatedUser, NewUser, UnauthenticatedUser},
+};
 use diesel;
-use diesel::Connection;
 use diesel::pg::PgConnection;
+use diesel::Connection;
 
 use forms::traits::Validate;
 

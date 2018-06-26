@@ -1,11 +1,11 @@
 use std::path::{Path, PathBuf};
 
-use rocket::response::{NamedFile, Redirect};
 use rocket::response::status::NotFound;
+use rocket::response::{NamedFile, Redirect};
 use rocket_contrib::Template;
 
-use DbConn;
 use types::SignedInUserWithEmail;
+use DbConn;
 
 #[get("/")]
 fn home(user: SignedInUserWithEmail, _db: DbConn) -> Template {

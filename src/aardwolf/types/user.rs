@@ -1,9 +1,9 @@
-use aardwolf_models::user::{AuthenticatedUser, UserLike};
 use aardwolf_models::user::email::Email;
-use rocket::{Outcome, Request, State};
+use aardwolf_models::user::{AuthenticatedUser, UserLike};
 use rocket::http::Status;
-use rocket::request::{self, FromRequest};
 use rocket::outcome::IntoOutcome;
+use rocket::request::{self, FromRequest};
+use rocket::{Outcome, Request, State};
 
 use Pool;
 

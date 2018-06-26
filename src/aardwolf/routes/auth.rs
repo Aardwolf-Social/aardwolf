@@ -1,13 +1,13 @@
 use aardwolf_models::user::email::EmailVerificationToken;
 // use ring::rand::SystemRandom;
 use rocket::http::{Cookie, Cookies};
-use rocket::response::Redirect;
 use rocket::request::Form;
+use rocket::response::Redirect;
 use rocket_contrib::Template;
 
-use DbConn;
 use forms::auth::{SignInForm, SignUpForm};
 use types::SignedInUser;
+use DbConn;
 
 #[derive(FromForm)]
 struct SignUpError {
@@ -64,8 +64,8 @@ fn sign_up(form: Form<SignUpForm>, db: DbConn) -> Redirect {
 
 #[post("/sign_in", data = "<form>")]
 fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redirect {
-    use controllers::auth;
     use aardwolf_models::user::UserLike;
+    use controllers::auth;
 
     match auth::sign_in(form.into_inner(), &db) {
         Ok(user) => {

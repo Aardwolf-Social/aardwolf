@@ -1,10 +1,10 @@
-use chrono::DateTime;
 use chrono::offset::Utc;
+use chrono::DateTime;
 use diesel;
 use diesel::pg::PgConnection;
 
-use timer::event::Event;
 use schema::event_notifications;
+use timer::event::Event;
 use timer::Timer;
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]

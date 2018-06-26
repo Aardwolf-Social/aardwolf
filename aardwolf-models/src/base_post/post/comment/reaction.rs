@@ -1,11 +1,11 @@
-use chrono::DateTime;
 use chrono::offset::Utc;
+use chrono::DateTime;
 use diesel;
 use diesel::pg::PgConnection;
 
+use super::Comment;
 use schema::reactions;
 use sql_types::ReactionType;
-use super::Comment;
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "reactions"]

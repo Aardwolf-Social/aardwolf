@@ -1,5 +1,7 @@
-use aardwolf_models::{base_actor::persona::Persona,
-                      user::{AuthenticatedUser, PermissionError, PermissionedUser}};
+use aardwolf_models::{
+    base_actor::persona::Persona,
+    user::{AuthenticatedUser, PermissionError, PermissionedUser},
+};
 use diesel::{pg::PgConnection, result::Error as DieselError};
 
 use forms::personas::{PersonaCreationFail, PersonaCreationForm};

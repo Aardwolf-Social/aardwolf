@@ -1,11 +1,11 @@
-use chrono::DateTime;
 use chrono::offset::Utc;
+use chrono::DateTime;
 use diesel;
 use diesel::pg::PgConnection;
 
+use super::Group;
 use base_actor::BaseActor;
 use schema::group_base_actors;
-use super::Group;
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "group_base_actors"]

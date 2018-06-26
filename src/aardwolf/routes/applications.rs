@@ -1,15 +1,14 @@
 /// Routes for dealing with applications
-
 use failure::Error;
 use rocket_contrib::Json;
 
-use types::scope::Scope;
-use types::apps::{App, AppId};
 use controllers;
+use types::apps::{App, AppId};
+use types::scope::Scope;
 
 mod deser_scope {
-    use types::scope::Scope;
     use serde::{self, Deserialize, Deserializer};
+    use types::scope::Scope;
 
     pub(crate) fn deserialize<'de, D>(deserializer: D) -> Result<Scope, D::Error>
     where

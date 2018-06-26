@@ -1,5 +1,5 @@
-use chrono::DateTime;
 use chrono::offset::Utc;
+use chrono::DateTime;
 use chrono_tz::Tz;
 use diesel;
 use diesel::pg::PgConnection;

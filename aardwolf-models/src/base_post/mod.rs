@@ -1,5 +1,5 @@
-use chrono::DateTime;
 use chrono::offset::Utc;
+use chrono::DateTime;
 use diesel;
 use diesel::pg::PgConnection;
 use mime::Mime as OrigMime;
@@ -8,10 +8,10 @@ use serde_json::Value;
 pub mod direct_post;
 pub mod post;
 
+use self::direct_post::DirectPost;
 use base_actor::BaseActor;
 use file::image::Image;
 use schema::base_posts;
-use self::direct_post::DirectPost;
 use sql_types::{Mime, PostVisibility};
 
 #[derive(Debug, Queryable, QueryableByName)]

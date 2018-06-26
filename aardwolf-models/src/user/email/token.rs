@@ -1,5 +1,5 @@
-use std::io::Write;
 use std::fmt;
+use std::io::Write;
 use std::str::Utf8Error;
 
 use bcrypt::{hash, verify, DEFAULT_COST};
@@ -42,7 +42,8 @@ pub enum VerificationError {
 pub fn create_token() -> Result<(EmailToken, HashedEmailToken), CreationError> {
     let mut rng = OsRng::new().map_err(|_| CreationError::Rng)?;
 
-    let token = rng.gen_ascii_chars()
+    let token = rng
+        .gen_ascii_chars()
         .take(32)
         .map(|c| c.to_string())
         .collect::<Vec<_>>()

@@ -4,8 +4,8 @@ use std::io::Write;
 use std::str::FromStr;
 
 use diesel::backend::Backend;
-use diesel::serialize;
 use diesel::deserialize;
+use diesel::serialize;
 use diesel::sql_types::Text;
 
 #[derive(AsExpression, Clone, Copy, Debug, Eq, FromSqlRow, Hash, PartialEq)]

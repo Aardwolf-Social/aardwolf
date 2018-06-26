@@ -1,13 +1,14 @@
-use chrono::DateTime;
 use chrono::offset::Utc;
+use chrono::DateTime;
 use diesel;
 use diesel::pg::PgConnection;
 
 mod password;
 
 use self::password::Password;
-pub use self::password::{CreationError as PasswordCreationError, PlaintextPassword,
-                         ValidationError, VerificationError};
+pub use self::password::{
+    CreationError as PasswordCreationError, PlaintextPassword, ValidationError, VerificationError,
+};
 use schema::local_auth;
 use user::{AuthenticatedUser, UnauthenticatedUser, UnverifiedUser};
 

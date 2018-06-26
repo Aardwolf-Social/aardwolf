@@ -1,4 +1,5 @@
-#[macro_use] extern crate clap;
+#[macro_use]
+extern crate clap;
 extern crate config;
 #[macro_use]
 extern crate failure;
@@ -16,21 +17,23 @@ mod common;
 fn check_out(output: &Result<Output, io::Error>) {
     match output {
         &Ok(ref o) if !o.status.success() => {
-            eprintln!("got non-zero exit code, output was:\n\tstdout:\n{}\n\tstderr:\n{}",
-                    String::from_utf8_lossy(&o.stdout),
-                    String::from_utf8_lossy(&o.stderr));
+            eprintln!(
+                "got non-zero exit code, output was:\n\tstdout:\n{}\n\tstderr:\n{}",
+                String::from_utf8_lossy(&o.stdout),
+                String::from_utf8_lossy(&o.stderr)
+            );
             process::exit(255);
-        },
+        }
         &Err(ref e) => {
             match e.kind() {
                 ErrorKind::NotFound => {
                     eprintln!("Could not find `diesel` binary, please use `cargo install diesel_cli` to install it");
-                },
+                }
                 _ => eprintln!("got error {}", e.description()),
             }
             process::exit(255);
-        },
-        &Ok(_) => {},
+        }
+        &Ok(_) => {}
     }
 }
 
@@ -41,7 +44,10 @@ fn main() {
         .author(env!("CARGO_PKG_AUTHORS"));
     let config = common::configure(app).unwrap();
     let db_url = common::db_conn_string(&config).unwrap();
-    println!("using database url `{}' to setup the aardwolf database", &db_url);
+    println!(
+        "using database url `{}' to setup the aardwolf database",
+        &db_url
+    );
     let output = Command::new("diesel")
         .arg("setup")
         .arg("--migration-dir")

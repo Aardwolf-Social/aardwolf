@@ -1,6 +1,8 @@
-use aardwolf_models::{base_actor::{BaseActor, persona::Persona},
-                      sql_types::{FollowPolicy, PostVisibility, Url},
-                      user::{PermissionError, PermissionedUser}};
+use aardwolf_models::{
+    base_actor::{persona::Persona, BaseActor},
+    sql_types::{FollowPolicy, PostVisibility, Url},
+    user::{PermissionError, PermissionedUser},
+};
 use diesel::{pg::PgConnection, result::Error as DieselError};
 use url::ParseError as UrlParseError;
 

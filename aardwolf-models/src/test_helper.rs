@@ -1,44 +1,48 @@
 use std::env;
 use std::io::Error as IoError;
 
+use chrono::offset::Utc;
 use chrono::DateTime;
 use chrono::Duration as OldDuration;
-use chrono::offset::Utc;
 use chrono_tz::Tz;
 use diesel;
-use diesel::Connection;
 use diesel::pg::PgConnection;
+use diesel::Connection;
 use dotenv::dotenv;
 use mime::TEXT_PLAIN;
 use rand::{OsRng, Rng};
 use serde_json;
 use url::{ParseError as UrlParseError, Url as OrigUrl};
 
-use base_actor::{BaseActor, NewBaseActor};
-use base_actor::group::{Group, NewGroup};
-use base_actor::group::group_base_actor::{GroupBaseActor, NewGroupBaseActor};
 use base_actor::follow_request::{FollowRequest, NewFollowRequest};
 use base_actor::follower::{Follower, NewFollower};
+use base_actor::group::group_base_actor::{GroupBaseActor, NewGroupBaseActor};
+use base_actor::group::{Group, NewGroup};
 use base_actor::persona::{NewPersona, Persona};
-use base_post::{BasePost, NewBasePost};
-use base_post::post::{NewPost, Post};
-use base_post::post::comment::{Comment, NewComment};
-use base_post::post::comment::reaction::{NewReaction, Reaction};
-use base_post::post::media_post::{MediaPost, NewMediaPost};
+use base_actor::{BaseActor, NewBaseActor};
 use base_post::direct_post::{DirectPost, NewDirectPost};
+use base_post::post::comment::reaction::{NewReaction, Reaction};
+use base_post::post::comment::{Comment, NewComment};
+use base_post::post::media_post::{MediaPost, NewMediaPost};
+use base_post::post::{NewPost, Post};
+use base_post::{BasePost, NewBasePost};
 use file::{File, FileCreationError, NewFile};
-use timer::{NewTimer, Timer};
+use sql_types::{FollowPolicy, PostVisibility, ReactionType, Url};
 use timer::event::{Event, EventCreationError, NewEvent};
 use timer::event_notification::{EventNotification, NewEventNotification};
-use user::{AuthenticatedUser, NewUser, UnauthenticatedUser, UnverifiedUser, UserLike,
-           UserVerifyError};
-use user::email::{CreationError as EmailCreationError, EmailToken, EmailVerificationToken,
-                  NewEmail, UnverifiedEmail, VerificationError as EmailVerificationError,
-                  VerifiedEmail};
-use user::local_auth::{LocalAuth, NewLocalAuth, PasswordCreationError, PlaintextPassword,
-                       VerificationError as PasswordVerificationError};
-use sql_types::{FollowPolicy, PostVisibility, ReactionType, Url};
+use timer::{NewTimer, Timer};
+use user::email::{
+    CreationError as EmailCreationError, EmailToken, EmailVerificationToken, NewEmail,
+    UnverifiedEmail, VerificationError as EmailVerificationError, VerifiedEmail,
+};
+use user::local_auth::{
+    LocalAuth, NewLocalAuth, PasswordCreationError, PlaintextPassword,
+    VerificationError as PasswordVerificationError,
+};
 use user::QueriedUser;
+use user::{
+    AuthenticatedUser, NewUser, UnauthenticatedUser, UnverifiedUser, UserLike, UserVerifyError,
+};
 
 #[derive(Debug, Fail)]
 pub enum GenericError {

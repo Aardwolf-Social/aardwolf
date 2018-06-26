@@ -11,11 +11,11 @@ extern crate serde_json;
 use std::env;
 
 use aardwolf_models::user::email::{EmailVerificationToken, NewEmail};
-use aardwolf_models::user::{NewUser, UnauthenticatedUser, UserLike};
 use aardwolf_models::user::local_auth::NewLocalAuth;
 use aardwolf_models::user::local_auth::PlaintextPassword;
-use diesel::prelude::*;
+use aardwolf_models::user::{NewUser, UnauthenticatedUser, UserLike};
 use diesel::pg::PgConnection;
+use diesel::prelude::*;
 use dotenv::dotenv;
 
 #[derive(Deserialize)]
@@ -128,7 +128,8 @@ fn main() {
                 Err(unverified_email) => unverified_email,
             };
 
-            let (_user, _email) = user.verify(email, payload.token)
+            let (_user, _email) = user
+                .verify(email, payload.token)
                 .unwrap()
                 .store_verify(&connection)
                 .unwrap();

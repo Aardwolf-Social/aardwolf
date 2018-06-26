@@ -1,10 +1,10 @@
-use chrono::DateTime;
 use chrono::offset::Utc;
+use chrono::DateTime;
 use diesel;
 use diesel::pg::PgConnection;
 
-use base_actor::BaseActor;
 use base_actor::follow_request::FollowRequest;
+use base_actor::BaseActor;
 use schema::followers;
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]

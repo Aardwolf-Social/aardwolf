@@ -1,8 +1,8 @@
 // use std::path::{Path, PathBuf};
 use std::path::Path;
 
-use chrono::DateTime;
 use chrono::offset::Utc;
+use chrono::DateTime;
 use diesel;
 use diesel::pg::PgConnection;
 

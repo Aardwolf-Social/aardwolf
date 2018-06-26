@@ -11,18 +11,18 @@ extern crate failure;
 extern crate r2d2;
 extern crate r2d2_diesel;
 // extern crate ring;
+extern crate log;
 extern crate rocket;
 extern crate rocket_contrib;
 extern crate serde;
 extern crate yaml_rust;
-extern crate log;
 
+#[cfg(feature = "log-simple")]
+extern crate simple_logging;
 #[cfg(feature = "log-syslog")]
 extern crate syslog;
 #[cfg(feature = "use-systemd")]
 extern crate systemd;
-#[cfg(feature = "log-simple")]
-extern crate simple_logging;
 
 extern crate _aardwolf as aardwolf;
 
@@ -37,12 +37,12 @@ use common::{configure, db_conn_string};
 
 use failure::Error;
 // use ring::rand::SystemRandom;
+use clap::App;
+use diesel::pg::PgConnection;
+use log::LevelFilter;
+use r2d2_diesel::ConnectionManager;
 use rocket::Rocket;
 use rocket_contrib::Template;
-use diesel::pg::PgConnection;
-use r2d2_diesel::ConnectionManager;
-use clap::App;
-use log::LevelFilter;
 
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
@@ -145,14 +145,14 @@ fn main() {
 
     app(config).unwrap().launch();
 
-//
-// Given that our app is architeturally different I DOUBT this belongs here.
-// However, until I give it a whack, and talk with everyone else, I do not 
-// know where else I should be putting it...
+    //
+    // Given that our app is architeturally different I DOUBT this belongs here.
+    // However, until I give it a whack, and talk with everyone else, I do not
+    // know where else I should be putting it...
 
-//
-// rocket_i18n fairings
-//
+    //
+    // rocket_i18n fairings
+    //
 
     rocket::ignite()
         // Register the fairing. The parameter is the domain you want to use (the name of your app most of the time)
@@ -161,5 +161,5 @@ fn main() {
         .attach(rocket_contrib::Template::custom(|engines| {
             rocket_i18n::tera(&mut engines.tera);
         }))
-        // Register routes, etc
+    // Register routes, etc
 }

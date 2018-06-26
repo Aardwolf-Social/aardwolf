@@ -1,8 +1,8 @@
-use chrono::DateTime;
 use chrono::offset::Utc;
+use chrono::DateTime;
 
-use schema::images;
 use file::File;
+use schema::images;
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "images"]
