@@ -10,7 +10,7 @@ use diesel::Connection;
 use diesel::pg::PgConnection;
 use dotenv::dotenv;
 use mime::TEXT_PLAIN;
-use rand::{OsRng, Rng};
+use rand::{OsRng, Rng, Error as RandError, distributions::Alphanumeric};
 use serde_json;
 use url::{ParseError as UrlParseError, Url as OrigUrl};
 
@@ -64,6 +64,8 @@ pub enum GenericError {
     UserVerification(#[cause] UserVerifyError),
     #[fail(display = "Failed to verify password: {}", _0)]
     PasswordVerification(#[cause] PasswordVerificationError),
+    #[fail(display = "Failed to be random: {}", _0)]
+    Rand(#[cause] RandError),
     #[fail(display = "Generated time is out of bounds")]
     TimeBounds,
     #[fail(display = "Item should not be verified at this point")]
@@ -136,6 +138,12 @@ impl From<PasswordVerificationError> for GenericError {
     }
 }
 
+impl From<RandError> for GenericError {
+    fn from(e: RandError) -> Self {
+        GenericError::Rand(e)
+    }
+}
+
 pub fn create_plaintext_password(pass: &str) -> Result<PlaintextPassword, GenericError> {
     let v = serde_json::Value::String(pass.to_owned());
     let pass = serde_json::from_value(v)?;
@@ -153,7 +161,7 @@ pub fn transmute_email_token(token: EmailToken) -> Result<EmailVerificationToken
 pub fn gen_string() -> Result<String, GenericError> {
     let mut rng = OsRng::new()?;
 
-    Ok(rng.gen_ascii_chars().take(10).collect())
+    Ok(rng.sample_iter(&Alphanumeric).take(10).collect())
 }
 
 pub fn gen_url() -> Result<Url, GenericError> {
