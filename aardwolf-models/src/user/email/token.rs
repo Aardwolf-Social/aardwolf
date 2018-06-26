@@ -7,7 +7,7 @@ use diesel::backend::Backend;
 use diesel::deserialize;
 use diesel::serialize;
 use diesel::sql_types::Text;
-use rand::{OsRng, Rng};
+use rand::{OsRng, Rng, distributions::Alphanumeric};
 use rocket::http::RawStr;
 use rocket::request::FromFormValue;
 
@@ -42,7 +42,7 @@ pub enum VerificationError {
 pub fn create_token() -> Result<(EmailToken, HashedEmailToken), CreationError> {
     let mut rng = OsRng::new().map_err(|_| CreationError::Rng)?;
 
-    let token = rng.gen_ascii_chars()
+    let token = rng.sample_iter(&Alphanumeric)
         .take(32)
         .map(|c| c.to_string())
         .collect::<Vec<_>>()
