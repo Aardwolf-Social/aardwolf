@@ -156,9 +156,9 @@ fn main() {
 
     rocket::ignite()
         // Register the fairing. The parameter is the domain you want to use (the name of your app most of the time)
-        .attach(rocket_i18n::I18n::new("aardwolf-server"))
+        .attach(I18n::new("aardwolf-server"))
         // Eventually register the Tera filters (only works with the master branch of Rocket)
-        .attach(rocket_contrib::Template::custom(|engines| {
+        .attach(Template::custom(|engines| {
             rocket_i18n::tera(&mut engines.tera);
         }));
 }
