@@ -1,25 +1,11 @@
-<<<<<<< HEAD
-use chrono::offset::Utc;
-use chrono::DateTime;
-use diesel;
-use diesel::connection::Connection;
-use diesel::pg::PgConnection;
-=======
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, connection::Connection, pg::PgConnection};
->>>>>>> origin/master
 
 pub mod email;
 pub mod local_auth;
 mod permissions;
 pub mod role;
 
-<<<<<<< HEAD
-use self::email::{Email, EmailVerificationToken, UnverifiedEmail, VerifiedEmail, VerifyEmail};
-use self::local_auth::LocalAuth;
-pub use self::local_auth::{PlaintextPassword, VerificationError};
-pub use self::permissions::{PermissionError, PermissionResult, PermissionedUser};
-=======
 use self::{
     email::{Email, EmailVerificationToken, UnverifiedEmail, VerifiedEmail, VerifyEmail},
     local_auth::LocalAuth,
@@ -28,7 +14,6 @@ pub use self::{
     local_auth::{PlaintextPassword, VerificationError},
     permissions::{PermissionError, PermissionResult, PermissionedUser},
 };
->>>>>>> origin/master
 use schema::users;
 use sql_types::Role;
 

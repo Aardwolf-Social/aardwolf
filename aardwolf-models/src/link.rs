@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-use chrono::offset::Utc;
-use chrono::DateTime;
-=======
 use chrono::{offset::Utc, DateTime};
->>>>>>> origin/master
 
 use base_post::BasePost;
 use schema::links;

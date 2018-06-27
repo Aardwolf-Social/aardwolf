@@ -1,15 +1,8 @@
 // use std::path::{Path, PathBuf};
 use std::path::Path;
 
-<<<<<<< HEAD
-use chrono::offset::Utc;
-use chrono::DateTime;
-use diesel;
-use diesel::pg::PgConnection;
-=======
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
->>>>>>> origin/master
 
 pub mod image;
 

@@ -4,18 +4,6 @@ use mime::Mime as OrigMime;
 use serde_json::Value;
 
 use super::UserLike;
-<<<<<<< HEAD
-use base_actor::follow_request::{FollowRequest, NewFollowRequest};
-use base_actor::follower::{Follower, NewFollower};
-use base_actor::persona::{NewPersona, Persona};
-use base_actor::{BaseActor, NewBaseActor};
-use base_post::post::comment::{Comment, NewComment};
-use base_post::post::media_post::{MediaPost, NewMediaPost};
-use base_post::post::{NewPost, Post};
-use base_post::{BasePost, NewBasePost};
-use file::image::Image;
-use file::File;
-=======
 use base_actor::{
     follow_request::{FollowRequest, NewFollowRequest},
     follower::{Follower, NewFollower},
@@ -31,7 +19,6 @@ use base_post::{
     {BasePost, NewBasePost},
 };
 use file::{image::Image, File};
->>>>>>> origin/master
 use sql_types::{FollowPolicy, Permission, PostVisibility, Role, Url};
 
 #[derive(Debug, Fail)]

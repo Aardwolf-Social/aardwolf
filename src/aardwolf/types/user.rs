@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-use aardwolf_models::user::email::Email;
-use aardwolf_models::user::{AuthenticatedUser, UserLike};
-use rocket::http::Status;
-use rocket::outcome::IntoOutcome;
-use rocket::request::{self, FromRequest};
-use rocket::{Outcome, Request, State};
-=======
 use aardwolf_models::user::{
     email::Email,
     {AuthenticatedUser, UserLike},
@@ -16,7 +8,6 @@ use rocket::{
     request::{self, FromRequest},
     {Outcome, Request, State},
 };
->>>>>>> origin/master
 
 use Pool;
 

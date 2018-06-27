@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-use std::error::Error as StdError;
-use std::io::Write;
-=======
 use std::{error::Error as StdError, io::Write};
->>>>>>> origin/master
 
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
 use mime::Mime as OrigMime;

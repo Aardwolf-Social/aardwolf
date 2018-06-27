@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-use std::fmt;
-use std::io::Write;
-use std::str::Utf8Error;
-=======
 use std::{fmt, io::Write};
->>>>>>> origin/master
 
 use bcrypt::{hash, verify, DEFAULT_COST};
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
@@ -42,11 +36,7 @@ pub fn create_token() -> Result<(EmailToken, HashedEmailToken), CreationError> {
     let mut rng = OsRng::new().map_err(|_| CreationError::Rng)?;
 
     let token = rng
-<<<<<<< HEAD
-        .gen_ascii_chars()
-=======
         .sample_iter(&Alphanumeric)
->>>>>>> origin/master
         .take(32)
         .map(|c| c.to_string())
         .collect::<Vec<_>>()

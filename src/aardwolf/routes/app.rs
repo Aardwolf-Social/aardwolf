@@ -1,14 +1,10 @@
+
 use std::path::{Path, PathBuf};
 
-<<<<<<< HEAD
-use rocket::response::status::NotFound;
-use rocket::response::{NamedFile, Redirect};
-=======
 use rocket::response::{
     status::NotFound,
     {NamedFile, Redirect},
 };
->>>>>>> origin/master
 use rocket_contrib::Template;
 
 use types::SignedInUserWithEmail;

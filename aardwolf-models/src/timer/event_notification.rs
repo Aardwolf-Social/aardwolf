@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-use chrono::offset::Utc;
-use chrono::DateTime;
-use diesel;
-use diesel::pg::PgConnection;
-
-use schema::event_notifications;
-use timer::event::Event;
-use timer::Timer;
-=======
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
 
 use schema::event_notifications;
 use timer::{event::Event, Timer};
->>>>>>> origin/master
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "event_notifications"]

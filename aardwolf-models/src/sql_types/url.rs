@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-use std::error::Error as StdError;
-use std::io::Write;
-use std::str::FromStr;
-=======
 use std::{error::Error as StdError, io::Write, str::FromStr};
->>>>>>> origin/master
 
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
 use url::Url as OrigUrl;
