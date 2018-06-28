@@ -17,6 +17,7 @@ development machine.
 
 Full Details can be found here:
 [INSTALL-POSTGRES.md](/doc/INSTALL-POSTGRES.md)
+[SETUP-POSTGRES.md](/doc/SETUP-POSTGRES.md)
 
 
 ### Installing Rust Environment
