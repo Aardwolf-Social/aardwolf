@@ -28,6 +28,10 @@ For Gentoo (eselect-postgresql is optional),
 For Fedora/CentOS/RHEL, do
 
     # dnf install postgresql-server postgresql-contrib
+    
+For Arch/Manjaro, do
+
+    $ pacman -S postgresql
 
 #### Windows Instructions
 
