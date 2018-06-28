@@ -16,7 +16,7 @@ this guide we’re going to assume you are running the database on your
 development machine.
 
 Full Details can be found here:
-[INSTALL-POSTGRES.md(/doc/INSTALL-POSTGRES.md)
+[INSTALL-POSTGRES.md](/doc/INSTALL-POSTGRES.md)
 
 
 ### Installing Rust Environment
@@ -26,7 +26,7 @@ installed. The best way to do this is to install
 [rustup](https://rustup.rs), which is a Rust toolchain manager.
 
 Full Details can be found here:
-[INSTALL-RUST.md(/doc/INSTALL-RUST.md)
+[INSTALL-RUST.md](/doc/INSTALL-RUST.md)
 
 
 ## Getting the source
