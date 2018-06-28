@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
-
-  {{> htmlHead }}
+  <!-- Begin Html Header -->
+  {% block html_head %}{% endblock html_head %}
+  <!-- End Html Header -->  
 
   <body>
-  <!-- Does Bulma even understand "semantic web" stuff? Let's find out! -->
   <!-- Begin Page Header -->
   <header>
-    <h2 class="title">{{ instanceTitle }}</h2>
+    <h2 class="title">{{ "Aardwolf Instance" | _  }}</h2>
     <div style="text-align: right">
-    <a href="sign_up">Need an Account? - Create one!</a>
+    <a href="sign_in">Have an Account? - Login</a>
     </div>
   </header>
   <!-- End Page Header -->
@@ -35,26 +35,31 @@
 		<p>Finally, <a href="https://github.com/banjofox/aardwolf">Aardwolf</a> is open source, so developers who want to contribute or understand how it works can dig in and do so.</p>
     </div>
     <div class="column">
-      <h1 class="title">
-        Login
+          <h1 class="title">
+        Create an Account
       </h1>
       <p class="subtitle">
-        Welcome back!
+        Feel free to sign up!
       </p>
-	  <span style="color: red;">{{ error_msg }}</span>
-	  <form method="POST" action="/auth/sign_in">
-		 <input type="hidden" name="csrf_token" value="{{ token }}">
-		 <input type="email" name="email" id="email" placeholder="E-mail address">
-		 <input type="password" name="password" id="password" placeholder="Password">
-		 <button>Log In</button>
-      </form>
-      </div>
+    <span style="color: red;">{{ error_msg }}</span>
+	  <form method="POST" action="/auth">
+		<input type="hidden" name="csrf_token" value="{{ token }}">
+		<span class="icon icon-user"></span>
+		<input type="text" name="username" id="username" placeholder="username@aardwolf.social">
+		<span class="icon icon-envelope"></span>
+		<input type="email" name="email" id="email" placeholder="E-mail address">
+		<span class="icon icon-lock"></span>
+		<input type="password" name="password" id="password" placeholder="Password">
+		<span class="icon icon-lock"></span>
+		<input type="password" name="password_confirmation", id="password_confirmation" placeholder="Confirm password">
+		<button>Sign Up</button>
+	  </form>
+    </div>
   </div>
 </div>
 </section>
   </body>
-  <!-- Does Bulma even understand "semantic web" stuff? Let's find out! -->
   <!-- Begin Page Footer -->
-	{{> home_footer }}
+	{% block home_footer %}{% endblock home_footer %}
   <!-- End Page Footer -->
 </html>

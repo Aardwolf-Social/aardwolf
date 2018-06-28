@@ -1,0 +1,172 @@
+###
+### These are the string values for the Polish translation
+###
+
+##
+## multipurpose
+## These strings are used in multiple places
+##
+
+
+msgid "Instancja Aardwolfa"
+msgstr ""
+
+msgid "Wróć"
+msgstr ""
+
+msgid "Wyślij"
+msgstr ""
+
+msgid "Dodaj komentarz…"
+msgstr ""
+
+##
+## asideSettings
+##
+msgid "Ustawienia"
+msgstr ""
+
+msgid "Edytuj profil"
+msgstr ""
+
+msgid "Preferencje"
+msgstr ""
+
+msgid "Wyciszone słowa"
+msgstr ""
+
+msgid "Wyciszeni użytkownicy"
+msgstr ""
+
+msgid "Powiadomienia"
+msgstr ""
+
+msgid "Bezpieczeństwo"
+msgstr ""
+
+msgid "Importowanie danych"
+msgstr ""
+
+msgid "Eksportowanie danych"
+msgstr ""
+
+msgid "Uwierzytelnione aplikacje"
+msgstr ""
+
+msgid "Zatwierdzeni śledzeni"
+msgstr ""
+
+msgid "Zaproś ludzi"
+msgstr ""
+
+##
+## asideShortcuts
+##
+msgid "Aktualności"
+msgstr ""
+
+messages ="Wiadomości"
+msgstr ""
+
+msgid "Skróty"
+msgstr ""
+
+msgid "Kalendarz"
+msgstr ""
+
+msgid "Groupy"
+msgstr ""
+
+msgid "Listy"
+msgstr ""
+
+msgid "Zdjęcia"
+msgstr ""
+
+msgid "Ulubione"
+msgstr ""
+
+msgid "Pogoda"
+msgstr ""
+
+msgid "Utwórz"
+msgstr ""
+
+msgid "Nowe wydarzenie"
+msgstr ""
+
+msgid "Nowa grupa"
+msgstr ""
+
+##
+## profileEdit
+##
+
+msgid "Edytuj profil"
+msgstr ""
+
+msgid "Podpis"
+msgstr ""
+
+msgid "Nazwa wyświetlana"
+msgstr ""
+
+msgid "pozostałych znaków"
+msgstr ""
+
+msgid "O Tobie"
+msgstr ""
+
+msgid "Wyślij awatar"
+msgstr ""
+
+msgid "Wybierz plik…"
+msgstr ""
+
+msgid "Nie wybrano pliku"
+msgstr ""
+
+msgid "PNG, GIF lub JPG. Co najwyżej 2MB. Zostanie pomniejszony do 120x120px"
+msgstr ""
+
+msgid "Wyślij awatar"
+msgstr ""
+
+msgid "Wybierz plik…"
+msgstr ""
+
+msgid "Nie wybrano pliku"
+msgstr ""
+
+msgid "PNG, GIF lub JPG. Co najwyżej 2MB. Zostanie pomniejszony do 700x335px"
+msgstr ""
+
+##
+## messaging
+##
+
+msgid "Naciśnij, aby zawyć"
+msgstr ""
+
+msgid "Awoo"
+msgstr ""
+
+msgid "Reply"
+msgstr ""
+
+##
+## footer
+##
+
+msgid "Zasady użytkowania"
+msgstr ""
+
+msgid "Prawa autorskie 2018"
+msgstr ""
+
+msgid "Odwiedź projekt na GitHubie"
+msgstr ""
+
+msgid "Kup kawę zespołowi"
+msgstr ""
+

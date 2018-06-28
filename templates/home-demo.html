@@ -4,7 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Aardwolf - Main</title>
-  <link rel="stylesheet" href="/web/0.app.css">
+  <link rel="stylesheet" type="text/css" href="../web/stylesheets/bulma.min.0.6.2.css">
+  <link rel="stylesheet" type="text/css" href="../web/stylesheets/bulma.min.0.6.2.css.map">
+  <!-- This is a hacky CSS that really needs to be fixed/replaced. I'm just putting it here to see if I can improve the styling until proper Bulma implementation -->
+  <link rel="stylesheet" type="text/css" href="../web/stylesheets/scratchpad.css">
+  <link rel="stylesheet" type="text/css" href="../web/fork-awesome-1.0.1/css/fork-awesome.min.css">
+  
+  <!-- 
+	FontAwesome is a piece of shit that doesn't work on desktop with the JS installed because Chrome :P
+		<script defer src="../web/javascript/fontawesome.all.5.0.0.js"></script> 
+  -->
 </head>
 
 <body>
@@ -16,7 +25,7 @@
         <a class="navbar-item">
           <img src="https://bulma.io/images/placeholders/128x128.png" alt="Aardwolf">
         </a>
-        <span class="navbar-burger burger" data-target="navbarMenuHeroA">
+        <span class="navbar-burger burger" data-target="navbar_menu_hero_a">
 			<span></span>
         <span></span>
         <span></span>
@@ -35,7 +44,7 @@
           </p>
         </div>
       </div>
-      <div id="navbarMenuHeroA" class="navbar-menu">
+      <div id="navbar_menu_hero_a" class="navbar-menu">
         <div class="navbar-end">
           <a class="navbar-item is-active">
 			  Home
@@ -65,16 +74,16 @@
         <!-- Does this need to be in a <div class="container> ?? -->
         <!-- For now I would say no, because making it a container brings it to left-center -->
         <aside class="menu">
-          <a class="fa fa-user-circle-o"> BanjoFox</a>
+          <a class="fa fa-user-circle"> BanjoFox</a>
           <ul class="menu-list">
-            <li><a class="fa fa-newspaper-o" aria-hidden="true"> News Feed</a></li>
+            <li><a class="fa fa-newspaper" aria-hidden="true"> News Feed</a></li>
             <li><a class="fa fa-envelope" aria-hidden="true"> Messages</a></li>
           </ul>
           <p class="menu-label">
             <span class="fa fa-star" aria-hidden="true"> Shortcuts</span>
           </p>
           <ul class="menu-list">
-            <li><a class="fa fa-calendar" aria-hidden="true"> Calendar</a></li>
+            <li><a class="fa fa-calendar" aria-hidden="true" href="containers/calendar.html"> Calendar</a></li>
             <li><a class="fa fa-users" aria-hidden="true"> Groups</a></li>
             <li><a class="fa fa-list" aria-hidden="true"> Lists</a></li>
             <li><a class="fa fa-picture-o" aria-hidden="true"> Photos</a></li>
@@ -97,7 +106,7 @@
           <article class="media">
             <figure class="media-left">
               <p class="image is-64x64">
-                <img src="https://bulma.io/images/placeholders/128x128.png" alt="{{user_name}}">
+                <img src="https://bulma.io/images/placeholders/128x128.png" alt="{{"Username" | _}}">
               </p>
             </figure>
             <div class="media-content">
@@ -128,7 +137,7 @@
             <!-- Begin sample conversation -->
             <figure class="media-left">
               <p class="image is-64x64">
-                <img src="https://bulma.io/images/placeholders/128x128.png" alt="{{user_name}}">
+                <img src="https://bulma.io/images/placeholders/128x128.png" alt="{{"Username" | _}}">
               </p>
             </figure>
             <div class="media-content">
@@ -144,7 +153,7 @@
               <article class="media">
                 <figure class="media-left">
                   <p class="image is-48x48">
-                    <img src="https://bulma.io/images/placeholders/96x96.png" alt="{{user_name}}">
+                    <img src="https://bulma.io/images/placeholders/96x96.png" alt="{{"Username" | _}}">
                   </p>
                 </figure>
                 <div class="media-content">
@@ -170,7 +179,7 @@
               <article class="media">
                 <figure class="media-left">
                   <p class="image is-48x48">
-                    <img src="https://bulma.io/images/placeholders/96x96.png" alt="{{user_name}}">
+                    <img src="https://bulma.io/images/placeholders/96x96.png" alt="{{"Username" | _}}">
                   </p>
                 </figure>
                 <div class="media-content">
@@ -193,7 +202,7 @@
             <!-- Begin reply box -->
             <figure class="media-left">
               <p class="image is-64x64">
-                <img src="https://bulma.io/images/placeholders/128x128.png" alt="{{user_name}}">
+                <img src="https://bulma.io/images/placeholders/128x128.png" alt="{{"Username" | _}}">
               </p>
             </figure>
             <div class="media-content">
@@ -219,13 +228,13 @@
 <footer class="footer">
   <div class="container">
     <div class="content has-text-centered">
-      <a href="termsofservice.html" class="footerBox">Terms of Service</a>
-      <span class="verticalLine" />
-      <span class="footerBox">Copyright - 2017</span>
-      <span class="verticalLine" />
-      <a href="https://github.com/BanjoFox/aardwolf" class="footerBox">Check us out on <i class="fa fa-lg fa-github"></i></a>
-      <span class="verticalLine" />
-      <a href="https://www.patreon.com/banjofox" class="footerBox">Buy Banjo a <span class="fa fa-beer"aria-hidden="true"></span></a>
+      <a href="termsofservice.html" class="footer_box">Terms of Service</a>
+      <span class="vertical_line" />
+      <span class="footer_box">Copyright - 2017</span>
+      <span class="vertical_line" />
+      <a href="https://github.com/BanjoFox/aardwolf" class="footer_box">Check us out on <i class="fas fa-lg fa-github"></i></a>
+      <span class="vertical_line" />
+      <a href="https://www.patreon.com/banjofox" class="footer_box">Buy Banjo a <span class="fa fa-beer"aria-hidden="true"></span></a>
     </div>
   </div>
 </footer>

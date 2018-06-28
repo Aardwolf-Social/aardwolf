@@ -1,0 +1,212 @@
+##
+## This is the main "template" for all of the language files
+##
+
+msgid ""
+msgstr ""
+"Project-Id-Version: aardwolf-core\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-06-21 19:03-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+##
+## multipurpose
+## These strings are used in multiple places
+
+msgid "Aardwolf Instance" ## Replace this with the name of your instance ;D
+msgstr ""
+
+msgid "Go back"
+msgstr ""
+
+msgid "Submit"
+msgstr ""
+
+msgid "Home"
+msgstr ""
+
+msgid "Profile"
+msgstr ""
+
+msgid "Messages"
+msgstr ""
+
+msgid "Login"
+msgstr ""
+
+msgid "Logout"
+msgstr ""
+
+##
+## asides/aside_settings
+##
+
+msgid "Settings"
+msgstr ""
+
+msgid "Edit Profile"
+msgstr ""
+
+msgid "Preferences"
+msgstr ""
+
+msgid "Muted Keywords"
+msgstr ""
+
+msgid "Muted Users"
+msgstr ""
+
+msgid "Notifications"
+msgstr ""
+
+msgid "Security"
+msgstr ""
+
+msgid "Data Import"
+msgstr ""
+
+msgid "Data Export"
+msgstr ""
+
+msgid "Authorized Apps"
+msgstr ""
+
+msgid "Authorized Followers"
+msgstr ""
+
+msgid "Invite People"
+msgstr ""
+
+##
+## asides/aside_shortcuts
+##
+
+msgid "News Feed"
+msgstr ""
+
+msgid "Messages"
+msgstr ""
+
+msgid "Shortcuts"
+msgstr ""
+
+msgid "Calendar"
+msgstr ""
+
+msgid "Groups"
+msgstr ""
+
+msgid "Lists"
+msgstr ""
+
+msgid "Photos"
+msgstr ""
+
+msgid "Favorites"
+msgstr ""
+
+msgid "Weather"
+msgstr ""
+
+msgid "Create"
+msgstr ""
+
+msgid "New Event"
+msgstr ""
+
+msgid "New Group"
+msgstr ""
+
+##
+## containers/containter_preferences
+##
+
+msgid "Preferences"
+msgstr ""
+
+msgid "Language"
+msgstr ""
+
+msgid "profile_bio"
+msgstr ""
+
+##
+## containers/containter_preferences (Profile Edit)
+##
+
+msgid "Edit Profile"
+msgstr ""
+
+msgid "Subtitle"
+msgstr ""
+
+msgid "Display Name"
+msgstr ""
+
+msgid "characters remaining"
+msgid_plural "One character remaining"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "About you"
+msgstr ""
+
+msgid "Upload Avatar"
+msgstr ""
+
+msgid "Choose a file…"
+msgstr ""
+
+msgid "No file chosen"
+msgstr ""
+
+msgid "PNG, GIF or JPG. At most 2MB. Will be downscaled to 120x120px"
+msgstr ""
+
+msgid "Upload Avatar"
+msgstr ""
+
+msgid "Choose a file…"
+msgstr ""
+
+msgid "No file chosen"
+msgstr ""
+
+msgid "PNG, GIF or JPG. At most 2MB. Will be downscaled to 700x335px"
+msgstr ""
+
+##
+## new_post
+##
+
+msgid "Press enter to awoo"
+msgstr ""
+
+msgid "Awoo"
+msgstr ""
+
+msgid "Reply"
+msgstr ""
+
+##
+## includes/home_footer
+##
+
+msgid "Terms of Service"
+msgstr ""
+
+msgid "Copyright 2018"
+msgstr ""
+
+msgid "Check us out on GitHub"
+msgstr ""
+
+msgid "Buy the team a coffee"
+msgstr ""

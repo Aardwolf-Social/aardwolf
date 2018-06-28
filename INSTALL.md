@@ -18,7 +18,6 @@ development machine.
 Full Details can be found here:
 [INSTALL-POSTGRES.md](/doc/INSTALL-POSTGRES.md)
 
-
 ### Installing Rust Environment
 
 Next, you’ll need to have the [Rust](https://rust-lang.org/) toolchain
@@ -27,7 +26,6 @@ installed. The best way to do this is to install
 
 Full Details can be found here:
 [INSTALL-RUST.md](/doc/INSTALL-RUST.md)
-
 
 ## Getting the source
 

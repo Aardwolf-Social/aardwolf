@@ -1,0 +1,88 @@
+<!-- Begin Profile Section -->
+<section class="section">
+    <div class="container">
+
+        <title>{{ profile_title }}</title>
+        
+        <!-- section title -->
+        <h1 class="title">{{ profile_title }}</h1>
+        <h2 class="subtitle">{{ profile_sub_title }}</h2>
+        
+        <!-- Profile display name -->
+		<div class="field box">
+		  <label class="label">{{ profile_display_name }}</label>
+		  <div class="control">
+			<input class="input" type="text" placeholder="{{ profile_display_name }}">
+		  </div>
+		  <p>30 {{ profile_char_remaining }}</p><!-- temporary placeholder -->
+		</div>
+
+       <!-- Profile bio -->
+        <div class="field box">
+          <label class="label">{{ "About you" | _ }}</label>
+          <div class="control">
+            <textarea class="textarea" placeholder="{{ "About you" | _ }}"></textarea>
+          </div>
+          <p>500 {{ "{{ count }} "characters remaining" | _n(singular="One character remaining", count=n_characters) }}</p><!-- temporary placeholder -->
+        </div>
+             
+        <!-- Profile Avatar -->
+        <div class="box">
+          <label class="label">{{ "Upload Avatar" | _ }}</label>
+        <figure class="image is-128x128">
+          <img src="https://bulma.io/images/placeholders/128x128.png">
+        </figure>
+        <br />
+        
+        <!-- Avatar upload controls -->
+        <div class="file has-name">
+          <label class="file-label">
+            <input class="file-input" type="file" name="resume">
+            <span class="file-cta">
+              <span class="file-icon">
+                <i class="fa fa-upload"></i>
+              </span>
+              <span class="file-label">
+                {{ "Choose a file…" | _ }}
+              </span>
+            </span>
+            <span class="file-name">
+              {{ "No file chosen" | _ }}
+            </span>
+          </label>
+        </div>
+        <p>{{ "PNG, GIF or JPG. At most 2MB. Will be downscaled to 120x120px" | _ }}</p>
+        </div>
+            
+        <!-- Profile Header -->
+        <div class="box">
+          <label class="label">{{ "Upload profile header" | _ }}</label>
+        <figure class="image is-128x128">
+          <img src="https://bulma.io/images/placeholders/128x128.png">
+        </figure>
+        <br />
+        
+        <!-- Header upload controls -->
+        <div class="file has-name">
+          <label class="file-label">
+            <input class="file-input" type="file" name="resume">
+            <span class="file-cta">
+              <span class="file-icon">
+                <i class="fa fa-upload"></i>
+              </span>
+              <span class="file-label">
+                {{ "No file chosen" | _ }}
+              </span>
+            </span>
+            <span class="file-name">
+              {{ "Choose a file…" | _ }}
+            </span>
+          </label>
+        </div>
+        <p>{{ "PNG, GIF or JPG. At most 2MB. Will be downscaled to 700x335px" | _ }}</p><!-- temporary placeholder -->
+        </div>
+                
+    </div>
+</section>
+<!-- End Profile Section -->
+
