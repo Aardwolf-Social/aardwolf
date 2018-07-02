@@ -2,6 +2,7 @@
 #![feature(plugin)]
 #![feature(custom_derive)]
 #![plugin(rocket_codegen)]
+#![feature(decl_macro)]
 
 extern crate aardwolf_models;
 extern crate bcrypt;
