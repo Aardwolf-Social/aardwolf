@@ -85,6 +85,9 @@ features = ["tera_templates", "json"]
 [dependencies.rocket_http]
 git = "https://github.com/SergioBenitez/Rocket"
 
+[dependencies.rocket_i18n]
+git = "https://github.com/BaptisteGelez/rocket_i18n"
+
 [dependencies.uuid]
 version = "0.6"
 features = ["v4"]

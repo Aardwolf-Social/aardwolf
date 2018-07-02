@@ -16,6 +16,7 @@ extern crate rocket;
 extern crate rocket_contrib;
 extern crate serde;
 extern crate yaml_rust;
+extern crate rocket_i18n;
 
 #[cfg(feature = "log-simple")]
 extern crate simple_logging;
@@ -103,6 +104,15 @@ fn app(config: config::Config) -> Result<Rocket, Error> {
     // so we pass it to the db_pool function, get the pool, and _then_ return the instance
     let pool = db_pool(&r)?;
     Ok(r.manage(pool))
+
+    // Just for giggles, what happens if I put the rocket_i18n fairing here....
+
+    // Register the fairing. The parameter is the domain you want to use (the name of your app most of the time)
+    .attach(rocket_i18n::I18n::new("my_app"))
+    // Eventually register the Tera filters (only works with the master branch of Rocket)
+    .attach(rocket_contrib::Template::custom(|engines| {
+        rocket_i18n::tera(&mut engines.tera);
+    }))
 }
 
 fn cli<'a, 'b>(yaml: &'a yaml_rust::yaml::Yaml) -> App<'a, 'b> {
