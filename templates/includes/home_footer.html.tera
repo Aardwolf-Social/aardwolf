@@ -1,7 +1,7 @@
 <footer class="footer">
   <div class="container">
 	<div class="content has-text-centered">
-		<a href="termsofservice.html" class="footer_box">{{ "Terms of Service" | }}</a>
+		<a href="termsofservice.html" class="footer_box">{{ "Terms of Service" | _ }}</a>
 		<span class="vertical_line"/>
 		<span class="footer_box">{{ "Copyright 2018" | _ }}</span>
 		<span class="vertical_line" />

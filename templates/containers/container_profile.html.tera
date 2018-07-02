@@ -23,7 +23,7 @@
           <div class="control">
             <textarea class="textarea" placeholder="{{ "About you" | _ }}"></textarea>
           </div>
-          <p>500 {{ "{{ count }} "characters remaining" | _n(singular="One character remaining", count=n_characters) }}</p><!-- temporary placeholder -->
+          <p>500 {{ "{{ count }} characters remaining" | _n(singular="One character remaining", count=n_characters) }}</p><!-- temporary placeholder -->
         </div>
              
         <!-- Profile Avatar -->

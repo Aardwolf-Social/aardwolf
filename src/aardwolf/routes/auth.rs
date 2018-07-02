@@ -59,7 +59,7 @@ fn sign_up(form: Form<SignUpForm>, db: DbConn) -> Redirect {
         Ok(_) => Redirect::to("/auth/sign_in"),
         Err(e) => {
             println!("unable to create account: {:#?}", e);
-            Redirect::to(&format!("/auth/sign_up?msg={}", e))
+            Redirect::to(format!("/auth/sign_up?msg={}", e))
         }
     }
 }
@@ -78,7 +78,7 @@ fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redirect
         }
         Err(e) => {
             println!("unable to log in: {:#?}", e);
-            Redirect::to(&format!("/auth/sign_in?msg={}", e))
+            Redirect::to(format!("/auth/sign_in?msg={}", e))
         }
     }
 }
