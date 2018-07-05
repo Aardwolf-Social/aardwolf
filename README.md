@@ -37,15 +37,13 @@ Our vision is to create a social-networking platform that mirrors the functional
 ### Who are we?
 We are a group of friends that met on Mastodon to collaborate on building a better social networking application.  Despite our busy lives we are all able to share our multitude of talents with one another to bring this project to life, one small contribution at a time.  While the core group have years of development experience, several of them have not used Rust until this project.  Others, such as Banjo, have never done any significant development work, but are able to take on other responsibilities such as project management, documentation, or even creating artwork (yes there is plenty of non-technical work that needs doing ;D).
 
-Banjo is currently working as an Information Security Engineer, but his primary background is in computer hardware, and Linux system administration.  He can usually be found elbows deep in some project or another, be it home DIY, planning or making beer/mead, fishing, or gaming.  To date, Aardwolf is also the first development project he has ever managed, but he is having a lot of fun, and learning a heck of a lot about how web applications get built.  Someday he hopes to have enough "free time" to go back to learning Rust.
-
 ###  What do we need?
 There are a lot of moving pieces right now, but this list should remain relatively stable.  In -all- cases we are NOT looking for expert developers.  Even if you are **new** to any of the topics below that's okay!  For a lot of us this is a learning experience, and we like to help each other out.  Do not be afraid to ask :)
 
   _ProTip: Working on a project is a great way to learn programming ;)_
 
 * People to help with [Rust](https://www.rust-lang.org) 
-* HTML/CSS folks that want to help with the [Aardwolf Interface](https://github.com/BanjoFox/aardwolf-interface)
+* HTML/CSS folks that want to help with the [Aardwolf Interface](https://github.com/Aardwolf-Social/aardwolf-interface)
 * Designers/artists for the graphical bits (website layouts, color schemes, look-and-feel images)
 * Documentation help.  Proofreading, organization, update wiki, add more things
 * Docker containers/VM's.  At one time we'd considered building ready-to-deploy development environments to help speed up the process for those that wanted/needed it.
@@ -55,7 +53,7 @@ There are a lot of moving pieces right now, but this list should remain relative
 ### Get involved
 If you think you can help in any of the areas listed above (and we bet you can) or in any of the many areas that we haven't yet thought of (and here we're sure you can) then please check out our contributors' guidelines and our roadmap.
 
-Please note that it's very important to us that we maintain a positive and supportive environment for everyone who wants to participate. When you join us we ask that you follow our [code of conduct] (https://github.com/BanjoFox/aardwolf/blob/master/CODE_OF_CONDUCT.md) in all interactions both on and offline.
+Please note that it's very important to us that we maintain a positive and supportive environment for everyone who wants to participate. When you join us we ask that you follow our [code of conduct](/CODE_OF_CONDUCT.md) in all interactions both on and offline.
 
 ### Contact Us
 Lately we have been hanging out on Matrix chat which is [#aardwolf-discussion:matrix.org](https://riot.im/app/#/room/#aardwolf-discussion:matrix.org), and doing almost all of our discussion there.
@@ -68,9 +66,8 @@ If you would like to get in touch with the project lead (Banjo), please checkout
 
 ### Find out more
 * [Contributor's guidelines](/CONTRIBUTING.md)
-* [Hackers Guide to Aardwolf](/Hackers-Guide-to-Aardwolf)
+* [Developmer Documentation](/doc/development)
 * [Roadmap](ROADMAP.md)
-* Open Canvass(WIP)
 * [Building, and installation guide](/INSTALL.md)
 
 ### Donations
