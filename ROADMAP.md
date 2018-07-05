@@ -4,8 +4,7 @@ Our vision is to create a social-networking platform that mirrors the functional
 We welcome help from technical, as well as non-technical folks equally.  Even if you do not code, there is a growing list of items that you may still be able to help out with. <br />
 
 Please do not hesitate to ask questions, or volunteer for things that you might be interested in poking at.
-
-(( Still debating whether or not we should have detailed stuff here, or over in [The Hackers Guide to Aardwolf](https://github.com/BanjoFox/aardwolf/tree/master/Hackers-Guide-to-Aardwolf) ))
+Also checkout the [Developer Documentation](https://github.com/Aardwolf-Social/aardwolf/tree/documentation-rework/doc/development)For more information on specific development targets.
 
 --------
 ## Requirements for Minimum Viable Product
@@ -18,9 +17,9 @@ Please do not hesitate to ask questions, or volunteer for things that you might 
 
 ## Requirements for Alpha-build
 - ActivityPub implementation (as best we can)
-- That other stuff X.x
 
 ## Stretch Goals
+- Bridge connection to [Plume](https://github.com/Plume-org/Plume)
 - Bridge connection to Matrix (or similar) for chat service
 - Bridge connection to [PeerTube](https://github.com/Chocobozzz/PeerTube) for video sharing
 
