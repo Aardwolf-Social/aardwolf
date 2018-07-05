@@ -77,4 +77,4 @@ Everyone on the core team gets an equal stake (Except for Banjo who is opting-ou
 
 ### License
 All Aardwolf software is licensed under the GNU Affero General Public License 
-[License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)(http://www.gnu.org/licenses/agpl-3.0)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
