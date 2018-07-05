@@ -51,16 +51,15 @@ There are a lot of moving pieces right now, but this list should remain relative
 * User inputs.  What would **you** like to see in a Facebook replacement?
 
 ### Get involved
-If you think you can help in any of the areas listed above (and we bet you can) or in any of the many areas that we haven't yet thought of (and here we're sure you can) then please check out our contributors' guidelines and our roadmap.
+If you think you can help in any of the areas listed above (and we bet you can) or in any of the many areas that we haven't yet thought of (we are pretty sure you can) then please check out our [contributor's guidelines](/CONTRIBUTING.md), and our [roadmap](ROADMAP.md).  
 
 Please note that it's very important to us that we maintain a positive and supportive environment for everyone who wants to participate. When you join us we ask that you follow our [code of conduct](/CODE_OF_CONDUCT.md) in all interactions both on and offline.
 
 ### Contact Us
-Lately we have been hanging out on Matrix chat which is [#aardwolf-discussion:matrix.org](https://riot.im/app/#/room/#aardwolf-discussion:matrix.org), and doing almost all of our discussion there.
-
-If you would like to follow us on Mastodon you may do so using [@aardwolf@glitch.social](https://glitch.social/@aardwolf).
-
-We also have a forum [WeAreSocial.tech](http://wearesocial.tech/) (you can login with your GitHub account), and a [mailing list](https://lists.riseup.net/www/info/aardwolf-development), both of which have been super quiet. 
+Chat Room: [#aardwolf-discussion:matrix.org](https://riot.im/app/#/room/#aardwolf-discussion:matrix.org)
+Mastodon: [@aardwolf@glitch.social](https://glitch.social/@aardwolf).
+Discussion Forum: [WeAreSocial.tech](http://wearesocial.tech/) (you can login with your GitHub account)
+Mailing List: [mailing list](https://lists.riseup.net/www/info/aardwolf-development)
 
 If you would like to get in touch with the project lead (Banjo), please checkout his homepage at [banjo.codes](http://banjo.codes) for a long list of contact methods. 
 
