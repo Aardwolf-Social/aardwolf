@@ -1,4 +1,4 @@
-# Hackers Guide to Aardwolf
+# Developer Guide (a.k.a Hackers Guide to Aardwolf)
 
 ### Intro
 
