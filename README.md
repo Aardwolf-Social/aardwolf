@@ -66,7 +66,7 @@ If you would like to get in touch with the project lead (Banjo), please checkout
 
 ### Find out more
 * [Contributor's guidelines](/CONTRIBUTING.md)
-* [Developmer Documentation](/doc/development)
+* [Developer Documentation](/doc/development)
 * [Roadmap](ROADMAP.md)
 * [Building, and installation guide](/INSTALL.md)
 
