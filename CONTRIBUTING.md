@@ -6,10 +6,11 @@ Contributors are always welcome! This guide aims to provide some pointers :D If 
 
 High level approach:
 
-1. Find something to fix/improve (hint: the [issues tagged with 'help wanted'](https://github.com/BanjoFox/aardwolf/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22))
-2. Change code (Rust code lives in /src/, WebUI lives in /templates/`)
-3. Run the app to verify (cargo run --bin aardwolf-server), make changes until it works
-4. Open a PR (also can be done between 2. and 3. if you run into problems)
+1. Check out the [development docs](/doc/development)
+2. Find something to fix/improve (hint: the [issues tagged with 'help wanted'](https://github.com/Aardwolf-Social/aardwolf/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22))
+3. Change code (Rust code lives in /src/, WebUI lives in /templates/)
+4. Run the app to verify (cargo run --bin aardwolf-server), make changes until it works
+5. Open a PR (also can be done between 2. and 3. if you run into problems)
 
 ## Contributions
 
@@ -23,7 +24,7 @@ Should you wish to work on an issue, please claim it first by commenting on
 the GitHub [issue](https://github.com/BanjoFox/aardwolf/issues) that you want to work on it. This is to prevent duplicated
 efforts from contributors on the same issue.
 
-Head over to [Aardwolf Starter Issues](https://github.com/BanjoFox/aardwolf/issues?q=is%3Aissue+is%3Aopen+label%3Amozsprint) to find good tasks to start with. 
+Head over to [Aardwolf Starter Issues](https://github.com/Aardwolf-Social/aardwolf/issues?q=is%3Aissue+is%3Aopen+label%3Amozsprint) to find good tasks to start with. 
 If you come across words or jargon that do not make sense, please feel free to ask on [#aardwolf-discussion:matrix.org](https://riot.im/app/#/room/#aardwolf-discussion:matrix.org).
 We will probably be working on a proper glossary at some point after we get a proper 
 application running. 

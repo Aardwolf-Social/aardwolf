@@ -1,4 +1,4 @@
-# Hackers Guide to Aardwolf
+# Developer Guide (a.k.a Hackers Guide to Aardwolf)
 
 ### Intro
 
@@ -27,7 +27,7 @@ Completed tasks will be struckthrough with tildes like ~~this~~.  Or maybe we sh
 - [ ] 1. E-mailing auth_tokens (Crates.io has Rust libraries for sending mail.  [Mailstrom](https://crates.io/crates/mailstrom), and [Lettre](https://crates.io/crates/lettre) are two examples
 - [ ] 2. Documentation review (correctness/accuracy), organization, creation (app needs more writers).
 - [ ] 3. Tying languages to Templates.  The templates will not look right, without text ;).... to be fair, Banjo should probably put filler text in -.-
-- [ ] 4. UI Development.  Clean up the existing templates, flesh out ones that haven't been created yet. [Issue #29](https://github.com/BanjoFox/aardwolf/issues/29) tracks most of the progress (unlikely), and there is a separate repo for [UI-hacking](https://github.com/BanjoFox/aardwolf-interface).
+- [ ] 4. UI Development.  Clean up the existing templates, flesh out ones that haven't been created yet. [Issue #29](https://github.com/Aardwolf-Social/aardwolf/issues/29) tracks most of the progress (unlikely), and there is a separate repo for [UI-hacking](https://github.com/Aardwolf-Social/aardwolf-interface).
 - [ ] 5. Data flow diagrams.  How does data move through the application?  This will help to visualize connections between code segments.
 - [ ] 6. API Development
 - [ ] 7. Implementing more I/O to create a shoutbox-like demo for the live server. 
