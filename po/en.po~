@@ -2,11 +2,26 @@
 ### These are the string values for the (American) English translation
 ###
 
+msgid ""
+msgstr ""
+"Project-Id-Version: aardwolf-core\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-06-21 19:03-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
 ##
 ## multipurpose
 ## These strings are used in multiple places
 
-msgid "Aardwolf Instance" ## Replace this with the name of your instance ;D
+## Replace this with the name of your instance ;D
+msgid "Aardwolf Instance"
 msgstr ""
 
 msgid "Go back"
@@ -77,9 +92,6 @@ msgstr ""
 msgid "News Feed"
 msgstr ""
 
-msgid "Messages"
-msgstr ""
-
 msgid "Shortcuts"
 msgstr ""
 
@@ -114,21 +126,12 @@ msgstr ""
 ## containers/containter_preferences
 ##
 
-msgid "Preferences"
-msgstr ""
-
-msgid "Language"
-msgstr ""
-
 msgid "profile_bio"
 msgstr ""
 
 ##
 ## containers/containter_preferences (Profile Edit)
 ##
-
-msgid "Edit Profile"
-msgstr ""
 
 msgid "Subtitle"
 msgstr ""
@@ -146,16 +149,7 @@ msgstr ""
 msgid "Upload Avatar"
 msgstr ""
 
-msgid "Choose a file…"
-msgstr ""
-
-msgid "No file chosen"
-msgstr ""
-
 msgid "PNG, GIF or JPG. At most 2MB. Will be downscaled to 120x120px"
-msgstr ""
-
-msgid "Upload Avatar"
 msgstr ""
 
 msgid "Choose a file…"

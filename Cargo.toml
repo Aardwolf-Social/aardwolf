@@ -72,21 +72,26 @@ default-features = false
 features = ["postgres", "uuid", "chrono"]
 
 [dependencies.rocket]
+rev = "a383d49ab0c224394353bae76a2b231287483cfe"
 git = "https://github.com/SergioBenitez/Rocket"
 
 [dependencies.rocket_codegen]
 git = "https://github.com/SergioBenitez/Rocket"
+rev = "a383d49ab0c224394353bae76a2b231287483cfe"
 
 [dependencies.rocket_contrib]
 git = "https://github.com/SergioBenitez/Rocket"
+rev = "a383d49ab0c224394353bae76a2b231287483cfe"
 default-features = false
 features = ["tera_templates", "json"]
 
 [dependencies.rocket_http]
 git = "https://github.com/SergioBenitez/Rocket"
+rev = "a383d49ab0c224394353bae76a2b231287483cfe"
 
 [dependencies.rocket_i18n]
 git = "https://github.com/BaptisteGelez/rocket_i18n"
+rev = "4ccd0b081d8c3774fc1d94147423d39ceb7bc672"
 
 [dependencies.uuid]
 version = "0.6"
