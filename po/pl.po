@@ -20,13 +20,13 @@ msgstr ""
 # These strings are used in multiple places
 # Replace this with the name of your instance ;D
 msgid "Aardwolf Instance"
-msgstr ""
+msgstr "Instancja Aardwolfa"
 
 msgid "Go back"
-msgstr ""
+msgstr "Wróć"
 
 msgid "Submit"
-msgstr ""
+msgstr "Wyślij"
 
 msgid "Home"
 msgstr ""
@@ -47,76 +47,76 @@ msgstr ""
 # asides/aside_settings
 #
 msgid "Settings"
-msgstr ""
+msgstr "Ustawienia"
 
 msgid "Edit Profile"
-msgstr ""
+msgstr "Edytuj profil"
 
 msgid "Preferences"
-msgstr ""
+msgstr "Preferencje"
 
 msgid "Muted Keywords"
-msgstr ""
+msgstr "Wyciszone słowa"
 
 msgid "Muted Users"
-msgstr ""
+msgstr "Wyciszeni użytkownicy"
 
 msgid "Notifications"
-msgstr ""
+msgstr "Powiadomienia"
 
 msgid "Security"
-msgstr ""
+msgstr "Bezpieczeństwo"
 
 msgid "Data Import"
-msgstr ""
+msgstr "Importowanie danych"
 
 msgid "Data Export"
-msgstr ""
+msgstr "Eksportowanie danych"
 
 msgid "Authorized Apps"
-msgstr ""
+msgstr "Uwierzytelnione aplikacje"
 
 msgid "Authorized Followers"
-msgstr ""
+msgstr "Zatwierdzeni śledzeni"
 
 msgid "Invite People"
-msgstr ""
+msgstr "Zaproś ludzi"
 
 #
 # asides/aside_shortcuts
 #
 msgid "News Feed"
-msgstr ""
+msgstr "Aktualności"
 
 msgid "Shortcuts"
-msgstr ""
+msgstr "Skróty"
 
 msgid "Calendar"
-msgstr ""
+msgstr "Kalendarz"
 
 msgid "Groups"
-msgstr ""
+msgstr "Groupy"
 
 msgid "Lists"
-msgstr ""
+msgstr "Listy"
 
 msgid "Photos"
-msgstr ""
+msgstr "Zdjęcia"
 
 msgid "Favorites"
-msgstr ""
+msgstr "Ulubione"
 
 msgid "Weather"
-msgstr ""
+msgstr "Pogoda"
 
 msgid "Create"
-msgstr ""
+msgstr "Utwórz"
 
 msgid "New Event"
-msgstr ""
+msgstr "Nowe wydarzenie"
 
 msgid "New Group"
-msgstr ""
+msgstr "Nowa grupa"
 
 #
 # containers/containter_preferences
@@ -131,57 +131,57 @@ msgstr ""
 # containers/containter_preferences (Profile Edit)
 #
 msgid "Subtitle"
-msgstr ""
+msgstr "Podpis"
 
 msgid "Display Name"
-msgstr ""
+msgstr "Nazwa wyświetlana"
 
 msgid "characters remaining"
 msgid_plural "One character remaining"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "pozostałych znaków"
+msgstr[1] "pozostałych znaków"
 
 msgid "About you"
-msgstr ""
+msgstr "O Tobie"
 
 msgid "Upload Avatar"
-msgstr ""
+msgstr "Wyślij awatar"
 
 msgid "Choose a file…"
-msgstr ""
+msgstr "Wybierz plik…"
 
 msgid "No file chosen"
-msgstr ""
+msgstr "Nie wybrano pliku"
 
 msgid "PNG, GIF or JPG. At most 2MB. Will be downscaled to 120x120px"
-msgstr ""
+msgstr "PNG, GIF lub JPG. Co najwyżej 2MB. Zostanie pomniejszony do 120x120px"
 
 msgid "PNG, GIF or JPG. At most 2MB. Will be downscaled to 700x335px"
-msgstr ""
+msgstr "PNG, GIF lub JPG. Co najwyżej 2MB. Zostanie pomniejszony do 700x335px"
 
 #
 # new_post
 #
 msgid "Press enter to awoo"
-msgstr ""
+msgstr "Naciśnij, aby zawyć"
 
 msgid "Awoo"
-msgstr ""
+msgstr "Awoo"
 
 msgid "Reply"
-msgstr ""
+msgstr "Rewoo"
 
 #
 # includes/home_footer
 #
 msgid "Terms of Service"
-msgstr ""
+msgstr "Zasady użytkowania"
 
 msgid "Copyright 2018"
-msgstr ""
+msgstr "Prawa autorskie 2018"
 
 msgid "Check us out on GitHub"
-msgstr ""
+msgstr "Odwiedź projekt na GitHubie"
 
 msgid "Buy the team a coffee"
-msgstr ""
+msgstr "Kup kawę zespołowi"
