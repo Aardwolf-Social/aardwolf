@@ -1,151 +1,168 @@
-###
-### These are the string values for the Polish translation
-###
+#
+# These are the string values for the Polish translation
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: aardwolf-core\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-06-21 19:03-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-##
-## multipurpose
-## These strings are used in multiple places
-##
-
-
-msgid "Instancja Aardwolfa"
+#
+# multipurpose
+# These strings are used in multiple places
+# Replace this with the name of your instance ;D
+msgid "Aardwolf Instance"
 msgstr ""
 
-msgid "Wróć"
+msgid "Go back"
 msgstr ""
 
-msgid "Wyślij"
+msgid "Submit"
 msgstr ""
 
-msgid "Dodaj komentarz…"
+msgid "Home"
 msgstr ""
 
-##
-## asideSettings
-##
-msgid "Ustawienia"
+msgid "Profile"
 msgstr ""
 
-msgid "Edytuj profil"
+msgid "Messages"
 msgstr ""
 
-msgid "Preferencje"
+msgid "Login"
 msgstr ""
 
-msgid "Wyciszone słowa"
+msgid "Logout"
 msgstr ""
 
-msgid "Wyciszeni użytkownicy"
+#
+# asides/aside_settings
+#
+msgid "Settings"
 msgstr ""
 
-msgid "Powiadomienia"
+msgid "Edit Profile"
 msgstr ""
 
-msgid "Bezpieczeństwo"
+msgid "Preferences"
 msgstr ""
 
-msgid "Importowanie danych"
+msgid "Muted Keywords"
 msgstr ""
 
-msgid "Eksportowanie danych"
+msgid "Muted Users"
 msgstr ""
 
-msgid "Uwierzytelnione aplikacje"
+msgid "Notifications"
 msgstr ""
 
-msgid "Zatwierdzeni śledzeni"
+msgid "Security"
 msgstr ""
 
-msgid "Zaproś ludzi"
+msgid "Data Import"
 msgstr ""
 
-##
-## asideShortcuts
-##
-msgid "Aktualności"
+msgid "Data Export"
 msgstr ""
 
-messages ="Wiadomości"
+msgid "Authorized Apps"
 msgstr ""
 
-msgid "Skróty"
+msgid "Authorized Followers"
 msgstr ""
 
-msgid "Kalendarz"
+msgid "Invite People"
 msgstr ""
 
-msgid "Groupy"
+#
+# asides/aside_shortcuts
+#
+msgid "News Feed"
 msgstr ""
 
-msgid "Listy"
+msgid "Shortcuts"
 msgstr ""
 
-msgid "Zdjęcia"
+msgid "Calendar"
 msgstr ""
 
-msgid "Ulubione"
+msgid "Groups"
 msgstr ""
 
-msgid "Pogoda"
+msgid "Lists"
 msgstr ""
 
-msgid "Utwórz"
+msgid "Photos"
 msgstr ""
 
-msgid "Nowe wydarzenie"
+msgid "Favorites"
 msgstr ""
 
-msgid "Nowa grupa"
+msgid "Weather"
 msgstr ""
 
-##
-## profileEdit
-##
-
-msgid "Edytuj profil"
+msgid "Create"
 msgstr ""
 
-msgid "Podpis"
+msgid "New Event"
 msgstr ""
 
-msgid "Nazwa wyświetlana"
+msgid "New Group"
 msgstr ""
 
-msgid "pozostałych znaków"
+#
+# containers/containter_preferences
+#
+msgid "Language"
 msgstr ""
 
-msgid "O Tobie"
+msgid "profile_bio"
 msgstr ""
 
-msgid "Wyślij awatar"
+#
+# containers/containter_preferences (Profile Edit)
+#
+msgid "Subtitle"
 msgstr ""
 
-msgid "Wybierz plik…"
+msgid "Display Name"
 msgstr ""
 
-msgid "Nie wybrano pliku"
+msgid "characters remaining"
+msgid_plural "One character remaining"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "About you"
 msgstr ""
 
-msgid "PNG, GIF lub JPG. Co najwyżej 2MB. Zostanie pomniejszony do 120x120px"
+msgid "Upload Avatar"
 msgstr ""
 
-msgid "Wyślij awatar"
+msgid "Choose a file…"
 msgstr ""
 
-msgid "Wybierz plik…"
+msgid "No file chosen"
 msgstr ""
 
-msgid "Nie wybrano pliku"
+msgid "PNG, GIF or JPG. At most 2MB. Will be downscaled to 120x120px"
 msgstr ""
 
-msgid "PNG, GIF lub JPG. Co najwyżej 2MB. Zostanie pomniejszony do 700x335px"
+msgid "PNG, GIF or JPG. At most 2MB. Will be downscaled to 700x335px"
 msgstr ""
 
-##
-## messaging
-##
-
-msgid "Naciśnij, aby zawyć"
+#
+# new_post
+#
+msgid "Press enter to awoo"
 msgstr ""
 
 msgid "Awoo"
@@ -154,19 +171,17 @@ msgstr ""
 msgid "Reply"
 msgstr ""
 
-##
-## footer
-##
-
-msgid "Zasady użytkowania"
+#
+# includes/home_footer
+#
+msgid "Terms of Service"
 msgstr ""
 
-msgid "Prawa autorskie 2018"
+msgid "Copyright 2018"
 msgstr ""
 
-msgid "Odwiedź projekt na GitHubie"
+msgid "Check us out on GitHub"
 msgstr ""
 
-msgid "Kup kawę zespołowi"
+msgid "Buy the team a coffee"
 msgstr ""
-

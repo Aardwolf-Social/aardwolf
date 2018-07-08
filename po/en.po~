@@ -1,6 +1,6 @@
-#
-# This is the main "template" for all of the language files
-#
+### 
+### These are the string values for the (American) English translation
+###
 
 msgid ""
 msgstr ""
@@ -16,11 +16,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#
-# multipurpose
-# These strings are used in multiple places
+##
+## multipurpose
+## These strings are used in multiple places
 
-# Replace this with the name of your instance ;D
+## Replace this with the name of your instance ;D
 msgid "Aardwolf Instance"
 msgstr ""
 
@@ -45,9 +45,9 @@ msgstr ""
 msgid "Logout"
 msgstr ""
 
-#
-# asides/aside_settings
-#
+##
+## asides/aside_settings
+##
 
 msgid "Settings"
 msgstr ""
@@ -85,9 +85,9 @@ msgstr ""
 msgid "Invite People"
 msgstr ""
 
-#
-# asides/aside_shortcuts
-#
+##
+## asides/aside_shortcuts
+##
 
 msgid "News Feed"
 msgstr ""
@@ -122,19 +122,16 @@ msgstr ""
 msgid "New Group"
 msgstr ""
 
-#
-# containers/containter_preferences
-#
-
-msgid "Language"
-msgstr ""
+##
+## containers/containter_preferences
+##
 
 msgid "profile_bio"
 msgstr ""
 
-#
-# containers/containter_preferences (Profile Edit)
-#
+##
+## containers/containter_preferences (Profile Edit)
+##
 
 msgid "Subtitle"
 msgstr ""
@@ -143,14 +140,16 @@ msgid "Display Name"
 msgstr ""
 
 msgid "characters remaining"
-msgid_plural "One character remaining"
-msgstr[0] ""
-msgstr[1] ""
+"One character remaining"
+msgstr ""
 
 msgid "About you"
 msgstr ""
 
 msgid "Upload Avatar"
+msgstr ""
+
+msgid "PNG, GIF or JPG. At most 2MB. Will be downscaled to 120x120px"
 msgstr ""
 
 msgid "Choose a file…"
@@ -159,15 +158,12 @@ msgstr ""
 msgid "No file chosen"
 msgstr ""
 
-msgid "PNG, GIF or JPG. At most 2MB. Will be downscaled to 120x120px"
-msgstr ""
-
 msgid "PNG, GIF or JPG. At most 2MB. Will be downscaled to 700x335px"
 msgstr ""
 
-#
-# new_post
-#
+##
+## new_post
+##
 
 msgid "Press enter to awoo"
 msgstr ""
@@ -175,12 +171,12 @@ msgstr ""
 msgid "Awoo"
 msgstr ""
 
-msgid "Reply"
+msgid "Rewoo"
 msgstr ""
 
-#
-# includes/home_footer
-#
+##
+## includes/home_footer
+##
 
 msgid "Terms of Service"
 msgstr ""

@@ -37,7 +37,6 @@ use diesel::pg::PgConnection;
 use log::LevelFilter;
 use r2d2_diesel::ConnectionManager;
 use rocket::Rocket;
-use rocket_contrib::Template;
 
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
@@ -97,13 +96,12 @@ fn app(config: config::Config) -> Result<Rocket, Error> {
             routes![aardwolf::routes::applications::register_application],
         )
         .mount("/", routes)
-        .attach(Template::fairing())//;
     // .manage(SystemRandom::new());
 
         // Just for giggles, what happens if I put the rocket_i18n fairing here....
 
         // Register the fairing. The parameter is the domain you want to use (the name of your app most of the time)
-        .attach(rocket_i18n::I18n::new("my_app"))
+        .attach(rocket_i18n::I18n::new("aardwolf"))
         // Eventually register the Tera filters (only works with the master branch of Rocket)
         .attach(rocket_contrib::Template::custom(|engines| {
                 rocket_i18n::tera(&mut engines.tera);

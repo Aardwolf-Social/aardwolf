@@ -1,12 +1,25 @@
-### 
-### These are the string values for the (American) English translation
-###
+# 
+# These are the string values for the (American) English translation
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: aardwolf-core\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-06-21 19:03-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-##
-## multipurpose
-## These strings are used in multiple places
-
-msgid "Aardwolf Instance" ## Replace this with the name of your instance ;D
+#
+# multipurpose
+# These strings are used in multiple places
+# Replace this with the name of your instance ;D
+msgid "Aardwolf Instance"
 msgstr ""
 
 msgid "Go back"
@@ -30,10 +43,9 @@ msgstr ""
 msgid "Logout"
 msgstr ""
 
-##
-## asides/aside_settings
-##
-
+#
+# asides/aside_settings
+#
 msgid "Settings"
 msgstr ""
 
@@ -70,14 +82,10 @@ msgstr ""
 msgid "Invite People"
 msgstr ""
 
-##
-## asides/aside_shortcuts
-##
-
+#
+# asides/aside_shortcuts
+#
 msgid "News Feed"
-msgstr ""
-
-msgid "Messages"
 msgstr ""
 
 msgid "Shortcuts"
@@ -110,26 +118,21 @@ msgstr ""
 msgid "New Group"
 msgstr ""
 
-##
-## containers/containter_preferences
-##
-
-msgid "Preferences"
-msgstr ""
-
+#
+# containers/containter_preferences
+#
 msgid "Language"
 msgstr ""
 
+#
+# containers/containter_preferences
+#
 msgid "profile_bio"
 msgstr ""
 
-##
-## containers/containter_preferences (Profile Edit)
-##
-
-msgid "Edit Profile"
-msgstr ""
-
+#
+# containers/containter_preferences (Profile Edit)
+#
 msgid "Subtitle"
 msgstr ""
 
@@ -137,8 +140,9 @@ msgid "Display Name"
 msgstr ""
 
 msgid "characters remaining"
-"One character remaining"
-msgstr ""
+msgid_plural "One character remaining"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "About you"
 msgstr ""
@@ -155,35 +159,24 @@ msgstr ""
 msgid "PNG, GIF or JPG. At most 2MB. Will be downscaled to 120x120px"
 msgstr ""
 
-msgid "Upload Avatar"
-msgstr ""
-
-msgid "Choose a file…"
-msgstr ""
-
-msgid "No file chosen"
-msgstr ""
-
 msgid "PNG, GIF or JPG. At most 2MB. Will be downscaled to 700x335px"
 msgstr ""
 
-##
-## new_post
-##
-
+#
+# new_post
+#
 msgid "Press enter to awoo"
 msgstr ""
 
 msgid "Awoo"
 msgstr ""
 
-msgid "Rewoo"
+msgid "Reply"
 msgstr ""
 
-##
-## includes/home_footer
-##
-
+#
+# includes/home_footer
+#
 msgid "Terms of Service"
 msgstr ""
 
