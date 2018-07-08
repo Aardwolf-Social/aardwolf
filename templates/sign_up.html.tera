@@ -1,7 +1,13 @@
 <!DOCTYPE html>
 <html>
   <!-- Begin Html Header -->
-  {% block html_head %}{% endblock html_head %}
+    {% block html_head %}
+        <link rel="stylesheet" type="text/css" href="/stylesheets/bulma.min.0.6.2.css">
+        <link rel="stylesheet" type="text/css" href="/stylesheets/bulma.min.0.6.2.css.map">
+        <link rel="stylesheet" type="text/css" href="/stylesheets/scratchpad.css">
+        <link rel="stylesheet" type="text/css" href="/stylesheets/forkawesome.css">
+        <title>{% block title %}{% endblock title %} - My Webpage</title>
+    {% endblock html_head %}
   <!-- End Html Header -->  
 
   <body>
@@ -41,7 +47,7 @@
       <p class="subtitle">
         Feel free to sign up!
       </p>
-    <span style="color: red;">{{ error_msg }}</span>
+    <span style="color: red;">{{ "Error Message" | _ }}</span>
 	  <form method="POST" action="/auth">
 		<input type="hidden" name="csrf_token" value="{{ token }}">
 		<span class="icon icon-user"></span>

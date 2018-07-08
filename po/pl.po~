@@ -1,7 +1,6 @@
-###
-### These are the string values for the Polish translation
-###
-
+#
+# These are the string values for the Polish translation
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: aardwolf-core\n"
@@ -16,159 +15,173 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-##
-## multipurpose
-## These strings are used in multiple places
-##
+#
+# multipurpose
+# These strings are used in multiple places
+# Replace this with the name of your instance ;D
+msgid "Aardwolf Instance"
+msgstr "Instancja Aardwolfa"
 
+msgid "Go back"
+msgstr "Wróć"
 
-msgid "Instancja Aardwolfa"
+msgid "Submit"
+msgstr "Wyślij"
+
+msgid "Home"
 msgstr ""
 
-msgid "Wróć"
+msgid "Profile"
 msgstr ""
 
-msgid "Wyślij"
+msgid "Messages"
 msgstr ""
 
-msgid "Dodaj komentarz…"
+msgid "Login"
 msgstr ""
 
-##
-## asideSettings
-##
-msgid "Ustawienia"
+msgid "Logout"
 msgstr ""
 
-msgid "Edytuj profil"
+#
+# asides/aside_settings
+#
+msgid "Settings"
+msgstr "Ustawienia"
+
+msgid "Edit Profile"
+msgstr "Edytuj profil"
+
+msgid "Preferences"
+msgstr "Preferencje"
+
+msgid "Muted Keywords"
+msgstr "Wyciszone słowa"
+
+msgid "Muted Users"
+msgstr "Wyciszeni użytkownicy"
+
+msgid "Notifications"
+msgstr "Powiadomienia"
+
+msgid "Security"
+msgstr "Bezpieczeństwo"
+
+msgid "Data Import"
+msgstr "Importowanie danych"
+
+msgid "Data Export"
+msgstr "Eksportowanie danych"
+
+msgid "Authorized Apps"
+msgstr "Uwierzytelnione aplikacje"
+
+msgid "Authorized Followers"
+msgstr "Zatwierdzeni śledzeni"
+
+msgid "Invite People"
+msgstr "Zaproś ludzi"
+
+#
+# asides/aside_shortcuts
+#
+msgid "News Feed"
+msgstr "Aktualności"
+
+msgid "Shortcuts"
+msgstr "Skróty"
+
+msgid "Calendar"
+msgstr "Kalendarz"
+
+msgid "Groups"
+msgstr "Groupy"
+
+msgid "Lists"
+msgstr "Listy"
+
+msgid "Photos"
+msgstr "Zdjęcia"
+
+msgid "Favorites"
+msgstr "Ulubione"
+
+msgid "Weather"
+msgstr "Pogoda"
+
+msgid "Create"
+msgstr "Utwórz"
+
+msgid "New Event"
+msgstr "Nowe wydarzenie"
+
+msgid "New Group"
+msgstr "Nowa grupa"
+
+#
+# containers/containter_preferences
+#
+msgid "Language"
 msgstr ""
 
-msgid "Preferencje"
+msgid "profile_bio"
 msgstr ""
 
-msgid "Wyciszone słowa"
-msgstr ""
+#
+# containers/containter_preferences (Profile Edit)
+#
+msgid "Subtitle"
+msgstr "Podpis"
 
-msgid "Wyciszeni użytkownicy"
-msgstr ""
+msgid "Display Name"
+msgstr "Nazwa wyświetlana"
 
-msgid "Powiadomienia"
-msgstr ""
+msgid "characters remaining"
+msgid_plural "One character remaining"
+msgstr[0] "pozostałych znaków"
+msgstr[1] "pozostałych znaków"
 
-msgid "Bezpieczeństwo"
-msgstr ""
+msgid "About you"
+msgstr "O Tobie"
 
-msgid "Importowanie danych"
-msgstr ""
+msgid "Upload Avatar"
+msgstr "Wyślij awatar"
 
-msgid "Eksportowanie danych"
-msgstr ""
+msgid "Choose a file…"
+msgstr "Wybierz plik…"
 
-msgid "Uwierzytelnione aplikacje"
-msgstr ""
+msgid "No file chosen"
+msgstr "Nie wybrano pliku"
 
-msgid "Zatwierdzeni śledzeni"
-msgstr ""
+msgid "PNG, GIF or JPG. At most 2MB. Will be downscaled to 120x120px"
+msgstr "PNG, GIF lub JPG. Co najwyżej 2MB. Zostanie pomniejszony do 120x120px"
 
-msgid "Zaproś ludzi"
-msgstr ""
+msgid "PNG, GIF or JPG. At most 2MB. Will be downscaled to 700x335px"
+msgstr "PNG, GIF lub JPG. Co najwyżej 2MB. Zostanie pomniejszony do 700x335px"
 
-##
-## asideShortcuts
-##
-msgid "Aktualności"
-msgstr ""
-
-msgid "Wiadomości"
-msgstr ""
-
-msgid "Skróty"
-msgstr ""
-
-msgid "Kalendarz"
-msgstr ""
-
-msgid "Groupy"
-msgstr ""
-
-msgid "Listy"
-msgstr ""
-
-msgid "Zdjęcia"
-msgstr ""
-
-msgid "Ulubione"
-msgstr ""
-
-msgid "Pogoda"
-msgstr ""
-
-msgid "Utwórz"
-msgstr ""
-
-msgid "Nowe wydarzenie"
-msgstr ""
-
-msgid "Nowa grupa"
-msgstr ""
-
-##
-## profileEdit
-##
-
-msgid "Podpis"
-msgstr ""
-
-msgid "Nazwa wyświetlana"
-msgstr ""
-
-msgid "pozostałych znaków"
-msgstr ""
-
-msgid "O Tobie"
-msgstr ""
-
-msgid "Wyślij awatar"
-msgstr ""
-
-msgid "PNG, GIF lub JPG. Co najwyżej 2MB. Zostanie pomniejszony do 120x120px"
-msgstr ""
-
-msgid "Wybierz plik…"
-msgstr ""
-
-msgid "Nie wybrano pliku"
-msgstr ""
-
-msgid "PNG, GIF lub JPG. Co najwyżej 2MB. Zostanie pomniejszony do 700x335px"
-msgstr ""
-
-##
-## messaging
-##
-
-msgid "Naciśnij, aby zawyć"
-msgstr ""
+#
+# new_post
+#
+msgid "Press enter to awoo"
+msgstr "Naciśnij, aby zawyć"
 
 msgid "Awoo"
-msgstr ""
+msgstr "Awoo"
 
 msgid "Reply"
-msgstr ""
+msgstr "Rewoo"
 
-##
-## footer
-##
+#
+# includes/home_footer
+#
+msgid "Terms of Service"
+msgstr "Zasady użytkowania"
 
-msgid "Zasady użytkowania"
-msgstr ""
+msgid "Copyright 2018"
+msgstr "Prawa autorskie 2018"
 
-msgid "Prawa autorskie 2018"
-msgstr ""
+msgid "Check us out on GitHub"
+msgstr "Odwiedź projekt na GitHubie"
 
-msgid "Odwiedź projekt na GitHubie"
-msgstr ""
-
-msgid "Kup kawę zespołowi"
-msgstr ""
-
+msgid "Buy the team a coffee"
+msgstr "Kup kawę zespołowi"

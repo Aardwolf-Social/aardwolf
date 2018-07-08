@@ -43,6 +43,9 @@ msgstr ""
 msgid "Logout"
 msgstr ""
 
+msgid "Error Message"
+msgstr ""
+
 #
 # asides/aside_settings
 #
