@@ -19,3 +19,7 @@ aardwolf.log
 .config
 
 node_modules
+
+# Translations
+.po~
+translations
