@@ -2,11 +2,7 @@
 <html>
 
     {% block html_head %}
-        <link rel="stylesheet" type="text/css" href="/stylesheets/bulma.min.0.6.2.css">
-        <link rel="stylesheet" type="text/css" href="/stylesheets/bulma.min.0.6.2.css.map">
-        <link rel="stylesheet" type="text/css" href="/stylesheets/scratchpad.css">
-        <link rel="stylesheet" type="text/css" href="/stylesheets/forkawesome.css">
-        <title>{% block title %}{% endblock title %} - My Webpage</title>
+		{% include "html_head.html.tera" %}
     {% endblock html_head %}
 
   <body>
