@@ -5,6 +5,10 @@ Because Rocket isn't really designed to serve static files (i.e. CSS, images, et
 `../config/nginx/includes/gzip.conf`  -- This is the GZIP compression info
 `../config/nginx/includes/other-locations.conf` -- These are for other locations to add non-critical functionality.  It was easier to put them here so that a single line comment `#include includes/other-locations.conf` could be done to make troubleshooting easier ;)
 
+Sample NGINX configurations are available in the config directory:
+[/config/nginx/](/config/nginx/)
+
+
 ### Setting up NGINX - The fast way (FUTURE)
 Debian: 
 
