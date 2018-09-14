@@ -1,5 +1,5 @@
 To setup and start the database server, first install PostGRE SQL as described here:
-[INSTALL-POSTGRES.md](/INSTALL-POSTGRES.md)
+[INSTALL-POSTGRES.md](INSTALL-POSTGRES.md)
 
 ## Configure postgres user and database cluster directory ##
 
