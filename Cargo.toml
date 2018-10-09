@@ -42,8 +42,8 @@ failure = "0.1.1"
 r2d2 = "0.8"
 r2d2-diesel = "1.0"
 ring = "0.11"
-rocket = "=0.3.14"
-rocket_codegen = "=0.3.14"
+rocket = "0.3.17"
+rocket_codegen = "0.3.17"
 serde = "1.0.21"
 serde_derive = "1.0.21"
 url = "1.7"
@@ -72,7 +72,7 @@ default-features = false
 features = ["postgres", "uuid", "chrono"]
 
 [dependencies.rocket_contrib]
-version = "=0.3.14"
+version = "0.3.17"
 default-features = false
 features = ["handlebars_templates", "json"]
 
