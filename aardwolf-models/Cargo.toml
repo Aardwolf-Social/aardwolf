@@ -12,7 +12,6 @@ failure = "0.1"
 log = "0.4"
 mime = "0.3"
 rand = "0.5"
-rocket = "0.3.17"
 serde = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0"
@@ -21,6 +20,10 @@ url = "1.7"
 [dependencies.diesel]
 version = "1.2"
 features = ["chrono", "postgres", "serde_json"]
+
+[dependencies.rocket]
+git = "https://github.com/SergioBenitez/Rocket"
+rev = "46da03c3c3c0c39b0c35700c85b5085b61ddbad9"
 
 [dev-dependencies]
 dotenv = "0.13"

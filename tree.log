@@ -256,12 +256,6 @@ aardwolf v0.1.0 (file:///home/quixote/gits/aardwolf)
 ├── r2d2-diesel v1.0.0
 │   ├── diesel v1.3.3 (*)
 │   └── r2d2 v0.8.2 (*)
-├── ring v0.13.2
-│   ├── lazy_static v1.1.0 (*)
-│   ├── libc v0.2.43 (*)
-│   └── untrusted v0.6.2
-│   [build-dependencies]
-│   └── cc v1.0.25 (*)
 ├── rocket v0.3.17 (*)
 ├── rocket_codegen v0.3.17
 │   ├── log v0.3.9 (*)
@@ -269,71 +263,34 @@ aardwolf v0.1.0 (file:///home/quixote/gits/aardwolf)
 │   [build-dependencies]
 │   ├── version_check v0.1.5 (*)
 │   └── yansi v0.4.0 (*)
-├── rocket_contrib v0.4.0-dev (https://github.com/SergioBenitez/Rocket?rev=55459db7732b9a240826a5c120c650f87e3372ce#55459db7)
+├── rocket_contrib v0.3.17
 │   ├── glob v0.2.11
-│   ├── log v0.4.5 (*)
-│   ├── notify v4.0.6
-│   │   ├── bitflags v1.0.4 (*)
-│   │   ├── filetime v0.2.1
-│   │   │   ├── cfg-if v0.1.5 (*)
-│   │   │   └── libc v0.2.43 (*)
-│   │   ├── inotify v0.6.1
-│   │   │   ├── bitflags v1.0.4 (*)
-│   │   │   ├── futures v0.1.25
-│   │   │   ├── inotify-sys v0.1.3
-│   │   │   │   └── libc v0.2.43 (*)
-│   │   │   ├── libc v0.2.43 (*)
-│   │   │   ├── mio v0.6.16
-│   │   │   │   ├── iovec v0.1.2
-│   │   │   │   │   └── libc v0.2.43 (*)
-│   │   │   │   ├── lazycell v1.2.0
-│   │   │   │   ├── libc v0.2.43 (*)
-│   │   │   │   ├── log v0.4.5 (*)
-│   │   │   │   ├── net2 v0.2.33
-│   │   │   │   │   ├── cfg-if v0.1.5 (*)
-│   │   │   │   │   └── libc v0.2.43 (*)
-│   │   │   │   └── slab v0.4.1
-│   │   │   ├── tokio-io v0.1.9
-│   │   │   │   ├── bytes v0.4.10
-│   │   │   │   │   ├── byteorder v1.2.6 (*)
-│   │   │   │   │   └── iovec v0.1.2 (*)
-│   │   │   │   ├── futures v0.1.25 (*)
-│   │   │   │   └── log v0.4.5 (*)
-│   │   │   └── tokio-reactor v0.1.6
-│   │   │       ├── crossbeam-utils v0.5.0
-│   │   │       ├── futures v0.1.25 (*)
-│   │   │       ├── lazy_static v1.1.0 (*)
-│   │   │       ├── log v0.4.5 (*)
-│   │   │       ├── mio v0.6.16 (*)
-│   │   │       ├── num_cpus v1.8.0 (*)
-│   │   │       ├── parking_lot v0.6.4
-│   │   │       │   ├── lock_api v0.1.4
-│   │   │       │   │   ├── owning_ref v0.3.3
-│   │   │       │   │   │   └── stable_deref_trait v1.1.1
-│   │   │       │   │   └── scopeguard v0.3.3 (*)
-│   │   │       │   └── parking_lot_core v0.3.1
-│   │   │       │       ├── libc v0.2.43 (*)
-│   │   │       │       ├── rand v0.5.5 (*)
-│   │   │       │       └── smallvec v0.6.5 (*)
-│   │   │       │       [build-dependencies]
-│   │   │       │       └── rustc_version v0.2.3
-│   │   │       │           └── semver v0.9.0
-│   │   │       │               └── semver-parser v0.7.0
-│   │   │       ├── slab v0.4.1 (*)
-│   │   │       ├── tokio-executor v0.1.5
-│   │   │       │   └── futures v0.1.25 (*)
-│   │   │       └── tokio-io v0.1.9 (*)
-│   │   │       [dev-dependencies]
-│   │   │       └── num_cpus v1.8.0 (*)
-│   │   ├── libc v0.2.43 (*)
-│   │   ├── mio v0.6.16 (*)
-│   │   ├── mio-extras v2.0.5
-│   │   │   ├── lazycell v1.2.0 (*)
-│   │   │   ├── log v0.4.5 (*)
-│   │   │   ├── mio v0.6.16 (*)
-│   │   │   └── slab v0.4.1 (*)
-│   │   └── walkdir v2.2.5
-│   │       └── same-file v1.0.3
+│   ├── log v0.3.9 (*)
+│   ├── rocket v0.3.17 (*)
+│   ├── serde v1.0.79 (*)
+│   ├── serde_json v1.0.32 (*)
+│   └── tera v0.10.10
+│       ├── chrono v0.4.6 (*)
+│       ├── error-chain v0.10.0
+│       │   └── backtrace v0.3.9 (*)
+│       ├── glob v0.2.11 (*)
+│       ├── humansize v1.1.0
+│       ├── lazy_static v0.2.11 (*)
+│       ├── pest v0.4.1
+│       ├── regex v0.2.11 (*)
+│       ├── serde v1.0.79 (*)
+│       ├── serde_json v1.0.32 (*)
+│       ├── slug v0.1.4
+│       │   └── deunicode v0.4.3
+│       └── url v1.7.1 (*)
+├── rocket_i18n v0.1.1 (https://github.com/BaptisteGelez/rocket_i18n?rev=75a3bfd7b847324c078a355a7f101f8241a9f59b#75a3bfd7)
+│   ├── gettext-rs v0.4.1
+│   │   ├── gettext-sys v0.19.8
+│   │   │   [build-dependencies]
+│   │   │   └── cc v1.0.25 (*)
+│   │   └── locale_config v0.2.2
+│   │       ├── lazy_static v0.2.11 (*)
+│   │       └── regex v0.2.11 (*)
 │   ├── rocket v0.4.0-dev (https://github.com/SergioBenitez/Rocket?rev=55459db7732b9a240826a5c120c650f87e3372ce#55459db7)
 │   │   ├── base64 v0.9.3 (*)
 │   │   ├── isatty v0.1.9 (*)
@@ -362,7 +319,12 @@ aardwolf v0.1.0 (file:///home/quixote/gits/aardwolf)
 │   │   │   └── rocket_http v0.4.0-dev (https://github.com/SergioBenitez/Rocket?rev=55459db7732b9a240826a5c120c650f87e3372ce#55459db7)
 │   │   │       ├── cookie v0.11.0-dev (https://github.com/alexcrichton/cookie-rs?rev=f191ca50#f191ca50)
 │   │   │       │   ├── base64 v0.9.3 (*)
-│   │   │       │   ├── ring v0.13.2 (*)
+│   │   │       │   ├── ring v0.13.2
+│   │   │       │   │   ├── lazy_static v1.1.0 (*)
+│   │   │       │   │   ├── libc v0.2.43 (*)
+│   │   │       │   │   └── untrusted v0.6.2
+│   │   │       │   │   [build-dependencies]
+│   │   │       │   │   └── cc v1.0.25 (*)
 │   │   │       │   ├── time v0.1.40 (*)
 │   │   │       │   └── url v1.7.1 (*)
 │   │   │       ├── hyper v0.10.13 (*)
@@ -380,14 +342,13 @@ aardwolf v0.1.0 (file:///home/quixote/gits/aardwolf)
 │   │   [build-dependencies]
 │   │   ├── version_check v0.1.5 (*)
 │   │   └── yansi v0.4.0 (*)
-│   ├── serde v1.0.79 (*)
 │   ├── serde_json v1.0.32 (*)
 │   └── tera v0.11.17
 │       ├── chrono v0.4.6 (*)
 │       ├── error-chain v0.12.0
 │       │   └── backtrace v0.3.9 (*)
 │       ├── glob v0.2.11 (*)
-│       ├── humansize v1.1.0
+│       ├── humansize v1.1.0 (*)
 │       ├── lazy_static v1.1.0 (*)
 │       ├── pest v2.0.1
 │       │   └── ucd-trie v0.1.1
@@ -421,8 +382,7 @@ aardwolf v0.1.0 (file:///home/quixote/gits/aardwolf)
 │       │   └── utf8-ranges v1.0.1 (*)
 │       ├── serde v1.0.79 (*)
 │       ├── serde_json v1.0.32 (*)
-│       ├── slug v0.1.4
-│       │   └── deunicode v0.4.3
+│       ├── slug v0.1.4 (*)
 │       ├── unic-segment v0.7.0
 │       │   └── unic-ucd-segment v0.7.0
 │       │       ├── unic-char-property v0.7.0
@@ -431,17 +391,6 @@ aardwolf v0.1.0 (file:///home/quixote/gits/aardwolf)
 │       │       └── unic-ucd-version v0.7.0
 │       │           └── unic-common v0.7.0
 │       └── url v1.7.1 (*)
-├── rocket_i18n v0.1.1 (https://github.com/BaptisteGelez/rocket_i18n?rev=75a3bfd7b847324c078a355a7f101f8241a9f59b#75a3bfd7)
-│   ├── gettext-rs v0.4.1
-│   │   ├── gettext-sys v0.19.8
-│   │   │   [build-dependencies]
-│   │   │   └── cc v1.0.25 (*)
-│   │   └── locale_config v0.2.2
-│   │       ├── lazy_static v0.2.11 (*)
-│   │       └── regex v0.2.11 (*)
-│   ├── rocket v0.4.0-dev (https://github.com/SergioBenitez/Rocket?rev=55459db7732b9a240826a5c120c650f87e3372ce#55459db7) (*)
-│   ├── serde_json v1.0.32 (*)
-│   └── tera v0.11.17 (*)
 ├── serde v1.0.79 (*)
 ├── serde_derive v1.0.79 (*)
 ├── simple-logging v2.0.1

@@ -39,21 +39,19 @@ collection_macros = "0.2.0"
 config = "0.8.0"
 derive_builder = "0.5.0"
 failure = "0.1.1"
+log = "0.4.1"
+pear = { git = "https://github.com/SergioBenitez/Pear" }
 r2d2 = "0.8"
 r2d2-diesel = "1.0"
-#ring = "0.13.2"
-rocket = "0.3.17"
-rocket_codegen = "0.3.17"
 serde = "1.0.21"
 serde_derive = "1.0.21"
+simple-logging = {version = "2.0.1", optional = true }
+syslog = { version = "4.0.0", optional = true }
+systemd = { version = "0.3.0", optional = true }
+tera = "0.11"
 url = "1.7"
 url_serde = "0.2"
 yaml-rust = "0.3.5"
-log = "0.4.1"
-syslog = { version = "4.0.0", optional = true }
-systemd = { version = "0.3.0", optional = true }
-simple-logging = {version = "2.0.1", optional = true}
-tera = "0.11"
 
 [dependencies.aardwolf-models]
 version = "0.1"
@@ -72,9 +70,17 @@ version = "1.1"
 default-features = false
 features = ["postgres", "uuid", "chrono"]
 
+[dependencies.rocket]
+git = "https://github.com/SergioBenitez/Rocket"
+rev = "46da03c3c3c0c39b0c35700c85b5085b61ddbad9"
+
+[dependencies.rocket_codegen]
+git = "https://github.com/SergioBenitez/Rocket"
+rev = "46da03c3c3c0c39b0c35700c85b5085b61ddbad9"
+
 [dependencies.rocket_contrib]
 git = "https://github.com/SergioBenitez/Rocket"
-rev = "55459db7732b9a240826a5c120c650f87e3372ce"
+rev = "46da03c3c3c0c39b0c35700c85b5085b61ddbad9"
 features = ["tera_templates", "json"]
 
 [dependencies.rocket_i18n]
