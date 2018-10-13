@@ -6,7 +6,7 @@
 address = "127.0.0.1"
 # Listen.port - What port to listen on for requests. This can be any valid port number,
 # NOTE: If you want to use port 80 or 443, you will have to run the service as root (sudo cargo run...)
-# Any port above 1024 does not require root/sudo priviledges (ex: 8080)
+# Ports above 1024 do not require root/sudo priviledges (ex: 8080)
 port = 80
 #port = 8080
 
