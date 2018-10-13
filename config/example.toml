@@ -6,6 +6,7 @@
 address = "127.0.0.1"
 # Listen.port - What port to listen on for requests. This can be any valid port number,
 # HTTP defaults to port 80, and https defaults to port 443.
+# NOTE: If you want to use port 80 or 443, you will have to run the service as root (sudo cargo run...)
 port = 80
 
 # Database - This section describes how and where to connect to the database.

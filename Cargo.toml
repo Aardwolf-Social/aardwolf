@@ -4,8 +4,6 @@ version = "0.1.0"
 authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Elijah Mark Anderson <kd0bpv@gmail.com>", "Paul Woolcock <paul@woolcock.us>", "Asonix <asonix.dev@gmail.com>"]
 description = "Powering connected social communities with free software."
 
-autobins = false
-
 [workspace]
 members = [
     "aardwolf-models",
@@ -43,7 +41,9 @@ derive_builder = "0.5.0"
 failure = "0.1.1"
 r2d2 = "0.8"
 r2d2-diesel = "1.0"
-ring = "0.13.0-alpha5"
+#ring = "0.13.2"
+rocket = "0.3.17"
+rocket_codegen = "0.3.17"
 serde = "1.0.21"
 serde_derive = "1.0.21"
 url = "1.7"
@@ -53,6 +53,7 @@ log = "0.4.1"
 syslog = { version = "4.0.0", optional = true }
 systemd = { version = "0.3.0", optional = true }
 simple-logging = {version = "2.0.1", optional = true}
+tera = "0.11"
 
 [dependencies.aardwolf-models]
 version = "0.1"
@@ -71,27 +72,14 @@ version = "1.1"
 default-features = false
 features = ["postgres", "uuid", "chrono"]
 
-[dependencies.rocket]
-rev = "a383d49ab0c224394353bae76a2b231287483cfe"
-git = "https://github.com/SergioBenitez/Rocket"
-
-[dependencies.rocket_codegen]
-git = "https://github.com/SergioBenitez/Rocket"
-rev = "a383d49ab0c224394353bae76a2b231287483cfe"
-
 [dependencies.rocket_contrib]
 git = "https://github.com/SergioBenitez/Rocket"
-rev = "a383d49ab0c224394353bae76a2b231287483cfe"
-default-features = false
+rev = "55459db7732b9a240826a5c120c650f87e3372ce"
 features = ["tera_templates", "json"]
-
-[dependencies.rocket_http]
-git = "https://github.com/SergioBenitez/Rocket"
-rev = "a383d49ab0c224394353bae76a2b231287483cfe"
 
 [dependencies.rocket_i18n]
 git = "https://github.com/BaptisteGelez/rocket_i18n"
-rev = "4ccd0b081d8c3774fc1d94147423d39ceb7bc672"
+rev = "75a3bfd7b847324c078a355a7f101f8241a9f59b"
 
 [dependencies.uuid]
 version = "0.6"
