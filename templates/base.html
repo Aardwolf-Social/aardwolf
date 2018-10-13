@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    {% block head %}
+		{% include "header.html" %}
+    {% endblock head %}
+</head>
+<body>
+
+	<!-- Begin Main Content -->	
+	{% block content %}
+		{% include "sign_up.html" %}
+	{% endblock content %}
+	<!-- End Main Content -->	
+	
+	<!-- Begin Footer -->	
+	{% block footer %}
+		{% include "footer.html" %}
+	{% endblock footer %}
+	<!-- End Footer -->	
+	
+</body>
+</html>
