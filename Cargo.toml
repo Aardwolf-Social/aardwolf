@@ -72,7 +72,8 @@ features = ["postgres", "uuid", "chrono"]
 
 [dependencies.rocket]
 git = "https://github.com/SergioBenitez/Rocket"
-rev = "46da03c3c3c0c39b0c35700c85b5085b61ddbad9"
+#rev = "46da03c3c3c0c39b0c35700c85b5085b61ddbad9"
+rev = "2839aca8ce1a95e47d678343410bc64d3e5938cf"
 
 [dependencies.rocket_codegen]
 git = "https://github.com/SergioBenitez/Rocket"
