@@ -40,7 +40,6 @@ config = "0.8.0"
 derive_builder = "0.5.0"
 failure = "0.1.1"
 log = "0.4.1"
-pear = { git = "https://github.com/SergioBenitez/Pear" }
 r2d2 = "0.8"
 r2d2-diesel = "1.0"
 serde = "1.0.21"
@@ -72,16 +71,11 @@ features = ["postgres", "uuid", "chrono"]
 
 [dependencies.rocket]
 git = "https://github.com/SergioBenitez/Rocket"
-#rev = "46da03c3c3c0c39b0c35700c85b5085b61ddbad9"
-rev = "2839aca8ce1a95e47d678343410bc64d3e5938cf"
-
-[dependencies.rocket_codegen]
-git = "https://github.com/SergioBenitez/Rocket"
-rev = "46da03c3c3c0c39b0c35700c85b5085b61ddbad9"
+branch = "master"
 
 [dependencies.rocket_contrib]
-git = "https://github.com/SergioBenitez/Rocket"
-rev = "46da03c3c3c0c39b0c35700c85b5085b61ddbad9"
+git = "https://github.com/SergioBenitez/Rocket" 
+rev = "0b2ece2f6563955155de362744bac843082b45a5"
 features = ["tera_templates", "json"]
 
 [dependencies.rocket_i18n]

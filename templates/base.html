@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 
 <html lang="en">
-<head>
-    {% block head %}
-		{% include "header.html" %}
-    {% endblock head %}
-</head>
-<body>
-
-	<!-- Begin Main Content -->	
-	{% block content %}
-		{% include "sign_up.html" %}
-	{% endblock content %}
-	<!-- End Main Content -->	
-	
-	<!-- Begin Footer -->	
-	{% block footer %}
-		{% include "footer.html" %}
-	{% endblock footer %}
-	<!-- End Footer -->	
-	
-</body>
+	<head>
+		{% block head %}
+		{% endblock head %}
+	</head>
+	<body>
+		<!-- Begin page Header -->	
+		{% block topNav %}
+		{% endblock topNav %}
+		<!-- End page Header -->
+		
+		<!-- Begin Main Content -->	
+		{% block content %}
+		{% endblock content %}
+		<!-- End Main Content -->	
+		
+		<!-- Begin Footer -->	
+		{% block footer %}
+		{% endblock footer %}
+		<!-- End Footer -->		
+	</body>
 </html>
