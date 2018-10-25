@@ -23,7 +23,15 @@ features = ["chrono", "postgres", "serde_json"]
 
 [dependencies.rocket]
 git = "https://github.com/SergioBenitez/Rocket"
-rev = "ad0ba0d5f1eba02fe09246ab2e1afee350857cf5"
+rev = "55459db7732b9a240826a5c120c650f87e3372ce"
+
+[dependencies.pear]
+git = "https://github.com/SergioBenitez/Pear"
+rev = "b4751403ed9a06bc813b662334f0a555eccae6a0"
+
+[dependencies.pear_codegen]
+git = "https://github.com/SergioBenitez/Pear"
+rev = "b4751403ed9a06bc813b662334f0a555eccae6a0"
 
 [dev-dependencies]
 dotenv = "0.13"
