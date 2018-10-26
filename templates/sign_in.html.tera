@@ -2,7 +2,7 @@
 <html>
 
     {% block html_head %}
-		{% include "html_head.html.tera" %}
+		{% include "header/html_head" %}
     {% endblock html_head %}
 
   <body>

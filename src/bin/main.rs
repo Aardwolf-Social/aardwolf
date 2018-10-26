@@ -88,7 +88,7 @@ fn app(config: config::Config) -> Result<Rocket, Error> {
         aardwolf::routes::personas::switch,
     ];
 
-    let r = rocket::custom(c, true)
+    let r = rocket::custom(c)
         .mount("/auth", auth)
         .mount("/personas", personas)
         .mount(

@@ -18,6 +18,7 @@ extern crate failure;
 extern crate r2d2;
 extern crate r2d2_diesel;
 extern crate ring;
+#[macro_use]
 extern crate rocket;
 extern crate rocket_contrib;
 extern crate serde;
