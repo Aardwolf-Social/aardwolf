@@ -74,6 +74,7 @@ impl StdError for FollowPolicyParseError {
     }
 }
 
+#[cfg(feature = "rocket")]
 mod rocket {
     use std::str::Utf8Error;
 

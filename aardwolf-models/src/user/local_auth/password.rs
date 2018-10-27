@@ -124,6 +124,7 @@ impl ValidationError {
 #[derive(Deserialize)]
 pub struct PlaintextPassword(String);
 
+#[cfg(feature = "rocket")]
 mod rocket {
     use std::str::Utf8Error;
 

@@ -43,6 +43,7 @@ impl FromStr for Url {
     }
 }
 
+#[cfg(feature = "rocket")]
 mod rocket {
     use std::str::Utf8Error;
 
