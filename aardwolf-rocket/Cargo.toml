@@ -21,8 +21,6 @@ rocket = "0.3.17"
 rocket_codegen = "0.3.17"
 serde = "1.0.21"
 serde_derive = "1.0.21"
-url = "1.7"
-url_serde = "0.2"
 yaml-rust = "0.3.5"
 log = "0.4.1"
 # Use syslog for writing logs. Conflicts with use-systemd and log-* features.
@@ -38,6 +36,11 @@ simple-logging = {version = "2.0.1", optional = true}
 version = "0.1"
 path = "../aardwolf-models"
 features = ["rocket"]
+
+[dependencies.aardwolf-types]
+version = "0.1"
+path = "../aardwolf-types"
+features = ["use-rocket"]
 
 [dependencies.chrono]
 version = "0.4"

@@ -1,8 +1,10 @@
 use rocket::request::Form;
 
 use controllers::personas::PersonaDeletionFail;
-use forms::personas::{PersonaCreationFail, PersonaCreationForm};
-use types::SignedInUser;
+use aardwolf_types::{
+    SignedInUser,
+    forms::personas::{PersonaCreationFail, PersonaCreationForm},
+};
 use DbConn;
 
 #[get("/new")]

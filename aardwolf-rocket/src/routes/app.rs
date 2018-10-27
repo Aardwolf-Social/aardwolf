@@ -6,7 +6,7 @@ use rocket::response::{
 };
 use rocket_contrib::Template;
 
-use types::SignedInUserWithEmail;
+use aardwolf_types::SignedInUserWithEmail;
 use DbConn;
 
 #[get("/")]

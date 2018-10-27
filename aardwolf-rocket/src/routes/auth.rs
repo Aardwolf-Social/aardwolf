@@ -7,8 +7,10 @@ use rocket::{
 };
 use rocket_contrib::Template;
 
-use forms::auth::{SignInForm, SignUpForm};
-use types::SignedInUser;
+use aardwolf_types::{
+    SignedInUser,
+    forms::auth::{SignInForm, SignUpForm},
+};
 use DbConn;
 
 #[derive(FromForm)]

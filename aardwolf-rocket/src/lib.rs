@@ -4,13 +4,12 @@
 #![plugin(rocket_codegen)]
 
 extern crate aardwolf_models;
+extern crate aardwolf_types;
 extern crate bcrypt;
 extern crate bs58;
 extern crate chrono;
 #[macro_use]
 extern crate collection_macros;
-#[macro_use]
-extern crate derive_builder;
 extern crate diesel;
 #[macro_use]
 extern crate failure;
@@ -22,8 +21,6 @@ extern crate rocket_contrib;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
-extern crate url;
-extern crate url_serde;
 extern crate uuid;
 
 use diesel::pg::PgConnection;
@@ -36,9 +33,7 @@ use rocket::{
 use std::ops::Deref;
 
 pub mod controllers;
-pub mod forms;
 pub mod routes;
-pub mod types;
 
 pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 

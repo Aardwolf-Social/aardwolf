@@ -5,11 +5,11 @@ use aardwolf_models::user::{
 };
 use diesel::{self, pg::PgConnection, Connection};
 
-use forms::traits::Validate;
+use crate::forms::traits::Validate;
 
 #[derive(Fail, Debug)]
 #[fail(display = "There was an error validating the form")]
-pub(crate) struct SignUpFormValidationFail {
+pub struct SignUpFormValidationFail {
     pub email_length: bool,
     pub password_match: bool,
     pub password_length: bool,
@@ -25,8 +25,9 @@ impl From<ValidationError> for SignUpFormValidationFail {
     }
 }
 
-#[derive(Debug, FromForm)]
-pub(crate) struct SignUpForm {
+#[derive(Debug)]
+#[cfg_attr(feature = "use-rocket", derive(FromForm))]
+pub struct SignUpForm {
     pub csrf_token: String,
     pub email: String,
     pub password: PlaintextPassword,
@@ -51,7 +52,7 @@ impl Validate<ValidatedSignupForm, SignUpFormValidationFail> for SignUpForm {
     }
 }
 
-pub(crate) struct ValidatedSignupForm {
+pub struct ValidatedSignupForm {
     email: String,
     password: PlaintextPassword,
     password_confirmation: PlaintextPassword,
@@ -87,7 +88,7 @@ impl ValidatedSignupForm {
 }
 
 #[derive(Fail, Debug)]
-pub(crate) enum SignUpFail {
+pub enum SignUpFail {
     #[fail(display = "Sign up failed because {}", _0)]
     ValidationError(#[cause] SignUpFormValidationFail),
     #[fail(display = "Failed to insert local_auth into database")]
@@ -136,13 +137,14 @@ impl From<CreationError> for SignUpFail {
 }
 
 #[derive(Fail, Debug)]
-pub(crate) enum SignInFormValidationFail {
+pub enum SignInFormValidationFail {
     #[fail(display = "Field `email` is required")]
     EmptyEmailError,
 }
 
-#[derive(Debug, FromForm)]
-pub(crate) struct SignInForm {
+#[derive(Debug)]
+#[cfg_attr(feature = "use-rocket", derive(FromForm))]
+pub struct SignInForm {
     pub csrf_token: String,
     pub email: String,
     pub password: PlaintextPassword,
@@ -161,7 +163,7 @@ impl Validate<ValidatedSignInForm, SignInFormValidationFail> for SignInForm {
     }
 }
 
-pub(crate) struct ValidatedSignInForm {
+pub struct ValidatedSignInForm {
     email: String,
     password: PlaintextPassword,
 }
@@ -178,7 +180,7 @@ impl ValidatedSignInForm {
 }
 
 #[derive(Fail, Debug)]
-pub(crate) enum SignInFail {
+pub enum SignInFail {
     #[fail(display = "Sign up failed because {}", _0)]
     ValidationError(SignInFormValidationFail),
     // this is the generic "login failed" error the user will see

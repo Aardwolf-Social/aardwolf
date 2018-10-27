@@ -4,7 +4,7 @@ use aardwolf_models::{
 };
 use diesel::{pg::PgConnection, result::Error as DieselError};
 
-use forms::{
+use aardwolf_types::forms::{
     personas::{PersonaCreationFail, PersonaCreationForm},
     traits::Validate,
 };

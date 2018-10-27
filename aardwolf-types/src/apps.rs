@@ -1,4 +1,4 @@
-use types::scope::Scope;
+use crate::scope::Scope;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct App<'a> {

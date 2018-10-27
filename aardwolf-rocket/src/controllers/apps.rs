@@ -1,4 +1,4 @@
-use types::apps::{App, AppId, AppIdBuilder};
+use aardwolf_types::apps::{App, AppId, AppIdBuilder};
 
 #[derive(Fail, Debug)]
 #[fail(display = "Failed to create app.")]

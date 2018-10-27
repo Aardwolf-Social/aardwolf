@@ -6,10 +6,11 @@ use aardwolf_models::{
 use diesel::{pg::PgConnection, result::Error as DieselError};
 use url::ParseError as UrlParseError;
 
-use forms::traits::Validate;
+use crate::forms::traits::Validate;
 
-#[derive(Debug, FromForm)]
-pub(crate) struct PersonaCreationForm {
+#[derive(Debug)]
+#[cfg_attr(feature = "use-rocket", derive(FromForm))]
+pub struct PersonaCreationForm {
     display_name: String,
     follow_policy: FollowPolicy,
     default_visibility: PostVisibility,

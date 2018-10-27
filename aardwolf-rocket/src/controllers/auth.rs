@@ -4,7 +4,7 @@ use aardwolf_models::user::{
 };
 use diesel::pg::PgConnection;
 
-use forms::{
+use aardwolf_types::forms::{
     auth::{SignInFail, SignInForm, SignUpFail, SignUpForm},
     traits::Validate,
 };

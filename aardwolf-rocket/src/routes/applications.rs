@@ -3,14 +3,14 @@ use failure::Error;
 use rocket_contrib::Json;
 
 use controllers;
-use types::{
+use aardwolf_types::{
     apps::{App, AppId},
     scope::Scope,
 };
 
 mod deser_scope {
     use serde::{self, Deserialize, Deserializer};
-    use types::scope::Scope;
+    use aardwolf_types::scope::Scope;
 
     pub(crate) fn deserialize<'de, D>(deserializer: D) -> Result<Scope, D::Error>
     where
