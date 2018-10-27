@@ -7,7 +7,8 @@ description = "Powering connected social communities with free software."
 [workspace]
 members = [
     "aardwolf-models",
-    "aardwolf-rocket"
+    "aardwolf-rocket",
+    "aardwolf-actix"
 ]
 
 [features]
