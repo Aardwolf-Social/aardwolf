@@ -1,20 +1,18 @@
 #![feature(plugin)]
-#![feature(custom_derive)]
 #![plugin(rocket_codegen)]
 
+extern crate aardwolf;
+extern crate aardwolf_rocket;
 #[macro_use]
 extern crate clap;
 extern crate config;
 extern crate diesel;
-#[macro_use]
 extern crate failure;
+extern crate log;
 extern crate r2d2;
 extern crate r2d2_diesel;
-// extern crate ring;
-extern crate log;
 extern crate rocket;
 extern crate rocket_contrib;
-extern crate serde;
 extern crate yaml_rust;
 
 #[cfg(feature = "log-simple")]
@@ -24,16 +22,12 @@ extern crate syslog;
 #[cfg(feature = "use-systemd")]
 extern crate systemd;
 
-extern crate _aardwolf as aardwolf;
-
-mod common;
-use common::{configure, db_conn_string};
+use aardwolf::{configure, db_conn_string};
 
 use failure::Error;
 // use ring::rand::SystemRandom;
 use clap::App;
 use diesel::pg::PgConnection;
-use log::LevelFilter;
 use r2d2_diesel::ConnectionManager;
 use rocket::Rocket;
 use rocket_contrib::Template;
@@ -56,36 +50,36 @@ fn app(config: config::Config) -> Result<Rocket, Error> {
         .unwrap();
 
     let mut routes = routes![
-        aardwolf::routes::app::home,
-        aardwolf::routes::app::home_redirect,
+        aardwolf_rocket::routes::app::home,
+        aardwolf_rocket::routes::app::home_redirect,
     ];
 
     #[cfg(debug_assertions)]
     routes.extend(routes![
         // webroot/favicon
-        aardwolf::routes::app::webroot,
+        aardwolf_rocket::routes::app::webroot,
         // emoji
-        aardwolf::routes::app::emoji,
+        aardwolf_rocket::routes::app::emoji,
         // themes
-        aardwolf::routes::app::themes,
+        aardwolf_rocket::routes::app::themes,
     ]);
 
     let auth = routes![
-        aardwolf::routes::auth::sign_up_form,
-        aardwolf::routes::auth::sign_up_form_with_error,
-        aardwolf::routes::auth::sign_in_form,
-        aardwolf::routes::auth::sign_in_form_with_error,
-        aardwolf::routes::auth::sign_up,
-        aardwolf::routes::auth::sign_in,
-        aardwolf::routes::auth::confirm,
-        aardwolf::routes::auth::sign_out,
+        aardwolf_rocket::routes::auth::sign_up_form,
+        aardwolf_rocket::routes::auth::sign_up_form_with_error,
+        aardwolf_rocket::routes::auth::sign_in_form,
+        aardwolf_rocket::routes::auth::sign_in_form_with_error,
+        aardwolf_rocket::routes::auth::sign_up,
+        aardwolf_rocket::routes::auth::sign_in,
+        aardwolf_rocket::routes::auth::confirm,
+        aardwolf_rocket::routes::auth::sign_out,
     ];
 
     let personas = routes![
-        aardwolf::routes::personas::new,
-        aardwolf::routes::personas::create,
-        aardwolf::routes::personas::delete,
-        aardwolf::routes::personas::switch,
+        aardwolf_rocket::routes::personas::new,
+        aardwolf_rocket::routes::personas::create,
+        aardwolf_rocket::routes::personas::delete,
+        aardwolf_rocket::routes::personas::switch,
     ];
 
     let r = rocket::custom(c, true)
@@ -93,7 +87,7 @@ fn app(config: config::Config) -> Result<Rocket, Error> {
         .mount("/personas", personas)
         .mount(
             "/api/v1",
-            routes![aardwolf::routes::applications::register_application],
+            routes![aardwolf_rocket::routes::applications::register_application],
         )
         .mount("/", routes)
         .attach(Template::fairing());
@@ -113,20 +107,27 @@ fn cli<'a, 'b>(yaml: &'a yaml_rust::yaml::Yaml) -> App<'a, 'b> {
         .about(env!("CARGO_PKG_DESCRIPTION"))
 }
 
-#[cfg(feature = "log-simple")]
+#[cfg(not(any(feature = "simple-logger", feature = "syslog", feature = "systemd")))]
+fn begin_log(_config: &config::Config) {
+    // TODO: Implement no feature logging
+}
+
+#[cfg(feature = "simple-logger")]
 fn begin_log(config: &config::Config) {
+    use log::LevelFilter;
+
     match config.get_str("log_file").unwrap().as_ref() {
         "_CONSOLE_" => (),
         l => simple_logging::log_to_file(l, LevelFilter::Info).unwrap(),
     }
 }
 
-#[cfg(feature = "log-syslog")]
+#[cfg(feature = "syslog")]
 fn begin_log(config: &config::Config) {
     // TODO: Implement log-syslog:begin_log()
 }
 
-#[cfg(feature = "use-systemd")]
+#[cfg(feature = "systemd")]
 fn begin_log(config: &config::Config) {
     // TODO: Implement use-systemd:begin_log()
 }
