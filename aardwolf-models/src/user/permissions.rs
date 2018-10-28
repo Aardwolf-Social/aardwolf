@@ -407,7 +407,8 @@ impl<'a> CommentMaker<'a> {
                         .get_result(conn)
                         .map(|comment: Comment| (base_post, post, comment))
                 })
-        }).map_err(From::from)
+        })
+        .map_err(From::from)
     }
 }
 
@@ -548,17 +549,19 @@ impl<'a, U: UserLike> LocalPersonaCreator<'a, U> {
                 Some(self.0),
                 follow_policy,
                 json!({}),
-            ).insert(conn)
-                .and_then(|base_actor| {
-                    NewPersona::new(
-                        default_visibility,
-                        is_searchable,
-                        avatar,
-                        shortname,
-                        &base_actor,
-                    ).insert(conn)
-                        .map(|persona| (base_actor, persona))
-                })
+            )
+            .insert(conn)
+            .and_then(|base_actor| {
+                NewPersona::new(
+                    default_visibility,
+                    is_searchable,
+                    avatar,
+                    shortname,
+                    &base_actor,
+                )
+                .insert(conn)
+                .map(|persona| (base_actor, persona))
+            })
         })
     }
 }

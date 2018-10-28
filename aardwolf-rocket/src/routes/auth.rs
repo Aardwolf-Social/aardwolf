@@ -1,4 +1,3 @@
-use aardwolf_models::user::email::EmailVerificationToken;
 // use ring::rand::SystemRandom;
 use rocket::{
     http::{Cookie, Cookies},
@@ -7,16 +6,11 @@ use rocket::{
 };
 use rocket_contrib::Template;
 
-use aardwolf_types::{
-    SignedInUser,
-    forms::auth::{SignInForm, SignUpForm},
+use aardwolf_types::forms::auth::{
+    ConfirmError, ConfirmToken, SignInError, SignInForm, SignUpError, SignUpForm,
 };
+use types::user::SignedInUser;
 use DbConn;
-
-#[derive(FromForm)]
-struct SignUpError {
-    msg: String,
-}
 
 #[get("/sign_up?<error>")]
 fn sign_up_form_with_error(error: SignUpError) -> Template {
@@ -31,11 +25,6 @@ fn sign_up_form_with_error(error: SignUpError) -> Template {
 fn sign_up_form() -> Template {
     let token = "some csrf token";
     Template::render("sign_up", hashmap!{ "token" => token })
-}
-
-#[derive(FromForm)]
-struct SignInError {
-    msg: String,
 }
 
 #[get("/sign_in?<error>")]
@@ -85,21 +74,9 @@ fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redirect
     }
 }
 
-#[derive(FromForm)]
-struct ConfirmToken {
-    pub id: i32,
-    pub token: EmailVerificationToken,
-}
-
-#[derive(Debug, Fail)]
-#[fail(display = "Failed to confirm account")]
-struct ConfirmError;
-
 #[get("/confirmation?<token>")]
 fn confirm(token: ConfirmToken, db: DbConn) -> Result<Redirect, ConfirmError> {
-    use controllers::auth;
-
-    Ok(match auth::confirm_account(token.id, token.token, &db) {
+    Ok(match token.confirm_account(&db) {
         Ok(_) => Redirect::to("/auth/sign_in"),
         Err(e) => {
             println!("unable to confirm account: {:#?}", e);

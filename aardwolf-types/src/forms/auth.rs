@@ -1,13 +1,13 @@
 use aardwolf_models::user::{
-    email::{CreationError, EmailToken, NewEmail, UnverifiedEmail},
+    email::{CreationError, EmailToken, EmailVerificationToken, NewEmail, UnverifiedEmail},
     local_auth::{NewLocalAuth, PasswordCreationError, PlaintextPassword, ValidationError},
     {AuthenticatedUser, NewUser, UnauthenticatedUser},
 };
 use diesel::{self, pg::PgConnection, Connection};
 
-use crate::forms::traits::Validate;
+use crate::forms::traits::{DbAction, Validate};
 
-#[derive(Fail, Debug)]
+#[derive(Fail, Debug, Deserialize, Serialize)]
 #[fail(display = "There was an error validating the form")]
 pub struct SignUpFormValidationFail {
     pub email_length: bool,
@@ -25,7 +25,19 @@ impl From<ValidationError> for SignUpFormValidationFail {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "use-rocket", derive(FromForm))]
+pub struct SignUpError {
+    pub msg: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "use-rocket", derive(FromForm))]
+pub struct SignInError {
+    pub msg: String,
+}
+
+#[derive(Debug, Deserialize)]
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]
 pub struct SignUpForm {
     pub csrf_token: String,
@@ -34,8 +46,8 @@ pub struct SignUpForm {
     pub password_confirmation: PlaintextPassword,
 }
 
-impl Validate<ValidatedSignupForm, SignUpFormValidationFail> for SignUpForm {
-    fn validate(self) -> Result<ValidatedSignupForm, SignUpFormValidationFail> {
+impl Validate<ValidatedSignUpForm, SignUpFormValidationFail> for SignUpForm {
+    fn validate(self) -> Result<ValidatedSignUpForm, SignUpFormValidationFail> {
         if self.email.is_empty() {
             Err(SignUpFormValidationFail {
                 email_length: true,
@@ -43,7 +55,7 @@ impl Validate<ValidatedSignupForm, SignUpFormValidationFail> for SignUpForm {
                 password_length: false,
             })
         } else {
-            Ok(ValidatedSignupForm {
+            Ok(ValidatedSignUpForm {
                 email: self.email,
                 password: self.password,
                 password_confirmation: self.password_confirmation,
@@ -52,13 +64,19 @@ impl Validate<ValidatedSignupForm, SignUpFormValidationFail> for SignUpForm {
     }
 }
 
-pub struct ValidatedSignupForm {
+pub struct ValidatedSignUpForm {
     email: String,
     password: PlaintextPassword,
     password_confirmation: PlaintextPassword,
 }
 
-impl ValidatedSignupForm {
+impl DbAction<(UnverifiedEmail, EmailToken), SignUpFail> for ValidatedSignUpForm {
+    fn db_action(self, conn: &PgConnection) -> Result<(UnverifiedEmail, EmailToken), SignUpFail> {
+        self.create_user_and_auth(conn)
+    }
+}
+
+impl ValidatedSignUpForm {
     pub fn create_user_and_auth(
         self,
         db: &PgConnection,
@@ -142,7 +160,7 @@ pub enum SignInFormValidationFail {
     EmptyEmailError,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]
 pub struct SignInForm {
     pub csrf_token: String,
@@ -166,6 +184,12 @@ impl Validate<ValidatedSignInForm, SignInFormValidationFail> for SignInForm {
 pub struct ValidatedSignInForm {
     email: String,
     password: PlaintextPassword,
+}
+
+impl DbAction<AuthenticatedUser, SignInFail> for ValidatedSignInForm {
+    fn db_action(self, conn: &PgConnection) -> Result<AuthenticatedUser, SignInFail> {
+        self.sign_in(conn)
+    }
 }
 
 impl ValidatedSignInForm {
@@ -197,5 +221,113 @@ impl From<SignInFormValidationFail> for SignInFail {
 impl From<diesel::result::Error> for SignInFail {
     fn from(_: diesel::result::Error) -> Self {
         SignInFail::GenericLoginError
+    }
+}
+
+#[derive(Debug, Fail)]
+pub enum ConfirmAccountFail {
+    #[fail(display = "email was not found")]
+    EmailNotFound,
+    #[fail(display = "account already confirmed")]
+    Confirmed,
+    #[fail(display = "Failed to lookup newly created user")]
+    UserLookup,
+    #[fail(display = "Failed to verify email")]
+    Verify,
+}
+
+#[derive(Debug, Deserialize)]
+#[cfg_attr(feature = "use-rocket", derive(FromForm))]
+pub struct ConfirmToken {
+    id: i32,
+    token: EmailVerificationToken,
+}
+
+impl DbAction<AuthenticatedUser, ConfirmAccountFail> for ConfirmToken {
+    fn db_action(self, conn: &PgConnection) -> Result<AuthenticatedUser, ConfirmAccountFail> {
+        self.confirm_account(conn)
+    }
+}
+
+impl ConfirmToken {
+    pub fn confirm_account(
+        self,
+        db: &PgConnection,
+    ) -> Result<AuthenticatedUser, ConfirmAccountFail> {
+        let (unauthenticated_user, email) = UnauthenticatedUser::by_email_id(self.id, db)
+            .map_err(|_| ConfirmAccountFail::EmailNotFound)?;
+
+        let user = match unauthenticated_user
+            .to_verified(db)
+            .map_err(|_| ConfirmAccountFail::UserLookup)?
+        {
+            Ok(_unauthenticatec_user) => return Err(ConfirmAccountFail::Confirmed),
+            Err(unverified_user) => unverified_user,
+        };
+
+        let email = match email.to_verified() {
+            Ok(_verified_email) => return Err(ConfirmAccountFail::Confirmed),
+            Err(unverified_email) => unverified_email,
+        };
+
+        let (user, _email) = user
+            .verify(email, self.token)
+            .map_err(|_| ConfirmAccountFail::Verify)?
+            .store_verify(db)
+            .map_err(|_| ConfirmAccountFail::Confirmed)?;
+
+        Ok(user)
+    }
+}
+
+#[derive(Debug, Fail)]
+#[fail(display = "Failed to confirm account")]
+pub struct ConfirmError;
+
+#[cfg(feature = "use-actix")]
+mod actix {
+    use actix_web::{dev::FormConfig, error::ResponseError, Form, FromRequest, HttpRequest};
+    use futures::Future;
+
+    use crate::forms::{
+        auth::{
+            ConfirmError, SignInFail, SignInForm, SignInFormValidationFail, SignUpFail, SignUpForm,
+            SignUpFormValidationFail, ValidatedSignInForm, ValidatedSignUpForm,
+        },
+        traits::Validate,
+    };
+
+    impl ResponseError for ConfirmError {}
+    impl ResponseError for SignInFail {}
+    impl ResponseError for SignInFormValidationFail {}
+    impl ResponseError for SignUpFail {}
+    impl ResponseError for SignUpFormValidationFail {}
+
+    impl<S> FromRequest<S> for ValidatedSignInForm
+    where
+        S: 'static,
+    {
+        type Config = ();
+        type Result = Box<dyn Future<Item = Self, Error = actix_web::error::Error>>;
+
+        fn from_request(req: &HttpRequest<S>, _: &Self::Config) -> Self::Result {
+            Box::new(Form::from_request(req, &FormConfig::default()).and_then(
+                |form: Form<SignInForm>| form.into_inner().validate().map_err(From::from),
+            ))
+        }
+    }
+
+    impl<S> FromRequest<S> for ValidatedSignUpForm
+    where
+        S: 'static,
+    {
+        type Config = ();
+        type Result = Box<dyn Future<Item = Self, Error = actix_web::error::Error>>;
+
+        fn from_request(req: &HttpRequest<S>, _: &Self::Config) -> Self::Result {
+            Box::new(Form::from_request(req, &FormConfig::default()).and_then(
+                |form: Form<SignUpForm>| form.into_inner().validate().map_err(From::from),
+            ))
+        }
     }
 }

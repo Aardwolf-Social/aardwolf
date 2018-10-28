@@ -1,6 +1,10 @@
 use std::{error::Error as StdError, fmt, io::Write, str::FromStr};
 
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
+use serde::{
+    de::{Deserialize, Deserializer},
+    ser::{Serialize, Serializer},
+};
 
 #[derive(AsExpression, Clone, Copy, Debug, Eq, FromSqlRow, Hash, PartialEq)]
 #[sql_type = "Text"]
@@ -20,6 +24,15 @@ impl fmt::Display for FollowPolicy {
     }
 }
 
+impl Serialize for FollowPolicy {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
 impl FromStr for FollowPolicy {
     type Err = FollowPolicyParseError;
 
@@ -30,6 +43,16 @@ impl FromStr for FollowPolicy {
             "MANUAL" => Ok(FollowPolicy::ManualReview),
             _ => Err(FollowPolicyParseError),
         }
+    }
+}
+
+impl<'de> Deserialize<'de> for FollowPolicy {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        s.parse::<FollowPolicy>().map_err(serde::de::Error::custom)
     }
 }
 

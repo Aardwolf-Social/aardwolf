@@ -25,8 +25,8 @@ fn cli<'a, 'b>(yaml: &'a yaml_rust::yaml::Yaml) -> App<'a, 'b> {
 
 #[cfg(feature = "rocket")]
 mod rocket {
-    use std::error::Error;
     use config::Config;
+    use std::error::Error;
 
     pub fn run(config: Config, db_url: String) -> Result<(), Box<dyn Error>> {
         aardwolf_rocket::run(config, db_url)
@@ -35,8 +35,8 @@ mod rocket {
 
 #[cfg(feature = "actix")]
 mod actix {
-    use std::error::Error;
     use config::Config;
+    use std::error::Error;
 
     pub fn run(config: Config, db_url: String) -> Result<(), Box<dyn Error>> {
         aardwolf_actix::run(config, db_url)
@@ -60,4 +60,3 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
-

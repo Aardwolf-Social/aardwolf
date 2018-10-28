@@ -1,7 +1,7 @@
 extern crate clap;
 extern crate config;
-extern crate log;
 extern crate failure;
+extern crate log;
 
 use std::{env, fmt};
 
@@ -111,7 +111,10 @@ pub fn db_conn_string(config: &Config) -> Result<String, Error> {
 }
 
 #[derive(Debug, Fail)]
-#[fail(display = "Configuration was missing exected keys: [{:?}]", _0)]
+#[fail(
+    display = "Configuration was missing exected keys: [{:?}]",
+    _0
+)]
 pub struct MissingKeys(Vec<String>);
 
 #[derive(Debug)]

@@ -16,30 +16,21 @@ pub enum Scope {
 impl Scope {
     pub fn read(&self) -> bool {
         match *self {
-            Scope::Read
-            | Scope::ReadWrite
-            | Scope::ReadFollow
-            | Scope::ReadWriteFollow => true,
+            Scope::Read | Scope::ReadWrite | Scope::ReadFollow | Scope::ReadWriteFollow => true,
             _ => false,
         }
     }
 
     pub fn write(&self) -> bool {
         match *self {
-            Scope::Write
-            | Scope::ReadWrite
-            | Scope::WriteFollow
-            | Scope::ReadWriteFollow => true,
+            Scope::Write | Scope::ReadWrite | Scope::WriteFollow | Scope::ReadWriteFollow => true,
             _ => false,
         }
     }
 
     pub fn follow(&self) -> bool {
         match *self {
-            Scope::Follow
-            | Scope::ReadFollow
-            | Scope::WriteFollow
-            | Scope::ReadWriteFollow => true,
+            Scope::Follow | Scope::ReadFollow | Scope::WriteFollow | Scope::ReadWriteFollow => true,
             _ => false,
         }
     }

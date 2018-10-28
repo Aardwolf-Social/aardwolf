@@ -1,20 +1,46 @@
+/*
 #[macro_use]
 extern crate log;
+*/
 
-use std::error::Error;
+#[macro_use]
+extern crate collection_macros;
+#[macro_use]
+extern crate failure;
 
-use actix::{Addr, SyncArbiter};
-use actix_web::{App, HttpRequest, server::HttpServer};
+use std::{error::Error, sync::Arc};
+
+use actix::{self, Addr, SyncArbiter};
+use actix_web::{
+    http::Method,
+    middleware::session::{CookieSessionBackend, SessionStorage},
+    server::HttpServer,
+    App,
+};
 use config::Config;
 use diesel::pg::PgConnection;
+use handlebars::Handlebars;
 use r2d2_diesel::ConnectionManager;
 
 pub mod db;
+pub mod error;
+pub mod routes;
+pub mod types;
 
 use self::db::{Db, Pool};
 
-pub struct State {
+#[derive(Clone)]
+pub struct AppConfig {
     db: Addr<Db>,
+    templates: Arc<Handlebars>,
+}
+
+impl AppConfig {
+    fn render<T: serde::Serialize>(&self, template: &str, data: &T) -> error::RenderResult {
+        self.templates
+            .render(template, data)
+            .map_err(|_| error::RenderError)
+    }
 }
 
 fn db_pool(database_url: String) -> Result<Pool, Box<dyn Error>> {
@@ -22,31 +48,65 @@ fn db_pool(database_url: String) -> Result<Pool, Box<dyn Error>> {
     Ok(r2d2::Pool::builder().build(manager)?)
 }
 
-fn index(_req: &HttpRequest<State>) -> &'static str {
-    "Hello world!"
-}
-
 pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
     let sys = actix::System::new("aardwolf-actix");
 
     let pool = db_pool(database_url)?;
 
-    let db = SyncArbiter::start(3, move || {
-        Db::new(pool.clone())
-    });
+    let db = SyncArbiter::start(3, move || Db::new(pool.clone()));
 
-    let listen_address = format!("{}:{}", config.get_str("Web.Listen.address")?, config.get_str("Web.Listen.port")?);
+    let listen_address = format!(
+        "{}:{}",
+        config.get_str("Web.Listen.address")?,
+        config.get_str("Web.Listen.port")?
+    );
+
+    let template_dir = config.get_str("Templates.dir")?;
+
+    let mut templates = Handlebars::new();
+    templates.register_templates_directory("hbs", &template_dir)?;
+
+    let templates = Arc::new(templates);
 
     HttpServer::new(move || {
-        let state = State {
+        let state = AppConfig {
             db: db.clone(),
+            templates: templates.clone(),
         };
 
-        App::with_state(state)
-            .resource("/", |r| r.f(index))
-    }).bind(&listen_address)?.run();
-
-    info!("listening on {}", listen_address);
+        vec![
+            App::with_state(state.clone())
+                .middleware(SessionStorage::new(
+                    CookieSessionBackend::signed(&[0; 32]).secure(false),
+                ))
+                .resource("/", |r| {
+                    r.method(Method::GET).with(self::routes::app::index)
+                }),
+            App::with_state(state.clone())
+                .prefix("/auth")
+                .middleware(SessionStorage::new(
+                    CookieSessionBackend::signed(&[0; 32]).secure(false),
+                ))
+                .resource("/sign_up", |r| {
+                    r.method(Method::GET)
+                        .with(self::routes::auth::sign_up_form_with_error);
+                    r.method(Method::POST).with(self::routes::auth::sign_up)
+                })
+                .resource("/sign_in", |r| {
+                    r.method(Method::GET)
+                        .with(self::routes::auth::sign_in_form_with_error);
+                    r.method(Method::POST).with(self::routes::auth::sign_in)
+                })
+                .resource("/confirmation", |r| {
+                    r.method(Method::GET).with(self::routes::auth::confirm)
+                })
+                .resource("/sign_out", |r| {
+                    r.method(Method::DELETE).with(self::routes::auth::sign_out)
+                }),
+        ]
+    })
+    .bind(&listen_address)?
+    .run();
 
     sys.run();
 

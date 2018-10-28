@@ -27,14 +27,14 @@ use r2d2_diesel::ConnectionManager;
 use rocket::{
     http::Status,
     request::{self, FromRequest},
-    Outcome, Request, State,
-    Rocket,
+    Outcome, Request, Rocket, State,
 };
 use rocket_contrib::Template;
 use std::{error::Error, ops::Deref};
 
 pub mod controllers;
 pub mod routes;
+pub mod types;
 
 pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
@@ -73,10 +73,7 @@ fn app(config: config::Config, db_url: String) -> Result<Rocket, Box<dyn Error>>
         .extra("database_url", db_url.as_str())
         .unwrap();
 
-    let mut routes = routes![
-        self::routes::app::home,
-        self::routes::app::home_redirect,
-    ];
+    let mut routes = routes![self::routes::app::home, self::routes::app::home_redirect,];
 
     #[cfg(debug_assertions)]
     routes.extend(routes![
@@ -127,4 +124,3 @@ pub fn run(config: config::Config, db_url: String) -> Result<(), Box<dyn Error>>
     app(config, db_url)?.launch();
     Ok(())
 }
-

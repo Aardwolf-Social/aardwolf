@@ -7,14 +7,24 @@ edition = "2018"
 [dependencies]
 actix = "0.7"
 actix-web = "0.7"
+collection_macros = "0.2.0"
 config = "0.8.0"
+failure = "0.1"
+futures = "0.1"
+handlebars = "1.1"
 log = "0.4"
 r2d2 = "0.8"
 r2d2-diesel = "1.0"
+serde = "1.0"
 
 [dependencies.aardwolf-models]
 version = "0.1"
 path = "../aardwolf-models"
+
+[dependencies.aardwolf-types]
+version = "0.1"
+path = "../aardwolf-types"
+features = ["use-actix"]
 
 [dependencies.diesel]
 version = "1.1"

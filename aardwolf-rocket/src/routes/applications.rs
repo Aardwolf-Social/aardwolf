@@ -2,11 +2,11 @@
 use failure::Error;
 use rocket_contrib::Json;
 
-use controllers;
 use aardwolf_types::{
-    apps::{AppId},
+    apps::AppId,
     forms::{app::CreateApp, traits::Validate},
 };
+use controllers;
 
 #[post("/apps", data = "<app>")]
 fn register_application(app: Json<CreateApp>) -> Result<Json<AppId>, Error> {

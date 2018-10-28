@@ -8,7 +8,7 @@ use url::ParseError as UrlParseError;
 
 use crate::forms::traits::Validate;
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]
 pub struct PersonaCreationForm {
     display_name: String,
@@ -33,7 +33,8 @@ impl Validate<ValidatedPersonaCreationForm, PersonaCreationFail> for PersonaCrea
             follow_policy: self.follow_policy,
             profile_url: format!("https://localhost:8000/users/{}", self.shortname).parse()?,
             inbox_url: format!("https://localhost:8000/users/{}/inbox", self.shortname).parse()?,
-            outbox_url: format!("https://localhost:8000/users/{}/outbox", self.shortname).parse()?,
+            outbox_url: format!("https://localhost:8000/users/{}/outbox", self.shortname)
+                .parse()?,
             default_visibility: self.default_visibility,
             shortname: self.shortname,
             is_searchable: self.is_searchable,
@@ -94,5 +95,32 @@ impl ValidatedPersonaCreationForm {
             self.shortname,
             db,
         )?)
+    }
+}
+
+#[cfg(feature = "use-actix")]
+mod actix {
+    use actix_web::{dev::FormConfig, error::ResponseError, Form, FromRequest, HttpRequest};
+    use futures::Future;
+
+    use crate::forms::{
+        personas::{PersonaCreationFail, PersonaCreationForm, ValidatedPersonaCreationForm},
+        traits::Validate,
+    };
+
+    impl ResponseError for PersonaCreationFail {}
+
+    impl<S> FromRequest<S> for ValidatedPersonaCreationForm
+    where
+        S: 'static,
+    {
+        type Config = ();
+        type Result = Box<dyn Future<Item = Self, Error = actix_web::error::Error>>;
+
+        fn from_request(req: &HttpRequest<S>, _: &Self::Config) -> Self::Result {
+            Box::new(Form::from_request(req, &FormConfig::default()).and_then(
+                |form: Form<PersonaCreationForm>| form.into_inner().validate().map_err(From::from),
+            ))
+        }
     }
 }

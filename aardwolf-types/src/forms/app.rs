@@ -40,3 +40,35 @@ impl Validate<App, CreateAppError> for CreateApp {
         })
     }
 }
+
+#[cfg(feature = "use-actix")]
+mod actix {
+    use actix_web::{dev::FormConfig, error::ResponseError, Form, FromRequest, HttpRequest};
+    use futures::Future;
+
+    use crate::{
+        apps::App,
+        forms::{
+            app::{CreateApp, CreateAppError},
+            traits::Validate,
+        },
+    };
+
+    impl ResponseError for CreateAppError {}
+
+    impl<S> FromRequest<S> for App
+    where
+        S: 'static,
+    {
+        type Config = ();
+        type Result = Box<dyn Future<Item = Self, Error = actix_web::error::Error>>;
+
+        fn from_request(req: &HttpRequest<S>, _: &Self::Config) -> Self::Result {
+            Box::new(
+                Form::from_request(req, &FormConfig::default()).and_then(
+                    |form: Form<CreateApp>| form.into_inner().validate().map_err(From::from),
+                ),
+            )
+        }
+    }
+}
