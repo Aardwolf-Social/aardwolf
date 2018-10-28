@@ -157,3 +157,28 @@ pub enum ErrorKind {
     #[fail(display = "Config struct cannot be modified")]
     ConfigImmutable,
 }
+
+#[cfg(not(any(feature = "simple-logger", feature = "syslog", feature = "systemd")))]
+pub fn begin_log(_config: &config::Config) {
+    // TODO: Implement no feature logging
+}
+
+#[cfg(feature = "simple-logger")]
+pub fn begin_log(config: &config::Config) {
+    use log::LevelFilter;
+
+    match config.get_str("log_file").unwrap().as_ref() {
+        "_CONSOLE_" => (),
+        l => simple_logging::log_to_file(l, LevelFilter::Info).unwrap(),
+    }
+}
+
+#[cfg(feature = "syslog")]
+pub fn begin_log(config: &config::Config) {
+    // TODO: Implement log-syslog:begin_log()
+}
+
+#[cfg(feature = "systemd")]
+pub fn begin_log(config: &config::Config) {
+    // TODO: Implement use-systemd:begin_log()
+}

@@ -1,4 +1,6 @@
-use std::str::FromStr;
+use std::{fmt, str::FromStr};
+
+use serde::{self, Deserialize, Deserializer, Serialize, Serializer};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Scope {
@@ -9,6 +11,77 @@ pub enum Scope {
     ReadFollow,
     WriteFollow,
     ReadWriteFollow,
+}
+
+impl Scope {
+    pub fn read(&self) -> bool {
+        match *self {
+            Scope::Read
+            | Scope::ReadWrite
+            | Scope::ReadFollow
+            | Scope::ReadWriteFollow => true,
+            _ => false,
+        }
+    }
+
+    pub fn write(&self) -> bool {
+        match *self {
+            Scope::Write
+            | Scope::ReadWrite
+            | Scope::WriteFollow
+            | Scope::ReadWriteFollow => true,
+            _ => false,
+        }
+    }
+
+    pub fn follow(&self) -> bool {
+        match *self {
+            Scope::Follow
+            | Scope::ReadFollow
+            | Scope::WriteFollow
+            | Scope::ReadWriteFollow => true,
+            _ => false,
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for Scope {
+    fn deserialize<D>(deserializer: D) -> Result<Scope, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        s.parse::<Scope>().map_err(serde::de::Error::custom)
+    }
+}
+
+impl Serialize for Scope {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl fmt::Display for Scope {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let read = "read";
+        let write = "write";
+        let follow = "follow";
+
+        let scope = match *self {
+            Scope::Read => vec![read],
+            Scope::Write => vec![write],
+            Scope::Follow => vec![follow],
+            Scope::ReadWrite => vec![read, write],
+            Scope::ReadFollow => vec![read, follow],
+            Scope::WriteFollow => vec![write, follow],
+            Scope::ReadWriteFollow => vec![read, write, follow],
+        };
+
+        write!(f, "{}", scope.join(" "))
+    }
 }
 
 #[derive(Debug, Fail)]

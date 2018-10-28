@@ -3,8 +3,6 @@ extern crate aardwolf;
 extern crate clap;
 extern crate config;
 extern crate failure;
-extern crate r2d2;
-extern crate rocket;
 
 use std::{
     error::Error as StdError,
