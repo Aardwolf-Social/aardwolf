@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate log;
+
 use std::error::Error;
 
 use actix::{Addr, SyncArbiter};
@@ -32,6 +35,8 @@ pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
         Db::new(pool.clone())
     });
 
+    let listen_address = format!("{}:{}", config.get_str("Web.Listen.address")?, config.get_str("Web.Listen.port")?);
+
     HttpServer::new(move || {
         let state = State {
             db: db.clone(),
@@ -39,7 +44,9 @@ pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
 
         App::with_state(state)
             .resource("/", |r| r.f(index))
-    }).bind(&format!("{}:{}", config.get_str("Web.Listen.address")?, config.get_str("Web.Listen.port")?))?.run();
+    }).bind(&listen_address)?.run();
+
+    info!("listening on {}", listen_address);
 
     sys.run();
 

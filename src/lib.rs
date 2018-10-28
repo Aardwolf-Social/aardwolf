@@ -1,5 +1,6 @@
 extern crate clap;
 extern crate config;
+extern crate log;
 extern crate failure;
 
 use std::{env, fmt};
@@ -158,16 +159,11 @@ pub enum ErrorKind {
     ConfigImmutable,
 }
 
-#[cfg(not(any(feature = "simple-logger", feature = "syslog", feature = "systemd")))]
-pub fn begin_log(_config: &config::Config) {
-    // TODO: Implement no feature logging
-}
-
-#[cfg(feature = "simple-logger")]
+#[cfg(feature = "simple-logging")]
 pub fn begin_log(config: &config::Config) {
     use log::LevelFilter;
 
-    match config.get_str("log_file").unwrap().as_ref() {
+    match config.get_str("Log.file").unwrap().as_ref() {
         "_CONSOLE_" => (),
         l => simple_logging::log_to_file(l, LevelFilter::Info).unwrap(),
     }

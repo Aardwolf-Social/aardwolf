@@ -21,6 +21,7 @@ actix = ["aardwolf-actix"]
 [dependencies]
 config = "0.8.0"
 failure = "0.1"
+log = "0.4"
 yaml-rust = "0.3.5"
 # Use simple log files or stdout/stderr. Conflicts with use-systemd and
 # log-* features.
