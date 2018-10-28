@@ -1,7 +1,11 @@
+extern crate clap;
+extern crate config;
+extern crate failure;
+
 use std::{env, fmt};
 
 use clap::App;
-use config::{self, Config, ConfigError};
+use config::{Config, ConfigError};
 use failure::{Backtrace, Context, Error, Fail, ResultExt};
 
 pub fn configure(app: App) -> Result<Config, Error> {
