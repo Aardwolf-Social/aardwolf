@@ -128,6 +128,7 @@ impl fmt::Display for EmailVerificationToken {
     }
 }
 
+#[cfg(feature = "rocket")]
 mod rocket {
     use std::str::Utf8Error;
 

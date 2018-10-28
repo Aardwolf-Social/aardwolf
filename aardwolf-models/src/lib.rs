@@ -11,6 +11,7 @@ extern crate failure;
 extern crate log;
 extern crate mime;
 extern crate rand;
+#[cfg(feature = "rocket")]
 extern crate rocket;
 extern crate serde;
 #[macro_use]

@@ -77,6 +77,7 @@ impl StdError for VisibilityParseError {
     }
 }
 
+#[cfg(feature = "rocket")]
 mod rocket {
     use std::str::Utf8Error;
 
