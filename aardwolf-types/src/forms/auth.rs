@@ -257,24 +257,47 @@ impl ConfirmToken {
         let (unauthenticated_user, email) = UnauthenticatedUser::by_email_id(self.id, db)
             .map_err(|_| ConfirmAccountFail::EmailNotFound)?;
 
+        info!(
+            "Found user and email, {:?} - {:?}",
+            unauthenticated_user, email
+        );
+
         let user = match unauthenticated_user
             .to_verified(db)
             .map_err(|_| ConfirmAccountFail::UserLookup)?
         {
-            Ok(_unauthenticatec_user) => return Err(ConfirmAccountFail::Confirmed),
+            Ok(unauthenticated_user) => {
+                error!("User already verified: {:?}", unauthenticated_user);
+                return Err(ConfirmAccountFail::Confirmed);
+            }
             Err(unverified_user) => unverified_user,
         };
 
+        info!("User is not yet verified");
+
         let email = match email.to_verified() {
-            Ok(_verified_email) => return Err(ConfirmAccountFail::Confirmed),
+            Ok(verified_email) => {
+                error!(
+                    "Tried to verify already verified email: {}",
+                    verified_email.email()
+                );
+                return Err(ConfirmAccountFail::Confirmed);
+            }
             Err(unverified_email) => unverified_email,
         };
+
+        info!("Email is not yet verified");
 
         let (user, _email) = user
             .verify(email, self.token)
             .map_err(|_| ConfirmAccountFail::Verify)?
             .store_verify(db)
-            .map_err(|_| ConfirmAccountFail::Confirmed)?;
+            .map_err(|e| {
+                error!("Could not store verified user: {}, {:?}", e, e);
+                ConfirmAccountFail::Confirmed
+            })?;
+
+        info!("Verified user and email");
 
         Ok(user)
     }

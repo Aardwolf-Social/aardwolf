@@ -95,8 +95,6 @@ impl Email {
     }
 }
 
-#[derive(AsChangeset)]
-#[table_name = "emails"]
 pub struct VerifyEmail {
     id: i32,
     email: String,
@@ -108,6 +106,15 @@ pub struct VerifyEmail {
     updated_at: DateTime<Utc>,
 }
 
+#[derive(AsChangeset)]
+#[table_name = "emails"]
+pub struct EmailVerificationChangeset {
+    id: i32,
+    verified: bool,
+    verification_token: Option<HashedEmailToken>,
+    confirmed_at: DateTime<Utc>,
+}
+
 impl VerifyEmail {
     pub(crate) fn store_verify(
         self,
@@ -117,7 +124,12 @@ impl VerifyEmail {
         use schema::emails;
 
         diesel::update(emails::table)
-            .set(&self)
+            .set(&EmailVerificationChangeset {
+                id: self.id,
+                verified: true,
+                verification_token: None,
+                confirmed_at: self.confirmed_at,
+            })
             .execute(conn)
             .map(|_| VerifiedEmail {
                 id: self.id,
@@ -125,6 +137,10 @@ impl VerifyEmail {
                 user_id: self.user_id,
                 created_at: self.created_at,
                 updated_at: self.updated_at,
+            })
+            .map_err(|e| {
+                error!("Failed to verify email: {}, {:?}", e, e);
+                e
             })
     }
 }

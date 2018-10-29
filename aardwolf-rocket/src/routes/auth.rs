@@ -49,7 +49,7 @@ fn sign_up(form: Form<SignUpForm>, db: DbConn) -> Redirect {
     match auth::create_user_and_account(form.into_inner(), &db) {
         Ok(_) => Redirect::to("/auth/sign_in"),
         Err(e) => {
-            println!("unable to create account: {:#?}", e);
+            println!("unable to create account: {}, {:?}", e, e);
             Redirect::to(&format!("/auth/sign_up?msg={}", e))
         }
     }
@@ -68,7 +68,7 @@ fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redirect
             Redirect::to("/")
         }
         Err(e) => {
-            println!("unable to log in: {:#?}", e);
+            println!("unable to log in: {}, {:?}", e, e);
             Redirect::to(&format!("/auth/sign_in?msg={}", e))
         }
     }
@@ -79,7 +79,7 @@ fn confirm(token: ConfirmToken, db: DbConn) -> Result<Redirect, ConfirmError> {
     Ok(match token.confirm_account(&db) {
         Ok(_) => Redirect::to("/auth/sign_in"),
         Err(e) => {
-            println!("unable to confirm account: {:#?}", e);
+            println!("unable to confirm account: {}, {:?}", e, e);
             return Err(ConfirmError);
         }
     })

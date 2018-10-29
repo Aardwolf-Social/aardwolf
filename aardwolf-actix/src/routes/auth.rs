@@ -134,7 +134,7 @@ pub(crate) fn confirm(
             .map(|_user| {
                 // do cookie things
                 HttpResponse::SeeOther()
-                    .header(LOCATION, "/auth/sign_in/")
+                    .header(LOCATION, "/auth/sign_in")
                     .finish()
             }),
     )
