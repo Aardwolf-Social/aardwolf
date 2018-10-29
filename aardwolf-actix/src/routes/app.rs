@@ -1,7 +1,4 @@
-use actix_web::{
-    http::header::{CONTENT_TYPE, LOCATION},
-    FromRequest, HttpRequest, HttpResponse, State,
-};
+use actix_web::{http::header::LOCATION, FromRequest, HttpRequest, HttpResponse, State};
 use futures::Future;
 
 use crate::{error::RenderResult, types::user::SignedInUserWithEmail, AppConfig};
@@ -11,9 +8,7 @@ pub(crate) fn index(
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
     Box::new(SignedInUserWithEmail::from_request(&req, &()).then(|res| {
         match res {
-            Ok(user) => logged_in_index((state, user))
-                .map(|s| HttpResponse::Ok().header(CONTENT_TYPE, "text/html").body(s))
-                .map_err(From::from),
+            Ok(user) => logged_in_index((state, user)).map_err(From::from),
             _ => Ok(HttpResponse::SeeOther()
                 .header(LOCATION, "/auth/sign_in")
                 .finish()),

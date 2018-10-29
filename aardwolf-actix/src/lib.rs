@@ -1,8 +1,5 @@
-/*
 #[macro_use]
 extern crate log;
-*/
-
 #[macro_use]
 extern crate collection_macros;
 #[macro_use]
@@ -12,10 +9,13 @@ use std::{error::Error, sync::Arc};
 
 use actix::{self, Addr, SyncArbiter};
 use actix_web::{
-    http::Method,
-    middleware::session::{CookieSessionBackend, SessionStorage},
+    http::{header::CONTENT_TYPE, Method},
+    middleware::{
+        session::{CookieSessionBackend, SessionStorage},
+        Logger,
+    },
     server::HttpServer,
-    App,
+    App, HttpResponse,
 };
 use config::Config;
 use diesel::pg::PgConnection;
@@ -39,7 +39,11 @@ impl AppConfig {
     fn render<T: serde::Serialize>(&self, template: &str, data: &T) -> error::RenderResult {
         self.templates
             .render(template, data)
-            .map_err(|_| error::RenderError)
+            .map(|s| HttpResponse::Ok().header(CONTENT_TYPE, "text/html").body(s))
+            .map_err(|e| {
+                error!("Unable to render template, {}", e);
+                error::RenderError
+            })
     }
 }
 
@@ -64,7 +68,7 @@ pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
     let template_dir = config.get_str("Templates.dir")?;
 
     let mut templates = Handlebars::new();
-    templates.register_templates_directory("hbs", &template_dir)?;
+    templates.register_templates_directory(".html.hbs", &template_dir)?;
 
     let templates = Arc::new(templates);
 
@@ -76,14 +80,8 @@ pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
 
         vec![
             App::with_state(state.clone())
-                .middleware(SessionStorage::new(
-                    CookieSessionBackend::signed(&[0; 32]).secure(false),
-                ))
-                .resource("/", |r| {
-                    r.method(Method::GET).with(self::routes::app::index)
-                }),
-            App::with_state(state.clone())
                 .prefix("/auth")
+                .middleware(Logger::default())
                 .middleware(SessionStorage::new(
                     CookieSessionBackend::signed(&[0; 32]).secure(false),
                 ))
@@ -102,6 +100,14 @@ pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
                 })
                 .resource("/sign_out", |r| {
                     r.method(Method::DELETE).with(self::routes::auth::sign_out)
+                }),
+            App::with_state(state.clone())
+                .middleware(Logger::default())
+                .middleware(SessionStorage::new(
+                    CookieSessionBackend::signed(&[0; 32]).secure(false),
+                ))
+                .resource("/", |r| {
+                    r.method(Method::GET).with(self::routes::app::index)
                 }),
         ]
     })

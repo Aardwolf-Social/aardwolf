@@ -1,6 +1,6 @@
-use actix_web::ResponseError;
+use actix_web::{HttpResponse, ResponseError};
 
-pub type RenderResult = Result<String, RenderError>;
+pub type RenderResult = Result<HttpResponse, RenderError>;
 
 #[derive(Clone, Debug, Fail)]
 #[fail(display = "Could not render template")]

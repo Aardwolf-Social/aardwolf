@@ -7,18 +7,19 @@ use futures::Future;
 use crate::{db::PerformDbAction, error::RenderResult, types::user::SignedInUser, AppConfig};
 
 pub(crate) fn sign_up_form_with_error(
-    (state, error): (State<AppConfig>, Query<Option<SignUpError>>),
+    (state, error): (State<AppConfig>, Option<Query<SignUpError>>),
 ) -> RenderResult {
     let token = "some csrf token";
 
     error
-        .into_inner()
         .map(|error| {
+            let msg = error.into_inner().msg;
+
             state.render(
                 "sign_up",
                 &hashmap!{
                     "token" => token,
-                    "error_msg" => error.msg.as_str(),
+                    "error_msg" => msg.as_str(),
                 },
             )
         })
@@ -37,18 +38,19 @@ fn sign_up_form(state: State<AppConfig>) -> RenderResult {
 }
 
 pub(crate) fn sign_in_form_with_error(
-    (state, error): (State<AppConfig>, Query<Option<SignInError>>),
+    (state, error): (State<AppConfig>, Option<Query<SignInError>>),
 ) -> RenderResult {
     let token = "some csrf token";
 
     error
-        .into_inner()
         .map(|error| {
+            let msg = error.into_inner().msg;
+
             state.render(
                 "sign_in",
                 &hashmap!{
                     "token" => token,
-                    "error_msg" => error.msg.as_str(),
+                    "error_msg" => msg.as_str(),
                 },
             )
         })

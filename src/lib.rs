@@ -168,7 +168,7 @@ pub fn begin_log(config: &config::Config) {
 
     match config.get_str("Log.file").unwrap().as_ref() {
         "_CONSOLE_" => (),
-        l => simple_logging::log_to_file(l, LevelFilter::Info).unwrap(),
+        l => simple_logging::log_to_file(l, LevelFilter::Debug).unwrap(),
     }
 }
 
