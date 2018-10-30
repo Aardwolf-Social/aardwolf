@@ -1,10 +1,16 @@
+use aardwolf_models::user::UserLike;
 use aardwolf_types::forms::auth::{
     ConfirmToken, SignInError, SignUpError, ValidatedSignInForm, ValidatedSignUpForm,
 };
-use actix_web::{http::header::LOCATION, HttpResponse, Query, State};
+use actix_web::{http::header::LOCATION, middleware::session::Session, HttpResponse, Query, State};
 use futures::Future;
 
-use crate::{db::PerformDbAction, error::RenderResult, types::user::SignedInUser, AppConfig};
+use crate::{
+    db::PerformDbAction,
+    error::{RedirectError, RenderResult},
+    types::user::SignedInUser,
+    AppConfig,
+};
 
 pub(crate) fn sign_up_form_with_error(
     (state, error): (State<AppConfig>, Option<Query<SignUpError>>),
@@ -92,12 +98,13 @@ pub(crate) fn sign_up(
                 HttpResponse::SeeOther()
                     .header(LOCATION, "/auth/sign_in")
                     .finish()
-            }),
+            })
+            .map_err(|_: actix_web::Error| RedirectError::new("/auth/sign_up").into()),
     )
 }
 
 pub(crate) fn sign_in(
-    (state, signin_form): (State<AppConfig>, ValidatedSignInForm),
+    (state, session, signin_form): (State<AppConfig>, Session, ValidatedSignInForm),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
     Box::new(
         state
@@ -110,10 +117,9 @@ pub(crate) fn sign_in(
                 },
                 Err(e) => Err(e.into()),
             })
-            .map(|_user| {
-                // do cookie things
-                HttpResponse::SeeOther().header(LOCATION, "/").finish()
-            }),
+            .and_then(move |user| session.set("user_id", user.id()))
+            .map(|_| HttpResponse::SeeOther().header(LOCATION, "/").finish())
+            .map_err(|_| RedirectError::new("/auth/sign_in").into()),
     )
 }
 
@@ -132,7 +138,6 @@ pub(crate) fn confirm(
                 Err(e) => Err(e.into()),
             })
             .map(|_user| {
-                // do cookie things
                 HttpResponse::SeeOther()
                     .header(LOCATION, "/auth/sign_in")
                     .finish()
@@ -140,8 +145,9 @@ pub(crate) fn confirm(
     )
 }
 
-pub(crate) fn sign_out((_, _): (State<AppConfig>, SignedInUser)) -> HttpResponse {
-    // do cookie things
+pub(crate) fn sign_out((session, _): (Session, SignedInUser)) -> HttpResponse {
+    session.remove("user_id");
+
     HttpResponse::SeeOther()
         .header(LOCATION, "/auth/sign_in")
         .finish()

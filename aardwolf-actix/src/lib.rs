@@ -9,6 +9,7 @@ use std::{error::Error, sync::Arc};
 
 use actix::{self, Addr, SyncArbiter};
 use actix_web::{
+    fs::StaticFiles,
     http::{header::CONTENT_TYPE, Method},
     middleware::{
         session::{CookieSessionBackend, SessionStorage},
@@ -52,6 +53,42 @@ fn db_pool(database_url: String) -> Result<Pool, Box<dyn Error>> {
     Ok(r2d2::Pool::builder().build(manager)?)
 }
 
+#[cfg(debug_assertions)]
+mod assets {
+    use std::error::Error;
+
+    use config::Config;
+
+    #[derive(Clone, Debug)]
+    pub struct Assets {
+        web: String,
+        emoji: String,
+        themes: String,
+    }
+
+    impl Assets {
+        pub fn from_config(config: &Config) -> Result<Self, Box<dyn Error>> {
+            Ok(Assets {
+                web: config.get_str("Assets.web")?,
+                emoji: config.get_str("Assets.emoji")?,
+                themes: config.get_str("Assets.themes")?,
+            })
+        }
+
+        pub fn web(&self) -> &str {
+            &self.web
+        }
+
+        pub fn emoji(&self) -> &str {
+            &self.emoji
+        }
+
+        pub fn themes(&self) -> &str {
+            &self.themes
+        }
+    }
+}
+
 pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
     let sys = actix::System::new("aardwolf-actix");
 
@@ -71,6 +108,9 @@ pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
     templates.register_templates_directory(".html.hbs", &template_dir)?;
 
     let templates = Arc::new(templates);
+
+    #[cfg(debug_assertions)]
+    let assets = assets::Assets::from_config(&config)?;
 
     HttpServer::new(move || {
         let state = AppConfig {
@@ -99,8 +139,9 @@ pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
                     r.method(Method::GET).with(self::routes::auth::confirm)
                 })
                 .resource("/sign_out", |r| {
-                    r.method(Method::DELETE).with(self::routes::auth::sign_out)
+                    r.method(Method::POST).with(self::routes::auth::sign_out)
                 }),
+            #[cfg(not(debug_assertions))]
             App::with_state(state.clone())
                 .middleware(Logger::default())
                 .middleware(SessionStorage::new(
@@ -109,6 +150,18 @@ pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
                 .resource("/", |r| {
                     r.method(Method::GET).with(self::routes::app::index)
                 }),
+            #[cfg(debug_assertions)]
+            App::with_state(state.clone())
+                .middleware(Logger::default())
+                .middleware(SessionStorage::new(
+                    CookieSessionBackend::signed(&[0; 32]).secure(false),
+                ))
+                .resource("/", |r| {
+                    r.method(Method::GET).with(self::routes::app::index)
+                })
+                .handler("/web", StaticFiles::new(assets.web()).unwrap())
+                .handler("/themes", StaticFiles::new(assets.themes()).unwrap())
+                .handler("/emoji", StaticFiles::new(assets.emoji()).unwrap()),
         ]
     })
     .bind(&listen_address)?
