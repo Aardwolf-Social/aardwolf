@@ -12,5 +12,6 @@ extern crate log;
 extern crate serde_derive;
 
 pub mod apps;
+pub mod error;
 pub mod forms;
 pub mod scope;

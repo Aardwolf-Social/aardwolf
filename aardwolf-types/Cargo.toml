@@ -6,7 +6,7 @@ edition = "2018"
 
 [features]
 default = []
-use-rocket = ["rocket", "rocket_codegen", "aardwolf-models/rocket"]
+use-rocket = ["rocket", "rocket_codegen", "rocket_contrib", "aardwolf-models/rocket"]
 use-actix = ["actix-web", "actix", "futures"]
 
 [dependencies]
@@ -18,6 +18,7 @@ futures = { version = "0.1", optional = true }
 log = "0.4"
 rocket = { version = "0.3.17", optional = true }
 rocket_codegen = { version = "0.3.17", optional = true }
+rocket_contrib = { version = "0.3.17", optional = true }
 r2d2 = "0.8"
 r2d2-diesel = "1.0"
 serde = "1.0"
