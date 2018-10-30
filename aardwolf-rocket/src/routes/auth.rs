@@ -1,4 +1,3 @@
-// use ring::rand::SystemRandom;
 use rocket::{
     http::{Cookie, Cookies},
     request::Form,

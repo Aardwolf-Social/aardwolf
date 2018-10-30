@@ -16,11 +16,9 @@ extern crate diesel;
 extern crate failure;
 extern crate r2d2;
 extern crate r2d2_diesel;
-extern crate ring;
 extern crate rocket;
 extern crate rocket_contrib;
 extern crate serde;
-extern crate uuid;
 
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
