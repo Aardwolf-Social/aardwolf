@@ -6,14 +6,18 @@ use crate::{error::RenderResult, types::user::SignedInUserWithEmail, AppConfig};
 pub(crate) fn index(
     (req, state): (HttpRequest<AppConfig>, State<AppConfig>),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
-    Box::new(SignedInUserWithEmail::from_request(&req, &()).then(|res| {
-        match res {
+    Box::new(
+        SignedInUserWithEmail::from_request(&req, &()).then(|res| match res {
             Ok(user) => logged_in_index((state, user)).map_err(From::from),
-            _ => Ok(HttpResponse::SeeOther()
-                .header(LOCATION, "/auth/sign_in")
-                .finish()),
-        }
-    }))
+            _ => Ok(logged_out_index()),
+        }),
+    )
+}
+
+fn logged_out_index() -> HttpResponse {
+    HttpResponse::SeeOther()
+        .header(LOCATION, "/auth/sign_in")
+        .finish()
 }
 
 fn logged_in_index((state, user): (State<AppConfig>, SignedInUserWithEmail)) -> RenderResult {

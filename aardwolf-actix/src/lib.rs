@@ -5,7 +5,7 @@ extern crate collection_macros;
 #[macro_use]
 extern crate failure;
 
-use std::{error::Error, sync::Arc};
+use std::{error::Error, fmt, sync::Arc};
 
 use actix::{self, Addr, SyncArbiter};
 use actix_web::{
@@ -34,6 +34,12 @@ use self::db::{Db, Pool};
 pub struct AppConfig {
     db: Addr<Db>,
     templates: Arc<Handlebars>,
+}
+
+impl fmt::Debug for AppConfig {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "AppConfig")
+    }
 }
 
 impl AppConfig {

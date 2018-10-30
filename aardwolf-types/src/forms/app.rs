@@ -1,9 +1,28 @@
-use crate::{apps::App, forms::traits::Validate, scope::Scope};
+use crate::{
+    apps::App,
+    error::{AardwolfError, AardwolfErrorKind},
+    forms::traits::Validate,
+    scope::Scope,
+};
 
-#[derive(Debug, Fail)]
+#[derive(Clone, Debug, Fail)]
 pub enum CreateAppError {
     #[fail(display = "validation error when creating app")]
     ValidationError,
+}
+
+impl AardwolfError for CreateAppError {
+    fn name(&self) -> &str {
+        "Create App Error"
+    }
+
+    fn kind(&self) -> AardwolfErrorKind {
+        AardwolfErrorKind::BadRequest
+    }
+
+    fn description(&self) -> String {
+        format!("{}", self)
+    }
 }
 
 /// Represents the form that is POSTed to /api/v1/apps to create an application
@@ -38,37 +57,5 @@ impl Validate<App, CreateAppError> for CreateApp {
             scopes,
             website,
         })
-    }
-}
-
-#[cfg(feature = "use-actix")]
-mod actix {
-    use actix_web::{dev::FormConfig, error::ResponseError, Form, FromRequest, HttpRequest};
-    use futures::Future;
-
-    use crate::{
-        apps::App,
-        forms::{
-            app::{CreateApp, CreateAppError},
-            traits::Validate,
-        },
-    };
-
-    impl ResponseError for CreateAppError {}
-
-    impl<S> FromRequest<S> for App
-    where
-        S: 'static,
-    {
-        type Config = ();
-        type Result = Box<dyn Future<Item = Self, Error = actix_web::error::Error>>;
-
-        fn from_request(req: &HttpRequest<S>, _: &Self::Config) -> Self::Result {
-            Box::new(
-                Form::from_request(req, &FormConfig::default()).and_then(
-                    |form: Form<CreateApp>| form.into_inner().validate().map_err(From::from),
-                ),
-            )
-        }
     }
 }

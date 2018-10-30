@@ -1,14 +1,15 @@
 use aardwolf_models::user::UserLike;
-use aardwolf_types::forms::auth::{
-    ConfirmToken, SignInError, SignUpError, ValidatedSignInForm, ValidatedSignUpForm,
-};
+use aardwolf_types::forms::auth::{ConfirmToken, SignInError, SignUpError};
 use actix_web::{http::header::LOCATION, middleware::session::Session, HttpResponse, Query, State};
 use futures::Future;
 
 use crate::{
     db::PerformDbAction,
     error::{RedirectError, RenderResult},
-    types::user::SignedInUser,
+    types::{
+        auth::{ValidSignInForm, ValidSignUpForm},
+        user::SignedInUser,
+    },
     AppConfig,
 };
 
@@ -75,12 +76,12 @@ fn sign_in_form(state: State<AppConfig>) -> RenderResult {
 }
 
 pub(crate) fn sign_up(
-    (state, signup_form): (State<AppConfig>, ValidatedSignUpForm),
+    (state, signup_form): (State<AppConfig>, ValidSignUpForm),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
     Box::new(
         state
             .db
-            .send(PerformDbAction::new(signup_form))
+            .send(PerformDbAction::new(signup_form.0))
             .then(|res| match res {
                 Ok(item_res) => match item_res {
                     Ok(item) => Ok(item),
@@ -106,12 +107,12 @@ pub(crate) fn sign_up(
 }
 
 pub(crate) fn sign_in(
-    (state, session, signin_form): (State<AppConfig>, Session, ValidatedSignInForm),
+    (state, session, signin_form): (State<AppConfig>, Session, ValidSignInForm),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
     Box::new(
         state
             .db
-            .send(PerformDbAction::new(signin_form))
+            .send(PerformDbAction::new(signin_form.0))
             .then(|res| match res {
                 Ok(item_res) => match item_res {
                     Ok(item) => Ok(item),

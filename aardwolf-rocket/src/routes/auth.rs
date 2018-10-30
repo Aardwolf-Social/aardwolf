@@ -5,9 +5,7 @@ use rocket::{
 };
 use rocket_contrib::Template;
 
-use aardwolf_types::forms::auth::{
-    ConfirmError, ConfirmToken, SignInError, SignInForm, SignUpError, SignUpForm,
-};
+use aardwolf_types::forms::auth::{ConfirmToken, SignInError, SignInForm, SignUpError, SignUpForm};
 use types::user::SignedInUser;
 use DbConn;
 
@@ -72,6 +70,10 @@ fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redirect
         }
     }
 }
+
+#[derive(Debug, Fail)]
+#[fail(display = "Failed to confirm account")]
+pub struct ConfirmError;
 
 #[get("/confirmation?<token>")]
 fn confirm(token: ConfirmToken, db: DbConn) -> Result<Redirect, ConfirmError> {

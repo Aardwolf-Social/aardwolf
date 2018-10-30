@@ -5,9 +5,12 @@ use aardwolf_models::user::{
 };
 use diesel::{self, pg::PgConnection, Connection};
 
-use crate::forms::traits::{DbAction, Validate};
+use crate::{
+    error::{AardwolfError, AardwolfErrorKind},
+    forms::traits::{DbAction, Validate},
+};
 
-#[derive(Fail, Debug, Deserialize, Serialize)]
+#[derive(Clone, Fail, Debug, Deserialize, Serialize)]
 #[fail(display = "There was an error validating the form")]
 pub struct SignUpFormValidationFail {
     pub email_length: bool,
@@ -22,6 +25,20 @@ impl From<ValidationError> for SignUpFormValidationFail {
             password_match: e.no_match(),
             password_length: e.too_short(),
         }
+    }
+}
+
+impl AardwolfError for SignUpFormValidationFail {
+    fn name(&self) -> &str {
+        "Invalid Singup Form"
+    }
+
+    fn kind(&self) -> AardwolfErrorKind {
+        AardwolfErrorKind::BadRequest
+    }
+
+    fn description(&self) -> String {
+        format!("{}", self)
     }
 }
 
@@ -105,7 +122,7 @@ impl ValidatedSignUpForm {
     }
 }
 
-#[derive(Fail, Debug)]
+#[derive(Clone, Fail, Debug)]
 pub enum SignUpFail {
     #[fail(display = "Sign up failed because {}", _0)]
     ValidationError(#[cause] SignUpFormValidationFail),
@@ -125,6 +142,30 @@ pub enum SignUpFail {
     UserLookup,
     #[fail(display = "Failed to perform database transaction")]
     Transaction,
+}
+
+impl AardwolfError for SignUpFail {
+    fn name(&self) -> &str {
+        "Signup Fail"
+    }
+
+    fn kind(&self) -> AardwolfErrorKind {
+        match *self {
+            SignUpFail::ValidationError(_) => AardwolfErrorKind::BadRequest,
+            SignUpFail::LocalAuthCreateError
+            | SignUpFail::UserCreateError
+            | SignUpFail::EmailCreateError
+            | SignUpFail::PasswordHashError
+            | SignUpFail::CreateTokenError
+            | SignUpFail::VerifiedUser
+            | SignUpFail::Transaction => AardwolfErrorKind::InternalServerError,
+            SignUpFail::UserLookup => AardwolfErrorKind::NotFound,
+        }
+    }
+
+    fn description(&self) -> String {
+        format!("{}", self)
+    }
 }
 
 impl From<SignUpFormValidationFail> for SignUpFail {
@@ -154,10 +195,26 @@ impl From<CreationError> for SignUpFail {
     }
 }
 
-#[derive(Fail, Debug)]
+#[derive(Clone, Fail, Debug)]
 pub enum SignInFormValidationFail {
     #[fail(display = "Field `email` is required")]
     EmptyEmailError,
+}
+
+impl AardwolfError for SignInFormValidationFail {
+    fn name(&self) -> &str {
+        "Invalid SignIn Form"
+    }
+
+    fn kind(&self) -> AardwolfErrorKind {
+        match *self {
+            SignInFormValidationFail::EmptyEmailError => AardwolfErrorKind::BadRequest,
+        }
+    }
+
+    fn description(&self) -> String {
+        format!("{}", self)
+    }
 }
 
 #[derive(Debug, Deserialize)]
@@ -203,13 +260,30 @@ impl ValidatedSignInForm {
     }
 }
 
-#[derive(Fail, Debug)]
+#[derive(Clone, Fail, Debug)]
 pub enum SignInFail {
     #[fail(display = "Sign up failed because {}", _0)]
-    ValidationError(SignInFormValidationFail),
+    ValidationError(#[cause] SignInFormValidationFail),
     // this is the generic "login failed" error the user will see
     #[fail(display = "Invalid username or password")]
     GenericLoginError,
+}
+
+impl AardwolfError for SignInFail {
+    fn name(&self) -> &str {
+        "SignIn Fail"
+    }
+
+    fn kind(&self) -> AardwolfErrorKind {
+        match *self {
+            SignInFail::ValidationError(_) => AardwolfErrorKind::BadRequest,
+            SignInFail::GenericLoginError => AardwolfErrorKind::BadRequest,
+        }
+    }
+
+    fn description(&self) -> String {
+        format!("{}", self)
+    }
 }
 
 impl From<SignInFormValidationFail> for SignInFail {
@@ -224,7 +298,7 @@ impl From<diesel::result::Error> for SignInFail {
     }
 }
 
-#[derive(Debug, Fail)]
+#[derive(Clone, Debug, Fail)]
 pub enum ConfirmAccountFail {
     #[fail(display = "email was not found")]
     EmailNotFound,
@@ -234,6 +308,26 @@ pub enum ConfirmAccountFail {
     UserLookup,
     #[fail(display = "Failed to verify email")]
     Verify,
+}
+
+impl AardwolfError for ConfirmAccountFail {
+    fn name(&self) -> &str {
+        "Confirm Account Fail"
+    }
+
+    fn kind(&self) -> AardwolfErrorKind {
+        match *self {
+            ConfirmAccountFail::Confirmed => AardwolfErrorKind::BadRequest,
+            ConfirmAccountFail::EmailNotFound | ConfirmAccountFail::UserLookup => {
+                AardwolfErrorKind::NotFound
+            }
+            ConfirmAccountFail::Verify => AardwolfErrorKind::InternalServerError,
+        }
+    }
+
+    fn description(&self) -> String {
+        format!("{}", self)
+    }
 }
 
 #[derive(Debug, Deserialize)]
@@ -300,90 +394,5 @@ impl ConfirmToken {
         info!("Verified user and email");
 
         Ok(user)
-    }
-}
-
-#[derive(Debug, Fail)]
-#[fail(display = "Failed to confirm account")]
-pub struct ConfirmError;
-
-#[cfg(feature = "use-actix")]
-mod actix {
-    use actix_web::{
-        dev::FormConfig, error::ResponseError, http::header::LOCATION, Form, FromRequest,
-        HttpRequest, HttpResponse,
-    };
-    use futures::Future;
-
-    use crate::forms::{
-        auth::{
-            ConfirmError, SignInFail, SignInForm, SignInFormValidationFail, SignUpFail, SignUpForm,
-            SignUpFormValidationFail, ValidatedSignInForm, ValidatedSignUpForm,
-        },
-        traits::Validate,
-    };
-
-    impl ResponseError for ConfirmError {
-        fn error_response(&self) -> HttpResponse {
-            HttpResponse::SeeOther()
-                .header(LOCATION, format!("/auth/sign_in?msg={}", self).as_str())
-                .finish()
-        }
-    }
-    impl ResponseError for SignInFail {
-        fn error_response(&self) -> HttpResponse {
-            HttpResponse::SeeOther()
-                .header(LOCATION, format!("/auth/sign_in?msg={}", self).as_str())
-                .finish()
-        }
-    }
-    impl ResponseError for SignInFormValidationFail {
-        fn error_response(&self) -> HttpResponse {
-            HttpResponse::SeeOther()
-                .header(LOCATION, format!("/auth/sign_in?msg={}", self).as_str())
-                .finish()
-        }
-    }
-    impl ResponseError for SignUpFail {
-        fn error_response(&self) -> HttpResponse {
-            HttpResponse::SeeOther()
-                .header(LOCATION, format!("/auth/sign_up?msg={}", self).as_str())
-                .finish()
-        }
-    }
-    impl ResponseError for SignUpFormValidationFail {
-        fn error_response(&self) -> HttpResponse {
-            HttpResponse::SeeOther()
-                .header(LOCATION, format!("/auth/sign_up?msg={}", self).as_str())
-                .finish()
-        }
-    }
-
-    impl<S> FromRequest<S> for ValidatedSignInForm
-    where
-        S: 'static,
-    {
-        type Config = ();
-        type Result = Box<dyn Future<Item = Self, Error = actix_web::error::Error>>;
-
-        fn from_request(req: &HttpRequest<S>, _: &Self::Config) -> Self::Result {
-            Box::new(Form::from_request(req, &FormConfig::default()).and_then(
-                |form: Form<SignInForm>| form.into_inner().validate().map_err(From::from),
-            ))
-        }
-    }
-
-    impl<S> FromRequest<S> for ValidatedSignUpForm
-    where
-        S: 'static,
-    {
-        type Config = ();
-        type Result = Box<dyn Future<Item = Self, Error = actix_web::error::Error>>;
-
-        fn from_request(req: &HttpRequest<S>, _: &Self::Config) -> Self::Result {
-            Box::new(Form::from_request(req, &FormConfig::default()).and_then(
-                |form: Form<SignUpForm>| form.into_inner().validate().map_err(From::from),
-            ))
-        }
     }
 }

@@ -1,4 +1,16 @@
-use actix_web::{http::header::LOCATION, HttpResponse, ResponseError};
+use aardwolf_types::{
+    error::{AardwolfError, AardwolfErrorKind, ErrorJson, TemplateError, TemplateName},
+    forms::{
+        app::CreateAppError,
+        auth::{SignInFormValidationFail, SignUpFormValidationFail},
+    },
+};
+use actix_web::{
+    http::header::{CONTENT_TYPE, LOCATION},
+    HttpResponse, ResponseError,
+};
+
+use crate::AppConfig;
 
 pub type RenderResult = Result<HttpResponse, RenderError>;
 
@@ -36,5 +48,84 @@ impl ResponseError for RedirectError {
         HttpResponse::SeeOther()
             .header(LOCATION, location.as_str())
             .finish()
+    }
+}
+
+#[derive(Clone, Debug, Fail)]
+#[fail(display = "{}", _1)]
+pub struct ErrorWrapper<E>(AppConfig, pub E)
+where
+    E: AardwolfError;
+
+impl<E> ErrorWrapper<E>
+where
+    E: AardwolfError,
+{
+    pub fn new(state: AppConfig, error: E) -> Self {
+        ErrorWrapper(state, error)
+    }
+}
+
+impl<E> AardwolfError for ErrorWrapper<E>
+where
+    E: AardwolfError,
+{
+    fn name(&self) -> &str {
+        self.1.name()
+    }
+
+    fn kind(&self) -> AardwolfErrorKind {
+        self.1.kind()
+    }
+
+    fn description(&self) -> String {
+        self.1.description()
+    }
+}
+
+impl TemplateError for ErrorWrapper<CreateAppError> {
+    fn template(&self) -> TemplateName {
+        TemplateName::new("sign_up")
+    }
+}
+
+impl TemplateError for ErrorWrapper<SignInFormValidationFail> {
+    fn template(&self) -> TemplateName {
+        TemplateName::new("sign_in")
+    }
+}
+
+impl TemplateError for ErrorWrapper<SignUpFormValidationFail> {
+    fn template(&self) -> TemplateName {
+        TemplateName::new("sign_up")
+    }
+}
+
+impl<E> ResponseError for ErrorWrapper<E>
+where
+    Self: TemplateError,
+    E: AardwolfError + Clone,
+{
+    fn error_response(&self) -> HttpResponse {
+        let mut res = match self.1.kind() {
+            AardwolfErrorKind::Redirect(location) => {
+                let mut res = HttpResponse::SeeOther();
+                res.header(LOCATION, location);
+                res
+            }
+            AardwolfErrorKind::BadRequest => HttpResponse::BadRequest(),
+            AardwolfErrorKind::RequiresAuthentication => HttpResponse::Unauthorized(),
+            AardwolfErrorKind::RequiresPermission => HttpResponse::Forbidden(),
+            AardwolfErrorKind::NotFound => HttpResponse::NotFound(),
+            AardwolfErrorKind::InternalServerError => HttpResponse::InternalServerError(),
+        };
+
+        let body = self
+            .0
+            .templates
+            .render(self.template().name(), &ErrorJson::from(self.1.clone()))
+            .unwrap_or("".to_owned());
+
+        res.header(CONTENT_TYPE, "text/html").body(body)
     }
 }
