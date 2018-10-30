@@ -99,7 +99,9 @@ pub(crate) fn sign_up(
                     .header(LOCATION, "/auth/sign_in")
                     .finish()
             })
-            .map_err(|_: actix_web::Error| RedirectError::new("/auth/sign_up").into()),
+            .map_err(|e: actix_web::Error| {
+                RedirectError::new("/auth/sign_up", Some(e.to_string().as_str())).into()
+            }),
     )
 }
 
@@ -119,7 +121,7 @@ pub(crate) fn sign_in(
             })
             .and_then(move |user| session.set("user_id", user.id()))
             .map(|_| HttpResponse::SeeOther().header(LOCATION, "/").finish())
-            .map_err(|_| RedirectError::new("/auth/sign_in").into()),
+            .map_err(|e| RedirectError::new("/auth/sign_in", Some(e.to_string().as_str())).into()),
     )
 }
 

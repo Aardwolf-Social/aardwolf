@@ -309,7 +309,10 @@ pub struct ConfirmError;
 
 #[cfg(feature = "use-actix")]
 mod actix {
-    use actix_web::{dev::FormConfig, error::ResponseError, Form, FromRequest, HttpRequest};
+    use actix_web::{
+        dev::FormConfig, error::ResponseError, http::header::LOCATION, Form, FromRequest,
+        HttpRequest, HttpResponse,
+    };
     use futures::Future;
 
     use crate::forms::{
@@ -320,11 +323,41 @@ mod actix {
         traits::Validate,
     };
 
-    impl ResponseError for ConfirmError {}
-    impl ResponseError for SignInFail {}
-    impl ResponseError for SignInFormValidationFail {}
-    impl ResponseError for SignUpFail {}
-    impl ResponseError for SignUpFormValidationFail {}
+    impl ResponseError for ConfirmError {
+        fn error_response(&self) -> HttpResponse {
+            HttpResponse::SeeOther()
+                .header(LOCATION, format!("/auth/sign_in?msg={}", self).as_str())
+                .finish()
+        }
+    }
+    impl ResponseError for SignInFail {
+        fn error_response(&self) -> HttpResponse {
+            HttpResponse::SeeOther()
+                .header(LOCATION, format!("/auth/sign_in?msg={}", self).as_str())
+                .finish()
+        }
+    }
+    impl ResponseError for SignInFormValidationFail {
+        fn error_response(&self) -> HttpResponse {
+            HttpResponse::SeeOther()
+                .header(LOCATION, format!("/auth/sign_in?msg={}", self).as_str())
+                .finish()
+        }
+    }
+    impl ResponseError for SignUpFail {
+        fn error_response(&self) -> HttpResponse {
+            HttpResponse::SeeOther()
+                .header(LOCATION, format!("/auth/sign_up?msg={}", self).as_str())
+                .finish()
+        }
+    }
+    impl ResponseError for SignUpFormValidationFail {
+        fn error_response(&self) -> HttpResponse {
+            HttpResponse::SeeOther()
+                .header(LOCATION, format!("/auth/sign_up?msg={}", self).as_str())
+                .finish()
+        }
+    }
 
     impl<S> FromRequest<S> for ValidatedSignInForm
     where
