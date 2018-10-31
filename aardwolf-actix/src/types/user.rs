@@ -1,13 +1,11 @@
 use aardwolf_models::user::{email::Email, AuthenticatedUser};
+use aardwolf_types::forms::user::{GetUserAndEmailById, GetUserById};
 use actix_web::{
     error::ResponseError, middleware::session::RequestSession, FromRequest, HttpRequest,
 };
 use futures::future::{Either, Future, IntoFuture};
 
-use crate::{
-    db::{GetUserAndEmailById, GetUserById},
-    AppConfig,
-};
+use crate::{db::PerformDbAction, AppConfig};
 
 #[derive(Clone, Debug, Fail)]
 #[fail(display = "No user cookie present")]
@@ -37,13 +35,15 @@ impl FromRequest<AppConfig> for SignedInUser {
                 .into_future()
                 .and_then(move |maybe_id| match maybe_id {
                     Some(id) => {
-                        let fut = db.send(GetUserById::new(id)).then(|res| match res {
-                            Ok(user_res) => match user_res {
-                                Ok(user) => Ok(user),
+                        let fut = db
+                            .send(PerformDbAction::new(GetUserById::new(id)))
+                            .then(|res| match res {
+                                Ok(user_res) => match user_res {
+                                    Ok(user) => Ok(SignedInUser(user)),
+                                    Err(e) => Err(e.into()),
+                                },
                                 Err(e) => Err(e.into()),
-                            },
-                            Err(e) => Err(e.into()),
-                        });
+                            });
 
                         Either::A(fut)
                     }
@@ -67,13 +67,15 @@ impl FromRequest<AppConfig> for SignedInUserWithEmail {
                 .into_future()
                 .and_then(move |maybe_id| match maybe_id {
                     Some(id) => {
-                        let fut = db.send(GetUserAndEmailById::new(id)).then(|res| match res {
-                            Ok(user_res) => match user_res {
-                                Ok(user) => Ok(user),
+                        let fut = db
+                            .send(PerformDbAction::new(GetUserAndEmailById::new(id)))
+                            .then(|res| match res {
+                                Ok(user_res) => match user_res {
+                                    Ok((user, email)) => Ok(SignedInUserWithEmail(user, email)),
+                                    Err(e) => Err(e.into()),
+                                },
                                 Err(e) => Err(e.into()),
-                            },
-                            Err(e) => Err(e.into()),
-                        });
+                            });
 
                         Either::A(fut)
                     }

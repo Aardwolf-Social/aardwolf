@@ -3,10 +3,8 @@ use diesel::pg::PgConnection;
 use r2d2::PooledConnection;
 use r2d2_diesel::ConnectionManager;
 
-mod get_user_by_id;
 mod perform_db_action;
 
-pub use self::get_user_by_id::{GetUserAndEmailById, GetUserById};
 pub use self::perform_db_action::PerformDbAction;
 
 pub type ManagedPgConn = ConnectionManager<PgConnection>;
