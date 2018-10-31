@@ -5,7 +5,10 @@ use rocket::{
 };
 use rocket_contrib::Template;
 
-use aardwolf_types::forms::auth::{ConfirmToken, SignInError, SignInForm, SignUpError, SignUpForm};
+use aardwolf_types::forms::{
+    auth::{ConfirmToken, SignInError, SignInForm, SignUpError, SignUpForm},
+    traits::{DbAction, Validate},
+};
 use types::user::SignedInUser;
 use DbConn;
 
@@ -41,10 +44,26 @@ fn sign_in_form() -> Template {
 
 #[post("/sign_up", data = "<form>")]
 fn sign_up(form: Form<SignUpForm>, db: DbConn) -> Redirect {
-    use controllers::auth;
+    // validation goes here
 
-    match auth::create_user_and_account(form.into_inner(), &db) {
-        Ok(_) => Redirect::to("/auth/sign_in"),
+    let res = form
+        .into_inner()
+        .validate()
+        .map_err(From::from)
+        .and_then(|form| form.db_action(&db));
+
+    match res {
+        Ok((email, token)) => {
+            // just printing this out for now so we can copy/paste into the browser to confirm accounts,
+            // but obviously this will need to be emailed to the user
+            println!(
+                "confirmation token url: /auth/confirmation?id={}&token={}",
+                email.id(),
+                token
+            );
+
+            Redirect::to("/auth/sign_in")
+        }
         Err(e) => {
             println!("unable to create account: {}, {:?}", e, e);
             Redirect::to(&format!("/auth/sign_up?msg={}", e))
@@ -55,9 +74,16 @@ fn sign_up(form: Form<SignUpForm>, db: DbConn) -> Redirect {
 #[post("/sign_in", data = "<form>")]
 fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redirect {
     use aardwolf_models::user::UserLike;
-    use controllers::auth;
 
-    match auth::sign_in(form.into_inner(), &db) {
+    // TODO: check csrf token (this will probably be a request guard)
+
+    let res = form
+        .into_inner()
+        .validate()
+        .map_err(From::from)
+        .and_then(|form| form.sign_in(&db));
+
+    match res {
         Ok(user) => {
             let mut cookie = Cookie::new("user_id", format!("{}", user.id()));
             cookie.set_http_only(true);

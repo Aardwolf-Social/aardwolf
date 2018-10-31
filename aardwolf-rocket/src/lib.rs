@@ -30,7 +30,6 @@ use rocket::{
 use rocket_contrib::Template;
 use std::{error::Error, ops::Deref};
 
-pub mod controllers;
 pub mod routes;
 pub mod types;
 

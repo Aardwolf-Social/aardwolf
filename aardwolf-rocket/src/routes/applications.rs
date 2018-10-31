@@ -3,13 +3,20 @@ use failure::Error;
 use rocket_contrib::Json;
 
 use aardwolf_types::{
-    apps::AppId,
+    apps::{AppId, AppIdBuilder},
     forms::{app::CreateApp, traits::Validate},
 };
-use controllers;
 
 #[post("/apps", data = "<app>")]
 fn register_application(app: Json<CreateApp>) -> Result<Json<AppId>, Error> {
-    let app = app.into_inner();
-    Ok(Json(controllers::apps::create(app.validate()?)?))
+    let _ = app.into_inner().validate()?;
+
+    Ok(Json(
+        AppIdBuilder::default()
+            .id("foo")
+            .client_id("bar")
+            .client_secret("baz")
+            .build()
+            .unwrap(),
+    ))
 }

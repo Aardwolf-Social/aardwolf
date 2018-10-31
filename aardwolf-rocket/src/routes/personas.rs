@@ -1,7 +1,15 @@
 use rocket::request::Form;
 
-use aardwolf_types::forms::personas::{PersonaCreationFail, PersonaCreationForm};
-use controllers::personas::PersonaDeletionFail;
+use aardwolf_types::{
+    error::AardwolfError,
+    forms::{
+        personas::{
+            DeletePersona, GetPersonaById, PersonaCreationFail, PersonaCreationForm,
+            UserCanDeletePersona,
+        },
+        traits::{DbAction, Validate},
+    },
+};
 use types::user::SignedInUser;
 use DbConn;
 
@@ -16,18 +24,30 @@ fn create(
     persona_creation_form: Form<PersonaCreationForm>,
     db: DbConn,
 ) -> Result<String, PersonaCreationFail> {
-    use controllers::personas;
-    personas::create(user.0, persona_creation_form.into_inner(), &db)
+    persona_creation_form
+        .into_inner()
+        .validate()?
+        .to_operation(user.0)
+        .db_action(&db)?;
+
+    Ok(format!("Created!"))
 }
 
-#[get("/delete/<delete_persona>")]
-fn delete(
-    user: SignedInUser,
-    delete_persona: i32,
-    db: DbConn,
-) -> Result<String, PersonaDeletionFail> {
-    use controllers::personas;
-    personas::delete(user.0, delete_persona, &db)
+#[get("/delete/<id>")]
+fn delete(user: SignedInUser, id: i32, db: DbConn) -> Result<String, Box<dyn AardwolfError>> {
+    let persona = GetPersonaById::new(id)
+        .db_action(&db)
+        .map_err(|e| Box::new(e) as Box<dyn AardwolfError>)?;
+
+    let persona_deleter = UserCanDeletePersona::new(user.0, persona)
+        .db_action(&db)
+        .map_err(|e| Box::new(e) as Box<dyn AardwolfError>)?;
+
+    DeletePersona::new(persona_deleter)
+        .db_action(&db)
+        .map_err(|e| Box::new(e) as Box<dyn AardwolfError>)?;
+
+    Ok(format!("Deleted!"))
 }
 
 #[get("/switch/<switch_persona>")]

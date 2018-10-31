@@ -212,31 +212,31 @@ impl DbAction<PersonaDeleter, PermissionError> for UserCanDeletePersona {
 }
 
 #[derive(Clone, Debug, Fail)]
-pub enum PersonaDeletionError {
+pub enum PersonaDeletionFail {
     #[fail(display = "Error in database")]
     Database,
     #[fail(display = "Persona not found")]
     NotFound,
 }
 
-impl From<DieselError> for PersonaDeletionError {
+impl From<DieselError> for PersonaDeletionFail {
     fn from(e: DieselError) -> Self {
         match e {
-            DieselError::NotFound => PersonaDeletionError::NotFound,
-            _ => PersonaDeletionError::Database,
+            DieselError::NotFound => PersonaDeletionFail::NotFound,
+            _ => PersonaDeletionFail::Database,
         }
     }
 }
 
-impl AardwolfError for PersonaDeletionError {
+impl AardwolfError for PersonaDeletionFail {
     fn name(&self) -> &str {
         "Persona Deletion Error"
     }
 
     fn kind(&self) -> AardwolfErrorKind {
         match *self {
-            PersonaDeletionError::Database => AardwolfErrorKind::InternalServerError,
-            PersonaDeletionError::NotFound => AardwolfErrorKind::NotFound,
+            PersonaDeletionFail::Database => AardwolfErrorKind::InternalServerError,
+            PersonaDeletionFail::NotFound => AardwolfErrorKind::NotFound,
         }
     }
 
@@ -253,8 +253,8 @@ impl DeletePersona {
     }
 }
 
-impl DbAction<(), PersonaDeletionError> for DeletePersona {
-    fn db_action(self, conn: &PgConnection) -> Result<(), PersonaDeletionError> {
+impl DbAction<(), PersonaDeletionFail> for DeletePersona {
+    fn db_action(self, conn: &PgConnection) -> Result<(), PersonaDeletionFail> {
         self.0.delete_persona(conn).map_err(From::from)
     }
 }
