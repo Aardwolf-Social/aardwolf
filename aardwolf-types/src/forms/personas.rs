@@ -1,12 +1,15 @@
 use aardwolf_models::{
     base_actor::{persona::Persona, BaseActor},
     sql_types::{FollowPolicy, PostVisibility, Url},
-    user::{PermissionError, PermissionedUser},
+    user::{AuthenticatedUser, PermissionError, PermissionedUser, PersonaDeleter},
 };
 use diesel::{pg::PgConnection, result::Error as DieselError};
 use url::ParseError as UrlParseError;
 
-use crate::forms::traits::Validate;
+use crate::{
+    error::{AardwolfError, AardwolfErrorKind},
+    forms::traits::{DbAction, Validate},
+};
 
 #[derive(Debug, Deserialize)]
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]
@@ -21,11 +24,11 @@ pub struct PersonaCreationForm {
 impl Validate<ValidatedPersonaCreationForm, PersonaCreationFail> for PersonaCreationForm {
     fn validate(self) -> Result<ValidatedPersonaCreationForm, PersonaCreationFail> {
         if self.display_name.is_empty() {
-            return Err(PersonaCreationFail);
+            return Err(PersonaCreationFail::Validation);
         }
 
         if self.shortname.is_empty() {
-            return Err(PersonaCreationFail);
+            return Err(PersonaCreationFail::Validation);
         }
 
         Ok(ValidatedPersonaCreationForm {
@@ -42,25 +45,49 @@ impl Validate<ValidatedPersonaCreationForm, PersonaCreationFail> for PersonaCrea
     }
 }
 
-#[derive(Debug, Fail)]
-#[fail(display = "Failed to validate persona")]
-pub struct PersonaCreationFail;
+#[derive(Clone, Debug, Fail)]
+pub enum PersonaCreationFail {
+    #[fail(display = "Failed to validate persona")]
+    Validation,
+    #[fail(display = "User doesn't have permission to create persona")]
+    Permission,
+    #[fail(display = "Error in database")]
+    Database,
+}
+
+impl AardwolfError for PersonaCreationFail {
+    fn name(&self) -> &str {
+        "Persona Creation Fail"
+    }
+
+    fn kind(&self) -> AardwolfErrorKind {
+        match *self {
+            PersonaCreationFail::Validation => AardwolfErrorKind::BadRequest,
+            PersonaCreationFail::Permission => AardwolfErrorKind::RequiresPermission,
+            PersonaCreationFail::Database => AardwolfErrorKind::InternalServerError,
+        }
+    }
+
+    fn description(&self) -> String {
+        format!("{}", self)
+    }
+}
 
 impl From<UrlParseError> for PersonaCreationFail {
     fn from(_: UrlParseError) -> Self {
-        PersonaCreationFail
+        PersonaCreationFail::Validation
     }
 }
 
 impl From<DieselError> for PersonaCreationFail {
     fn from(_: DieselError) -> Self {
-        PersonaCreationFail
+        PersonaCreationFail::Database
     }
 }
 
 impl From<PermissionError> for PersonaCreationFail {
     fn from(_: PermissionError) -> Self {
-        PersonaCreationFail
+        PersonaCreationFail::Permission
     }
 }
 
@@ -96,31 +123,138 @@ impl ValidatedPersonaCreationForm {
             db,
         )?)
     }
+
+    pub fn to_operation<U>(self, user: U) -> PersonaCreationOperation<U>
+    where
+        U: PermissionedUser,
+    {
+        PersonaCreationOperation { form: self, user }
+    }
 }
 
-#[cfg(feature = "use-actix")]
-mod actix {
-    use actix_web::{dev::FormConfig, error::ResponseError, Form, FromRequest, HttpRequest};
-    use futures::Future;
+pub struct PersonaCreationOperation<U>
+where
+    U: PermissionedUser,
+{
+    form: ValidatedPersonaCreationForm,
+    user: U,
+}
 
-    use crate::forms::{
-        personas::{PersonaCreationFail, PersonaCreationForm, ValidatedPersonaCreationForm},
-        traits::Validate,
-    };
+impl<U> DbAction<(BaseActor, Persona), PersonaCreationFail> for PersonaCreationOperation<U>
+where
+    U: PermissionedUser,
+{
+    fn db_action(self, conn: &PgConnection) -> Result<(BaseActor, Persona), PersonaCreationFail> {
+        self.form.create(&self.user, conn)
+    }
+}
 
-    impl ResponseError for PersonaCreationFail {}
+#[derive(Clone, Debug, Fail)]
+pub enum PersonaLookupError {
+    #[fail(display = "Error in database")]
+    Database,
+    #[fail(display = "Persona not found")]
+    NotFound,
+}
 
-    impl<S> FromRequest<S> for ValidatedPersonaCreationForm
-    where
-        S: 'static,
-    {
-        type Config = ();
-        type Result = Box<dyn Future<Item = Self, Error = actix_web::error::Error>>;
-
-        fn from_request(req: &HttpRequest<S>, _: &Self::Config) -> Self::Result {
-            Box::new(Form::from_request(req, &FormConfig::default()).and_then(
-                |form: Form<PersonaCreationForm>| form.into_inner().validate().map_err(From::from),
-            ))
+impl From<DieselError> for PersonaLookupError {
+    fn from(e: DieselError) -> Self {
+        match e {
+            DieselError::NotFound => PersonaLookupError::NotFound,
+            _ => PersonaLookupError::Database,
         }
+    }
+}
+
+impl AardwolfError for PersonaLookupError {
+    fn name(&self) -> &str {
+        "Persona Lookup Error"
+    }
+
+    fn kind(&self) -> AardwolfErrorKind {
+        match *self {
+            PersonaLookupError::Database => AardwolfErrorKind::InternalServerError,
+            PersonaLookupError::NotFound => AardwolfErrorKind::NotFound,
+        }
+    }
+
+    fn description(&self) -> String {
+        format!("{}", self)
+    }
+}
+
+pub struct GetPersonaById(i32);
+
+impl GetPersonaById {
+    pub fn new(id: i32) -> Self {
+        GetPersonaById(id)
+    }
+}
+
+impl DbAction<Persona, PersonaLookupError> for GetPersonaById {
+    fn db_action(self, conn: &PgConnection) -> Result<Persona, PersonaLookupError> {
+        Persona::by_id(self.0, conn).map_err(From::from)
+    }
+}
+
+pub struct UserCanDeletePersona(AuthenticatedUser, Persona);
+
+impl UserCanDeletePersona {
+    pub fn new(user: AuthenticatedUser, persona: Persona) -> Self {
+        UserCanDeletePersona(user, persona)
+    }
+}
+
+impl DbAction<PersonaDeleter, PermissionError> for UserCanDeletePersona {
+    fn db_action(self, conn: &PgConnection) -> Result<PersonaDeleter, PermissionError> {
+        self.0.can_delete_persona(self.1, conn)
+    }
+}
+
+#[derive(Clone, Debug, Fail)]
+pub enum PersonaDeletionError {
+    #[fail(display = "Error in database")]
+    Database,
+    #[fail(display = "Persona not found")]
+    NotFound,
+}
+
+impl From<DieselError> for PersonaDeletionError {
+    fn from(e: DieselError) -> Self {
+        match e {
+            DieselError::NotFound => PersonaDeletionError::NotFound,
+            _ => PersonaDeletionError::Database,
+        }
+    }
+}
+
+impl AardwolfError for PersonaDeletionError {
+    fn name(&self) -> &str {
+        "Persona Deletion Error"
+    }
+
+    fn kind(&self) -> AardwolfErrorKind {
+        match *self {
+            PersonaDeletionError::Database => AardwolfErrorKind::InternalServerError,
+            PersonaDeletionError::NotFound => AardwolfErrorKind::NotFound,
+        }
+    }
+
+    fn description(&self) -> String {
+        format!("{}", self)
+    }
+}
+
+pub struct DeletePersona(PersonaDeleter);
+
+impl DeletePersona {
+    pub fn new(persona_deleter: PersonaDeleter) -> Self {
+        DeletePersona(persona_deleter)
+    }
+}
+
+impl DbAction<(), PersonaDeletionError> for DeletePersona {
+    fn db_action(self, conn: &PgConnection) -> Result<(), PersonaDeletionError> {
+        self.0.delete_persona(conn).map_err(From::from)
     }
 }

@@ -12,7 +12,7 @@ use self::{
 };
 pub use self::{
     local_auth::{PlaintextPassword, VerificationError},
-    permissions::{PermissionError, PermissionResult, PermissionedUser},
+    permissions::{PermissionError, PermissionResult, PermissionedUser, PersonaDeleter},
 };
 use schema::users;
 use sql_types::Role;

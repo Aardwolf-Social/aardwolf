@@ -3,6 +3,7 @@ use aardwolf_types::{
     forms::{
         app::CreateAppError,
         auth::{SignInFormValidationFail, SignUpFormValidationFail},
+        personas::PersonaCreationFail,
     },
 };
 use actix_web::{
@@ -101,6 +102,12 @@ impl TemplateError for ErrorWrapper<SignUpFormValidationFail> {
     }
 }
 
+impl TemplateError for ErrorWrapper<PersonaCreationFail> {
+    fn template(&self) -> TemplateName {
+        TemplateName::new("TODO")
+    }
+}
+
 impl<E> ResponseError for ErrorWrapper<E>
 where
     Self: TemplateError,
@@ -124,7 +131,7 @@ where
             .0
             .templates
             .render(self.template().name(), &ErrorJson::from(self.1.clone()))
-            .unwrap_or("".to_owned());
+            .unwrap_or("Failed to render template".to_owned());
 
         res.header(CONTENT_TYPE, "text/html").body(body)
     }

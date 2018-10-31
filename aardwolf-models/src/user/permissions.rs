@@ -24,7 +24,7 @@ use sql_types::{FollowPolicy, Permission, PostVisibility, Role, Url};
 #[derive(Debug, Fail)]
 pub enum PermissionError {
     #[fail(display = "Failed to check user's permission")]
-    Diesel(diesel::result::Error),
+    Diesel(#[cause] diesel::result::Error),
     #[fail(display = "User doesn't have this permission")]
     Permission,
 }

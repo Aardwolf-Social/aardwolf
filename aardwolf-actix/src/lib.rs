@@ -147,6 +147,21 @@ pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
                 .resource("/sign_out", |r| {
                     r.method(Method::POST).with(self::routes::auth::sign_out)
                 }),
+            App::with_state(state.clone())
+                .prefix("/personas")
+                .middleware(Logger::default())
+                .middleware(SessionStorage::new(
+                    CookieSessionBackend::signed(&[0; 32]).secure(false),
+                ))
+                .resource("/new", |r| {
+                    r.method(Method::GET).with(self::routes::personas::new);
+                })
+                .resource("/create", |r| {
+                    r.method(Method::POST).with(self::routes::personas::create)
+                })
+                .resource("/delete", |r| {
+                    r.method(Method::GET).with(self::routes::personas::delete)
+                }),
             #[cfg(not(debug_assertions))]
             App::with_state(state.clone())
                 .middleware(Logger::default())

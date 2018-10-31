@@ -1,3 +1,4 @@
+use aardwolf_models::user::PermissionError;
 use failure::Fail;
 
 pub enum AardwolfErrorKind {
@@ -61,6 +62,23 @@ impl TemplateName {
 
 pub trait TemplateError: AardwolfError {
     fn template(&self) -> TemplateName;
+}
+
+impl AardwolfError for PermissionError {
+    fn name(&self) -> &str {
+        "permission error"
+    }
+
+    fn kind(&self) -> AardwolfErrorKind {
+        match *self {
+            PermissionError::Diesel(_) => AardwolfErrorKind::InternalServerError,
+            PermissionError::Permission => AardwolfErrorKind::RequiresPermission,
+        }
+    }
+
+    fn description(&self) -> String {
+        format!("{}", self)
+    }
 }
 
 impl<T> AardwolfError for T
