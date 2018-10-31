@@ -99,7 +99,9 @@ pub struct VerifyEmail {
     id: i32,
     email: String,
     user_id: i32,
+    #[allow(dead_code)]
     verified: bool,
+    #[allow(dead_code)]
     verification_token: Option<HashedEmailToken>,
     confirmed_at: DateTime<Utc>,
     created_at: DateTime<Utc>,
@@ -109,6 +111,7 @@ pub struct VerifyEmail {
 #[derive(AsChangeset)]
 #[table_name = "emails"]
 pub struct EmailVerificationChangeset {
+    #[allow(dead_code)]
     id: i32,
     verified: bool,
     verification_token: Option<HashedEmailToken>,
