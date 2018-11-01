@@ -91,9 +91,7 @@ pub(crate) fn sign_up(
                     .header(LOCATION, "/auth/sign_in")
                     .finish()
             })
-            .map_err(|e: actix_web::Error| {
-                RedirectError::new("/auth/sign_up", Some(e.to_string().as_str())).into()
-            }),
+            .map_err(|e| RedirectError::new("/auth/sign_up", Some(e.to_string().as_str())).into()),
     )
 }
 
@@ -102,9 +100,13 @@ pub(crate) fn sign_in(
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
     Box::new(
         execute_db_query(state.clone(), signin_form.0)
-            .and_then(move |user| session.set("user_id", user.id()))
-            .map(|_| HttpResponse::SeeOther().header(LOCATION, "/").finish())
-            .map_err(|e| RedirectError::new("/auth/sign_in", Some(e.to_string().as_str())).into()),
+            .map_err(|e| RedirectError::new("/auth/sign_in", Some(e.to_string().as_str())).into())
+            .and_then(move |user| {
+                session.set("user_id", user.id()).map_err(|e| {
+                    RedirectError::new("/auth/sign_in", Some(e.to_string().as_str())).into()
+                })
+            })
+            .map(|_| HttpResponse::SeeOther().header(LOCATION, "/").finish()),
     )
 }
 
@@ -112,11 +114,13 @@ pub(crate) fn confirm(
     (state, token): (State<AppConfig>, Query<ConfirmToken>),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
     Box::new(
-        execute_db_query(state.clone(), token.into_inner()).map(|_user| {
-            HttpResponse::SeeOther()
-                .header(LOCATION, "/auth/sign_in")
-                .finish()
-        }),
+        execute_db_query(state.clone(), token.into_inner())
+            .map(|_user| {
+                HttpResponse::SeeOther()
+                    .header(LOCATION, "/auth/sign_in")
+                    .finish()
+            })
+            .map_err(|e| RedirectError::new("/auth/sign_up", Some(e.to_string().as_str())).into()),
     )
 }
 

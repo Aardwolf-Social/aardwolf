@@ -5,7 +5,7 @@ use actix_web::{
 };
 use futures::future::{Either, Future, IntoFuture};
 
-use crate::{db::execute_db_query, AppConfig};
+use crate::{db::execute_db_query, error::ErrorWrapper, AppConfig};
 
 #[derive(Clone, Debug, Fail)]
 #[fail(display = "No user cookie present")]
@@ -35,7 +35,10 @@ impl FromRequest<AppConfig> for SignedInUser {
                 .into_future()
                 .and_then(move |maybe_id| match maybe_id {
                     Some(id) => {
-                        let fut = execute_db_query(state, GetUserById::new(id)).map(SignedInUser);
+                        let fut = execute_db_query(state.clone(), GetUserById::new(id))
+                            .map(SignedInUser)
+                            .map_err(|e| ErrorWrapper::new(state, e))
+                            .from_err();
 
                         Either::A(fut)
                     }
@@ -59,8 +62,10 @@ impl FromRequest<AppConfig> for SignedInUserWithEmail {
                 .into_future()
                 .and_then(move |maybe_id| match maybe_id {
                     Some(id) => {
-                        let fut = execute_db_query(state, GetUserAndEmailById::new(id))
-                            .map(|(user, email)| SignedInUserWithEmail(user, email));
+                        let fut = execute_db_query(state.clone(), GetUserAndEmailById::new(id))
+                            .map(|(user, email)| SignedInUserWithEmail(user, email))
+                            .map_err(|e| ErrorWrapper::new(state, e))
+                            .from_err();
 
                         Either::A(fut)
                     }

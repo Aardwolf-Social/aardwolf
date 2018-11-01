@@ -86,8 +86,11 @@ impl From<DieselError> for PersonaCreationFail {
 }
 
 impl From<PermissionError> for PersonaCreationFail {
-    fn from(_: PermissionError) -> Self {
-        PersonaCreationFail::Permission
+    fn from(e: PermissionError) -> Self {
+        match e {
+            PermissionError::Diesel => PersonaCreationFail::Database,
+            PermissionError::Permission => PersonaCreationFail::Permission,
+        }
     }
 }
 
@@ -214,6 +217,8 @@ impl DbAction<PersonaDeleter, PermissionError> for UserCanDeletePersona {
 
 #[derive(Clone, Debug, Fail)]
 pub enum PersonaDeletionFail {
+    #[fail(display = "Insufficient permissions")]
+    Permission,
     #[fail(display = "Error in database")]
     Database,
     #[fail(display = "Persona not found")]
@@ -229,6 +234,24 @@ impl From<DieselError> for PersonaDeletionFail {
     }
 }
 
+impl From<PermissionError> for PersonaDeletionFail {
+    fn from(e: PermissionError) -> Self {
+        match e {
+            PermissionError::Permission => PersonaDeletionFail::Permission,
+            PermissionError::Diesel => PersonaDeletionFail::Database,
+        }
+    }
+}
+
+impl From<PersonaLookupError> for PersonaDeletionFail {
+    fn from(e: PersonaLookupError) -> Self {
+        match e {
+            PersonaLookupError::Database => PersonaDeletionFail::Database,
+            PersonaLookupError::NotFound => PersonaDeletionFail::NotFound,
+        }
+    }
+}
+
 impl AardwolfError for PersonaDeletionFail {
     fn name(&self) -> &str {
         "Persona Deletion Error"
@@ -236,6 +259,7 @@ impl AardwolfError for PersonaDeletionFail {
 
     fn kind(&self) -> AardwolfErrorKind {
         match *self {
+            PersonaDeletionFail::Permission => AardwolfErrorKind::RequiresPermission,
             PersonaDeletionFail::Database => AardwolfErrorKind::InternalServerError,
             PersonaDeletionFail::NotFound => AardwolfErrorKind::NotFound,
         }

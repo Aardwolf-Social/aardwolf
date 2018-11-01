@@ -1,23 +1,22 @@
 use std::marker::PhantomData;
 
 use aardwolf_types::{
-    error::{AardwolfError, AardwolfErrorKind, TemplateError},
+    error::{AardwolfError, AardwolfErrorKind},
     forms::traits::DbAction,
 };
-use crate::actix::{Handler, Message};
+use crate::actix::{Handler, MailboxError, Message};
 use failure::Fail;
 use futures::Future;
 
-use crate::{db::Db, error::ErrorWrapper, AppConfig};
+use crate::{db::Db, AppConfig};
 
 pub fn execute_db_query<D, T, E>(
     state: AppConfig,
     db_action: D,
-) -> impl Future<Item = T, Error = actix_web::error::Error>
+) -> impl Future<Item = T, Error = DbActionError<E>>
 where
     D: DbAction<T, E> + Send + 'static,
     E: AardwolfError + Clone,
-    ErrorWrapper<DbActionError<E>>: TemplateError + Clone,
     T: Send + 'static,
 {
     state
@@ -26,9 +25,9 @@ where
         .then(|res| match res {
             Ok(item_res) => match item_res {
                 Ok(item) => Ok(item),
-                Err(e) => Err(ErrorWrapper::new(state, e).into()),
+                Err(e) => Err(e),
             },
-            Err(e) => Err(e.into()),
+            Err(e) => Err(DbActionError::from(e)),
         })
 }
 
@@ -39,8 +38,35 @@ where
 {
     #[fail(display = "Error in action {}", _0)]
     Action(#[cause] E),
-    #[fail(display = "Error in connection")]
+    #[fail(display = "Error in connection to database")]
     Connection,
+    #[fail(display = "Error communicating db actor")]
+    Mailbox,
+}
+
+impl<E> DbActionError<E>
+where
+    E: Fail,
+{
+    pub fn map_err<F>(self) -> DbActionError<F>
+    where
+        F: Fail + From<E>,
+    {
+        match self {
+            DbActionError::Action(e) => DbActionError::Action(e.into()),
+            DbActionError::Connection => DbActionError::Connection,
+            DbActionError::Mailbox => DbActionError::Mailbox,
+        }
+    }
+}
+
+impl<E> From<MailboxError> for DbActionError<E>
+where
+    E: Fail,
+{
+    fn from(_: MailboxError) -> Self {
+        DbActionError::Mailbox
+    }
 }
 
 impl<E> AardwolfError for DbActionError<E>
@@ -53,7 +79,9 @@ where
 
     fn kind(&self) -> AardwolfErrorKind {
         match *self {
-            DbActionError::Connection => AardwolfErrorKind::InternalServerError,
+            DbActionError::Connection | DbActionError::Mailbox => {
+                AardwolfErrorKind::InternalServerError
+            }
             DbActionError::Action(ref e) => e.kind(),
         }
     }

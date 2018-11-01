@@ -1,4 +1,6 @@
-use aardwolf_types::forms::personas::{DeletePersona, GetPersonaById, UserCanDeletePersona};
+use aardwolf_types::forms::personas::{
+    DeletePersona, GetPersonaById, PersonaDeletionFail, UserCanDeletePersona,
+};
 use actix_web::{Path, State};
 use futures::Future;
 
@@ -23,7 +25,7 @@ pub(crate) fn create(
     Box::new(
         execute_db_query(state.clone(), persona_creation_form.0.to_operation(user.0))
             .map(|(_base_actor, _persona)| format!("Created!"))
-            .map_err(|_: actix_web::Error| RedirectError::new("/personas/new", None).into()),
+            .map_err(|_| RedirectError::new("/personas/new", None).into()),
     )
 }
 
@@ -35,13 +37,15 @@ pub(crate) fn delete(
 
     Box::new(
         execute_db_query(state.clone(), GetPersonaById::new(id.into_inner()))
+            .map_err(|e| e.map_err::<PersonaDeletionFail>())
             .and_then(move |persona| {
                 execute_db_query(state1, UserCanDeletePersona::new(user.0, persona))
+                    .map_err(|e| e.map_err::<PersonaDeletionFail>())
             })
             .and_then(move |persona_deleter| {
                 execute_db_query(state2, DeletePersona::new(persona_deleter))
             })
             .map(|_| format!("Deleted!"))
-            .map_err(|_: actix_web::Error| RedirectError::new("/personas", None).into()),
+            .map_err(|_| RedirectError::new("/personas", None).into()),
     )
 }
