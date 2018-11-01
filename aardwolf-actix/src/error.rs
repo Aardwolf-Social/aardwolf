@@ -7,7 +7,7 @@ use aardwolf_types::{
             ConfirmAccountFail, SignInFail, SignInFormValidationFail, SignUpFail,
             SignUpFormValidationFail,
         },
-        personas::{PersonaCreationFail, PersonaDeletionFail, PersonaLookupError},
+        personas::{PersonaCreationFail, PersonaDeletionFail},
         user::UserLookupFail,
     },
 };
@@ -119,12 +119,6 @@ impl TemplateError for ErrorWrapper<DbActionError<PersonaCreationFail>> {
     }
 }
 
-impl TemplateError for ErrorWrapper<DbActionError<PersonaLookupError>> {
-    fn template(&self) -> TemplateName {
-        TemplateName::new("TODO")
-    }
-}
-
 impl TemplateError for ErrorWrapper<DbActionError<PermissionError>> {
     fn template(&self) -> TemplateName {
         TemplateName::new("TODO")
@@ -157,7 +151,7 @@ impl TemplateError for ErrorWrapper<DbActionError<SignInFail>> {
 
 impl TemplateError for ErrorWrapper<DbActionError<UserLookupFail>> {
     fn template(&self) -> TemplateName {
-        TemplateName::new("TODO")
+        TemplateName::new("TODO_404")
     }
 }
 
