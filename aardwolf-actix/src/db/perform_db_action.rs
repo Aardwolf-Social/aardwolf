@@ -1,31 +1,74 @@
 use std::marker::PhantomData;
 
-use aardwolf_types::forms::traits::DbAction;
-use actix_web::error::ResponseError;
+use aardwolf_types::{
+    error::{AardwolfError, AardwolfErrorKind, TemplateError},
+    forms::traits::DbAction,
+};
 use crate::actix::{Handler, Message};
 use failure::Fail;
+use futures::Future;
 
-use crate::db::Db;
+use crate::{db::Db, error::ErrorWrapper, AppConfig};
 
-#[derive(Debug, Fail)]
+pub fn execute_db_query<D, T, E>(
+    state: AppConfig,
+    db_action: D,
+) -> impl Future<Item = T, Error = actix_web::error::Error>
+where
+    D: DbAction<T, E> + Send + 'static,
+    E: AardwolfError + Clone,
+    ErrorWrapper<DbActionError<E>>: TemplateError + Clone,
+    T: Send + 'static,
+{
+    state
+        .db
+        .send(PerformDbAction::new(db_action))
+        .then(|res| match res {
+            Ok(item_res) => match item_res {
+                Ok(item) => Ok(item),
+                Err(e) => Err(ErrorWrapper::new(state, e).into()),
+            },
+            Err(e) => Err(e.into()),
+        })
+}
+
+#[derive(Clone, Debug, Fail)]
 pub enum DbActionError<E>
 where
     E: Fail,
 {
     #[fail(display = "Error in action {}", _0)]
     Action(#[cause] E),
-    #[fail(display = "Error in connection {}", _0)]
-    Connection(#[cause] r2d2::Error),
+    #[fail(display = "Error in connection")]
+    Connection,
 }
 
-impl<E> ResponseError for DbActionError<E> where E: Fail {}
+impl<E> AardwolfError for DbActionError<E>
+where
+    E: AardwolfError,
+{
+    fn name(&self) -> &str {
+        "Database Action Error"
+    }
+
+    fn kind(&self) -> AardwolfErrorKind {
+        match *self {
+            DbActionError::Connection => AardwolfErrorKind::InternalServerError,
+            DbActionError::Action(ref e) => e.kind(),
+        }
+    }
+
+    fn description(&self) -> String {
+        format!("{}", self)
+    }
+}
 
 impl<E> From<r2d2::Error> for DbActionError<E>
 where
     E: Fail,
 {
-    fn from(e: r2d2::Error) -> Self {
-        DbActionError::Connection(e)
+    fn from(_: r2d2::Error) -> Self {
+        DbActionError::Connection
     }
 }
 

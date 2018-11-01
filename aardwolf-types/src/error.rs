@@ -71,7 +71,7 @@ impl AardwolfError for PermissionError {
 
     fn kind(&self) -> AardwolfErrorKind {
         match *self {
-            PermissionError::Diesel(_) => AardwolfErrorKind::InternalServerError,
+            PermissionError::Diesel => AardwolfErrorKind::InternalServerError,
             PermissionError::Permission => AardwolfErrorKind::RequiresPermission,
         }
     }

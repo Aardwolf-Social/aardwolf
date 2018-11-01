@@ -21,17 +21,17 @@ use base_post::{
 use file::{image::Image, File};
 use sql_types::{FollowPolicy, Permission, PostVisibility, Role, Url};
 
-#[derive(Debug, Fail)]
+#[derive(Clone, Debug, Fail)]
 pub enum PermissionError {
     #[fail(display = "Failed to check user's permission")]
-    Diesel(#[cause] diesel::result::Error),
+    Diesel,
     #[fail(display = "User doesn't have this permission")]
     Permission,
 }
 
 impl From<diesel::result::Error> for PermissionError {
-    fn from(e: diesel::result::Error) -> Self {
-        PermissionError::Diesel(e)
+    fn from(_: diesel::result::Error) -> Self {
+        PermissionError::Diesel
     }
 }
 

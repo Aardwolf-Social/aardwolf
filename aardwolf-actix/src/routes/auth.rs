@@ -4,7 +4,7 @@ use actix_web::{http::header::LOCATION, middleware::session::Session, HttpRespon
 use futures::Future;
 
 use crate::{
-    db::PerformDbAction,
+    db::execute_db_query,
     error::{RedirectError, RenderResult},
     types::{
         auth::{ValidSignInForm, ValidSignUpForm},
@@ -79,16 +79,7 @@ pub(crate) fn sign_up(
     (state, signup_form): (State<AppConfig>, ValidSignUpForm),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
     Box::new(
-        state
-            .db
-            .send(PerformDbAction::new(signup_form.0))
-            .then(|res| match res {
-                Ok(item_res) => match item_res {
-                    Ok(item) => Ok(item),
-                    Err(e) => Err(e.into()),
-                },
-                Err(e) => Err(e.into()),
-            })
+        execute_db_query(state.clone(), signup_form.0)
             .map(|(email, token)| {
                 println!(
                     "confirmation token url: /auth/confirmation?id={}&token={}",
@@ -110,16 +101,7 @@ pub(crate) fn sign_in(
     (state, session, signin_form): (State<AppConfig>, Session, ValidSignInForm),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
     Box::new(
-        state
-            .db
-            .send(PerformDbAction::new(signin_form.0))
-            .then(|res| match res {
-                Ok(item_res) => match item_res {
-                    Ok(item) => Ok(item),
-                    Err(e) => Err(e.into()),
-                },
-                Err(e) => Err(e.into()),
-            })
+        execute_db_query(state.clone(), signin_form.0)
             .and_then(move |user| session.set("user_id", user.id()))
             .map(|_| HttpResponse::SeeOther().header(LOCATION, "/").finish())
             .map_err(|e| RedirectError::new("/auth/sign_in", Some(e.to_string().as_str())).into()),
@@ -130,21 +112,11 @@ pub(crate) fn confirm(
     (state, token): (State<AppConfig>, Query<ConfirmToken>),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
     Box::new(
-        state
-            .db
-            .send(PerformDbAction::new(token.into_inner()))
-            .then(|res| match res {
-                Ok(item_res) => match item_res {
-                    Ok(item) => Ok(item),
-                    Err(e) => Err(e.into()),
-                },
-                Err(e) => Err(e.into()),
-            })
-            .map(|_user| {
-                HttpResponse::SeeOther()
-                    .header(LOCATION, "/auth/sign_in")
-                    .finish()
-            }),
+        execute_db_query(state.clone(), token.into_inner()).map(|_user| {
+            HttpResponse::SeeOther()
+                .header(LOCATION, "/auth/sign_in")
+                .finish()
+        }),
     )
 }
 

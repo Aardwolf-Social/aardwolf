@@ -81,7 +81,7 @@ fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redirect
         .into_inner()
         .validate()
         .map_err(From::from)
-        .and_then(|form| form.sign_in(&db));
+        .and_then(|form| form.db_action(&db));
 
     match res {
         Ok(user) => {
@@ -103,7 +103,7 @@ pub struct ConfirmError;
 
 #[get("/confirmation?<token>")]
 fn confirm(token: ConfirmToken, db: DbConn) -> Result<Redirect, ConfirmError> {
-    Ok(match token.confirm_account(&db) {
+    Ok(match token.db_action(&db) {
         Ok(_) => Redirect::to("/auth/sign_in"),
         Err(e) => {
             println!("unable to confirm account: {}, {:?}", e, e);

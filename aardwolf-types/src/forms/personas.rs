@@ -205,6 +205,7 @@ impl UserCanDeletePersona {
     }
 }
 
+/// TODO: Use a different error kind here that's more specific
 impl DbAction<PersonaDeleter, PermissionError> for UserCanDeletePersona {
     fn db_action(self, conn: &PgConnection) -> Result<PersonaDeleter, PermissionError> {
         self.0.can_delete_persona(self.1, conn)

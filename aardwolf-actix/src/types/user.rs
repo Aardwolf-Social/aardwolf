@@ -5,7 +5,7 @@ use actix_web::{
 };
 use futures::future::{Either, Future, IntoFuture};
 
-use crate::{db::PerformDbAction, AppConfig};
+use crate::{db::execute_db_query, AppConfig};
 
 #[derive(Clone, Debug, Fail)]
 #[fail(display = "No user cookie present")]
@@ -27,7 +27,7 @@ impl FromRequest<AppConfig> for SignedInUser {
     type Result = Box<dyn Future<Item = Self, Error = actix_web::Error>>;
 
     fn from_request(req: &HttpRequest<AppConfig>, _: &Self::Config) -> Self::Result {
-        let db = req.state().db.clone();
+        let state = req.state().clone();
 
         Box::new(
             req.session()
@@ -35,15 +35,7 @@ impl FromRequest<AppConfig> for SignedInUser {
                 .into_future()
                 .and_then(move |maybe_id| match maybe_id {
                     Some(id) => {
-                        let fut = db
-                            .send(PerformDbAction::new(GetUserById::new(id)))
-                            .then(|res| match res {
-                                Ok(user_res) => match user_res {
-                                    Ok(user) => Ok(SignedInUser(user)),
-                                    Err(e) => Err(e.into()),
-                                },
-                                Err(e) => Err(e.into()),
-                            });
+                        let fut = execute_db_query(state, GetUserById::new(id)).map(SignedInUser);
 
                         Either::A(fut)
                     }
@@ -59,7 +51,7 @@ impl FromRequest<AppConfig> for SignedInUserWithEmail {
     type Result = Box<dyn Future<Item = Self, Error = actix_web::Error>>;
 
     fn from_request(req: &HttpRequest<AppConfig>, _: &Self::Config) -> Self::Result {
-        let db = req.state().db.clone();
+        let state = req.state().clone();
 
         Box::new(
             req.session()
@@ -67,15 +59,8 @@ impl FromRequest<AppConfig> for SignedInUserWithEmail {
                 .into_future()
                 .and_then(move |maybe_id| match maybe_id {
                     Some(id) => {
-                        let fut = db
-                            .send(PerformDbAction::new(GetUserAndEmailById::new(id)))
-                            .then(|res| match res {
-                                Ok(user_res) => match user_res {
-                                    Ok((user, email)) => Ok(SignedInUserWithEmail(user, email)),
-                                    Err(e) => Err(e.into()),
-                                },
-                                Err(e) => Err(e.into()),
-                            });
+                        let fut = execute_db_query(state, GetUserAndEmailById::new(id))
+                            .map(|(user, email)| SignedInUserWithEmail(user, email));
 
                         Either::A(fut)
                     }

@@ -7,31 +7,31 @@ use crate::{
 };
 
 #[derive(Clone, Debug, Fail)]
-pub enum UserLookpFail {
+pub enum UserLookupFail {
     #[fail(display = "Error in database")]
     Database,
     #[fail(display = "User not found")]
     NotFound,
 }
 
-impl From<diesel::result::Error> for UserLookpFail {
+impl From<diesel::result::Error> for UserLookupFail {
     fn from(e: diesel::result::Error) -> Self {
         match e {
-            diesel::result::Error::NotFound => UserLookpFail::NotFound,
-            _ => UserLookpFail::Database,
+            diesel::result::Error::NotFound => UserLookupFail::NotFound,
+            _ => UserLookupFail::Database,
         }
     }
 }
 
-impl AardwolfError for UserLookpFail {
+impl AardwolfError for UserLookupFail {
     fn name(&self) -> &str {
         "User Lookup Fail"
     }
 
     fn kind(&self) -> AardwolfErrorKind {
         match *self {
-            UserLookpFail::Database => AardwolfErrorKind::InternalServerError,
-            UserLookpFail::NotFound => AardwolfErrorKind::NotFound,
+            UserLookupFail::Database => AardwolfErrorKind::InternalServerError,
+            UserLookupFail::NotFound => AardwolfErrorKind::NotFound,
         }
     }
 
@@ -48,8 +48,8 @@ impl GetUserById {
     }
 }
 
-impl DbAction<AuthenticatedUser, UserLookpFail> for GetUserById {
-    fn db_action(self, conn: &PgConnection) -> Result<AuthenticatedUser, UserLookpFail> {
+impl DbAction<AuthenticatedUser, UserLookupFail> for GetUserById {
+    fn db_action(self, conn: &PgConnection) -> Result<AuthenticatedUser, UserLookupFail> {
         AuthenticatedUser::get_authenticated_user_by_id(self.0, &conn).map_err(From::from)
     }
 }
@@ -62,8 +62,8 @@ impl GetUserAndEmailById {
     }
 }
 
-impl DbAction<(AuthenticatedUser, Email), UserLookpFail> for GetUserAndEmailById {
-    fn db_action(self, conn: &PgConnection) -> Result<(AuthenticatedUser, Email), UserLookpFail> {
+impl DbAction<(AuthenticatedUser, Email), UserLookupFail> for GetUserAndEmailById {
+    fn db_action(self, conn: &PgConnection) -> Result<(AuthenticatedUser, Email), UserLookupFail> {
         let user = AuthenticatedUser::get_authenticated_user_by_id(self.0, &conn)?;
 
         let email = match user.primary_email() {

@@ -89,33 +89,26 @@ pub struct ValidatedSignUpForm {
 
 impl DbAction<(UnverifiedEmail, EmailToken), SignUpFail> for ValidatedSignUpForm {
     fn db_action(self, conn: &PgConnection) -> Result<(UnverifiedEmail, EmailToken), SignUpFail> {
-        self.create_user_and_auth(conn)
-    }
-}
-
-impl ValidatedSignUpForm {
-    pub fn create_user_and_auth(
-        self,
-        db: &PgConnection,
-    ) -> Result<(UnverifiedEmail, EmailToken), SignUpFail> {
-        db.transaction::<_, SignUpFail, _>(|| {
+        conn.transaction::<_, SignUpFail, _>(|| {
             let user = NewUser::new()
-                .insert(db)
+                .insert(conn)
                 .map_err(|_| SignUpFail::UserCreateError)?;
 
-            let user = match user.to_verified(db).map_err(|_| SignUpFail::UserLookup)? {
+            let user = match user.to_verified(conn).map_err(|_| SignUpFail::UserLookup)? {
                 Ok(_unauthenticatec_user) => return Err(SignUpFail::VerifiedUser),
                 Err(unverified_user) => unverified_user,
             };
 
             let _local_auth =
                 NewLocalAuth::new_from_two(&user, self.password, self.password_confirmation)?
-                    .insert(db)
+                    .insert(conn)
                     .map_err(|_| SignUpFail::LocalAuthCreateError)?;
 
             let (email, token) = NewEmail::new(self.email, &user)?;
 
-            let email = email.insert(db).map_err(|_| SignUpFail::EmailCreateError)?;
+            let email = email
+                .insert(conn)
+                .map_err(|_| SignUpFail::EmailCreateError)?;
 
             Ok((email, token))
         })
@@ -245,13 +238,7 @@ pub struct ValidatedSignInForm {
 
 impl DbAction<AuthenticatedUser, SignInFail> for ValidatedSignInForm {
     fn db_action(self, conn: &PgConnection) -> Result<AuthenticatedUser, SignInFail> {
-        self.sign_in(conn)
-    }
-}
-
-impl ValidatedSignInForm {
-    pub fn sign_in(self, db: &PgConnection) -> Result<AuthenticatedUser, SignInFail> {
-        UnauthenticatedUser::by_email_for_auth(&self.email, db)
+        UnauthenticatedUser::by_email_for_auth(&self.email, conn)
             .map_err(|_| SignInFail::GenericLoginError)
             .and_then(|(user, _email, auth)| {
                 user.log_in_local(auth, self.password)
@@ -339,16 +326,7 @@ pub struct ConfirmToken {
 
 impl DbAction<AuthenticatedUser, ConfirmAccountFail> for ConfirmToken {
     fn db_action(self, conn: &PgConnection) -> Result<AuthenticatedUser, ConfirmAccountFail> {
-        self.confirm_account(conn)
-    }
-}
-
-impl ConfirmToken {
-    pub fn confirm_account(
-        self,
-        db: &PgConnection,
-    ) -> Result<AuthenticatedUser, ConfirmAccountFail> {
-        let (unauthenticated_user, email) = UnauthenticatedUser::by_email_id(self.id, db)
+        let (unauthenticated_user, email) = UnauthenticatedUser::by_email_id(self.id, conn)
             .map_err(|_| ConfirmAccountFail::EmailNotFound)?;
 
         info!(
@@ -357,7 +335,7 @@ impl ConfirmToken {
         );
 
         let user = match unauthenticated_user
-            .to_verified(db)
+            .to_verified(conn)
             .map_err(|_| ConfirmAccountFail::UserLookup)?
         {
             Ok(unauthenticated_user) => {
@@ -385,7 +363,7 @@ impl ConfirmToken {
         let (user, _email) = user
             .verify(email, self.token)
             .map_err(|_| ConfirmAccountFail::Verify)?
-            .store_verify(db)
+            .store_verify(conn)
             .map_err(|e| {
                 error!("Could not store verified user: {}, {:?}", e, e);
                 ConfirmAccountFail::Confirmed

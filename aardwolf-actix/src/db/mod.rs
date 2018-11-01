@@ -5,7 +5,7 @@ use r2d2_diesel::ConnectionManager;
 
 mod perform_db_action;
 
-pub use self::perform_db_action::PerformDbAction;
+pub use self::perform_db_action::{execute_db_query, DbActionError, PerformDbAction};
 
 pub type ManagedPgConn = ConnectionManager<PgConnection>;
 pub type Pool = r2d2::Pool<ManagedPgConn>;

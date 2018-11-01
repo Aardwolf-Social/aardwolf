@@ -1,9 +1,14 @@
+use aardwolf_models::user::PermissionError;
 use aardwolf_types::{
     error::{AardwolfError, AardwolfErrorKind, ErrorJson, TemplateError, TemplateName},
     forms::{
         app::CreateAppError,
-        auth::{SignInFormValidationFail, SignUpFormValidationFail},
-        personas::PersonaCreationFail,
+        auth::{
+            ConfirmAccountFail, SignInFail, SignInFormValidationFail, SignUpFail,
+            SignUpFormValidationFail,
+        },
+        personas::{PersonaCreationFail, PersonaDeletionFail, PersonaLookupError},
+        user::UserLookupFail,
     },
 };
 use actix_web::{
@@ -11,7 +16,7 @@ use actix_web::{
     HttpResponse, ResponseError,
 };
 
-use crate::AppConfig;
+use crate::{db::DbActionError, AppConfig};
 
 pub type RenderResult = Result<HttpResponse, RenderError>;
 
@@ -103,6 +108,54 @@ impl TemplateError for ErrorWrapper<SignUpFormValidationFail> {
 }
 
 impl TemplateError for ErrorWrapper<PersonaCreationFail> {
+    fn template(&self) -> TemplateName {
+        TemplateName::new("TODO")
+    }
+}
+
+impl TemplateError for ErrorWrapper<DbActionError<PersonaCreationFail>> {
+    fn template(&self) -> TemplateName {
+        TemplateName::new("TODO")
+    }
+}
+
+impl TemplateError for ErrorWrapper<DbActionError<PersonaLookupError>> {
+    fn template(&self) -> TemplateName {
+        TemplateName::new("TODO")
+    }
+}
+
+impl TemplateError for ErrorWrapper<DbActionError<PermissionError>> {
+    fn template(&self) -> TemplateName {
+        TemplateName::new("TODO")
+    }
+}
+
+impl TemplateError for ErrorWrapper<DbActionError<PersonaDeletionFail>> {
+    fn template(&self) -> TemplateName {
+        TemplateName::new("TODO")
+    }
+}
+
+impl TemplateError for ErrorWrapper<DbActionError<ConfirmAccountFail>> {
+    fn template(&self) -> TemplateName {
+        TemplateName::new("TODO")
+    }
+}
+
+impl TemplateError for ErrorWrapper<DbActionError<SignUpFail>> {
+    fn template(&self) -> TemplateName {
+        TemplateName::new("sign_up")
+    }
+}
+
+impl TemplateError for ErrorWrapper<DbActionError<SignInFail>> {
+    fn template(&self) -> TemplateName {
+        TemplateName::new("sign_in")
+    }
+}
+
+impl TemplateError for ErrorWrapper<DbActionError<UserLookupFail>> {
     fn template(&self) -> TemplateName {
         TemplateName::new("TODO")
     }
