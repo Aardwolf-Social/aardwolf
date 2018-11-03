@@ -19,8 +19,8 @@ script:
   - |
     for project in 'aardwolf-models' 'aardwolf-types' 'aardwolf-actix' 'aardwolf-rocket' '.'; do
       pushd $project
-      cargo build --verbose
-      cargo test --verbose
+      cargo build
+      cargo test
       popd
     done
 
