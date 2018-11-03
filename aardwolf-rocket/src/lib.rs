@@ -33,6 +33,7 @@ use std::{error::Error, ops::Deref};
 #[macro_use]
 pub mod action;
 pub mod routes;
+pub mod session;
 pub mod types;
 
 pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;

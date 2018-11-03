@@ -1,5 +1,5 @@
 use aardwolf_models::user::{email::Email, AuthenticatedUser};
-use aardwolf_types::forms::user::{FetchUser, FetchUserAndEmail, UserLookupFail};
+use aardwolf_types::forms::user::{FetchUser, FetchUserAndEmail, FetchUserFail};
 use actix_web::{
     error::ResponseError, middleware::session::RequestSession, FromRequest, HttpRequest,
     HttpResponse,
@@ -22,14 +22,14 @@ pub enum SignedInUserError {
     User,
 }
 
-impl From<DbActionError<UserLookupFail>> for SignedInUserError {
-    fn from(e: DbActionError<UserLookupFail>) -> Self {
+impl From<DbActionError<FetchUserFail>> for SignedInUserError {
+    fn from(e: DbActionError<FetchUserFail>) -> Self {
         match e {
             DbActionError::Connection => SignedInUserError::Database,
             DbActionError::Mailbox => SignedInUserError::Mailbox,
             DbActionError::Action(e) => match e {
-                UserLookupFail::Database => SignedInUserError::Database,
-                UserLookupFail::NotFound => SignedInUserError::User,
+                FetchUserFail::Database => SignedInUserError::Database,
+                FetchUserFail::NotFound => SignedInUserError::User,
             },
         }
     }

@@ -1,4 +1,5 @@
-use aardwolf_models::user::{email::Email, AuthenticatedUser, UserLike};
+use aardwolf_models::user::{email::Email, AuthenticatedUser};
+use aardwolf_types::forms::user::{FetchUser, FetchUserAndEmail, FetchUserFail};
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
 use rocket::{
@@ -7,6 +8,17 @@ use rocket::{
     request::{self, FromRequest},
     {Outcome, Request, State},
 };
+
+use action::DbActionWrapper;
+use session::from_cookie;
+
+struct CookieError;
+
+impl From<FetchUserFail> for CookieError {
+    fn from(_: FetchUserFail) -> Self {
+        CookieError
+    }
+}
 
 pub struct SignedInUser(pub AuthenticatedUser);
 pub struct SignedInUserWithEmail(pub AuthenticatedUser, pub Email);
@@ -23,12 +35,14 @@ impl<'l, 'r> FromRequest<'l, 'r> for SignedInUser {
             Err(_) => return Outcome::Failure((Status::ServiceUnavailable, ())),
         };
 
-        request
-            .cookies()
-            .get_private("user_id")
-            .and_then(|c| c.value().parse::<i32>().ok())
-            .and_then(|user_id| AuthenticatedUser::get_authenticated_user_by_id(user_id, &db).ok())
+        from_cookie(&mut request.cookies(), "user_id", CookieError)
+            .and_then(|user_id| {
+                perform!(&db, user_id, CookieError, [
+                    (DbActionWrapper<_, _, _> => FetchUser),
+                ])
+            })
             .map(SignedInUser)
+            .ok()
             .or_forward(())
     }
 }
@@ -43,20 +57,14 @@ impl<'l, 'r> FromRequest<'l, 'r> for SignedInUserWithEmail {
             Err(_) => return Outcome::Failure((Status::ServiceUnavailable, ())),
         };
 
-        request
-            .cookies()
-            .get_private("user_id")
-            .and_then(|c| c.value().parse::<i32>().ok())
+        from_cookie(&mut request.cookies(), "user_id", CookieError)
             .and_then(|user_id| {
-                AuthenticatedUser::get_authenticated_user_by_id(user_id, &db)
-                    .ok()
-                    .and_then(|user| {
-                        user.primary_email()
-                            .and_then(|primary_email| Email::by_id(primary_email, &db).ok())
-                            .or_else(|| Email::first_by_user_id(user_id, &db).ok())
-                            .map(|email| SignedInUserWithEmail(user, email))
-                    })
+                perform!(&db, user_id, CookieError, [
+                    (DbActionWrapper<_, _, _> => FetchUserAndEmail),
+                ])
             })
+            .map(|(user, email)| SignedInUserWithEmail(user, email))
+            .ok()
             .or_forward(())
     }
 }

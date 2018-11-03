@@ -7,31 +7,31 @@ use crate::{
 };
 
 #[derive(Clone, Debug, Fail)]
-pub enum UserLookupFail {
+pub enum FetchUserFail {
     #[fail(display = "Error in database")]
     Database,
     #[fail(display = "User not found")]
     NotFound,
 }
 
-impl From<diesel::result::Error> for UserLookupFail {
+impl From<diesel::result::Error> for FetchUserFail {
     fn from(e: diesel::result::Error) -> Self {
         match e {
-            diesel::result::Error::NotFound => UserLookupFail::NotFound,
-            _ => UserLookupFail::Database,
+            diesel::result::Error::NotFound => FetchUserFail::NotFound,
+            _ => FetchUserFail::Database,
         }
     }
 }
 
-impl AardwolfError for UserLookupFail {
+impl AardwolfError for FetchUserFail {
     fn name(&self) -> &str {
         "User Lookup Fail"
     }
 
     fn kind(&self) -> AardwolfErrorKind {
         match *self {
-            UserLookupFail::Database => AardwolfErrorKind::InternalServerError,
-            UserLookupFail::NotFound => AardwolfErrorKind::NotFound,
+            FetchUserFail::Database => AardwolfErrorKind::InternalServerError,
+            FetchUserFail::NotFound => AardwolfErrorKind::NotFound,
         }
     }
 
@@ -50,8 +50,8 @@ impl FetchUser {
 
 pub struct FetchUserOperation(i32);
 
-impl DbAction<AuthenticatedUser, UserLookupFail> for FetchUserOperation {
-    fn db_action(self, conn: &PgConnection) -> Result<AuthenticatedUser, UserLookupFail> {
+impl DbAction<AuthenticatedUser, FetchUserFail> for FetchUserOperation {
+    fn db_action(self, conn: &PgConnection) -> Result<AuthenticatedUser, FetchUserFail> {
         AuthenticatedUser::get_authenticated_user_by_id(self.0, &conn).map_err(From::from)
     }
 }
@@ -66,8 +66,8 @@ impl FetchUserAndEmail {
 
 pub struct FetchUserAndEmailOperation(i32);
 
-impl DbAction<(AuthenticatedUser, Email), UserLookupFail> for FetchUserAndEmailOperation {
-    fn db_action(self, conn: &PgConnection) -> Result<(AuthenticatedUser, Email), UserLookupFail> {
+impl DbAction<(AuthenticatedUser, Email), FetchUserFail> for FetchUserAndEmailOperation {
+    fn db_action(self, conn: &PgConnection) -> Result<(AuthenticatedUser, Email), FetchUserFail> {
         let user = AuthenticatedUser::get_authenticated_user_by_id(self.0, &conn)?;
 
         let email = match user.primary_email() {

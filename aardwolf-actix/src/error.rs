@@ -4,11 +4,11 @@ use aardwolf_types::{
     forms::{
         app::CreateAppError,
         auth::{
-            ConfirmAccountFail, SignInFail, SignInFormValidationFail, SignUpFail,
-            SignUpFormValidationFail,
+            ConfirmAccountFail, SignInFail, SignUpFail, ValidateSignInFormFail,
+            ValidateSignUpFormFail,
         },
         personas::{PersonaCreationFail, PersonaDeletionFail},
-        user::UserLookupFail,
+        user::FetchUserFail,
     },
 };
 use actix_web::{
@@ -95,13 +95,13 @@ impl TemplateError for ErrorWrapper<CreateAppError> {
     }
 }
 
-impl TemplateError for ErrorWrapper<SignInFormValidationFail> {
+impl TemplateError for ErrorWrapper<ValidateSignInFormFail> {
     fn template(&self) -> TemplateName {
         TemplateName::new("sign_in")
     }
 }
 
-impl TemplateError for ErrorWrapper<SignUpFormValidationFail> {
+impl TemplateError for ErrorWrapper<ValidateSignUpFormFail> {
     fn template(&self) -> TemplateName {
         TemplateName::new("sign_up")
     }
@@ -149,7 +149,7 @@ impl TemplateError for ErrorWrapper<DbActionError<SignInFail>> {
     }
 }
 
-impl TemplateError for ErrorWrapper<DbActionError<UserLookupFail>> {
+impl TemplateError for ErrorWrapper<DbActionError<FetchUserFail>> {
     fn template(&self) -> TemplateName {
         TemplateName::new("TODO_404")
     }

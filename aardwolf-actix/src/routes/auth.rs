@@ -1,8 +1,8 @@
 use aardwolf_models::user::UserLike;
 use aardwolf_types::forms::auth::{
     ConfirmAccountFail, ConfirmToken, ConfirmationToken, SignIn, SignInErrorMessage, SignInFail,
-    SignInForm, SignInFormValidationFail, SignUp, SignUpErrorMessage, SignUpFail, SignUpForm,
-    SignUpFormValidationFail, ValidateSignInForm, ValidateSignUpForm,
+    SignInForm, SignUp, SignUpErrorMessage, SignUpFail, SignUpForm, ValidateSignInForm,
+    ValidateSignInFormFail, ValidateSignUpForm, ValidateSignUpFormFail,
 };
 use actix_web::{
     http::header::LOCATION, middleware::session::Session, Form, HttpResponse, Query, State,
@@ -102,8 +102,8 @@ impl From<DbActionError<SignUpFail>> for SignUpError {
     }
 }
 
-impl From<SignUpFormValidationFail> for SignUpError {
-    fn from(e: SignUpFormValidationFail) -> Self {
+impl From<ValidateSignUpFormFail> for SignUpError {
+    fn from(e: ValidateSignUpFormFail) -> Self {
         SignUpError::SignUp(e.into())
     }
 }
@@ -157,8 +157,8 @@ impl From<DbActionError<SignInFail>> for SignInError {
     }
 }
 
-impl From<SignInFormValidationFail> for SignInError {
-    fn from(e: SignInFormValidationFail) -> Self {
+impl From<ValidateSignInFormFail> for SignInError {
+    fn from(e: ValidateSignInFormFail) -> Self {
         SignInError::SignIn(e.into())
     }
 }

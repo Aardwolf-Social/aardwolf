@@ -2,8 +2,8 @@ use rocket::request::Form;
 
 use aardwolf_models::user::PermissionError;
 use aardwolf_types::forms::personas::{
-    CheckDeletePersonaPermission, CreatePersona, DeletePersona, FetchPersona, PersonaCreationFail,
-    PersonaCreationForm, PersonaDeletionFail, PersonaLookupError, ValidatePersonaCreationForm,
+    CheckDeletePersonaPermission, CreatePersona, DeletePersona, FetchPersona, FetchPersonaFail,
+    PersonaCreationFail, PersonaCreationForm, PersonaDeletionFail, ValidatePersonaCreationForm,
 };
 use types::user::SignedInUser;
 use DbConn;
@@ -70,8 +70,8 @@ impl From<PersonaDeletionFail> for PersonaDeleteError {
     }
 }
 
-impl From<PersonaLookupError> for PersonaDeleteError {
-    fn from(e: PersonaLookupError) -> Self {
+impl From<FetchPersonaFail> for PersonaDeleteError {
+    fn from(e: FetchPersonaFail) -> Self {
         PersonaDeleteError::Delete(e.into())
     }
 }
