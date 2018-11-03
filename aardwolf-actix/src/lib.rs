@@ -137,13 +137,11 @@ pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
                     CookieSessionBackend::signed(&[0; 32]).secure(false),
                 ))
                 .resource("/sign_up", |r| {
-                    r.method(Method::GET)
-                        .with(self::routes::auth::sign_up_form_with_error);
+                    r.method(Method::GET).with(self::routes::auth::sign_up_form);
                     r.method(Method::POST).with(self::routes::auth::sign_up)
                 })
                 .resource("/sign_in", |r| {
-                    r.method(Method::GET)
-                        .with(self::routes::auth::sign_in_form_with_error);
+                    r.method(Method::GET).with(self::routes::auth::sign_in_form);
                     r.method(Method::POST).with(self::routes::auth::sign_in)
                 })
                 .resource("/confirmation", |r| {

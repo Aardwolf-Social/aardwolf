@@ -18,27 +18,28 @@ use crate::{
     AppConfig,
 };
 
-pub(crate) fn sign_up_form_with_error(
+pub(crate) fn sign_up_form(
     (state, error): (State<AppConfig>, Option<Query<SignUpErrorMessage>>),
 ) -> RenderResult {
-    let token = "some csrf token";
-
-    error
-        .map(|error| {
-            let msg = error.into_inner().msg;
-
-            state.render(
-                "sign_up",
-                &hashmap!{
-                    "token" => token,
-                    "error_msg" => msg.as_str(),
-                },
-            )
-        })
-        .unwrap_or_else(|| sign_up_form(state))
+    match error {
+        Some(error) => sign_up_form_with_error(state, error.into_inner()),
+        None => sign_up_form_without_error(state),
+    }
 }
 
-fn sign_up_form(state: State<AppConfig>) -> RenderResult {
+fn sign_up_form_with_error(state: State<AppConfig>, msg: SignUpErrorMessage) -> RenderResult {
+    let token = "some csrf token";
+
+    state.render(
+        "sign_up",
+        &hashmap!{
+            "token" => token,
+            "error_msg" => msg.msg.as_str(),
+        },
+    )
+}
+
+fn sign_up_form_without_error(state: State<AppConfig>) -> RenderResult {
     let token = "some csrf token";
 
     state.render(
@@ -49,27 +50,28 @@ fn sign_up_form(state: State<AppConfig>) -> RenderResult {
     )
 }
 
-pub(crate) fn sign_in_form_with_error(
+pub(crate) fn sign_in_form(
     (state, error): (State<AppConfig>, Option<Query<SignInErrorMessage>>),
 ) -> RenderResult {
-    let token = "some csrf token";
-
-    error
-        .map(|error| {
-            let msg = error.into_inner().msg;
-
-            state.render(
-                "sign_in",
-                &hashmap!{
-                    "token" => token,
-                    "error_msg" => msg.as_str(),
-                },
-            )
-        })
-        .unwrap_or_else(|| sign_in_form(state))
+    match error {
+        Some(error) => sign_in_form_with_error(state, error.into_inner()),
+        None => sign_in_form_without_error(state),
+    }
 }
 
-fn sign_in_form(state: State<AppConfig>) -> RenderResult {
+fn sign_in_form_with_error(state: State<AppConfig>, error: SignInErrorMessage) -> RenderResult {
+    let token = "some csrf token";
+
+    state.render(
+        "sign_in",
+        &hashmap!{
+            "token" => token,
+            "error_msg" => error.msg.as_str(),
+        },
+    )
+}
+
+fn sign_in_form_without_error(state: State<AppConfig>) -> RenderResult {
     let token = "some csrf token";
 
     state.render(

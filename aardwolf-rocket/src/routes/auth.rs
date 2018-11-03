@@ -5,15 +5,18 @@ use rocket::{
 };
 use rocket_contrib::Template;
 
-use aardwolf_types::forms::{
-    auth::{ConfirmToken, SignInError, SignInForm, SignUpError, SignUpForm},
-    traits::{DbAction, Validate},
+use aardwolf_models::user::UserLike;
+use aardwolf_types::forms::auth::{
+    ConfirmAccountFail, ConfirmToken, ConfirmationToken, SignIn, SignInErrorMessage, SignInFail,
+    SignInForm, SignInFormValidationFail, SignUp, SignUpErrorMessage, SignUpFail, SignUpForm,
+    SignUpFormValidationFail, ValidateSignInForm, ValidateSignUpForm,
 };
+use action::{DbActionWrapper, ValidateWrapper};
 use types::user::SignedInUser;
 use DbConn;
 
 #[get("/sign_up?<error>")]
-fn sign_up_form_with_error(error: SignUpError) -> Template {
+fn sign_up_form_with_error(error: SignUpErrorMessage) -> Template {
     let token = "some csrf token";
     Template::render(
         "sign_up",
@@ -28,7 +31,7 @@ fn sign_up_form() -> Template {
 }
 
 #[get("/sign_in?<error>")]
-fn sign_in_form_with_error(error: SignInError) -> Template {
+fn sign_in_form_with_error(error: SignInErrorMessage) -> Template {
     let token = "some csrf token";
     Template::render(
         "sign_in",
@@ -42,15 +45,36 @@ fn sign_in_form() -> Template {
     Template::render("sign_in", hashmap!{ "token" => token })
 }
 
+#[derive(Clone, Debug, Fail)]
+pub enum SignUpError {
+    #[fail(display = "Error talking db")]
+    Database,
+    #[fail(display = "Error signing up: {}", _0)]
+    SignUp(#[cause] SignUpFail),
+}
+
+impl From<SignUpFail> for SignUpError {
+    fn from(e: SignUpFail) -> Self {
+        SignUpError::SignUp(e)
+    }
+}
+
+impl From<SignUpFormValidationFail> for SignUpError {
+    fn from(e: SignUpFormValidationFail) -> Self {
+        SignUpError::SignUp(e.into())
+    }
+}
 #[post("/sign_up", data = "<form>")]
 fn sign_up(form: Form<SignUpForm>, db: DbConn) -> Redirect {
-    // validation goes here
-
-    let res = form
-        .into_inner()
-        .validate()
-        .map_err(From::from)
-        .and_then(|form| form.db_action(&db));
+    let res = perform!(
+        &db,
+        form.into_inner(),
+        SignUpError,
+        [
+            (ValidateWrapper<_, _, _> => ValidateSignUpForm),
+            (DbActionWrapper<_, _, _> => SignUp),
+        ]
+    );
 
     match res {
         Ok((email, token)) => {
@@ -71,17 +95,39 @@ fn sign_up(form: Form<SignUpForm>, db: DbConn) -> Redirect {
     }
 }
 
+#[derive(Clone, Debug, Fail)]
+pub enum SignInError {
+    #[fail(display = "Error talking db")]
+    Database,
+    #[fail(display = "Error signing in: {}", _0)]
+    SignIn(#[cause] SignInFail),
+}
+
+impl From<SignInFail> for SignInError {
+    fn from(e: SignInFail) -> Self {
+        SignInError::SignIn(e)
+    }
+}
+
+impl From<SignInFormValidationFail> for SignInError {
+    fn from(e: SignInFormValidationFail) -> Self {
+        SignInError::SignIn(e.into())
+    }
+}
+
 #[post("/sign_in", data = "<form>")]
 fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redirect {
-    use aardwolf_models::user::UserLike;
-
     // TODO: check csrf token (this will probably be a request guard)
 
-    let res = form
-        .into_inner()
-        .validate()
-        .map_err(From::from)
-        .and_then(|form| form.db_action(&db));
+    let res = perform!(
+        &db,
+        form.into_inner(),
+        SignInError,
+        [
+            (ValidateWrapper<_, _, _> => ValidateSignInForm),
+            (DbActionWrapper<_, _, _> => SignIn),
+        ]
+    );
 
     match res {
         Ok(user) => {
@@ -97,17 +143,36 @@ fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redirect
     }
 }
 
-#[derive(Debug, Fail)]
-#[fail(display = "Failed to confirm account")]
-pub struct ConfirmError;
+#[derive(Clone, Debug, Fail)]
+pub enum ConfirmError {
+    #[fail(display = "Error talking db")]
+    Database,
+    #[fail(display = "Error confirming account: {}", _0)]
+    Confirm(#[cause] ConfirmAccountFail),
+}
+
+impl From<ConfirmAccountFail> for ConfirmError {
+    fn from(e: ConfirmAccountFail) -> Self {
+        ConfirmError::Confirm(e)
+    }
+}
 
 #[get("/confirmation?<token>")]
-fn confirm(token: ConfirmToken, db: DbConn) -> Result<Redirect, ConfirmError> {
-    Ok(match token.db_action(&db) {
+fn confirm(token: ConfirmationToken, db: DbConn) -> Result<Redirect, ConfirmError> {
+    let res = perform!(
+        &db,
+        token,
+        ConfirmError,
+        [
+            (DbActionWrapper<_, _, _> => ConfirmToken),
+        ]
+    );
+
+    Ok(match res {
         Ok(_) => Redirect::to("/auth/sign_in"),
         Err(e) => {
             println!("unable to confirm account: {}, {:?}", e, e);
-            return Err(ConfirmError);
+            return Err(e);
         }
     })
 }

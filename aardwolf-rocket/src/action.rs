@@ -1,19 +1,14 @@
 use std::marker::PhantomData;
 
 use aardwolf_types::forms::traits::{DbAction, Validate};
+use diesel::pg::PgConnection;
 use failure::Fail;
-use futures::future::Future;
-
-use crate::{
-    db::{DbActionError, PerformDbAction},
-    AppConfig,
-};
 
 pub trait Action<T, E>
 where
     E: Fail,
 {
-    fn action(self, state: AppConfig) -> Box<dyn Future<Item = T, Error = E> + Send>;
+    fn action(self, db: &PgConnection) -> Result<T, E>;
 }
 
 pub struct ValidateWrapper<V, T, E>(V, PhantomData<T>, PhantomData<E>)
@@ -47,10 +42,8 @@ where
     T: Send + 'static,
     E: Fail,
 {
-    fn action(self, _: AppConfig) -> Box<dyn Future<Item = T, Error = E> + Send> {
-        use futures::future::IntoFuture;
-
-        Box::new(self.0.validate().into_future())
+    fn action(self, _: &PgConnection) -> Result<T, E> {
+        self.0.validate()
     }
 }
 
@@ -79,37 +72,21 @@ where
     }
 }
 
-impl<D, T, E> Action<T, DbActionError<E>> for DbActionWrapper<D, T, E>
+impl<D, T, E> Action<T, E> for DbActionWrapper<D, T, E>
 where
     D: DbAction<T, E> + Send + 'static,
     T: Send + 'static,
     E: Fail,
 {
-    fn action(
-        self,
-        state: AppConfig,
-    ) -> Box<dyn Future<Item = T, Error = DbActionError<E>> + Send> {
-        let fut = state
-            .db
-            .send(PerformDbAction::new(self.0))
-            .then(|res| match res {
-                Ok(item_res) => match item_res {
-                    Ok(item) => Ok(item),
-                    Err(e) => Err(e),
-                },
-                Err(e) => Err(DbActionError::from(e)),
-            });
-
-        Box::new(fut)
+    fn action(self, db: &PgConnection) -> Result<T, E> {
+        self.0.db_action(db)
     }
 }
 
 #[macro_export]
 macro_rules! perform {
  ( $state:expr, $start:expr, $error_type:ty, [] ) => {{
-     use futures::future::IntoFuture;
-
-     (Ok($start) as Result<_, $error_type>).into_future()
+     Ok($start) as Result<_, $error_type>
  }};
  (
      $state:expr,
@@ -124,9 +101,9 @@ macro_rules! perform {
 
      let wrapper: $wrapper = $first.with($start).into();
 
-     let fut = wrapper.action($state.clone());
+     let res = wrapper.action($state.clone());
 
-     perform_inner!($state, $error_type, fut, [ $(($wrappers => $rest),)* ])
+     perform_inner!($state, $error_type, res, [ $(($wrappers => $rest),)* ])
  }};
 }
 
@@ -137,11 +114,10 @@ macro_rules! perform_inner {
         $first:expr,
         []
     ) => {{
-        use futures::future::IntoFuture;
-
-        $first
-            .into_future()
-            .from_err::<$error_type>()
+        $first.map_err(|e| {
+            let e: $error_type = e.into();
+            e
+        })
     }};
     (
         $state:expr,
@@ -152,18 +128,19 @@ macro_rules! perform_inner {
             $(($wrappers:ty => $items:expr),)*
         ]
     ) => {{
-        use futures::future::IntoFuture;
         use $crate::action::Action;
 
         $first
-            .into_future()
-            .from_err::<$error_type>()
-            .and_then(move |item| {
+            .map_err(|e| {
+                let e: $error_type = e.into();
+                e
+            })
+            .and_then(|item| {
                 let wrapper: $wrapper = $item.with(item).into();
 
-                let fut = wrapper.action($state.clone());
+                let res = wrapper.action($state.clone());
 
-                perform_inner!($state, $error_type, fut, [ $(($wrappers => $items),)* ])
+                perform_inner!($state, $error_type, res, [ $(($wrappers => $items),)* ])
             })
     }};
 }

@@ -30,6 +30,8 @@ use rocket::{
 use rocket_contrib::Template;
 use std::{error::Error, ops::Deref};
 
+#[macro_use]
+pub mod action;
 pub mod routes;
 pub mod types;
 
