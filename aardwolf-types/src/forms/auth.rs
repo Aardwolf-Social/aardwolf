@@ -63,9 +63,19 @@ pub struct SignUpForm {
     pub password_confirmation: PlaintextPassword,
 }
 
-impl Validate<ValidatedSignUpForm, SignUpFormValidationFail> for SignUpForm {
+pub struct ValidateSignUpForm;
+
+impl ValidateSignUpForm {
+    pub fn with(self, form: SignUpForm) -> ValidateSignUpFormOperation {
+        ValidateSignUpFormOperation(form)
+    }
+}
+
+pub struct ValidateSignUpFormOperation(SignUpForm);
+
+impl Validate<ValidatedSignUpForm, SignUpFormValidationFail> for ValidateSignUpFormOperation {
     fn validate(self) -> Result<ValidatedSignUpForm, SignUpFormValidationFail> {
-        if self.email.is_empty() {
+        if self.0.email.is_empty() {
             Err(SignUpFormValidationFail {
                 email_length: true,
                 password_match: false,
@@ -73,9 +83,9 @@ impl Validate<ValidatedSignUpForm, SignUpFormValidationFail> for SignUpForm {
             })
         } else {
             Ok(ValidatedSignUpForm {
-                email: self.email,
-                password: self.password,
-                password_confirmation: self.password_confirmation,
+                email: self.0.email,
+                password: self.0.password,
+                password_confirmation: self.0.password_confirmation,
             })
         }
     }
@@ -87,13 +97,17 @@ pub struct ValidatedSignUpForm {
     password_confirmation: PlaintextPassword,
 }
 
-impl ValidatedSignUpForm {
-    pub fn with(self, _: ()) -> Self {
-        self
+pub struct SignUp;
+
+impl SignUp {
+    pub fn with(self, form: ValidatedSignUpForm) -> SignUpOperation {
+        SignUpOperation(form)
     }
 }
 
-impl DbAction<(UnverifiedEmail, EmailToken), SignUpFail> for ValidatedSignUpForm {
+pub struct SignUpOperation(ValidatedSignUpForm);
+
+impl DbAction<(UnverifiedEmail, EmailToken), SignUpFail> for SignUpOperation {
     fn db_action(self, conn: &PgConnection) -> Result<(UnverifiedEmail, EmailToken), SignUpFail> {
         conn.transaction::<_, SignUpFail, _>(|| {
             let user = NewUser::new()
@@ -106,11 +120,11 @@ impl DbAction<(UnverifiedEmail, EmailToken), SignUpFail> for ValidatedSignUpForm
             };
 
             let _local_auth =
-                NewLocalAuth::new_from_two(&user, self.password, self.password_confirmation)?
+                NewLocalAuth::new_from_two(&user, self.0.password, self.0.password_confirmation)?
                     .insert(conn)
                     .map_err(|_| SignUpFail::LocalAuthCreateError)?;
 
-            let (email, token) = NewEmail::new(self.email, &user)?;
+            let (email, token) = NewEmail::new(self.0.email, &user)?;
 
             let email = email
                 .insert(conn)
@@ -224,14 +238,24 @@ pub struct SignInForm {
     pub password: PlaintextPassword,
 }
 
-impl Validate<ValidatedSignInForm, SignInFormValidationFail> for SignInForm {
+pub struct ValidateSignInForm;
+
+impl ValidateSignInForm {
+    pub fn with(self, form: SignInForm) -> ValidateSignInFormOperation {
+        ValidateSignInFormOperation(form)
+    }
+}
+
+pub struct ValidateSignInFormOperation(SignInForm);
+
+impl Validate<ValidatedSignInForm, SignInFormValidationFail> for ValidateSignInFormOperation {
     fn validate(self) -> Result<ValidatedSignInForm, SignInFormValidationFail> {
-        if self.email.is_empty() {
+        if self.0.email.is_empty() {
             Err(SignInFormValidationFail::EmptyEmailError)
         } else {
             Ok(ValidatedSignInForm {
-                email: self.email,
-                password: self.password,
+                email: self.0.email,
+                password: self.0.password,
             })
         }
     }
@@ -242,18 +266,22 @@ pub struct ValidatedSignInForm {
     password: PlaintextPassword,
 }
 
-impl ValidatedSignInForm {
-    pub fn with(self, _: ()) -> Self {
-        self
+pub struct SignIn;
+
+impl SignIn {
+    pub fn with(self, form: ValidatedSignInForm) -> SignInOperation {
+        SignInOperation(form)
     }
 }
 
-impl DbAction<AuthenticatedUser, SignInFail> for ValidatedSignInForm {
+pub struct SignInOperation(ValidatedSignInForm);
+
+impl DbAction<AuthenticatedUser, SignInFail> for SignInOperation {
     fn db_action(self, conn: &PgConnection) -> Result<AuthenticatedUser, SignInFail> {
-        UnauthenticatedUser::by_email_for_auth(&self.email, conn)
+        UnauthenticatedUser::by_email_for_auth(&self.0.email, conn)
             .map_err(|_| SignInFail::GenericLoginError)
             .and_then(|(user, _email, auth)| {
-                user.log_in_local(auth, self.password)
+                user.log_in_local(auth, self.0.password)
                     .map_err(|_| SignInFail::GenericLoginError)
             })
     }
@@ -331,20 +359,24 @@ impl AardwolfError for ConfirmAccountFail {
 
 #[derive(Debug, Deserialize)]
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]
-pub struct ConfirmToken {
+pub struct ConfirmationToken {
     id: i32,
     token: EmailVerificationToken,
 }
 
+pub struct ConfirmToken;
+
 impl ConfirmToken {
-    pub fn with(self, _: ()) -> Self {
-        self
+    pub fn with(self, token: ConfirmationToken) -> ConfirmTokenOperation {
+        ConfirmTokenOperation(token)
     }
 }
 
-impl DbAction<AuthenticatedUser, ConfirmAccountFail> for ConfirmToken {
+pub struct ConfirmTokenOperation(ConfirmationToken);
+
+impl DbAction<AuthenticatedUser, ConfirmAccountFail> for ConfirmTokenOperation {
     fn db_action(self, conn: &PgConnection) -> Result<AuthenticatedUser, ConfirmAccountFail> {
-        let (unauthenticated_user, email) = UnauthenticatedUser::by_email_id(self.id, conn)
+        let (unauthenticated_user, email) = UnauthenticatedUser::by_email_id(self.0.id, conn)
             .map_err(|_| ConfirmAccountFail::EmailNotFound)?;
 
         info!(
@@ -379,7 +411,7 @@ impl DbAction<AuthenticatedUser, ConfirmAccountFail> for ConfirmToken {
         info!("Email is not yet verified");
 
         let (user, _email) = user
-            .verify(email, self.token)
+            .verify(email, self.0.token)
             .map_err(|_| ConfirmAccountFail::Verify)?
             .store_verify(conn)
             .map_err(|e| {

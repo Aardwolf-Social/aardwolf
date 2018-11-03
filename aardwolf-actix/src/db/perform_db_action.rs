@@ -6,7 +6,6 @@ use aardwolf_types::{
 };
 use crate::actix::{Handler, MailboxError, Message};
 use failure::Fail;
-use futures::Future;
 
 use crate::db::Db;
 

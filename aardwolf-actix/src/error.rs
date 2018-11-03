@@ -35,8 +35,8 @@ impl ResponseError for RenderError {
 pub struct RedirectError(String, Option<String>);
 
 impl RedirectError {
-    pub fn new(s: &str, msg: Option<&str>) -> Self {
-        RedirectError(s.to_owned(), msg.map(|m| m.to_owned()))
+    pub fn new(s: &str, msg: &Option<String>) -> Self {
+        RedirectError(s.to_owned(), msg.to_owned())
     }
 }
 

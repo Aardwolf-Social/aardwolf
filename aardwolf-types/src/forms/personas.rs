@@ -21,26 +21,43 @@ pub struct PersonaCreationForm {
     is_searchable: bool,
 }
 
-impl Validate<ValidatedPersonaCreationForm, PersonaCreationFail> for PersonaCreationForm {
+pub struct ValidatePersonaCreationForm;
+
+impl ValidatePersonaCreationForm {
+    pub fn with(self, form: PersonaCreationForm) -> ValidatePersonaCreationFormOperation {
+        ValidatePersonaCreationFormOperation(form)
+    }
+}
+
+pub struct ValidatePersonaCreationFormOperation(PersonaCreationForm);
+
+impl Validate<ValidatedPersonaCreationForm, PersonaCreationFail>
+    for ValidatePersonaCreationFormOperation
+{
     fn validate(self) -> Result<ValidatedPersonaCreationForm, PersonaCreationFail> {
-        if self.display_name.is_empty() {
+        if self.0.display_name.is_empty() {
             return Err(PersonaCreationFail::Validation);
         }
 
-        if self.shortname.is_empty() {
+        if self.0.shortname.is_empty() {
             return Err(PersonaCreationFail::Validation);
         }
+
+        let profile_url = format!("https://localhost:8000/users/{}", self.0.shortname).parse()?;
+        let inbox_url =
+            format!("https://localhost:8000/users/{}/inbox", self.0.shortname).parse()?;
+        let outbox_url =
+            format!("https://localhost:8000/users/{}/outbox", self.0.shortname).parse()?;
 
         Ok(ValidatedPersonaCreationForm {
-            display_name: self.display_name,
-            follow_policy: self.follow_policy,
-            profile_url: format!("https://localhost:8000/users/{}", self.shortname).parse()?,
-            inbox_url: format!("https://localhost:8000/users/{}/inbox", self.shortname).parse()?,
-            outbox_url: format!("https://localhost:8000/users/{}/outbox", self.shortname)
-                .parse()?,
-            default_visibility: self.default_visibility,
-            shortname: self.shortname,
-            is_searchable: self.is_searchable,
+            display_name: self.0.display_name,
+            follow_policy: self.0.follow_policy,
+            profile_url,
+            inbox_url,
+            outbox_url,
+            default_visibility: self.0.default_visibility,
+            shortname: self.0.shortname,
+            is_searchable: self.0.is_searchable,
         })
     }
 }
@@ -126,29 +143,35 @@ impl ValidatedPersonaCreationForm {
             db,
         )?)
     }
-
-    pub fn with<U>(self, user: U) -> PersonaCreationOperation<U>
-    where
-        U: PermissionedUser,
-    {
-        PersonaCreationOperation { form: self, user }
-    }
 }
 
-pub struct PersonaCreationOperation<U>
+pub struct CreatePersona<U>(U)
+where
+    U: PermissionedUser;
+
+impl<U> CreatePersona<U>
 where
     U: PermissionedUser,
 {
-    form: ValidatedPersonaCreationForm,
-    user: U,
+    pub fn new(user: U) -> Self {
+        CreatePersona(user)
+    }
+
+    pub fn with(self, form: ValidatedPersonaCreationForm) -> CreatePersonaOperation<U> {
+        CreatePersonaOperation(self.0, form)
+    }
 }
 
-impl<U> DbAction<(BaseActor, Persona), PersonaCreationFail> for PersonaCreationOperation<U>
+pub struct CreatePersonaOperation<U>(U, ValidatedPersonaCreationForm)
+where
+    U: PermissionedUser;
+
+impl<U> DbAction<(BaseActor, Persona), PersonaCreationFail> for CreatePersonaOperation<U>
 where
     U: PermissionedUser,
 {
     fn db_action(self, conn: &PgConnection) -> Result<(BaseActor, Persona), PersonaCreationFail> {
-        self.form.create(&self.user, conn)
+        self.1.create(&self.0, conn)
     }
 }
 
@@ -186,42 +209,37 @@ impl AardwolfError for PersonaLookupError {
     }
 }
 
-pub struct GetPersonaById;
+pub struct FetchPersona;
 
-impl GetPersonaById {
-    pub fn new() -> Self {
-        GetPersonaById
-    }
-
-    pub fn with(self, id: i32) -> PersonaGetter {
-        PersonaGetter(id)
+impl FetchPersona {
+    pub fn with(self, id: i32) -> FetchPersonaOperation {
+        FetchPersonaOperation(id)
     }
 }
 
-pub struct PersonaGetter(i32);
+pub struct FetchPersonaOperation(i32);
 
-impl DbAction<Persona, PersonaLookupError> for PersonaGetter {
+impl DbAction<Persona, PersonaLookupError> for FetchPersonaOperation {
     fn db_action(self, conn: &PgConnection) -> Result<Persona, PersonaLookupError> {
         Persona::by_id(self.0, conn).map_err(From::from)
     }
 }
 
-pub struct UserCanDeletePersona(AuthenticatedUser);
+pub struct CheckDeletePersonaPermission(AuthenticatedUser);
 
-impl UserCanDeletePersona {
+impl CheckDeletePersonaPermission {
     pub fn new(user: AuthenticatedUser) -> Self {
-        UserCanDeletePersona(user)
+        CheckDeletePersonaPermission(user)
     }
 
-    pub fn with(self, persona: Persona) -> UserPersonaDeleter {
-        UserPersonaDeleter(self.0, persona)
+    pub fn with(self, persona: Persona) -> CheckDeletePersonaPermissionOperation {
+        CheckDeletePersonaPermissionOperation(self.0, persona)
     }
 }
 
-pub struct UserPersonaDeleter(AuthenticatedUser, Persona);
+pub struct CheckDeletePersonaPermissionOperation(AuthenticatedUser, Persona);
 
-/// TODO: Use a different error kind here that's more specific
-impl DbAction<PersonaDeleter, PermissionError> for UserPersonaDeleter {
+impl DbAction<PersonaDeleter, PermissionError> for CheckDeletePersonaPermissionOperation {
     fn db_action(self, conn: &PgConnection) -> Result<PersonaDeleter, PermissionError> {
         self.0.can_delete_persona(self.1, conn)
     }
@@ -285,10 +303,6 @@ impl AardwolfError for PersonaDeletionFail {
 pub struct DeletePersona;
 
 impl DeletePersona {
-    pub fn new() -> Self {
-        DeletePersona
-    }
-
     pub fn with(self, persona_deleter: PersonaDeleter) -> Delete {
         Delete(persona_deleter)
     }

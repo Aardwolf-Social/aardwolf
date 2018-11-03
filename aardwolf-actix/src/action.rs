@@ -1,8 +1,9 @@
 use std::marker::PhantomData;
 
 use aardwolf_types::forms::traits::{DbAction, Validate};
+use actix_web::{dev::AsyncResult, FromRequest, HttpRequest};
 use failure::Fail;
-use futures::Future;
+use futures::future::Future;
 
 use crate::{
     db::{DbActionError, PerformDbAction},
@@ -14,6 +15,10 @@ where
     E: Fail,
 {
     fn action(self, state: AppConfig) -> Box<dyn Future<Item = T, Error = E> + Send>;
+}
+
+pub trait LocalAction<T, E> {
+    fn action(self, state: AppConfig) -> Box<dyn Future<Item = T, Error = E>>;
 }
 
 pub struct ValidateWrapper<V, T, E>(V, PhantomData<T>, PhantomData<E>)
@@ -38,6 +43,19 @@ where
 {
     fn from(v: V) -> Self {
         ValidateWrapper::new(v)
+    }
+}
+
+impl<V, T, E> Action<T, E> for ValidateWrapper<V, T, E>
+where
+    V: Validate<T, E>,
+    T: Send + 'static,
+    E: Fail,
+{
+    fn action(self, _: AppConfig) -> Box<dyn Future<Item = T, Error = E> + Send> {
+        use futures::future::IntoFuture;
+
+        Box::new(self.0.validate().into_future())
     }
 }
 
@@ -66,19 +84,6 @@ where
     }
 }
 
-impl<V, T, E> Action<T, E> for ValidateWrapper<V, T, E>
-where
-    V: Validate<T, E>,
-    T: Send + 'static,
-    E: Fail,
-{
-    fn action(self, _: AppConfig) -> Box<dyn Future<Item = T, Error = E> + Send> {
-        use futures::future::IntoFuture;
-
-        Box::new(self.0.validate().into_future())
-    }
-}
-
 impl<D, T, E> Action<T, DbActionError<E>> for DbActionWrapper<D, T, E>
 where
     D: DbAction<T, E> + Send + 'static,
@@ -101,6 +106,40 @@ where
             });
 
         Box::new(fut)
+    }
+}
+
+pub struct RequestWrapper<'a, T>(&'a HttpRequest<AppConfig>, PhantomData<T>)
+where
+    T: FromRequest<AppConfig>;
+
+impl<'a, T> RequestWrapper<'a, T>
+where
+    T: FromRequest<AppConfig>,
+{
+    pub fn new(request: &'a HttpRequest<AppConfig>) -> Self {
+        RequestWrapper(request, PhantomData)
+    }
+}
+
+impl<'a, T> From<&'a HttpRequest<AppConfig>> for RequestWrapper<'a, T>
+where
+    T: FromRequest<AppConfig>,
+{
+    fn from(request: &'a HttpRequest<AppConfig>) -> Self {
+        RequestWrapper::new(request)
+    }
+}
+
+impl<'a, T> LocalAction<T, actix_web::error::Error> for RequestWrapper<'a, T>
+where
+    T: FromRequest<AppConfig> + 'static,
+{
+    fn action(self, _: AppConfig) -> Box<dyn Future<Item = T, Error = actix_web::error::Error>> {
+        let request_result = T::from_request(self.0, &Default::default());
+        let async_result: AsyncResult<T> = request_result.into();
+
+        Box::new(async_result)
     }
 }
 
@@ -155,8 +194,6 @@ macro_rules! perform_inner {
         use futures::future::IntoFuture;
         use $crate::action::Action;
 
-        let state = $state.clone();
-
         $first
             .into_future()
             .from_err::<$error_type>()
@@ -165,7 +202,7 @@ macro_rules! perform_inner {
 
                 let fut = wrapper.action($state.clone());
 
-                perform_inner!(state, $error_type, fut, [ $(($wrappers => $items),)* ])
+                perform_inner!($state, $error_type, fut, [ $(($wrappers => $items),)* ])
             })
     }};
 }

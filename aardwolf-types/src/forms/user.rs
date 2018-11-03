@@ -40,39 +40,33 @@ impl AardwolfError for UserLookupFail {
     }
 }
 
-pub struct GetUserById;
-pub struct UserGetter(i32);
+pub struct FetchUser;
 
-impl GetUserById {
-    pub fn new() -> Self {
-        GetUserById
-    }
-
-    pub fn with(self, id: i32) -> UserGetter {
-        UserGetter(id)
+impl FetchUser {
+    pub fn with(self, id: i32) -> FetchUserOperation {
+        FetchUserOperation(id)
     }
 }
 
-impl DbAction<AuthenticatedUser, UserLookupFail> for UserGetter {
+pub struct FetchUserOperation(i32);
+
+impl DbAction<AuthenticatedUser, UserLookupFail> for FetchUserOperation {
     fn db_action(self, conn: &PgConnection) -> Result<AuthenticatedUser, UserLookupFail> {
         AuthenticatedUser::get_authenticated_user_by_id(self.0, &conn).map_err(From::from)
     }
 }
 
-pub struct GetUserAndEmailById;
-pub struct UserAndEmailGetter(i32);
+pub struct FetchUserAndEmail;
 
-impl GetUserAndEmailById {
-    pub fn new() -> Self {
-        GetUserAndEmailById
-    }
-
-    pub fn with(self, id: i32) -> UserAndEmailGetter {
-        UserAndEmailGetter(id)
+impl FetchUserAndEmail {
+    pub fn with(self, id: i32) -> FetchUserAndEmailOperation {
+        FetchUserAndEmailOperation(id)
     }
 }
 
-impl DbAction<(AuthenticatedUser, Email), UserLookupFail> for UserAndEmailGetter {
+pub struct FetchUserAndEmailOperation(i32);
+
+impl DbAction<(AuthenticatedUser, Email), UserLookupFail> for FetchUserAndEmailOperation {
     fn db_action(self, conn: &PgConnection) -> Result<(AuthenticatedUser, Email), UserLookupFail> {
         let user = AuthenticatedUser::get_authenticated_user_by_id(self.0, &conn)?;
 

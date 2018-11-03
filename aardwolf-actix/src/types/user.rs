@@ -1,26 +1,47 @@
 use aardwolf_models::user::{email::Email, AuthenticatedUser};
-use aardwolf_types::forms::user::{GetUserAndEmailById, GetUserById, UserLookupFail};
+use aardwolf_types::forms::user::{FetchUser, FetchUserAndEmail, UserLookupFail};
 use actix_web::{
     error::ResponseError, middleware::session::RequestSession, FromRequest, HttpRequest,
+    HttpResponse,
 };
-use futures::future::{Either, Future, IntoFuture};
+use futures::future::{Future, IntoFuture};
 
-use crate::{action::DbActionWrapper, error::ErrorWrapper, AppConfig};
+use crate::{
+    action::DbActionWrapper, db::DbActionError, error::RedirectError, from_session, AppConfig,
+};
 
 #[derive(Clone, Debug, Fail)]
-#[fail(display = "No user cookie present")]
-pub struct NoUserCookie;
+pub enum SignedInUserError {
+    #[fail(display = "Error talking to db actor")]
+    Mailbox,
+    #[fail(display = "Error in database")]
+    Database,
+    #[fail(display = "No user cookie present")]
+    Cookie,
+    #[fail(display = "User doesn't exist")]
+    User,
+}
 
-impl NoUserCookie {
-    fn new() -> Self {
-        NoUserCookie
+impl From<DbActionError<UserLookupFail>> for SignedInUserError {
+    fn from(e: DbActionError<UserLookupFail>) -> Self {
+        match e {
+            DbActionError::Connection => SignedInUserError::Database,
+            DbActionError::Mailbox => SignedInUserError::Mailbox,
+            DbActionError::Action(e) => match e {
+                UserLookupFail::Database => SignedInUserError::Database,
+                UserLookupFail::NotFound => SignedInUserError::User,
+            },
+        }
     }
 }
 
-impl ResponseError for NoUserCookie {}
+impl ResponseError for SignedInUserError {
+    fn error_response(&self) -> HttpResponse {
+        RedirectError::new("/auth/sign_in", &Some(self.to_string())).error_response()
+    }
+}
 
 pub struct SignedInUser(pub AuthenticatedUser);
-pub struct SignedInUserWithEmail(pub AuthenticatedUser, pub Email);
 
 impl FromRequest<AppConfig> for SignedInUser {
     type Config = ();
@@ -29,27 +50,21 @@ impl FromRequest<AppConfig> for SignedInUser {
     fn from_request(req: &HttpRequest<AppConfig>, _: &Self::Config) -> Self::Result {
         let state = req.state().clone();
 
-        Box::new(
-            req.session()
-                .get::<i32>("user_id")
-                .into_future()
-                .and_then(move |maybe_id| match maybe_id {
-                    Some(id) => {
-                        let res = perform!(state, id, UserLookupFail, [(DbActionWrapper<_, _, _> => GetUserById::new()),]);
+        let id_res = from_session(req.session(), "user_id", SignedInUserError::Cookie);
 
-                        let fut = res
-                            .map(SignedInUser)
-                            .map_err(|e| ErrorWrapper::new(state, e))
-                            .from_err();
+        let res = id_res
+            .into_future()
+            .and_then(move |id| {
+                perform!(state, id, SignedInUserError, [(DbActionWrapper<_, _, _> => FetchUser),])
+            })
+            .map(SignedInUser)
+            .map_err(From::from);
 
-                        Either::A(fut)
-                    }
-                    None => Either::B(Err(NoUserCookie::new().into()).into_future()),
-                })
-                .map_err(|e: actix_web::Error| e),
-        )
+        Box::new(res)
     }
 }
+
+pub struct SignedInUserWithEmail(pub AuthenticatedUser, pub Email);
 
 impl FromRequest<AppConfig> for SignedInUserWithEmail {
     type Config = ();
@@ -58,24 +73,16 @@ impl FromRequest<AppConfig> for SignedInUserWithEmail {
     fn from_request(req: &HttpRequest<AppConfig>, _: &Self::Config) -> Self::Result {
         let state = req.state().clone();
 
-        Box::new(
-            req.session()
-                .get::<i32>("user_id")
-                .into_future()
-                .and_then(move |maybe_id| match maybe_id {
-                    Some(id) => {
-                        let res =
-                            perform!(state, id, UserLookupFail, [(DbActionWrapper => GetUserAndEmailById::new()),]);
-                        let fut = res
-                            .map(|(user, email)| SignedInUserWithEmail(user, email))
-                            .map_err(|e| ErrorWrapper::new(state, e))
-                            .from_err();
+        let id_res = from_session(req.session(), "user_id", SignedInUserError::Cookie);
 
-                        Either::A(fut)
-                    }
-                    None => Either::B(Err(NoUserCookie::new().into()).into_future()),
-                })
-                .map_err(|e: actix_web::Error| e),
-        )
+        let res = id_res
+            .into_future()
+            .and_then(move |id| {
+                perform!(state, id, SignedInUserError, [(DbActionWrapper<_, _, _> => FetchUserAndEmail),])
+            })
+            .map(|(user, email)| SignedInUserWithEmail(user, email))
+            .map_err(From::from);
+
+        Box::new(res)
     }
 }

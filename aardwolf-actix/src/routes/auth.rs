@@ -1,20 +1,20 @@
 use aardwolf_models::user::UserLike;
 use aardwolf_types::forms::auth::{
-    ConfirmAccountFail, ConfirmToken, SignInErrorMessage, SignInFail, SignUpErrorMessage,
-    SignUpFail,
+    ConfirmAccountFail, ConfirmToken, ConfirmationToken, SignIn, SignInErrorMessage, SignInFail,
+    SignInForm, SignInFormValidationFail, SignUp, SignUpErrorMessage, SignUpFail, SignUpForm,
+    SignUpFormValidationFail, ValidateSignInForm, ValidateSignUpForm,
 };
-use actix_web::{http::header::LOCATION, middleware::session::Session, HttpResponse, Query, State};
+use actix_web::{
+    http::header::LOCATION, middleware::session::Session, Form, HttpResponse, Query, State,
+};
 use failure::Fail;
-use futures::Future;
+use futures::future::Future;
 
 use crate::{
-    action::DbActionWrapper,
+    action::{DbActionWrapper, ValidateWrapper},
     db::DbActionError,
     error::{RedirectError, RenderResult},
-    types::{
-        auth::{ValidSignInForm, ValidSignUpForm},
-        user::SignedInUser,
-    },
+    types::user::SignedInUser,
     AppConfig,
 };
 
@@ -90,23 +90,34 @@ pub enum SignUpError {
     SignUp(#[cause] SignUpFail),
 }
 
-impl<E> From<DbActionError<E>> for SignUpError
-where
-    E: Into<SignUpFail> + Fail,
-{
-    fn from(e: DbActionError<E>) -> Self {
+impl From<DbActionError<SignUpFail>> for SignUpError {
+    fn from(e: DbActionError<SignUpFail>) -> Self {
         match e {
             DbActionError::Connection => SignUpError::Database,
             DbActionError::Mailbox => SignUpError::Mailbox,
-            DbActionError::Action(e) => SignUpError::SignUp(e.into()),
+            DbActionError::Action(e) => SignUpError::SignUp(e),
         }
     }
 }
 
+impl From<SignUpFormValidationFail> for SignUpError {
+    fn from(e: SignUpFormValidationFail) -> Self {
+        SignUpError::SignUp(e.into())
+    }
+}
+
 pub(crate) fn sign_up(
-    (state, signup_form): (State<AppConfig>, ValidSignUpForm),
+    (state, form): (State<AppConfig>, Form<SignUpForm>),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
-    let res = perform!(state, (), SignUpError, [(DbActionWrapper<_, _, _> => signup_form.0),]);
+    let res = perform!(
+        state,
+        form.into_inner(),
+        SignUpError,
+        [
+            (ValidateWrapper<_, _, _> => ValidateSignUpForm),
+            (DbActionWrapper<_, _, _> => SignUp),
+        ]
+    );
 
     Box::new(
         res.map(|(email, token)| {
@@ -120,7 +131,7 @@ pub(crate) fn sign_up(
                 .header(LOCATION, "/auth/sign_in")
                 .finish()
         })
-        .map_err(|e| RedirectError::new("/auth/sign_up", Some(e.to_string().as_str())).into()),
+        .map_err(|e| RedirectError::new("/auth/sign_up", &Some(e.to_string())).into()),
     )
 }
 
@@ -134,30 +145,41 @@ pub enum SignInError {
     SignIn(#[cause] SignInFail),
 }
 
-impl<E> From<DbActionError<E>> for SignInError
-where
-    E: Into<SignInFail> + Fail,
-{
-    fn from(e: DbActionError<E>) -> Self {
+impl From<DbActionError<SignInFail>> for SignInError {
+    fn from(e: DbActionError<SignInFail>) -> Self {
         match e {
             DbActionError::Connection => SignInError::Database,
             DbActionError::Mailbox => SignInError::Mailbox,
-            DbActionError::Action(e) => SignInError::SignIn(e.into()),
+            DbActionError::Action(e) => SignInError::SignIn(e),
         }
     }
 }
 
+impl From<SignInFormValidationFail> for SignInError {
+    fn from(e: SignInFormValidationFail) -> Self {
+        SignInError::SignIn(e.into())
+    }
+}
+
 pub(crate) fn sign_in(
-    (state, session, signin_form): (State<AppConfig>, Session, ValidSignInForm),
+    (state, session, form): (State<AppConfig>, Session, Form<SignInForm>),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
-    let res = perform!(state, (), SignInError, [(DbActionWrapper<_, _, _> => signin_form.0),]);
+    let res = perform!(
+        state,
+        form.into_inner(),
+        SignInError,
+        [
+            (ValidateWrapper<_, _, _> => ValidateSignInForm),
+            (DbActionWrapper<_, _, _> => SignIn),
+        ]
+    );
 
     Box::new(
-        res.map_err(|e| RedirectError::new("/auth/sign_in", Some(e.to_string().as_str())).into())
+        res.map_err(|e| RedirectError::new("/auth/sign_in", &Some(e.to_string())).into())
             .and_then(move |user| {
-                session.set("user_id", user.id()).map_err(|e| {
-                    RedirectError::new("/auth/sign_in", Some(e.to_string().as_str())).into()
-                })
+                session
+                    .set("user_id", user.id())
+                    .map_err(|e| RedirectError::new("/auth/sign_in", &Some(e.to_string())).into())
             })
             .map(|_| HttpResponse::SeeOther().header(LOCATION, "/").finish()),
     )
@@ -184,10 +206,16 @@ impl From<DbActionError<ConfirmAccountFail>> for ConfirmError {
 }
 
 pub(crate) fn confirm(
-    (state, token): (State<AppConfig>, Query<ConfirmToken>),
+    (state, query): (State<AppConfig>, Query<ConfirmationToken>),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
-    let res =
-        perform!(state, (), ConfirmError, [(DbActionWrapper<_, _, _> => token.into_inner()),]);
+    let res = perform!(
+        state,
+        query.into_inner(),
+        ConfirmError,
+        [
+            (DbActionWrapper<_, _, _> => ConfirmToken),
+        ]
+    );
 
     Box::new(
         res.map(|_user| {
@@ -195,11 +223,11 @@ pub(crate) fn confirm(
                 .header(LOCATION, "/auth/sign_in")
                 .finish()
         })
-        .map_err(|e| RedirectError::new("/auth/sign_up", Some(e.to_string().as_str())).into()),
+        .map_err(|e| RedirectError::new("/auth/sign_up", &Some(e.to_string())).into()),
     )
 }
 
-pub(crate) fn sign_out((session, _): (Session, SignedInUser)) -> HttpResponse {
+pub(crate) fn sign_out((session, _user): (Session, SignedInUser)) -> HttpResponse {
     session.remove("user_id");
 
     HttpResponse::SeeOther()

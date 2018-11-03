@@ -1,15 +1,16 @@
 use aardwolf_types::forms::personas::{
-    DeletePersona, GetPersonaById, PersonaCreationFail, PersonaDeletionFail, UserCanDeletePersona,
+    CheckDeletePersonaPermission, CreatePersona, DeletePersona, FetchPersona, PersonaCreationFail,
+    PersonaCreationForm, PersonaDeletionFail, ValidatePersonaCreationForm,
 };
-use actix_web::{Path, State};
+use actix_web::{Form, Path, State};
 use failure::Fail;
 use futures::Future;
 
 use crate::{
-    action::DbActionWrapper,
+    action::{DbActionWrapper, ValidateWrapper},
     db::DbActionError,
     error::RedirectError,
-    types::{personas::ValidPersonaCreationForm, user::SignedInUser},
+    types::user::SignedInUser,
     AppConfig,
 };
 
@@ -23,8 +24,20 @@ pub enum PersonaCreateError {
     Mailbox,
     #[fail(display = "Error talking db")]
     Database,
-    #[fail(display = "Error confirming account: {}", _0)]
-    Create(#[cause] PersonaCreationFail),
+    #[fail(display = "User does not have permission to create a persona")]
+    Permission,
+    #[fail(display = "Submitted form is invalid")]
+    Form,
+}
+
+impl From<PersonaCreationFail> for PersonaCreateError {
+    fn from(e: PersonaCreationFail) -> Self {
+        match e {
+            PersonaCreationFail::Validation => PersonaCreateError::Form,
+            PersonaCreationFail::Permission => PersonaCreateError::Permission,
+            PersonaCreationFail::Database => PersonaCreateError::Database,
+        }
+    }
 }
 
 impl From<DbActionError<PersonaCreationFail>> for PersonaCreateError {
@@ -32,28 +45,27 @@ impl From<DbActionError<PersonaCreationFail>> for PersonaCreateError {
         match e {
             DbActionError::Connection => PersonaCreateError::Database,
             DbActionError::Mailbox => PersonaCreateError::Mailbox,
-            DbActionError::Action(e) => PersonaCreateError::Create(e),
+            DbActionError::Action(e) => e.into(),
         }
     }
 }
 
 pub(crate) fn create(
-    (state, user, persona_creation_form): (
-        State<AppConfig>,
-        SignedInUser,
-        ValidPersonaCreationForm,
-    ),
+    (state, user, form): (State<AppConfig>, SignedInUser, Form<PersonaCreationForm>),
 ) -> Box<dyn Future<Item = String, Error = actix_web::error::Error>> {
     let res = perform!(
         state,
-        user.0,
+        form.into_inner(),
         PersonaCreateError,
-        [(DbActionWrapper<_, _, _> => persona_creation_form.0),]
+        [
+            (ValidateWrapper<_, _, _> => ValidatePersonaCreationForm),
+            (DbActionWrapper<_, _, _> => CreatePersona::new(user.0)),
+        ]
     );
 
     Box::new(
         res.map(|(_base_actor, _persona)| format!("Created!"))
-            .map_err(|_| RedirectError::new("/personas/new", None).into()),
+            .map_err(|_| RedirectError::new("/personas/new", &None).into()),
     )
 }
 
@@ -88,14 +100,14 @@ pub(crate) fn delete(
         id.into_inner(),
         PersonaDeleteError,
         [
-            (DbActionWrapper<_, _, _> => GetPersonaById::new()),
-            (DbActionWrapper<_, _, _> => UserCanDeletePersona::new(user.0)),
-            (DbActionWrapper<_, _, _> => DeletePersona::new()),
+            (DbActionWrapper<_, _, _> => FetchPersona),
+            (DbActionWrapper<_, _, _> => CheckDeletePersonaPermission::new(user.0)),
+            (DbActionWrapper<_, _, _> => DeletePersona),
         ]
     );
 
     Box::new(
         res.map(|_| format!("Deleted!"))
-            .map_err(|_| RedirectError::new("/personas", None).into()),
+            .map_err(|_| RedirectError::new("/personas", &None).into()),
     )
 }

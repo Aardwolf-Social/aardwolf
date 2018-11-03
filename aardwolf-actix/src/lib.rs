@@ -28,7 +28,10 @@ pub mod action;
 pub mod db;
 pub mod error;
 pub mod routes;
+mod session;
 pub mod types;
+
+pub use crate::session::from_session;
 
 use self::db::{Db, Pool};
 
