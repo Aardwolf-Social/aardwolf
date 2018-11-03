@@ -127,7 +127,7 @@ impl ValidatedPersonaCreationForm {
         )?)
     }
 
-    pub fn to_operation<U>(self, user: U) -> PersonaCreationOperation<U>
+    pub fn with<U>(self, user: U) -> PersonaCreationOperation<U>
     where
         U: PermissionedUser,
     {
@@ -186,30 +186,42 @@ impl AardwolfError for PersonaLookupError {
     }
 }
 
-pub struct GetPersonaById(i32);
+pub struct GetPersonaById;
 
 impl GetPersonaById {
-    pub fn new(id: i32) -> Self {
-        GetPersonaById(id)
+    pub fn new() -> Self {
+        GetPersonaById
+    }
+
+    pub fn with(self, id: i32) -> PersonaGetter {
+        PersonaGetter(id)
     }
 }
 
-impl DbAction<Persona, PersonaLookupError> for GetPersonaById {
+pub struct PersonaGetter(i32);
+
+impl DbAction<Persona, PersonaLookupError> for PersonaGetter {
     fn db_action(self, conn: &PgConnection) -> Result<Persona, PersonaLookupError> {
         Persona::by_id(self.0, conn).map_err(From::from)
     }
 }
 
-pub struct UserCanDeletePersona(AuthenticatedUser, Persona);
+pub struct UserCanDeletePersona(AuthenticatedUser);
 
 impl UserCanDeletePersona {
-    pub fn new(user: AuthenticatedUser, persona: Persona) -> Self {
-        UserCanDeletePersona(user, persona)
+    pub fn new(user: AuthenticatedUser) -> Self {
+        UserCanDeletePersona(user)
+    }
+
+    pub fn with(self, persona: Persona) -> UserPersonaDeleter {
+        UserPersonaDeleter(self.0, persona)
     }
 }
 
+pub struct UserPersonaDeleter(AuthenticatedUser, Persona);
+
 /// TODO: Use a different error kind here that's more specific
-impl DbAction<PersonaDeleter, PermissionError> for UserCanDeletePersona {
+impl DbAction<PersonaDeleter, PermissionError> for UserPersonaDeleter {
     fn db_action(self, conn: &PgConnection) -> Result<PersonaDeleter, PermissionError> {
         self.0.can_delete_persona(self.1, conn)
     }
@@ -270,15 +282,21 @@ impl AardwolfError for PersonaDeletionFail {
     }
 }
 
-pub struct DeletePersona(PersonaDeleter);
+pub struct DeletePersona;
 
 impl DeletePersona {
-    pub fn new(persona_deleter: PersonaDeleter) -> Self {
-        DeletePersona(persona_deleter)
+    pub fn new() -> Self {
+        DeletePersona
+    }
+
+    pub fn with(self, persona_deleter: PersonaDeleter) -> Delete {
+        Delete(persona_deleter)
     }
 }
 
-impl DbAction<(), PersonaDeletionFail> for DeletePersona {
+pub struct Delete(PersonaDeleter);
+
+impl DbAction<(), PersonaDeletionFail> for Delete {
     fn db_action(self, conn: &PgConnection) -> Result<(), PersonaDeletionFail> {
         self.0.delete_persona(conn).map_err(From::from)
     }

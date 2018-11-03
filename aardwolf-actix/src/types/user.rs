@@ -1,11 +1,11 @@
 use aardwolf_models::user::{email::Email, AuthenticatedUser};
-use aardwolf_types::forms::user::{GetUserAndEmailById, GetUserById};
+use aardwolf_types::forms::user::{GetUserAndEmailById, GetUserById, UserLookupFail};
 use actix_web::{
     error::ResponseError, middleware::session::RequestSession, FromRequest, HttpRequest,
 };
 use futures::future::{Either, Future, IntoFuture};
 
-use crate::{db::execute_db_query, error::ErrorWrapper, AppConfig};
+use crate::{action::DbActionWrapper, error::ErrorWrapper, AppConfig};
 
 #[derive(Clone, Debug, Fail)]
 #[fail(display = "No user cookie present")]
@@ -35,7 +35,9 @@ impl FromRequest<AppConfig> for SignedInUser {
                 .into_future()
                 .and_then(move |maybe_id| match maybe_id {
                     Some(id) => {
-                        let fut = execute_db_query(state.clone(), GetUserById::new(id))
+                        let res = perform!(state, id, UserLookupFail, [(DbActionWrapper<_, _, _> => GetUserById::new()),]);
+
+                        let fut = res
                             .map(SignedInUser)
                             .map_err(|e| ErrorWrapper::new(state, e))
                             .from_err();
@@ -62,7 +64,9 @@ impl FromRequest<AppConfig> for SignedInUserWithEmail {
                 .into_future()
                 .and_then(move |maybe_id| match maybe_id {
                     Some(id) => {
-                        let fut = execute_db_query(state.clone(), GetUserAndEmailById::new(id))
+                        let res =
+                            perform!(state, id, UserLookupFail, [(DbActionWrapper => GetUserAndEmailById::new()),]);
+                        let fut = res
                             .map(|(user, email)| SignedInUserWithEmail(user, email))
                             .map_err(|e| ErrorWrapper::new(state, e))
                             .from_err();

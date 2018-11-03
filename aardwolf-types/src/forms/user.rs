@@ -40,29 +40,39 @@ impl AardwolfError for UserLookupFail {
     }
 }
 
-pub struct GetUserById(i32);
+pub struct GetUserById;
+pub struct UserGetter(i32);
 
 impl GetUserById {
-    pub fn new(id: i32) -> Self {
-        GetUserById(id)
+    pub fn new() -> Self {
+        GetUserById
+    }
+
+    pub fn with(self, id: i32) -> UserGetter {
+        UserGetter(id)
     }
 }
 
-impl DbAction<AuthenticatedUser, UserLookupFail> for GetUserById {
+impl DbAction<AuthenticatedUser, UserLookupFail> for UserGetter {
     fn db_action(self, conn: &PgConnection) -> Result<AuthenticatedUser, UserLookupFail> {
         AuthenticatedUser::get_authenticated_user_by_id(self.0, &conn).map_err(From::from)
     }
 }
 
-pub struct GetUserAndEmailById(i32);
+pub struct GetUserAndEmailById;
+pub struct UserAndEmailGetter(i32);
 
 impl GetUserAndEmailById {
-    pub fn new(id: i32) -> Self {
-        GetUserAndEmailById(id)
+    pub fn new() -> Self {
+        GetUserAndEmailById
+    }
+
+    pub fn with(self, id: i32) -> UserAndEmailGetter {
+        UserAndEmailGetter(id)
     }
 }
 
-impl DbAction<(AuthenticatedUser, Email), UserLookupFail> for GetUserAndEmailById {
+impl DbAction<(AuthenticatedUser, Email), UserLookupFail> for UserAndEmailGetter {
     fn db_action(self, conn: &PgConnection) -> Result<(AuthenticatedUser, Email), UserLookupFail> {
         let user = AuthenticatedUser::get_authenticated_user_by_id(self.0, &conn)?;
 

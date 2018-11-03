@@ -8,28 +8,7 @@ use crate::actix::{Handler, MailboxError, Message};
 use failure::Fail;
 use futures::Future;
 
-use crate::{db::Db, AppConfig};
-
-pub fn execute_db_query<D, T, E>(
-    state: AppConfig,
-    db_action: D,
-) -> impl Future<Item = T, Error = DbActionError<E>>
-where
-    D: DbAction<T, E> + Send + 'static,
-    E: AardwolfError + Clone,
-    T: Send + 'static,
-{
-    state
-        .db
-        .send(PerformDbAction::new(db_action))
-        .then(|res| match res {
-            Ok(item_res) => match item_res {
-                Ok(item) => Ok(item),
-                Err(e) => Err(e),
-            },
-            Err(e) => Err(DbActionError::from(e)),
-        })
-}
+use crate::db::Db;
 
 #[derive(Clone, Debug, Fail)]
 pub enum DbActionError<E>

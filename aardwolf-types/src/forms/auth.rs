@@ -44,13 +44,13 @@ impl AardwolfError for SignUpFormValidationFail {
 
 #[derive(Debug, Deserialize, Serialize)]
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]
-pub struct SignUpError {
+pub struct SignUpErrorMessage {
     pub msg: String,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]
-pub struct SignInError {
+pub struct SignInErrorMessage {
     pub msg: String,
 }
 
@@ -85,6 +85,12 @@ pub struct ValidatedSignUpForm {
     email: String,
     password: PlaintextPassword,
     password_confirmation: PlaintextPassword,
+}
+
+impl ValidatedSignUpForm {
+    pub fn with(self, _: ()) -> Self {
+        self
+    }
 }
 
 impl DbAction<(UnverifiedEmail, EmailToken), SignUpFail> for ValidatedSignUpForm {
@@ -236,6 +242,12 @@ pub struct ValidatedSignInForm {
     password: PlaintextPassword,
 }
 
+impl ValidatedSignInForm {
+    pub fn with(self, _: ()) -> Self {
+        self
+    }
+}
+
 impl DbAction<AuthenticatedUser, SignInFail> for ValidatedSignInForm {
     fn db_action(self, conn: &PgConnection) -> Result<AuthenticatedUser, SignInFail> {
         UnauthenticatedUser::by_email_for_auth(&self.email, conn)
@@ -322,6 +334,12 @@ impl AardwolfError for ConfirmAccountFail {
 pub struct ConfirmToken {
     id: i32,
     token: EmailVerificationToken,
+}
+
+impl ConfirmToken {
+    pub fn with(self, _: ()) -> Self {
+        self
+    }
 }
 
 impl DbAction<AuthenticatedUser, ConfirmAccountFail> for ConfirmToken {

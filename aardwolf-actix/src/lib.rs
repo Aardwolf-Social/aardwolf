@@ -23,6 +23,8 @@ use diesel::pg::PgConnection;
 use handlebars::Handlebars;
 use r2d2_diesel::ConnectionManager;
 
+#[macro_use]
+pub mod action;
 pub mod db;
 pub mod error;
 pub mod routes;
