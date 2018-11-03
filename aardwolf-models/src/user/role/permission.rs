@@ -1,3 +1,4 @@
+#![allow(proc_macro_derive_resolution_fallback)]
 use chrono::{offset::Utc, DateTime};
 
 use schema::permissions;

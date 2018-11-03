@@ -1,3 +1,4 @@
+#![allow(proc_macro_derive_resolution_fallback)]
 use std::{fmt, io::Write};
 
 use bcrypt::{hash, verify, DEFAULT_COST};
