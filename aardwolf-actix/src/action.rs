@@ -1,7 +1,9 @@
 use std::marker::PhantomData;
 
-use aardwolf_types::forms::traits::{DbAction, Validate};
-use failure::Fail;
+use aardwolf_types::{
+    error::AardwolfFail,
+    forms::traits::{DbAction, Validate},
+};
 use futures::future::Future;
 
 use crate::{
@@ -11,7 +13,7 @@ use crate::{
 
 pub trait Action<T, E>
 where
-    E: Fail,
+    E: AardwolfFail,
 {
     fn action(self, state: AppConfig) -> Box<dyn Future<Item = T, Error = E> + Send>;
 }
@@ -19,12 +21,12 @@ where
 pub struct ValidateWrapper<V, T, E>(V, PhantomData<T>, PhantomData<E>)
 where
     V: Validate<T, E>,
-    E: Fail;
+    E: AardwolfFail;
 
 impl<V, T, E> ValidateWrapper<V, T, E>
 where
     V: Validate<T, E>,
-    E: Fail,
+    E: AardwolfFail,
 {
     pub fn new(validate: V) -> Self {
         ValidateWrapper(validate, PhantomData, PhantomData)
@@ -34,7 +36,7 @@ where
 impl<V, T, E> From<V> for ValidateWrapper<V, T, E>
 where
     V: Validate<T, E>,
-    E: Fail,
+    E: AardwolfFail,
 {
     fn from(v: V) -> Self {
         ValidateWrapper::new(v)
@@ -45,7 +47,7 @@ impl<V, T, E> Action<T, E> for ValidateWrapper<V, T, E>
 where
     V: Validate<T, E>,
     T: Send + 'static,
-    E: Fail,
+    E: AardwolfFail,
 {
     fn action(self, _: AppConfig) -> Box<dyn Future<Item = T, Error = E> + Send> {
         use futures::future::IntoFuture;
@@ -57,12 +59,12 @@ where
 pub struct DbActionWrapper<D, T, E>(D, PhantomData<T>, PhantomData<E>)
 where
     D: DbAction<T, E>,
-    E: Fail;
+    E: AardwolfFail;
 
 impl<D, T, E> DbActionWrapper<D, T, E>
 where
     D: DbAction<T, E>,
-    E: Fail,
+    E: AardwolfFail,
 {
     pub fn new(db_action: D) -> Self {
         DbActionWrapper(db_action, PhantomData, PhantomData)
@@ -72,7 +74,7 @@ where
 impl<D, T, E> From<D> for DbActionWrapper<D, T, E>
 where
     D: DbAction<T, E>,
-    E: Fail,
+    E: AardwolfFail,
 {
     fn from(d: D) -> Self {
         DbActionWrapper::new(d)
@@ -83,7 +85,7 @@ impl<D, T, E> Action<T, DbActionError<E>> for DbActionWrapper<D, T, E>
 where
     D: DbAction<T, E> + Send + 'static,
     T: Send + 'static,
-    E: Fail,
+    E: AardwolfFail,
 {
     fn action(
         self,

@@ -1,9 +1,6 @@
 use aardwolf_models::user::local_auth::{PlaintextPassword, ValidationError};
 
-use crate::{
-    error::{AardwolfError, AardwolfErrorKind},
-    forms::traits::Validate,
-};
+use crate::{error::AardwolfFail, forms::traits::Validate};
 
 #[derive(Debug, Deserialize, Serialize)]
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]
@@ -29,19 +26,7 @@ impl From<ValidationError> for ValidateSignUpFormFail {
     }
 }
 
-impl AardwolfError for ValidateSignUpFormFail {
-    fn name(&self) -> &str {
-        "Invalid Singup Form"
-    }
-
-    fn kind(&self) -> AardwolfErrorKind {
-        AardwolfErrorKind::BadRequest
-    }
-
-    fn description(&self) -> String {
-        format!("{}", self)
-    }
-}
+impl AardwolfFail for ValidateSignUpFormFail {}
 
 #[derive(Debug, Deserialize)]
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]

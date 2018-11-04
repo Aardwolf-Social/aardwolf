@@ -1,9 +1,6 @@
 use aardwolf_models::user::local_auth::PlaintextPassword;
 
-use crate::{
-    error::{AardwolfError, AardwolfErrorKind},
-    forms::traits::Validate,
-};
+use crate::{error::AardwolfFail, forms::traits::Validate};
 
 #[derive(Debug, Deserialize, Serialize)]
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]
@@ -11,27 +8,13 @@ pub struct SignInErrorMessage {
     pub msg: String,
 }
 
-#[derive(Clone, Fail, Debug)]
+#[derive(Clone, Debug, Fail, Serialize)]
 pub enum ValidateSignInFormFail {
     #[fail(display = "Field `email` is required")]
     EmptyEmailError,
 }
 
-impl AardwolfError for ValidateSignInFormFail {
-    fn name(&self) -> &str {
-        "Invalid SignIn Form"
-    }
-
-    fn kind(&self) -> AardwolfErrorKind {
-        match *self {
-            ValidateSignInFormFail::EmptyEmailError => AardwolfErrorKind::BadRequest,
-        }
-    }
-
-    fn description(&self) -> String {
-        format!("{}", self)
-    }
-}
+impl AardwolfFail for ValidateSignInFormFail {}
 
 #[derive(Debug, Deserialize)]
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]

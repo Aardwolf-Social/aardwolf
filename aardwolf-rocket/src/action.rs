@@ -135,7 +135,7 @@ macro_rules! perform_inner {
                 let e: $error_type = e.into();
                 e
             })
-            .and_then(|item| {
+            .and_then(move |item| {
                 let wrapper: $wrapper = $item.with(item).into();
 
                 let res = wrapper.action($state.clone());

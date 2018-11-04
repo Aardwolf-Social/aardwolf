@@ -2,9 +2,9 @@ use aardwolf_models::user::PermissionError;
 use diesel::result::Error as DieselError;
 use url::ParseError as UrlParseError;
 
-use crate::error::{AardwolfError, AardwolfErrorKind};
+use crate::error::AardwolfFail;
 
-#[derive(Clone, Debug, Fail)]
+#[derive(Clone, Debug, Fail, Serialize)]
 pub enum PersonaCreationFail {
     #[fail(display = "Failed to validate persona")]
     Validation,
@@ -14,23 +14,7 @@ pub enum PersonaCreationFail {
     Database,
 }
 
-impl AardwolfError for PersonaCreationFail {
-    fn name(&self) -> &str {
-        "Persona Creation Fail"
-    }
-
-    fn kind(&self) -> AardwolfErrorKind {
-        match *self {
-            PersonaCreationFail::Validation => AardwolfErrorKind::BadRequest,
-            PersonaCreationFail::Permission => AardwolfErrorKind::RequiresPermission,
-            PersonaCreationFail::Database => AardwolfErrorKind::InternalServerError,
-        }
-    }
-
-    fn description(&self) -> String {
-        format!("{}", self)
-    }
-}
+impl AardwolfFail for PersonaCreationFail {}
 
 impl From<UrlParseError> for PersonaCreationFail {
     fn from(_: UrlParseError) -> Self {

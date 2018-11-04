@@ -4,12 +4,9 @@ use aardwolf_models::user::{
 };
 use diesel::pg::PgConnection;
 
-use crate::{
-    error::{AardwolfError, AardwolfErrorKind},
-    forms::traits::DbAction,
-};
+use crate::{error::AardwolfFail, forms::traits::DbAction};
 
-#[derive(Clone, Debug, Fail)]
+#[derive(Clone, Debug, Fail, Serialize)]
 pub enum ConfirmAccountFail {
     #[fail(display = "email was not found")]
     EmailNotFound,
@@ -21,25 +18,7 @@ pub enum ConfirmAccountFail {
     Verify,
 }
 
-impl AardwolfError for ConfirmAccountFail {
-    fn name(&self) -> &str {
-        "Confirm Account Fail"
-    }
-
-    fn kind(&self) -> AardwolfErrorKind {
-        match *self {
-            ConfirmAccountFail::Confirmed => AardwolfErrorKind::BadRequest,
-            ConfirmAccountFail::EmailNotFound | ConfirmAccountFail::UserLookup => {
-                AardwolfErrorKind::NotFound
-            }
-            ConfirmAccountFail::Verify => AardwolfErrorKind::InternalServerError,
-        }
-    }
-
-    fn description(&self) -> String {
-        format!("{}", self)
-    }
-}
+impl AardwolfFail for ConfirmAccountFail {}
 
 #[derive(Debug, Deserialize)]
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]

@@ -1,8 +1,8 @@
 use rocket::request::Form;
 
-use aardwolf_models::user::PermissionError;
 use aardwolf_types::forms::personas::{
-    CheckDeletePersonaPermission, CreatePersona, DeletePersona, FetchPersona, FetchPersonaFail,
+    CheckCreatePersonaPermission, CheckCreatePersonaPermissionFail, CheckDeletePersonaPermission,
+    CheckDeletePersonaPermissionFail, CreatePersona, DeletePersona, FetchPersona, FetchPersonaFail,
     PersonaCreationFail, PersonaCreationForm, PersonaDeletionFail, ValidatePersonaCreationForm,
 };
 use types::user::SignedInUser;
@@ -35,6 +35,15 @@ impl From<PersonaCreationFail> for PersonaCreateError {
     }
 }
 
+impl From<CheckCreatePersonaPermissionFail> for PersonaCreateError {
+    fn from(e: CheckCreatePersonaPermissionFail) -> Self {
+        match e {
+            CheckCreatePersonaPermissionFail::Permission => PersonaCreateError::Permission,
+            CheckCreatePersonaPermissionFail::Database => PersonaCreateError::Database,
+        }
+    }
+}
+
 #[post("/create", data = "<form>")]
 fn create(
     user: SignedInUser,
@@ -47,7 +56,8 @@ fn create(
         PersonaCreateError,
         [
             (ValidateWrapper<_, _, _> => ValidatePersonaCreationForm),
-            (DbActionWrapper<_, _, _> => CreatePersona::new(user.0)),
+            (DbActionWrapper<_, _, _> => CheckCreatePersonaPermission::new(user.0)),
+            (DbActionWrapper<_, _, _> => CreatePersona),
         ]
     )?;
 
@@ -76,8 +86,8 @@ impl From<FetchPersonaFail> for PersonaDeleteError {
     }
 }
 
-impl From<PermissionError> for PersonaDeleteError {
-    fn from(e: PermissionError) -> Self {
+impl From<CheckDeletePersonaPermissionFail> for PersonaDeleteError {
+    fn from(e: CheckDeletePersonaPermissionFail) -> Self {
         PersonaDeleteError::Delete(e.into())
     }
 }

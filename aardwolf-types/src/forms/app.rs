@@ -1,29 +1,12 @@
-use crate::{
-    apps::App,
-    error::{AardwolfError, AardwolfErrorKind},
-    forms::traits::Validate,
-    scope::Scope,
-};
+use crate::{apps::App, error::AardwolfFail, forms::traits::Validate, scope::Scope};
 
-#[derive(Clone, Debug, Fail)]
+#[derive(Clone, Debug, Fail, Serialize)]
 pub enum CreateAppError {
     #[fail(display = "validation error when creating app")]
     ValidationError,
 }
 
-impl AardwolfError for CreateAppError {
-    fn name(&self) -> &str {
-        "Create App Error"
-    }
-
-    fn kind(&self) -> AardwolfErrorKind {
-        AardwolfErrorKind::BadRequest
-    }
-
-    fn description(&self) -> String {
-        format!("{}", self)
-    }
-}
+impl AardwolfFail for CreateAppError {}
 
 /// Represents the form that is POSTed to /api/v1/apps to create an application
 #[derive(Deserialize)]

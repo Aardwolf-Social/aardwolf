@@ -2,7 +2,7 @@ use aardwolf_models::user::{AuthenticatedUser, UnauthenticatedUser};
 use diesel::{self, pg::PgConnection};
 
 use crate::{
-    error::{AardwolfError, AardwolfErrorKind},
+    error::AardwolfFail,
     forms::{
         auth::{ValidateSignInFormFail, ValidatedSignInForm},
         traits::DbAction,
@@ -30,7 +30,7 @@ impl DbAction<AuthenticatedUser, SignInFail> for SignInOperation {
     }
 }
 
-#[derive(Clone, Fail, Debug)]
+#[derive(Clone, Debug, Fail, Serialize)]
 pub enum SignInFail {
     #[fail(display = "Sign up failed because {}", _0)]
     ValidationError(#[cause] ValidateSignInFormFail),
@@ -39,22 +39,7 @@ pub enum SignInFail {
     GenericLoginError,
 }
 
-impl AardwolfError for SignInFail {
-    fn name(&self) -> &str {
-        "SignIn Fail"
-    }
-
-    fn kind(&self) -> AardwolfErrorKind {
-        match *self {
-            SignInFail::ValidationError(_) => AardwolfErrorKind::BadRequest,
-            SignInFail::GenericLoginError => AardwolfErrorKind::BadRequest,
-        }
-    }
-
-    fn description(&self) -> String {
-        format!("{}", self)
-    }
-}
+impl AardwolfFail for SignInFail {}
 
 impl From<ValidateSignInFormFail> for SignInFail {
     fn from(e: ValidateSignInFormFail) -> Self {

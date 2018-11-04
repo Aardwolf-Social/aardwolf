@@ -5,7 +5,7 @@ use aardwolf_models::{
 use diesel::{pg::PgConnection, result::Error as DieselError};
 
 use crate::{
-    error::{AardwolfError, AardwolfErrorKind},
+    error::AardwolfFail,
     forms::{personas::FetchPersonaFail, traits::DbAction},
 };
 
@@ -23,11 +23,35 @@ impl CheckDeletePersonaPermission {
 
 pub struct CheckDeletePersonaPermissionOperation(AuthenticatedUser, Persona);
 
-impl DbAction<PersonaDeleter, PermissionError> for CheckDeletePersonaPermissionOperation {
-    fn db_action(self, conn: &PgConnection) -> Result<PersonaDeleter, PermissionError> {
-        self.0.can_delete_persona(self.1, conn)
+impl DbAction<PersonaDeleter, CheckDeletePersonaPermissionFail>
+    for CheckDeletePersonaPermissionOperation
+{
+    fn db_action(
+        self,
+        conn: &PgConnection,
+    ) -> Result<PersonaDeleter, CheckDeletePersonaPermissionFail> {
+        Ok(self.0.can_delete_persona(self.1, conn)?)
     }
 }
+
+#[derive(Debug, Clone, Fail, Serialize)]
+pub enum CheckDeletePersonaPermissionFail {
+    #[fail(display = "User does not have permission to delete persona")]
+    Permission,
+    #[fail(display = "Error accessing database to check permissions")]
+    Database,
+}
+
+impl From<PermissionError> for CheckDeletePersonaPermissionFail {
+    fn from(e: PermissionError) -> Self {
+        match e {
+            PermissionError::Diesel => CheckDeletePersonaPermissionFail::Database,
+            PermissionError::Permission => CheckDeletePersonaPermissionFail::Permission,
+        }
+    }
+}
+
+impl AardwolfFail for CheckDeletePersonaPermissionFail {}
 
 pub struct DeletePersona;
 
@@ -45,7 +69,7 @@ impl DbAction<(), PersonaDeletionFail> for Delete {
     }
 }
 
-#[derive(Clone, Debug, Fail)]
+#[derive(Clone, Debug, Fail, Serialize)]
 pub enum PersonaDeletionFail {
     #[fail(display = "Insufficient permissions")]
     Permission,
@@ -64,11 +88,11 @@ impl From<DieselError> for PersonaDeletionFail {
     }
 }
 
-impl From<PermissionError> for PersonaDeletionFail {
-    fn from(e: PermissionError) -> Self {
+impl From<CheckDeletePersonaPermissionFail> for PersonaDeletionFail {
+    fn from(e: CheckDeletePersonaPermissionFail) -> Self {
         match e {
-            PermissionError::Permission => PersonaDeletionFail::Permission,
-            PermissionError::Diesel => PersonaDeletionFail::Database,
+            CheckDeletePersonaPermissionFail::Permission => PersonaDeletionFail::Permission,
+            CheckDeletePersonaPermissionFail::Database => PersonaDeletionFail::Database,
         }
     }
 }
@@ -82,20 +106,4 @@ impl From<FetchPersonaFail> for PersonaDeletionFail {
     }
 }
 
-impl AardwolfError for PersonaDeletionFail {
-    fn name(&self) -> &str {
-        "Persona Deletion Error"
-    }
-
-    fn kind(&self) -> AardwolfErrorKind {
-        match *self {
-            PersonaDeletionFail::Permission => AardwolfErrorKind::RequiresPermission,
-            PersonaDeletionFail::Database => AardwolfErrorKind::InternalServerError,
-            PersonaDeletionFail::NotFound => AardwolfErrorKind::NotFound,
-        }
-    }
-
-    fn description(&self) -> String {
-        format!("{}", self)
-    }
-}
+impl AardwolfFail for PersonaDeletionFail {}

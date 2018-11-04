@@ -1,9 +1,11 @@
-use aardwolf_types::forms::personas::{
-    CheckDeletePersonaPermission, CreatePersona, DeletePersona, FetchPersona, PersonaCreationFail,
-    PersonaCreationForm, PersonaDeletionFail, ValidatePersonaCreationForm,
+use aardwolf_types::{
+    error::AardwolfFail,
+    forms::personas::{
+        CheckDeletePersonaPermission, CreatePersona, DeletePersona, FetchPersona,
+        PersonaCreationFail, PersonaCreationForm, PersonaDeletionFail, ValidatePersonaCreationForm,
+    },
 };
 use actix_web::{Form, Path, State};
-use failure::Fail;
 use futures::Future;
 
 use crate::{
@@ -69,7 +71,7 @@ pub(crate) fn create(
     )
 }
 
-#[derive(Clone, Debug, Fail)]
+#[derive(Clone, Debug, Fail, Serialize)]
 pub enum PersonaDeleteError {
     #[fail(display = "Error talking to db actor")]
     Mailbox,
@@ -81,7 +83,7 @@ pub enum PersonaDeleteError {
 
 impl<E> From<DbActionError<E>> for PersonaDeleteError
 where
-    E: Into<PersonaDeletionFail> + Fail,
+    E: Into<PersonaDeletionFail> + AardwolfFail,
 {
     fn from(e: DbActionError<E>) -> Self {
         match e {

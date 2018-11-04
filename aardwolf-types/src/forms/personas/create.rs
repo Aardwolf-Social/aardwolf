@@ -1,6 +1,6 @@
 use aardwolf_models::{
     base_actor::{persona::Persona, BaseActor},
-    user::PermissionedUser,
+    user::{LocalPersonaCreator, PermissionError, PermissionedUser},
 };
 use diesel::pg::PgConnection;
 
@@ -9,24 +9,79 @@ use crate::forms::{
     traits::DbAction,
 };
 
-pub struct CreatePersona<U>(U)
+pub struct CheckCreatePersonaPermission<U>(U)
 where
     U: PermissionedUser;
 
-impl<U> CreatePersona<U>
+impl<U> CheckCreatePersonaPermission<U>
 where
     U: PermissionedUser,
 {
     pub fn new(user: U) -> Self {
-        CreatePersona(user)
+        CheckCreatePersonaPermission(user)
     }
 
-    pub fn with(self, form: ValidatedPersonaCreationForm) -> CreatePersonaOperation<U> {
-        CreatePersonaOperation(self.0, form)
+    pub fn with(
+        self,
+        form: ValidatedPersonaCreationForm,
+    ) -> CheckCreatePersonaPermissionOperation<U> {
+        CheckCreatePersonaPermissionOperation(self.0, form)
     }
 }
 
-pub struct CreatePersonaOperation<U>(U, ValidatedPersonaCreationForm)
+pub struct CheckCreatePersonaPermissionOperation<U>(U, ValidatedPersonaCreationForm);
+
+impl<U>
+    DbAction<
+        (LocalPersonaCreator<U>, ValidatedPersonaCreationForm),
+        CheckCreatePersonaPermissionFail,
+    > for CheckCreatePersonaPermissionOperation<U>
+where
+    U: PermissionedUser + Clone,
+{
+    fn db_action(
+        self,
+        conn: &PgConnection,
+    ) -> Result<
+        (LocalPersonaCreator<U>, ValidatedPersonaCreationForm),
+        CheckCreatePersonaPermissionFail,
+    > {
+        Ok((self.0.can_make_persona(conn)?, self.1))
+    }
+}
+
+#[derive(Clone, Debug, Fail, Serialize)]
+pub enum CheckCreatePersonaPermissionFail {
+    #[fail(display = "Could not check user permissions")]
+    Database,
+    #[fail(display = "User does not haver permission to create persona")]
+    Permission,
+}
+
+impl From<PermissionError> for CheckCreatePersonaPermissionFail {
+    fn from(e: PermissionError) -> Self {
+        match e {
+            PermissionError::Diesel => CheckCreatePersonaPermissionFail::Database,
+            PermissionError::Permission => CheckCreatePersonaPermissionFail::Permission,
+        }
+    }
+}
+
+pub struct CreatePersona;
+
+impl CreatePersona {
+    pub fn with<U>(
+        self,
+        (persona_creator, form): (LocalPersonaCreator<U>, ValidatedPersonaCreationForm),
+    ) -> CreatePersonaOperation<U>
+    where
+        U: PermissionedUser,
+    {
+        CreatePersonaOperation(persona_creator, form)
+    }
+}
+
+pub struct CreatePersonaOperation<U>(LocalPersonaCreator<U>, ValidatedPersonaCreationForm)
 where
     U: PermissionedUser;
 
@@ -35,9 +90,7 @@ where
     U: PermissionedUser,
 {
     fn db_action(self, conn: &PgConnection) -> Result<(BaseActor, Persona), PersonaCreationFail> {
-        let persona_maker = self.0.can_make_persona(conn)?;
-
-        Ok(persona_maker.create_persona(
+        Ok(self.0.create_persona(
             self.1.display_name,
             self.1.profile_url,
             self.1.inbox_url,

@@ -1,12 +1,9 @@
 use aardwolf_models::user::{email::Email, AuthenticatedUser, UserLike};
 use diesel::pg::PgConnection;
 
-use crate::{
-    error::{AardwolfError, AardwolfErrorKind},
-    forms::traits::DbAction,
-};
+use crate::{error::AardwolfFail, forms::traits::DbAction};
 
-#[derive(Clone, Debug, Fail)]
+#[derive(Clone, Debug, Fail, Serialize)]
 pub enum FetchUserFail {
     #[fail(display = "Error in database")]
     Database,
@@ -23,22 +20,7 @@ impl From<diesel::result::Error> for FetchUserFail {
     }
 }
 
-impl AardwolfError for FetchUserFail {
-    fn name(&self) -> &str {
-        "User Lookup Fail"
-    }
-
-    fn kind(&self) -> AardwolfErrorKind {
-        match *self {
-            FetchUserFail::Database => AardwolfErrorKind::InternalServerError,
-            FetchUserFail::NotFound => AardwolfErrorKind::NotFound,
-        }
-    }
-
-    fn description(&self) -> String {
-        format!("{}", self)
-    }
-}
+impl AardwolfFail for FetchUserFail {}
 
 pub struct FetchUser;
 

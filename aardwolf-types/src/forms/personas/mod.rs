@@ -5,11 +5,14 @@ mod delete;
 mod fetch;
 
 pub use self::{
-    create::CreatePersona,
+    create::{CheckCreatePersonaPermission, CheckCreatePersonaPermissionFail, CreatePersona},
     creation_fail::PersonaCreationFail,
     creation_form::{
         PersonaCreationForm, ValidatePersonaCreationForm, ValidatedPersonaCreationForm,
     },
-    delete::{CheckDeletePersonaPermission, DeletePersona, PersonaDeletionFail},
+    delete::{
+        CheckDeletePersonaPermission, CheckDeletePersonaPermissionFail, DeletePersona,
+        PersonaDeletionFail,
+    },
     fetch::{FetchPersona, FetchPersonaFail},
 };

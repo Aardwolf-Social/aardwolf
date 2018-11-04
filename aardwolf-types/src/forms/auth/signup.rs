@@ -6,7 +6,7 @@ use aardwolf_models::user::{
 use diesel::{self, pg::PgConnection, Connection};
 
 use crate::{
-    error::{AardwolfError, AardwolfErrorKind},
+    error::AardwolfFail,
     forms::{
         auth::{ValidateSignUpFormFail, ValidatedSignUpForm},
         traits::DbAction,
@@ -51,7 +51,7 @@ impl DbAction<(UnverifiedEmail, EmailToken), SignUpFail> for SignUpOperation {
     }
 }
 
-#[derive(Clone, Fail, Debug)]
+#[derive(Clone, Debug, Fail, Serialize)]
 pub enum SignUpFail {
     #[fail(display = "Sign up failed because {}", _0)]
     ValidationError(#[cause] ValidateSignUpFormFail),
@@ -73,29 +73,7 @@ pub enum SignUpFail {
     Transaction,
 }
 
-impl AardwolfError for SignUpFail {
-    fn name(&self) -> &str {
-        "Signup Fail"
-    }
-
-    fn kind(&self) -> AardwolfErrorKind {
-        match *self {
-            SignUpFail::ValidationError(_) => AardwolfErrorKind::BadRequest,
-            SignUpFail::LocalAuthCreateError
-            | SignUpFail::UserCreateError
-            | SignUpFail::EmailCreateError
-            | SignUpFail::PasswordHashError
-            | SignUpFail::CreateTokenError
-            | SignUpFail::VerifiedUser
-            | SignUpFail::Transaction => AardwolfErrorKind::InternalServerError,
-            SignUpFail::UserLookup => AardwolfErrorKind::NotFound,
-        }
-    }
-
-    fn description(&self) -> String {
-        format!("{}", self)
-    }
-}
+impl AardwolfFail for SignUpFail {}
 
 impl From<ValidateSignUpFormFail> for SignUpFail {
     fn from(e: ValidateSignUpFormFail) -> SignUpFail {

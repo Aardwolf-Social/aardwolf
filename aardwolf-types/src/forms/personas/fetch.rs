@@ -1,12 +1,9 @@
 use aardwolf_models::base_actor::persona::Persona;
 use diesel::{pg::PgConnection, result::Error as DieselError};
 
-use crate::{
-    error::{AardwolfError, AardwolfErrorKind},
-    forms::traits::DbAction,
-};
+use crate::{error::AardwolfFail, forms::traits::DbAction};
 
-#[derive(Clone, Debug, Fail)]
+#[derive(Clone, Debug, Fail, Serialize)]
 pub enum FetchPersonaFail {
     #[fail(display = "Error in database")]
     Database,
@@ -23,22 +20,7 @@ impl From<DieselError> for FetchPersonaFail {
     }
 }
 
-impl AardwolfError for FetchPersonaFail {
-    fn name(&self) -> &str {
-        "Persona Lookup Error"
-    }
-
-    fn kind(&self) -> AardwolfErrorKind {
-        match *self {
-            FetchPersonaFail::Database => AardwolfErrorKind::InternalServerError,
-            FetchPersonaFail::NotFound => AardwolfErrorKind::NotFound,
-        }
-    }
-
-    fn description(&self) -> String {
-        format!("{}", self)
-    }
-}
+impl AardwolfFail for FetchPersonaFail {}
 
 pub struct FetchPersona;
 

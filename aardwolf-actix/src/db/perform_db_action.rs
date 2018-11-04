@@ -1,18 +1,15 @@
 use std::marker::PhantomData;
 
-use aardwolf_types::{
-    error::{AardwolfError, AardwolfErrorKind},
-    forms::traits::DbAction,
-};
+use aardwolf_types::{error::AardwolfFail, forms::traits::DbAction};
 use crate::actix::{Handler, MailboxError, Message};
 use failure::Fail;
 
 use crate::db::Db;
 
-#[derive(Clone, Debug, Fail)]
+#[derive(Clone, Debug, Fail, Serialize)]
 pub enum DbActionError<E>
 where
-    E: Fail,
+    E: AardwolfFail,
 {
     #[fail(display = "Error in action {}", _0)]
     Action(#[cause] E),
@@ -24,11 +21,11 @@ where
 
 impl<E> DbActionError<E>
 where
-    E: Fail,
+    E: AardwolfFail,
 {
     pub fn map_err<F>(self) -> DbActionError<F>
     where
-        F: Fail + From<E>,
+        F: AardwolfFail + From<E>,
     {
         match self {
             DbActionError::Action(e) => DbActionError::Action(e.into()),
@@ -40,38 +37,18 @@ where
 
 impl<E> From<MailboxError> for DbActionError<E>
 where
-    E: Fail,
+    E: AardwolfFail,
 {
     fn from(_: MailboxError) -> Self {
         DbActionError::Mailbox
     }
 }
 
-impl<E> AardwolfError for DbActionError<E>
-where
-    E: AardwolfError,
-{
-    fn name(&self) -> &str {
-        "Database Action Error"
-    }
-
-    fn kind(&self) -> AardwolfErrorKind {
-        match *self {
-            DbActionError::Connection | DbActionError::Mailbox => {
-                AardwolfErrorKind::InternalServerError
-            }
-            DbActionError::Action(ref e) => e.kind(),
-        }
-    }
-
-    fn description(&self) -> String {
-        format!("{}", self)
-    }
-}
+impl<E> AardwolfFail for DbActionError<E> where E: AardwolfFail {}
 
 impl<E> From<r2d2::Error> for DbActionError<E>
 where
-    E: Fail,
+    E: AardwolfFail,
 {
     fn from(_: r2d2::Error) -> Self {
         DbActionError::Connection
@@ -81,7 +58,7 @@ where
 pub struct PerformDbAction<D, T, E>
 where
     D: DbAction<T, E>,
-    E: Fail,
+    E: AardwolfFail,
 {
     db_action: D,
     item: PhantomData<T>,
@@ -91,7 +68,7 @@ where
 impl<D, T, E> PerformDbAction<D, T, E>
 where
     D: DbAction<T, E>,
-    E: Fail,
+    E: AardwolfFail,
 {
     pub fn new(db_action: D) -> Self {
         PerformDbAction {
@@ -105,7 +82,7 @@ where
 impl<D, T, E> Message for PerformDbAction<D, T, E>
 where
     D: DbAction<T, E>,
-    E: Fail,
+    E: AardwolfFail,
     T: 'static,
 {
     type Result = Result<T, DbActionError<E>>;
@@ -114,7 +91,7 @@ where
 impl<D, T, E> Handler<PerformDbAction<D, T, E>> for Db
 where
     D: DbAction<T, E>,
-    E: Fail,
+    E: AardwolfFail,
     T: 'static,
 {
     type Result = <PerformDbAction<D, T, E> as Message>::Result;

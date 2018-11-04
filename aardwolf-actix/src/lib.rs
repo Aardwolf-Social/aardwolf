@@ -1,9 +1,11 @@
 #[macro_use]
-extern crate log;
-#[macro_use]
 extern crate collection_macros;
 #[macro_use]
 extern crate failure;
+#[macro_use]
+extern crate log;
+#[macro_use]
+extern crate serde_derive;
 
 use std::{error::Error, fmt, sync::Arc};
 

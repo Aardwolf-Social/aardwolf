@@ -90,9 +90,12 @@ pub trait PermissionedUser: UserLike + Sized {
         })
     }
 
-    fn can_make_persona(&self, conn: &PgConnection) -> PermissionResult<LocalPersonaCreator<Self>> {
+    fn can_make_persona(&self, conn: &PgConnection) -> PermissionResult<LocalPersonaCreator<Self>>
+    where
+        Self: Clone,
+    {
         self.has_permission(Permission::MakePersona, conn)
-            .map(|_| LocalPersonaCreator(self))
+            .map(|_| LocalPersonaCreator(self.clone()))
     }
 
     fn can_switch_persona(
@@ -522,9 +525,9 @@ impl From<diesel::result::Error> for FollowRequestManagerError {
     }
 }
 
-pub struct LocalPersonaCreator<'a, U: UserLike + 'a>(&'a U);
+pub struct LocalPersonaCreator<U: UserLike>(U);
 
-impl<'a, U: UserLike> LocalPersonaCreator<'a, U> {
+impl<U: UserLike> LocalPersonaCreator<U> {
     pub fn create_persona(
         &self,
         display_name: String,
@@ -546,7 +549,7 @@ impl<'a, U: UserLike> LocalPersonaCreator<'a, U> {
                 profile_url,
                 inbox_url,
                 outbox_url,
-                Some(self.0),
+                Some(&self.0),
                 follow_policy,
                 json!({}),
             )
