@@ -1,8 +1,13 @@
+#![allow(proc_macro_derive_resolution_fallback)]
 use std::{fmt, io::Write};
 
 use bcrypt::{hash, verify, DEFAULT_COST};
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
 use rand::{distributions::Alphanumeric, OsRng, Rng};
+use serde::{
+    de::{Deserialize, Deserializer},
+    ser::{Serialize, Serializer},
+};
 
 /// A trait used to verify emails
 ///
@@ -98,8 +103,16 @@ impl VerifyEmail for HashedEmailToken {
     }
 }
 
-#[derive(Serialize)]
 pub struct EmailToken(String);
+
+impl Serialize for EmailToken {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        String::serialize(&self.0, serializer)
+    }
+}
 
 impl fmt::Debug for EmailToken {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -113,8 +126,16 @@ impl fmt::Display for EmailToken {
     }
 }
 
-#[derive(Deserialize)]
 pub struct EmailVerificationToken(String);
+
+impl<'de> Deserialize<'de> for EmailVerificationToken {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        Ok(EmailVerificationToken(String::deserialize(deserializer)?))
+    }
+}
 
 impl fmt::Debug for EmailVerificationToken {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

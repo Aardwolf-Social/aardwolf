@@ -1,3 +1,4 @@
+#![allow(proc_macro_derive_resolution_fallback)]
 mod token;
 
 use chrono::{offset::Utc, DateTime};
@@ -95,17 +96,27 @@ impl Email {
     }
 }
 
-#[derive(AsChangeset)]
-#[table_name = "emails"]
 pub struct VerifyEmail {
     id: i32,
     email: String,
     user_id: i32,
+    #[allow(dead_code)]
     verified: bool,
+    #[allow(dead_code)]
     verification_token: Option<HashedEmailToken>,
     confirmed_at: DateTime<Utc>,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
+}
+
+#[derive(AsChangeset)]
+#[table_name = "emails"]
+pub struct EmailVerificationChangeset {
+    #[allow(dead_code)]
+    id: i32,
+    verified: bool,
+    verification_token: Option<HashedEmailToken>,
+    confirmed_at: DateTime<Utc>,
 }
 
 impl VerifyEmail {
@@ -117,7 +128,12 @@ impl VerifyEmail {
         use schema::emails;
 
         diesel::update(emails::table)
-            .set(&self)
+            .set(&EmailVerificationChangeset {
+                id: self.id,
+                verified: true,
+                verification_token: None,
+                confirmed_at: self.confirmed_at,
+            })
             .execute(conn)
             .map(|_| VerifiedEmail {
                 id: self.id,
@@ -125,6 +141,10 @@ impl VerifyEmail {
                 user_id: self.user_id,
                 created_at: self.created_at,
                 updated_at: self.updated_at,
+            })
+            .map_err(|e| {
+                error!("Failed to verify email: {}, {:?}", e, e);
+                e
             })
     }
 }

@@ -15,7 +15,18 @@ before_script:
   - diesel migration run
   - popd
 
+script:
+  - |
+    for project in 'aardwolf-models' 'aardwolf-types' 'aardwolf-actix' 'aardwolf-rocket' '.'; do
+      pushd $project
+      cargo build --verbose
+      cargo test --verbose
+      popd
+    done
+
 rust:
   - nightly
 
-cache: cargo
+cache:
+  cargo: true
+  timeout: 1000

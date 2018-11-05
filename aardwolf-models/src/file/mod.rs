@@ -1,3 +1,4 @@
+#![allow(proc_macro_derive_resolution_fallback)]
 // use std::path::{Path, PathBuf};
 use std::path::Path;
 

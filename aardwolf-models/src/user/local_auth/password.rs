@@ -1,7 +1,9 @@
+#![allow(proc_macro_derive_resolution_fallback)]
 use std::{fmt, io::Write};
 
 use bcrypt::{hash, verify, DEFAULT_COST};
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
+use serde::de::{Deserialize, Deserializer};
 
 /// Create a trait used to verify passwords.
 ///
@@ -121,8 +123,16 @@ impl ValidationError {
 ///
 /// Debug and Display are both implemented for PlaintextPassword, but they simply print eight
 /// asterisks.
-#[derive(Deserialize)]
 pub struct PlaintextPassword(String);
+
+impl<'de> Deserialize<'de> for PlaintextPassword {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        Ok(PlaintextPassword(String::deserialize(deserializer)?))
+    }
+}
 
 #[cfg(feature = "rocket")]
 mod rocket {

@@ -1,6 +1,7 @@
 extern crate clap;
 extern crate config;
 extern crate failure;
+extern crate log;
 
 use std::{env, fmt};
 
@@ -110,7 +111,10 @@ pub fn db_conn_string(config: &Config) -> Result<String, Error> {
 }
 
 #[derive(Debug, Fail)]
-#[fail(display = "Configuration was missing exected keys: [{:?}]", _0)]
+#[fail(
+    display = "Configuration was missing exected keys: [{:?}]",
+    _0
+)]
 pub struct MissingKeys(Vec<String>);
 
 #[derive(Debug)]
@@ -156,4 +160,24 @@ pub enum ErrorKind {
     ConfigMissingKeys,
     #[fail(display = "Config struct cannot be modified")]
     ConfigImmutable,
+}
+
+#[cfg(feature = "simple-logging")]
+pub fn begin_log(config: &config::Config) {
+    use log::LevelFilter;
+
+    match config.get_str("Log.file").unwrap().as_ref() {
+        "_CONSOLE_" => (),
+        l => simple_logging::log_to_file(l, LevelFilter::Debug).unwrap(),
+    }
+}
+
+#[cfg(feature = "syslog")]
+pub fn begin_log(config: &config::Config) {
+    // TODO: Implement log-syslog:begin_log()
+}
+
+#[cfg(feature = "systemd")]
+pub fn begin_log(config: &config::Config) {
+    // TODO: Implement use-systemd:begin_log()
 }
