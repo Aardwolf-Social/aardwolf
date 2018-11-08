@@ -1,6 +1,7 @@
-#![cfg_attr(feature = "use-rocket", feature(plugin))]
-#![cfg_attr(feature = "use-rocket", feature(custom_derive))]
-#![cfg_attr(feature = "use-rocket", plugin(rocket_codegen))]
+#![cfg_attr(
+    feature = "use-rocket",
+    feature(custom_derive, proc_macro_hygiene, decl_macro)
+)]
 
 #[macro_use]
 extern crate derive_builder;
@@ -8,6 +9,8 @@ extern crate derive_builder;
 extern crate failure;
 #[macro_use]
 extern crate log;
+#[macro_use]
+extern crate rocket;
 #[macro_use]
 extern crate serde_derive;
 

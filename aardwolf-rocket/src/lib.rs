@@ -1,7 +1,5 @@
 #![recursion_limit = "128"]
-#![feature(plugin)]
-#![feature(custom_derive)]
-#![plugin(rocket_codegen)]
+#![feature(custome_derive, proc_macro_hygiene, decl_macro)]
 
 extern crate aardwolf_models;
 extern crate aardwolf_types;
@@ -16,6 +14,7 @@ extern crate diesel;
 extern crate failure;
 extern crate r2d2;
 extern crate r2d2_diesel;
+#[macro_use]
 extern crate rocket;
 extern crate rocket_contrib;
 extern crate rocket_i18n;
