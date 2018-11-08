@@ -1,50 +1,34 @@
+const path = require('path');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const path = require("path");
 
-var config = {
+module.exports = {
   entry: './web/javascript/app.js',
   output: {
-    filename: 'app.js'
+    filename: 'app.js',
+		path: path.resolve(__dirname, 'dist'),
   },
-   optimization: {
-    splitChunks: {
-      cacheGroups: {
-        styles: {
-          name: 'styles',
-          test: /\.css$/,
-          chunks: 'all',
-          enforce: true
-        }
-      }
-    }
-  },
-  plugins: [
-    new MiniCssExtractPlugin({
-      filename: "app.css",
-    })
-  ],
-  module: {
-    rules: [{
-      test: /\.css$/,
-      use: [
-	MiniCssExtractPlugin.loader,
-        {
-          loader: "css-loader",
-          options: {
-            includePaths: [
-              path.resolve("./node_modules/fork-awesome/css"),
-              path.resolve("./node_modules/bulma/css")
-            ]
-          }
-        }
-      ]
-    }, {
-      test: /\.woff2?$|\.ttf$|\.eot$|\.svg|\.png|\.jpg|\.jpeg|\.gif$/,
-      use: [{
-        loader: "file-loader"
-      }]
-    }]
-  }
+	plugins: [
+		new CleanWebpackPlugin(['dist']),
+		new MiniCssExtractPlugin({
+			filename: 'app.css',
+		}),
+	],
+	module: {
+		rules: [
+			{
+				test: /\.css$/,
+				use: [
+					{
+						loader: MiniCssExtractPlugin.loader,
+					},
+					'css-loader',
+				],
+			},
+			{
+				test: /\.woff2?$|\.ttf$|\.eot$|\.svg|\.png|\.jpg|\.jpeg|\.gif$/,
+				loader: 'file-loader',
+			},
+		]
+	},
 };
-
-module.exports = config;

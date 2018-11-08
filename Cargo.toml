@@ -1,100 +1,47 @@
 [package]
 name = "aardwolf"
 version = "0.1.0"
-authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Elijah Mark Anderson <kd0bpv@gmail.com>", "Paul Woolcock <paul@woolcock.us>", "Asonix <asonix.dev@gmail.com>"]
+authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Elijah Mark Anderson <kd0bpv@gmail.com>", "Paul Woolcock <paul@woolcock.us>", "asonix <asonix@asonix.dog>"]
 description = "Powering connected social communities with free software."
 
 [workspace]
 members = [
     "aardwolf-models",
+    "aardwolf-types",
+    "aardwolf-rocket",
+    "aardwolf-actix"
 ]
 
 [features]
-default = ["log-simple"]
-# Integrate with Systemd, includes Journald for logging. Conflicts with log-*
-# features.
-use-systemd = ["systemd"]
-# Use syslog for writing logs. Conflicts with use-systemd and log-* features.
-log-syslog = ["syslog"]
-# Use simple log files or stdout/stderr. Conflicts with use-systemd and
-# log-* features.
-log-simple = ["simple-logging"]
+default = ["simple-logging"]
+rocket = ["aardwolf-rocket"]
+actix = ["aardwolf-actix"]
 
-[lib]
-name = "_aardwolf"
-path = "src/aardwolf/lib.rs"
-
-[[bin]]
-name = "aardwolf-server"
-path = "src/bin/main.rs"
-
-[[bin]]
-name = "setup"
-path = "src/bin/setup.rs"
 
 [dependencies]
-bs58 = "0.2"
-bcrypt = "0.2"
-collection_macros = "0.2.0"
-config = "0.8.0"
-derive_builder = "0.5.0"
-failure = "0.1.1"
-log = "0.4.1"
-r2d2 = "0.8"
-r2d2-diesel = "1.0"
-ring = "0.13"
-serde = "1.0.21"
-serde_derive = "1.0.21"
-simple-logging = {version = "2.0.1", optional = true }
-syslog = { version = "4.0.0", optional = true }
-systemd = { version = "0.3.0", optional = true }
-tera = "0.11"
-url = "1.7"
-url_serde = "0.2"
-yaml-rust = "0.3.5"
+config = "0.9.0"
+failure = "0.1"
+log = "0.4"
+yaml-rust = "0.3"
+# Use simple log files or stdout/stderr. Conflicts with use-systemd and
+# log-* features.
+simple-logging = { version = "2.0", optional = true }
+# Use syslog for writing logs. Conflicts with use-systemd and log-* features.
+syslog = { version = "4.0", optional = true }
+# Integrate with Systemd, includes Journald for logging. Conflicts with log-*
+# features.
+systemd = { version = "0.4", optional = true }
 
-[dependencies.aardwolf-models]
+[dependencies.aardwolf-actix]
 version = "0.1"
-path = "aardwolf-models"
+path = "aardwolf-actix"
+optional = true
 
-[dependencies.chrono]
-version = "0.4"
-features = ["serde"]
+[dependencies.aardwolf-rocket]
+version = "0.1"
+path = "aardwolf-rocket"
+optional = true
 
 [dependencies.clap]
 version = "2.29"
 features = ["yaml"]
-
-[dependencies.diesel]
-version = "1.1"
-default-features = false
-features = ["postgres", "uuid", "chrono"]
-
-[dependencies.rocket]
-git = "https://github.com/SergioBenitez/Rocket"
-rev = "55459db7732b9a240826a5c120c650f87e3372ce"
-
-[dependencies.rocket_codegen]
-git = "https://github.com/SergioBenitez/Rocket"
-rev = "55459db7732b9a240826a5c120c650f87e3372ce"
-
-[dependencies.rocket_contrib]
-features = ["tera_templates", "json"]
-git = "https://github.com/SergioBenitez/Rocket"
-rev = "55459db7732b9a240826a5c120c650f87e3372ce"
-
-[dependencies.rocket_i18n]
-git = "https://github.com/BaptisteGelez/rocket_i18n"
-rev = "75a3bfd7b847324c078a355a7f101f8241a9f59b"
-
-[dependencies.pear]
-git = "https://github.com/SergioBenitez/Pear"
-rev = "b4751403ed9a06bc813b662334f0a555eccae6a0"
-
-[dependencies.pear_codegen]
-git = "https://github.com/SergioBenitez/Pear"
-rev = "b4751403ed9a06bc813b662334f0a555eccae6a0"
-
-[dependencies.uuid]
-version = "0.6"
-features = ["v4"]

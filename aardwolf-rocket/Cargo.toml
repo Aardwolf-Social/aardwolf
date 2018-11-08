@@ -1,0 +1,63 @@
+[package]
+name = "aardwolf-rocket"
+version = "0.1.0"
+authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Elijah Mark Anderson <kd0bpv@gmail.com>", "Paul Woolcock <paul@woolcock.us>", "asonix <asonix@asonix.dog>"]
+description = "Powering connected social communities with free software."
+
+[features]
+default = []
+
+[dependencies]
+bs58 = "0.2"
+bcrypt = "0.2"
+collection_macros = "0.2.0"
+config = "0.9.0"
+failure = "0.1.1"
+r2d2 = "0.8"
+r2d2-diesel = "1.0"
+serde = "1.0.21"
+log = "0.4.1"
+
+[dependencies.aardwolf-models]
+version = "0.1"
+path = "../aardwolf-models"
+features = ["rocket"]
+
+[dependencies.aardwolf-types]
+version = "0.1"
+path = "../aardwolf-types"
+features = ["use-rocket"]
+
+[dependencies.chrono]
+version = "0.4"
+features = ["serde"]
+
+[dependencies.diesel]
+version = "1.1"
+default-features = false
+features = ["postgres", "uuid", "chrono"]
+
+[dependencies.rocket]
+git = "https://github.com/SergioBenitez/Rocket"
+rev = "55459db7732b9a240826a5c120c650f87e3372ce"
+
+[dependencies.rocket_codegen]
+git = "https://github.com/SergioBenitez/Rocket"
+rev = "55459db7732b9a240826a5c120c650f87e3372ce"
+
+[dependencies.rocket_contrib]
+features = ["tera_templates", "json"]
+git = "https://github.com/SergioBenitez/Rocket"
+rev = "55459db7732b9a240826a5c120c650f87e3372ce"
+
+[dependencies.rocket_i18n]
+git = "https://github.com/BaptisteGelez/rocket_i18n"
+rev = "75a3bfd7b847324c078a355a7f101f8241a9f59b"
+
+[dependencies.pear]
+git = "https://github.com/SergioBenitez/Pear"
+rev = "b4751403ed9a06bc813b662334f0a555eccae6a0"
+
+[dependencies.pear_codegen]
+git = "https://github.com/SergioBenitez/Pear"
+rev = "b4751403ed9a06bc813b662334f0a555eccae6a0"

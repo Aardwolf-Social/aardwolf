@@ -1,3 +1,4 @@
+#![allow(proc_macro_derive_resolution_fallback)]
 table! {
     base_actors (id) {
         id -> Int4,

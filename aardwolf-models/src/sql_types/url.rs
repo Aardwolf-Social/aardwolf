@@ -1,3 +1,4 @@
+#![allow(proc_macro_derive_resolution_fallback)]
 use std::{error::Error as StdError, io::Write, str::FromStr};
 
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
@@ -43,6 +44,7 @@ impl FromStr for Url {
     }
 }
 
+#[cfg(feature = "rocket")]
 mod rocket {
     use std::str::Utf8Error;
 

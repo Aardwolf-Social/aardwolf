@@ -1,3 +1,4 @@
+#![allow(proc_macro_derive_resolution_fallback)]
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, connection::Connection, pg::PgConnection};
 
@@ -12,7 +13,9 @@ use self::{
 };
 pub use self::{
     local_auth::{PlaintextPassword, VerificationError},
-    permissions::{PermissionError, PermissionResult, PermissionedUser},
+    permissions::{
+        LocalPersonaCreator, PermissionError, PermissionResult, PermissionedUser, PersonaDeleter,
+    },
 };
 use schema::users;
 use sql_types::Role;
@@ -86,7 +89,7 @@ impl From<diesel::result::Error> for UpdateFieldError {
     }
 }
 
-#[derive(Identifiable, Queryable)]
+#[derive(Debug, Clone, Identifiable, Queryable)]
 #[table_name = "users"]
 pub struct AuthenticatedUser {
     id: i32,
