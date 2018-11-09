@@ -1,3 +1,7 @@
+# Log - This section describes how logging should be handled in the application
+[Log]
+# Specifies the file that the logs should be stored in
+file = "aardwolf.log"
 # Web.Listen - This section describes where to listen for incoming HTTP(S) requests
 # for the web interface.
 [Web.Listen]

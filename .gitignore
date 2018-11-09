@@ -16,6 +16,7 @@
 # Ignore aardwolf.toml
 aardwolf.toml
 aardwolf.log
+diesel.toml
 .config
 
 node_modules

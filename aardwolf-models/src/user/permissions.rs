@@ -21,17 +21,17 @@ use base_post::{
 use file::{image::Image, File};
 use sql_types::{FollowPolicy, Permission, PostVisibility, Role, Url};
 
-#[derive(Debug, Fail)]
+#[derive(Clone, Debug, Fail)]
 pub enum PermissionError {
     #[fail(display = "Failed to check user's permission")]
-    Diesel(diesel::result::Error),
+    Diesel,
     #[fail(display = "User doesn't have this permission")]
     Permission,
 }
 
 impl From<diesel::result::Error> for PermissionError {
-    fn from(e: diesel::result::Error) -> Self {
-        PermissionError::Diesel(e)
+    fn from(_: diesel::result::Error) -> Self {
+        PermissionError::Diesel
     }
 }
 
@@ -90,9 +90,12 @@ pub trait PermissionedUser: UserLike + Sized {
         })
     }
 
-    fn can_make_persona(&self, conn: &PgConnection) -> PermissionResult<LocalPersonaCreator<Self>> {
+    fn can_make_persona(&self, conn: &PgConnection) -> PermissionResult<LocalPersonaCreator<Self>>
+    where
+        Self: Clone,
+    {
         self.has_permission(Permission::MakePersona, conn)
-            .map(|_| LocalPersonaCreator(self))
+            .map(|_| LocalPersonaCreator(self.clone()))
     }
 
     fn can_switch_persona(
@@ -407,7 +410,8 @@ impl<'a> CommentMaker<'a> {
                         .get_result(conn)
                         .map(|comment: Comment| (base_post, post, comment))
                 })
-        }).map_err(From::from)
+        })
+        .map_err(From::from)
     }
 }
 
@@ -521,9 +525,9 @@ impl From<diesel::result::Error> for FollowRequestManagerError {
     }
 }
 
-pub struct LocalPersonaCreator<'a, U: UserLike + 'a>(&'a U);
+pub struct LocalPersonaCreator<U: UserLike>(U);
 
-impl<'a, U: UserLike> LocalPersonaCreator<'a, U> {
+impl<U: UserLike> LocalPersonaCreator<U> {
     pub fn create_persona(
         &self,
         display_name: String,
@@ -545,20 +549,22 @@ impl<'a, U: UserLike> LocalPersonaCreator<'a, U> {
                 profile_url,
                 inbox_url,
                 outbox_url,
-                Some(self.0),
+                Some(&self.0),
                 follow_policy,
                 json!({}),
-            ).insert(conn)
-                .and_then(|base_actor| {
-                    NewPersona::new(
-                        default_visibility,
-                        is_searchable,
-                        avatar,
-                        shortname,
-                        &base_actor,
-                    ).insert(conn)
-                        .map(|persona| (base_actor, persona))
-                })
+            )
+            .insert(conn)
+            .and_then(|base_actor| {
+                NewPersona::new(
+                    default_visibility,
+                    is_searchable,
+                    avatar,
+                    shortname,
+                    &base_actor,
+                )
+                .insert(conn)
+                .map(|persona| (base_actor, persona))
+            })
         })
     }
 }

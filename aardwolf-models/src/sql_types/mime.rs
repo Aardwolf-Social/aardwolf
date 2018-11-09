@@ -1,3 +1,4 @@
+#![allow(proc_macro_derive_resolution_fallback)]
 use std::{error::Error as StdError, io::Write};
 
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};

@@ -1,0 +1,46 @@
+[package]
+name = "aardwolf-types"
+version = "0.1.0"
+authors = ["asonix <asonix@asonix.dog>"]
+edition = "2018"
+
+[features]
+default = []
+use-rocket = ["rocket", "rocket_codegen", "rocket_contrib", "aardwolf-models/rocket"]
+use-actix = ["actix-web", "actix", "futures"]
+
+[dependencies]
+actix = { version = "0.7", optional = true }
+actix-web = { version = "0.7", optional = true }
+derive_builder = "0.7.0"
+failure = "0.1"
+futures = { version = "0.1", optional = true }
+log = "0.4"
+r2d2 = "0.8"
+r2d2-diesel = "1.0"
+serde = "1.0"
+serde_derive = "1.0"
+url = "1.7"
+url_serde = "0.2"
+
+[dependencies.aardwolf-models]
+version = "0.1"
+path = "../aardwolf-models"
+
+[dependencies.diesel]
+version = "1.1"
+default-features = false
+features = ["postgres", "uuid", "chrono"]
+
+[dependencies.rocket]
+version = "0.4.0-rc.1"
+optional = true
+
+[dependencies.rocket_codegen]
+version = "0.4.0-rc.1"
+optional = true
+
+[dependencies.rocket_contrib]
+features = ["tera_templates", "json"]
+version = "0.4.0-rc.1"
+optional = true

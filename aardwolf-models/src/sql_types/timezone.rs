@@ -1,3 +1,4 @@
+#![allow(proc_macro_derive_resolution_fallback)]
 use std::{error::Error as StdError, fmt, io::Write, str::FromStr};
 
 use chrono_tz::Tz;

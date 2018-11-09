@@ -36,7 +36,7 @@ fn validate_features() {
     /* Exactly one logging implementation must be selected */
     {
         let mut numlog = 0;
-        let log_implementations = vec!["log-simple", "log-syslog", "use-systemd"];
+        let log_implementations = vec!["simple-logging", "syslog", "systemd"];
 
         for imp in log_implementations {
             let imp = imp.to_uppercase();

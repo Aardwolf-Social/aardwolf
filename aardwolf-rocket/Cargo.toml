@@ -1,0 +1,52 @@
+[package]
+name = "aardwolf-rocket"
+version = "0.1.0"
+authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Elijah Mark Anderson <kd0bpv@gmail.com>", "Paul Woolcock <paul@woolcock.us>", "asonix <asonix@asonix.dog>"]
+description = "Powering connected social communities with free software."
+
+[features]
+default = []
+
+[dependencies]
+bs58 = "0.2"
+bcrypt = "0.2"
+collection_macros = "0.2.0"
+config = "0.9.0"
+failure = "0.1.1"
+r2d2 = "0.8"
+r2d2-diesel = "1.0"
+serde = "1.0.21"
+log = "0.4.1"
+
+[dependencies.aardwolf-models]
+version = "0.1"
+path = "../aardwolf-models"
+features = ["rocket"]
+
+[dependencies.aardwolf-types]
+version = "0.1"
+path = "../aardwolf-types"
+features = ["use-rocket"]
+
+[dependencies.chrono]
+version = "0.4"
+features = ["serde"]
+
+[dependencies.diesel]
+version = "1.1"
+default-features = false
+features = ["postgres", "uuid", "chrono"]
+
+[dependencies.rocket]
+version = "0.4.0-rc.1"
+
+[dependencies.rocket_codegen]
+version = "0.4.0-rc.1"
+
+[dependencies.rocket_contrib]
+version = "0.4.0-rc.1"
+features = ["tera_templates", "json"]
+
+[dependencies.rocket_i18n]
+version = "0.1"
+path = "../rocket_i18n"

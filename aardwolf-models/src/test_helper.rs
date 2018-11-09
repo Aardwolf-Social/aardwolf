@@ -226,7 +226,8 @@ where
         None,
         FollowPolicy::AutoAccept,
         json!({}),
-    ).insert(conn)?;
+    )
+    .insert(conn)?;
 
     f(base_actor)
 }
@@ -296,7 +297,8 @@ where
         None,
         gen_string()?,
         base_actor,
-    ).insert(conn)?;
+    )
+    .insert(conn)?;
 
     f(persona)
 }
@@ -316,7 +318,8 @@ where
         None,
         PostVisibility::Public,
         json!({}),
-    ).insert(conn)?;
+    )
+    .insert(conn)?;
 
     f(base_post)
 }
