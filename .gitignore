@@ -20,3 +20,7 @@ diesel.toml
 .config
 
 node_modules
+
+# Translations
+.po~
+translations

@@ -1,6 +1,7 @@
 use aardwolf_types::{
     error::AardwolfFail,
     forms::personas::{
+        CheckCreatePersonaPermission, CheckCreatePersonaPermissionFail,
         CheckDeletePersonaPermission, CreatePersona, DeletePersona, FetchPersona,
         PersonaCreationFail, PersonaCreationForm, PersonaDeletionFail, ValidatePersonaCreationForm,
     },
@@ -42,6 +43,25 @@ impl From<PersonaCreationFail> for PersonaCreateError {
     }
 }
 
+impl From<CheckCreatePersonaPermissionFail> for PersonaCreateError {
+    fn from(e: CheckCreatePersonaPermissionFail) -> Self {
+        match e {
+            CheckCreatePersonaPermissionFail::Database => PersonaCreateError::Database,
+            CheckCreatePersonaPermissionFail::Permission => PersonaCreateError::Permission,
+        }
+    }
+}
+
+impl From<DbActionError<CheckCreatePersonaPermissionFail>> for PersonaCreateError {
+    fn from(e: DbActionError<CheckCreatePersonaPermissionFail>) -> Self {
+        match e {
+            DbActionError::Connection => PersonaCreateError::Database,
+            DbActionError::Mailbox => PersonaCreateError::Mailbox,
+            DbActionError::Action(e) => e.into(),
+        }
+    }
+}
+
 impl From<DbActionError<PersonaCreationFail>> for PersonaCreateError {
     fn from(e: DbActionError<PersonaCreationFail>) -> Self {
         match e {
@@ -61,7 +81,8 @@ pub(crate) fn create(
         PersonaCreateError,
         [
             (ValidateWrapper<_, _, _> => ValidatePersonaCreationForm),
-            (DbActionWrapper<_, _, _> => CreatePersona::new(user.0)),
+            (DbActionWrapper<_, _, _> => CheckCreatePersonaPermission::new(user.0)),
+            (DbActionWrapper<_, _, _> => CreatePersona),
         ]
     );
 

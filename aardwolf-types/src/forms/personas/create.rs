@@ -4,9 +4,12 @@ use aardwolf_models::{
 };
 use diesel::pg::PgConnection;
 
-use crate::forms::{
-    personas::{PersonaCreationFail, ValidatedPersonaCreationForm},
-    traits::DbAction,
+use crate::{
+    error::AardwolfFail,
+    forms::{
+        personas::{PersonaCreationFail, ValidatedPersonaCreationForm},
+        traits::DbAction,
+    },
 };
 
 pub struct CheckCreatePersonaPermission<U>(U)
@@ -66,6 +69,8 @@ impl From<PermissionError> for CheckCreatePersonaPermissionFail {
         }
     }
 }
+
+impl AardwolfFail for CheckCreatePersonaPermissionFail {}
 
 pub struct CreatePersona;
 

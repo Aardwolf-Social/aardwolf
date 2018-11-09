@@ -2,7 +2,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Aardwolf - Main</title>
-  <link rel="stylesheet" href="/web/0.app.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v_5.0.0/js/all.js"></script>
+  <!-- This is a hacky CSS that really needs to be fixed/replaced. I'm just putting it here to see if I can improve the styling until proper Bulma implementation -->
+  <link rel="stylesheet" media="screen" href="../stylesheets/scratchpad.css">
 </head>
 
 
@@ -10,18 +13,18 @@
 <section class="section">
     <div class="container">
 
-        <title>{{ preferences }}</title>
+        <title>{{ "Preferences" | _ }}</title>
         
         <!-- UI Language selection -->
-        <h1 class="title">{{ preferences }}</h1>
+        <h1 class="title">{{ "Preferences" | _ }}</h1>
         <hr />
         
             <div class="dropdown">
               <div class="dropdown-trigger">
                 <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
-                  <span>{{ language }}</span>
+                  <span>{{ "Language" | _ }}</span>
                   <span class="icon is-small">
-                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    <i class="fas fa-angle-down" aria-hidden="true"></i>
                   </span>
                 </button>
               </div>
@@ -86,71 +89,6 @@
                 </label>                
               </div>
             </div>
-
-        <!-- Profile bio -->
-        <div class="field box">
-          <label class="label">{{ profileBio }}</label>
-          <div class="control">
-            <textarea class="textarea" placeholder="{{ profileBio }}"></textarea>
-          </div>
-          <p>500 {{ profileCharRemaining }}</p><!-- temporary placeholder -->
-        </div>
-             
-        <!-- Profile Avatar -->
-        <div class="box">
-          <label class="label">{{ profileAvatarUpload }}</label>
-        <figure class="image is-128x128">
-          <img src="https://bulma.io/images/placeholders/128x128.png">
-        </figure>
-        <br />
-        
-        <!-- Avatar upload controls -->
-        <div class="file has-name">
-          <label class="file-label">
-            <input class="file-input" type="file" name="resume">
-            <span class="file-cta">
-              <span class="file-icon">
-                <i class="fa fa-upload"></i>
-              </span>
-              <span class="file-label">
-                {{ profileAvatarUploadLabel }}
-              </span>
-            </span>
-            <span class="file-name">
-              {{ profileAvatarFileName }}
-            </span>
-          </label>
-        </div>
-        <p>{{ profileAvatarSubText }}</p>
-        </div>
-            
-        <!-- Profile Header -->
-        <div class="box">
-          <label class="label">{{ profileHeaderUpload }}</label>
-        <figure class="image is-128x128">
-          <img src="https://bulma.io/images/placeholders/128x128.png">
-        </figure>
-        <br />
-        
-        <!-- Header upload controls -->
-        <div class="file has-name">
-          <label class="file-label">
-            <input class="file-input" type="file" name="resume">
-            <span class="file-cta">
-              <span class="file-icon">
-                <i class="fa fa-upload"></i>
-              </span>
-              <span class="file-label">
-                {{ profileAvatarHeaderLabel }}
-              </span>
-            </span>
-            <span class="file-name">
-              {{ profileHeaderFileName }}
-            </span>
-          </label>
-        </div>
-        <p>{{ profileHeaderSubText }}</p><!-- temporary placeholder -->
-        </div>
                 
     </div>
 </section>
