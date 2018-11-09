@@ -11,7 +11,7 @@ use DbConn;
 use crate::action::{DbActionWrapper, ValidateWrapper};
 
 #[get("/new")]
-fn new(_user: SignedInUser) -> String {
+pub fn new(_user: SignedInUser) -> String {
     format!("placeholder")
 }
 
@@ -45,7 +45,7 @@ impl From<CheckCreatePersonaPermissionFail> for PersonaCreateError {
 }
 
 #[post("/create", data = "<form>")]
-fn create(
+pub fn create(
     user: SignedInUser,
     form: Form<PersonaCreationForm>,
     db: DbConn,
@@ -93,7 +93,7 @@ impl From<CheckDeletePersonaPermissionFail> for PersonaDeleteError {
 }
 
 #[get("/delete/<id>")]
-fn delete(user: SignedInUser, id: i32, db: DbConn) -> Result<String, PersonaDeleteError> {
+pub fn delete(user: SignedInUser, id: i32, db: DbConn) -> Result<String, PersonaDeleteError> {
     let _ = perform!(
         &db,
         id,
@@ -109,6 +109,6 @@ fn delete(user: SignedInUser, id: i32, db: DbConn) -> Result<String, PersonaDele
 }
 
 #[get("/switch/<switch_persona>")]
-fn switch(_user: SignedInUser, switch_persona: i32) -> String {
+pub fn switch(_user: SignedInUser, switch_persona: i32) -> String {
     format!("placeholder, {}", switch_persona)
 }

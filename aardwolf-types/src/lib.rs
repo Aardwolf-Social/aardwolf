@@ -9,6 +9,7 @@ extern crate derive_builder;
 extern crate failure;
 #[macro_use]
 extern crate log;
+#[cfg(feature = "use-rocket")]
 #[macro_use]
 extern crate rocket;
 #[macro_use]

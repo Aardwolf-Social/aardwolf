@@ -1,5 +1,5 @@
 #![recursion_limit = "128"]
-#![feature(custome_derive, proc_macro_hygiene, decl_macro)]
+#![feature(custom_derive, proc_macro_hygiene, decl_macro)]
 
 extern crate aardwolf_models;
 extern crate aardwolf_types;
@@ -27,7 +27,6 @@ use rocket::{
     request::{self, FromRequest},
     Outcome, Request, Rocket, State,
 };
-use rocket_contrib::Template;
 use std::{error::Error, ops::Deref};
 
 #[macro_use]
@@ -73,42 +72,42 @@ fn app(config: config::Config, db_url: String) -> Result<Rocket, Box<dyn Error>>
         .extra("database_url", db_url.as_str())
         .unwrap();
 
-    let mut routes = routes![self::routes::app::home, self::routes::app::home_redirect,];
+    let mut routes = routes![routes::app::home, routes::app::home_redirect,];
 
     #[cfg(debug_assertions)]
     routes.extend(routes![
         // webroot/favicon
-        self::routes::app::webroot,
+        routes::app::webroot,
         // emoji
-        self::routes::app::emoji,
+        routes::app::emoji,
         // themes
-        self::routes::app::themes,
+        routes::app::themes,
     ]);
 
     let auth = routes![
-        self::routes::auth::sign_up_form,
-        self::routes::auth::sign_up_form_with_error,
-        self::routes::auth::sign_in_form,
-        self::routes::auth::sign_in_form_with_error,
-        self::routes::auth::sign_up,
-        self::routes::auth::sign_in,
-        self::routes::auth::confirm,
-        self::routes::auth::sign_out,
+        routes::auth::sign_up_form,
+        routes::auth::sign_up_form_with_error,
+        routes::auth::sign_in_form,
+        routes::auth::sign_in_form_with_error,
+        routes::auth::sign_up,
+        routes::auth::sign_in,
+        routes::auth::confirm,
+        routes::auth::sign_out,
     ];
 
     let personas = routes![
-        self::routes::personas::new,
-        self::routes::personas::create,
-        self::routes::personas::delete,
-        self::routes::personas::switch,
+        routes::personas::new,
+        routes::personas::create,
+        routes::personas::delete,
+        routes::personas::switch,
     ];
 
-    let r = rocket::custom(c, true)
+    let r = rocket::custom(c)
         .mount("/auth", auth)
         .mount("/personas", personas)
         .mount(
             "/api/v1",
-            routes![self::routes::applications::register_application],
+            routes![routes::applications::register_application],
         )
         .mount("/", routes)
         // .manage(SystemRandom::new());
@@ -116,7 +115,7 @@ fn app(config: config::Config, db_url: String) -> Result<Rocket, Box<dyn Error>>
         // Register the fairing. The parameter is the domain you want to use (the name of your app most of the time)
         .attach(rocket_i18n::I18n::new("aardwolf"))
         // Eventually register the Tera filters (only works with the master branch of Rocket)
-        .attach(rocket_contrib::Template::custom(|engines| {
+        .attach(rocket_contrib::templates::Template::custom(|engines| {
             rocket_i18n::tera(&mut engines.tera);
         }));
 

@@ -22,8 +22,9 @@ use actix_web::{
 };
 use config::Config;
 use diesel::pg::PgConnection;
-use handlebars::Handlebars;
 use r2d2_diesel::ConnectionManager;
+use rocket_i18n::I18n;
+use tera::Tera;
 
 #[macro_use]
 pub mod action;
@@ -40,7 +41,8 @@ use self::db::{Db, Pool};
 #[derive(Clone)]
 pub struct AppConfig {
     db: Addr<Db>,
-    templates: Arc<Handlebars>,
+    templates: Arc<Tera>,
+    i18n: Arc<I18n>,
 }
 
 impl fmt::Debug for AppConfig {
@@ -51,12 +53,28 @@ impl fmt::Debug for AppConfig {
 
 impl AppConfig {
     fn render<T: serde::Serialize>(&self, template: &str, data: &T) -> error::RenderResult {
-        self.templates
-            .render(template, data)
-            .map(|s| HttpResponse::Ok().header(CONTENT_TYPE, "text/html").body(s))
+        let attempts = vec![
+            template.to_owned(),
+            format!("{}.html", template),
+            format!("{}.html.tera", template),
+        ];
+
+        let res = attempts
+            .iter()
+            .fold(None, |acc, template_name| {
+                acc.or_else(|| {
+                    self.templates
+                        .render(template_name, data)
+                        .map_err(|e| error!("Error rendering, {}, {:?}", e, e))
+                        .ok()
+                })
+            })
+            .ok_or(error::RenderError);
+
+        res.map(|s| HttpResponse::Ok().header(CONTENT_TYPE, "text/html").body(s))
             .map_err(|e| {
-                error!("Unable to render template, {}", e);
-                error::RenderError
+                error!("Unable to render template");
+                e
             })
     }
 }
@@ -117,8 +135,8 @@ pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
 
     let template_dir = config.get_str("Templates.dir")?;
 
-    let mut templates = Handlebars::new();
-    templates.register_templates_directory(".html.hbs", &template_dir)?;
+    let mut templates = Tera::new(&template_dir)?;
+    rocket_i18n::tera(&mut templates);
 
     let templates = Arc::new(templates);
 
@@ -129,6 +147,7 @@ pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
         let state = AppConfig {
             db: db.clone(),
             templates: templates.clone(),
+            i18n: Arc::new(I18n::new("aardwolf")),
         };
 
         vec![

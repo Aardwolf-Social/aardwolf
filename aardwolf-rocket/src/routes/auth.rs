@@ -3,7 +3,7 @@ use rocket::{
     request::Form,
     response::Redirect,
 };
-use rocket_contrib::Template;
+use rocket_contrib::templates::Template;
 
 use aardwolf_models::user::UserLike;
 use aardwolf_types::forms::auth::{
@@ -15,8 +15,8 @@ use action::{DbActionWrapper, ValidateWrapper};
 use types::user::SignedInUser;
 use DbConn;
 
-#[get("/sign_up?<error>")]
-fn sign_up_form_with_error(error: SignUpErrorMessage) -> Template {
+#[get("/sign_up?<error..>")]
+pub fn sign_up_form_with_error(error: Form<SignUpErrorMessage>) -> Template {
     let token = "some csrf token";
     Template::render(
         "sign_up",
@@ -25,13 +25,13 @@ fn sign_up_form_with_error(error: SignUpErrorMessage) -> Template {
 }
 
 #[get("/sign_up")]
-fn sign_up_form() -> Template {
+pub fn sign_up_form() -> Template {
     let token = "some csrf token";
     Template::render("sign_up", hashmap!{ "token" => token })
 }
 
-#[get("/sign_in?<error>")]
-fn sign_in_form_with_error(error: SignInErrorMessage) -> Template {
+#[get("/sign_in?<error..>")]
+pub fn sign_in_form_with_error(error: Form<SignInErrorMessage>) -> Template {
     let token = "some csrf token";
     Template::render(
         "sign_in",
@@ -40,7 +40,7 @@ fn sign_in_form_with_error(error: SignInErrorMessage) -> Template {
 }
 
 #[get("/sign_in")]
-fn sign_in_form() -> Template {
+pub fn sign_in_form() -> Template {
     let token = "some csrf token";
     Template::render("sign_in", hashmap!{ "token" => token })
 }
@@ -65,7 +65,7 @@ impl From<ValidateSignUpFormFail> for SignUpError {
     }
 }
 #[post("/sign_up", data = "<form>")]
-fn sign_up(form: Form<SignUpForm>, db: DbConn) -> Redirect {
+pub fn sign_up(form: Form<SignUpForm>, db: DbConn) -> Redirect {
     let res = perform!(
         &db,
         form.into_inner(),
@@ -90,7 +90,7 @@ fn sign_up(form: Form<SignUpForm>, db: DbConn) -> Redirect {
         }
         Err(e) => {
             println!("unable to create account: {}, {:?}", e, e);
-            Redirect::to(&format!("/auth/sign_up?msg={}", e))
+            Redirect::to(format!("/auth/sign_up?msg={}", e))
         }
     }
 }
@@ -116,7 +116,7 @@ impl From<ValidateSignInFormFail> for SignInError {
 }
 
 #[post("/sign_in", data = "<form>")]
-fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redirect {
+pub fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redirect {
     // TODO: check csrf token (this will probably be a request guard)
 
     let res = perform!(
@@ -138,7 +138,7 @@ fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redirect
         }
         Err(e) => {
             println!("unable to log in: {}, {:?}", e, e);
-            Redirect::to(&format!("/auth/sign_in?msg={}", e))
+            Redirect::to(format!("/auth/sign_in?msg={}", e))
         }
     }
 }
@@ -157,11 +157,11 @@ impl From<ConfirmAccountFail> for ConfirmError {
     }
 }
 
-#[get("/confirmation?<token>")]
-fn confirm(token: ConfirmationToken, db: DbConn) -> Result<Redirect, ConfirmError> {
+#[get("/confirmation?<token..>")]
+pub fn confirm(token: Form<ConfirmationToken>, db: DbConn) -> Result<Redirect, ConfirmError> {
     let res = perform!(
         &db,
-        token,
+        token.into_inner(),
         ConfirmError,
         [
             (DbActionWrapper<_, _, _> => ConfirmToken),
@@ -178,7 +178,7 @@ fn confirm(token: ConfirmationToken, db: DbConn) -> Result<Redirect, ConfirmErro
 }
 
 #[post("/sign_out")]
-fn sign_out(_user: SignedInUser, mut cookies: Cookies) -> Redirect {
+pub fn sign_out(_user: SignedInUser, mut cookies: Cookies) -> Redirect {
     cookies.remove_private(Cookie::named("user_id"));
     Redirect::to("/auth/sign_in")
 }
