@@ -6,9 +6,7 @@ use actix_web::{
 };
 use futures::future::{Future, IntoFuture};
 
-use crate::{
-    action::DbActionWrapper, db::DbActionError, error::RedirectError, from_session, AppConfig,
-};
+use crate::{db::DbActionError, error::RedirectError, from_session, AppConfig};
 
 #[derive(Clone, Debug, Fail)]
 pub enum SignedInUserError {
@@ -55,7 +53,9 @@ impl FromRequest<AppConfig> for SignedInUser {
         let res = id_res
             .into_future()
             .and_then(move |id| {
-                perform!(state, id, SignedInUserError, [(DbActionWrapper<_, _, _> => FetchUser),])
+                perform!(state, SignedInUserError, [
+                     (_ = FetchUser(id)),
+                ])
             })
             .map(SignedInUser)
             .map_err(From::from);
@@ -78,7 +78,9 @@ impl FromRequest<AppConfig> for SignedInUserWithEmail {
         let res = id_res
             .into_future()
             .and_then(move |id| {
-                perform!(state, id, SignedInUserError, [(DbActionWrapper<_, _, _> => FetchUserAndEmail),])
+                perform!(state, SignedInUserError, [
+                     (_ = FetchUserAndEmail(id)),
+                ])
             })
             .map(|(user, email)| SignedInUserWithEmail(user, email))
             .map_err(From::from);
