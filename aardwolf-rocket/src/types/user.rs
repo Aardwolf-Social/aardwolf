@@ -9,7 +9,6 @@ use rocket::{
     {Outcome, Request, State},
 };
 
-use action::DbActionWrapper;
 use session::from_cookie;
 
 struct CookieError;
@@ -37,8 +36,8 @@ impl<'l, 'r> FromRequest<'l, 'r> for SignedInUser {
 
         from_cookie(&mut request.cookies(), "user_id", CookieError)
             .and_then(|user_id| {
-                perform!(&db, user_id, CookieError, [
-                    (DbActionWrapper<_, _, _> => FetchUser),
+                perform!(&db, CookieError, [
+                    (_ = FetchUser(user_id)),
                 ])
             })
             .map(SignedInUser)
@@ -59,8 +58,8 @@ impl<'l, 'r> FromRequest<'l, 'r> for SignedInUserWithEmail {
 
         from_cookie(&mut request.cookies(), "user_id", CookieError)
             .and_then(|user_id| {
-                perform!(&db, user_id, CookieError, [
-                    (DbActionWrapper<_, _, _> => FetchUserAndEmail),
+                perform!(&db, CookieError, [
+                    (_ = FetchUserAndEmail(user_id)),
                 ])
             })
             .map(|(user, email)| SignedInUserWithEmail(user, email))

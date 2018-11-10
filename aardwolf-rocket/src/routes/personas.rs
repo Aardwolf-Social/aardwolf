@@ -8,8 +8,6 @@ use aardwolf_types::forms::personas::{
 use types::user::SignedInUser;
 use DbConn;
 
-use crate::action::{DbActionWrapper, ValidateWrapper};
-
 #[get("/new")]
 pub fn new(_user: SignedInUser) -> String {
     format!("placeholder")
@@ -50,16 +48,11 @@ pub fn create(
     form: Form<PersonaCreationForm>,
     db: DbConn,
 ) -> Result<String, PersonaCreateError> {
-    let _ = perform!(
-        &db,
-        form.into_inner(),
-        PersonaCreateError,
-        [
-            (ValidateWrapper<_, _, _> => ValidatePersonaCreationForm),
-            (DbActionWrapper<_, _, _> => CheckCreatePersonaPermission::new(user.0)),
-            (DbActionWrapper<_, _, _> => CreatePersona),
-        ]
-    )?;
+    let _ = perform!(&db, PersonaCreateError, [
+        (form = ValidatePersonaCreationForm(form.into_inner())),
+        (creator = CheckCreatePersonaPermission(user.0)),
+        (_ = CreatePersona(creator, form)),
+    ])?;
 
     Ok(format!("Created!"))
 }
@@ -94,16 +87,11 @@ impl From<CheckDeletePersonaPermissionFail> for PersonaDeleteError {
 
 #[get("/delete/<id>")]
 pub fn delete(user: SignedInUser, id: i32, db: DbConn) -> Result<String, PersonaDeleteError> {
-    let _ = perform!(
-        &db,
-        id,
-        PersonaDeleteError,
-        [
-            (DbActionWrapper<_, _, _> => FetchPersona),
-            (DbActionWrapper<_, _, _> => CheckDeletePersonaPermission::new(user.0)),
-            (DbActionWrapper<_, _, _> => DeletePersona),
-        ]
-    )?;
+    let _ = perform!(&db, PersonaDeleteError, [
+        (persona = FetchPersona(id)),
+        (deleter = CheckDeletePersonaPermission(user.0, persona)),
+        (_ = DeletePersona(deleter)),
+    ])?;
 
     Ok(format!("Deleted!"))
 }
