@@ -1,8 +1,7 @@
-use std::marker::PhantomData;
-
 use aardwolf_types::{
     error::AardwolfFail,
-    forms::traits::{DbAction, Validate},
+    traits::{DbAction, Validate},
+    wrapper::{DbActionWrapper, ValidateWrapper},
 };
 use futures::future::Future;
 
@@ -11,6 +10,8 @@ use crate::{
     AppConfig,
 };
 
+pub use aardwolf_types::wrapper::Wrapped;
+
 pub trait Action<T, E>
 where
     E: AardwolfFail,
@@ -18,34 +19,9 @@ where
     fn action(self, state: AppConfig) -> Box<dyn Future<Item = T, Error = E> + Send>;
 }
 
-pub struct ValidateWrapper<V, T, E>(V, PhantomData<T>, PhantomData<E>)
-where
-    V: Validate<T, E>,
-    E: AardwolfFail;
-
-impl<V, T, E> ValidateWrapper<V, T, E>
-where
-    V: Validate<T, E>,
-    E: AardwolfFail,
-{
-    pub fn new(validate: V) -> Self {
-        ValidateWrapper(validate, PhantomData, PhantomData)
-    }
-}
-
-impl<V, T, E> From<V> for ValidateWrapper<V, T, E>
-where
-    V: Validate<T, E>,
-    E: AardwolfFail,
-{
-    fn from(v: V) -> Self {
-        ValidateWrapper::new(v)
-    }
-}
-
 impl<V, T, E> Action<T, E> for ValidateWrapper<V, T, E>
 where
-    V: Validate<T, E>,
+    V: Validate<Item = T, Error = E>,
     T: Send + 'static,
     E: AardwolfFail,
 {
@@ -56,34 +32,9 @@ where
     }
 }
 
-pub struct DbActionWrapper<D, T, E>(D, PhantomData<T>, PhantomData<E>)
-where
-    D: DbAction<T, E>,
-    E: AardwolfFail;
-
-impl<D, T, E> DbActionWrapper<D, T, E>
-where
-    D: DbAction<T, E>,
-    E: AardwolfFail,
-{
-    pub fn new(db_action: D) -> Self {
-        DbActionWrapper(db_action, PhantomData, PhantomData)
-    }
-}
-
-impl<D, T, E> From<D> for DbActionWrapper<D, T, E>
-where
-    D: DbAction<T, E>,
-    E: AardwolfFail,
-{
-    fn from(d: D) -> Self {
-        DbActionWrapper::new(d)
-    }
-}
-
 impl<D, T, E> Action<T, DbActionError<E>> for DbActionWrapper<D, T, E>
 where
-    D: DbAction<T, E> + Send + 'static,
+    D: DbAction<Item = T, Error = E> + Send + 'static,
     T: Send + 'static,
     E: AardwolfFail,
 {
@@ -107,65 +58,80 @@ where
 }
 
 #[macro_export]
+/// The perform macro executes a series of `Action`s in order
+///
+/// It allows for fallible operations to be chained without the hassle of manually calling the
+/// methods.
+///
+/// Example usage:
+/// ```rust,ignore
+/// fn do_thing(form: Form, user: User, db: &PgConnection) -> impl Future<Item = (), Error = Error> {
+///     perform!(db, Error, [
+///         (validated = ValidateForm(form)),
+///         (updater = GetUpdater(user, validated)),
+///         (_ = UpdateRecord(updater)),
+///     ]);
+/// }
+/// ```
+///
+/// which could be expressed as the following without the macro
+///
+/// ```rust,ignore
+/// fn do_thing(form: Form, user: User, state: AppConfig) -> Result<(), Error> {
+///     use futures::{Future, future::IntoFuture};
+///     use aardwolf_types::traits::{Validate, DbAction};
+///
+///     ValidateForm(form)
+///         .validate()
+///         .into_future()
+///         .from_err::<Error>()
+///         .and_then(move |validated| {
+///             GetUpdater(user, validated)
+///                 .db_action(state.clone())
+///                 .from_err::<Error>()
+///         })
+///         .and_then(move |updater| {
+///             UpdateRecord(updater)
+///                 .db_action(state.clone())
+///                 .from_err::<Error>()
+///         })
+///         .map(|_| ())
+/// }
+/// ```
 macro_rules! perform {
- ( $state:expr, $start:expr, $error_type:ty, [] ) => {{
+ ( $state:expr, $error_type:ty, [] ) => {{
      use futures::future::IntoFuture;
 
-     (Ok($start) as Result<_, $error_type>).into_future()
+     (Ok(()) as Result<(), $error_type>).into_future()
+ }};
+ ( $state:expr, $error_type:ty, [($store:pat = $operation:expr),] ) => {{
+     use $crate::action::{Action, Wrapped};
+
+     $operation
+         .wrap()
+         .action($state.clone())
+         .from_err::<$error_type>()
  }};
  (
      $state:expr,
-     $start:expr,
      $error_type:ty,
      [
-         ($wrapper:ty => $first:expr),
-         $(($wrappers:ty => $rest:expr),)*
+         ($store:pat = $operation:expr),
+         $(($stores:pat = $operations:expr),)*
      ]
  ) => {{
-     use $crate::action::Action;
+     use $crate::action::{Action, Wrapped};
 
-     let wrapper: $wrapper = $first.with($start).into();
+     $operation
+         .wrap()
+         .action($state.clone())
+         .from_err::<$error_type>()
+         .and_then(move |item| {
+             let $store = item;
 
-     let fut = wrapper.action($state.clone());
-
-     perform_inner!($state, $error_type, fut, [ $(($wrappers => $rest),)* ])
+             perform!($state, $error_type, [
+                  $(($stores = $operations),)*
+             ])
+         })
  }};
-}
-
-macro_rules! perform_inner {
-    (
-        $state:expr,
-        $error_type:ty,
-        $first:expr,
-        []
-    ) => {{
-        use futures::future::IntoFuture;
-
-        $first
-            .into_future()
-            .from_err::<$error_type>()
-    }};
-    (
-        $state:expr,
-        $error_type:ty,
-        $first:expr,
-        [
-            ($wrapper:ty => $item:expr),
-            $(($wrappers:ty => $items:expr),)*
-        ]
-    ) => {{
-        use futures::future::IntoFuture;
-        use $crate::action::Action;
-
-        $first
-            .into_future()
-            .from_err::<$error_type>()
-            .and_then(move |item| {
-                let wrapper: $wrapper = $item.with(item).into();
-
-                let fut = wrapper.action($state.clone());
-
-                perform_inner!($state, $error_type, fut, [ $(($wrappers => $items),)* ])
-            })
-    }};
 }

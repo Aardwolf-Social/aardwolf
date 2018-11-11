@@ -1,7 +1,11 @@
 use aardwolf_models::base_actor::persona::Persona;
 use diesel::{pg::PgConnection, result::Error as DieselError};
 
-use crate::{error::AardwolfFail, forms::traits::DbAction};
+use crate::{
+    error::AardwolfFail,
+    traits::DbAction,
+    wrapper::{DbActionWrapper, Wrapped},
+};
 
 #[derive(Clone, Debug, Fail, Serialize)]
 pub enum FetchPersonaFail {
@@ -22,17 +26,16 @@ impl From<DieselError> for FetchPersonaFail {
 
 impl AardwolfFail for FetchPersonaFail {}
 
-pub struct FetchPersona;
+pub struct FetchPersona(pub i32);
 
-impl FetchPersona {
-    pub fn with(self, id: i32) -> FetchPersonaOperation {
-        FetchPersonaOperation(id)
-    }
+impl Wrapped for FetchPersona {
+    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
 }
 
-pub struct FetchPersonaOperation(i32);
+impl DbAction for FetchPersona {
+    type Item = Persona;
+    type Error = FetchPersonaFail;
 
-impl DbAction<Persona, FetchPersonaFail> for FetchPersonaOperation {
     fn db_action(self, conn: &PgConnection) -> Result<Persona, FetchPersonaFail> {
         Persona::by_id(self.0, conn).map_err(From::from)
     }

@@ -7,23 +7,21 @@ use diesel::{self, pg::PgConnection, Connection};
 
 use crate::{
     error::AardwolfFail,
-    forms::{
-        auth::{ValidateSignUpFormFail, ValidatedSignUpForm},
-        traits::DbAction,
-    },
+    forms::auth::{ValidateSignUpFormFail, ValidatedSignUpForm},
+    traits::DbAction,
+    wrapper::{DbActionWrapper, Wrapped},
 };
 
-pub struct SignUp;
+pub struct SignUp(pub ValidatedSignUpForm);
 
-impl SignUp {
-    pub fn with(self, form: ValidatedSignUpForm) -> SignUpOperation {
-        SignUpOperation(form)
-    }
+impl Wrapped for SignUp {
+    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
 }
 
-pub struct SignUpOperation(ValidatedSignUpForm);
+impl DbAction for SignUp {
+    type Item = (UnverifiedEmail, EmailToken);
+    type Error = SignUpFail;
 
-impl DbAction<(UnverifiedEmail, EmailToken), SignUpFail> for SignUpOperation {
     fn db_action(self, conn: &PgConnection) -> Result<(UnverifiedEmail, EmailToken), SignUpFail> {
         conn.transaction::<_, SignUpFail, _>(|| {
             let user = NewUser::new()

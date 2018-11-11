@@ -19,3 +19,5 @@ pub mod apps;
 pub mod error;
 pub mod forms;
 pub mod scope;
+pub mod traits;
+pub mod wrapper;

@@ -1,6 +1,10 @@
 use aardwolf_models::sql_types::{FollowPolicy, PostVisibility, Url};
 
-use crate::forms::{personas::PersonaCreationFail, traits::Validate};
+use crate::{
+    forms::personas::PersonaCreationFail,
+    traits::Validate,
+    wrapper::{ValidateWrapper, Wrapped},
+};
 
 #[derive(Debug, Deserialize)]
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]
@@ -12,19 +16,16 @@ pub struct PersonaCreationForm {
     is_searchable: bool,
 }
 
-pub struct ValidatePersonaCreationForm;
+pub struct ValidatePersonaCreationForm(pub PersonaCreationForm);
 
-impl ValidatePersonaCreationForm {
-    pub fn with(self, form: PersonaCreationForm) -> ValidatePersonaCreationFormOperation {
-        ValidatePersonaCreationFormOperation(form)
-    }
+impl Wrapped for ValidatePersonaCreationForm {
+    type Wrapper = ValidateWrapper<Self, <Self as Validate>::Item, <Self as Validate>::Error>;
 }
 
-pub struct ValidatePersonaCreationFormOperation(PersonaCreationForm);
+impl Validate for ValidatePersonaCreationForm {
+    type Item = ValidatedPersonaCreationForm;
+    type Error = PersonaCreationFail;
 
-impl Validate<ValidatedPersonaCreationForm, PersonaCreationFail>
-    for ValidatePersonaCreationFormOperation
-{
     fn validate(self) -> Result<ValidatedPersonaCreationForm, PersonaCreationFail> {
         if self.0.display_name.is_empty() {
             return Err(PersonaCreationFail::Validation);

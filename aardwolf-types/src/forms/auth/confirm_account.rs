@@ -4,7 +4,11 @@ use aardwolf_models::user::{
 };
 use diesel::pg::PgConnection;
 
-use crate::{error::AardwolfFail, forms::traits::DbAction};
+use crate::{
+    error::AardwolfFail,
+    traits::DbAction,
+    wrapper::{DbActionWrapper, Wrapped},
+};
 
 #[derive(Clone, Debug, Fail, Serialize)]
 pub enum ConfirmAccountFail {
@@ -27,17 +31,16 @@ pub struct ConfirmationToken {
     token: EmailVerificationToken,
 }
 
-pub struct ConfirmToken;
+pub struct ConfirmToken(pub ConfirmationToken);
 
-impl ConfirmToken {
-    pub fn with(self, token: ConfirmationToken) -> ConfirmTokenOperation {
-        ConfirmTokenOperation(token)
-    }
+impl Wrapped for ConfirmToken {
+    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
 }
 
-pub struct ConfirmTokenOperation(ConfirmationToken);
+impl DbAction for ConfirmToken {
+    type Item = AuthenticatedUser;
+    type Error = ConfirmAccountFail;
 
-impl DbAction<AuthenticatedUser, ConfirmAccountFail> for ConfirmTokenOperation {
     fn db_action(self, conn: &PgConnection) -> Result<AuthenticatedUser, ConfirmAccountFail> {
         let (unauthenticated_user, email) = UnauthenticatedUser::by_email_id(self.0.id, conn)
             .map_err(|_| ConfirmAccountFail::EmailNotFound)?;

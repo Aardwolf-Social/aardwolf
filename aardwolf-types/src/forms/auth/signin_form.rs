@@ -1,6 +1,10 @@
 use aardwolf_models::user::local_auth::PlaintextPassword;
 
-use crate::{error::AardwolfFail, forms::traits::Validate};
+use crate::{
+    error::AardwolfFail,
+    traits::Validate,
+    wrapper::{ValidateWrapper, Wrapped},
+};
 
 #[derive(Debug, Deserialize, Serialize)]
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]
@@ -24,17 +28,16 @@ pub struct SignInForm {
     pub password: PlaintextPassword,
 }
 
-pub struct ValidateSignInForm;
+pub struct ValidateSignInForm(pub SignInForm);
 
-impl ValidateSignInForm {
-    pub fn with(self, form: SignInForm) -> ValidateSignInFormOperation {
-        ValidateSignInFormOperation(form)
-    }
+impl Wrapped for ValidateSignInForm {
+    type Wrapper = ValidateWrapper<Self, <Self as Validate>::Item, <Self as Validate>::Error>;
 }
 
-pub struct ValidateSignInFormOperation(SignInForm);
+impl Validate for ValidateSignInForm {
+    type Item = ValidatedSignInForm;
+    type Error = ValidateSignInFormFail;
 
-impl Validate<ValidatedSignInForm, ValidateSignInFormFail> for ValidateSignInFormOperation {
     fn validate(self) -> Result<ValidatedSignInForm, ValidateSignInFormFail> {
         if self.0.email.is_empty() {
             Err(ValidateSignInFormFail::EmptyEmailError)

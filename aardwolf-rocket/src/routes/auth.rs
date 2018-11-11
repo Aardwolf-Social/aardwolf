@@ -11,7 +11,6 @@ use aardwolf_types::forms::auth::{
     SignInForm, SignUp, SignUpErrorMessage, SignUpFail, SignUpForm, ValidateSignInForm,
     ValidateSignInFormFail, ValidateSignUpForm, ValidateSignUpFormFail,
 };
-use action::{DbActionWrapper, ValidateWrapper};
 use types::user::SignedInUser;
 use DbConn;
 
@@ -66,15 +65,10 @@ impl From<ValidateSignUpFormFail> for SignUpError {
 }
 #[post("/sign_up", data = "<form>")]
 pub fn sign_up(form: Form<SignUpForm>, db: DbConn) -> Redirect {
-    let res = perform!(
-        &db,
-        form.into_inner(),
-        SignUpError,
-        [
-            (ValidateWrapper<_, _, _> => ValidateSignUpForm),
-            (DbActionWrapper<_, _, _> => SignUp),
-        ]
-    );
+    let res = perform!(&db, SignUpError, [
+        (form = ValidateSignUpForm(form.into_inner())),
+        (_ = SignUp(form)),
+    ]);
 
     match res {
         Ok((email, token)) => {
@@ -119,15 +113,10 @@ impl From<ValidateSignInFormFail> for SignInError {
 pub fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redirect {
     // TODO: check csrf token (this will probably be a request guard)
 
-    let res = perform!(
-        &db,
-        form.into_inner(),
-        SignInError,
-        [
-            (ValidateWrapper<_, _, _> => ValidateSignInForm),
-            (DbActionWrapper<_, _, _> => SignIn),
-        ]
-    );
+    let res = perform!(&db, SignInError, [
+        (form = ValidateSignInForm(form.into_inner())),
+        (_ = SignIn(form)),
+    ]);
 
     match res {
         Ok(user) => {
@@ -159,14 +148,9 @@ impl From<ConfirmAccountFail> for ConfirmError {
 
 #[get("/confirmation?<token..>")]
 pub fn confirm(token: Form<ConfirmationToken>, db: DbConn) -> Result<Redirect, ConfirmError> {
-    let res = perform!(
-        &db,
-        token.into_inner(),
-        ConfirmError,
-        [
-            (DbActionWrapper<_, _, _> => ConfirmToken),
-        ]
-    );
+    let res = perform!(&db, ConfirmError, [
+       (_ = ConfirmToken(token.into_inner())),
+    ]);
 
     Ok(match res {
         Ok(_) => Redirect::to("/auth/sign_in"),

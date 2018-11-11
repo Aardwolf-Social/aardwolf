@@ -6,26 +6,21 @@ use diesel::{pg::PgConnection, result::Error as DieselError};
 
 use crate::{
     error::AardwolfFail,
-    forms::{personas::FetchPersonaFail, traits::DbAction},
+    forms::personas::FetchPersonaFail,
+    traits::DbAction,
+    wrapper::{DbActionWrapper, Wrapped},
 };
 
-pub struct CheckDeletePersonaPermission(AuthenticatedUser);
+pub struct CheckDeletePersonaPermission(pub AuthenticatedUser, pub Persona);
 
-impl CheckDeletePersonaPermission {
-    pub fn new(user: AuthenticatedUser) -> Self {
-        CheckDeletePersonaPermission(user)
-    }
-
-    pub fn with(self, persona: Persona) -> CheckDeletePersonaPermissionOperation {
-        CheckDeletePersonaPermissionOperation(self.0, persona)
-    }
+impl Wrapped for CheckDeletePersonaPermission {
+    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
 }
 
-pub struct CheckDeletePersonaPermissionOperation(AuthenticatedUser, Persona);
+impl DbAction for CheckDeletePersonaPermission {
+    type Item = PersonaDeleter;
+    type Error = CheckDeletePersonaPermissionFail;
 
-impl DbAction<PersonaDeleter, CheckDeletePersonaPermissionFail>
-    for CheckDeletePersonaPermissionOperation
-{
     fn db_action(
         self,
         conn: &PgConnection,
@@ -53,17 +48,16 @@ impl From<PermissionError> for CheckDeletePersonaPermissionFail {
 
 impl AardwolfFail for CheckDeletePersonaPermissionFail {}
 
-pub struct DeletePersona;
+pub struct DeletePersona(pub PersonaDeleter);
 
-impl DeletePersona {
-    pub fn with(self, persona_deleter: PersonaDeleter) -> Delete {
-        Delete(persona_deleter)
-    }
+impl Wrapped for DeletePersona {
+    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
 }
 
-pub struct Delete(PersonaDeleter);
+impl DbAction for DeletePersona {
+    type Item = ();
+    type Error = PersonaDeletionFail;
 
-impl DbAction<(), PersonaDeletionFail> for Delete {
     fn db_action(self, conn: &PgConnection) -> Result<(), PersonaDeletionFail> {
         self.0.delete_persona(conn).map_err(From::from)
     }
