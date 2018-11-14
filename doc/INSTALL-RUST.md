@@ -19,6 +19,8 @@ If you don't already have them, download and install the [Visual C++ 2015 Build 
 
 Then, download the [rustup installer](https://www.rust-lang.org/en-US/install.html) and run it. That's it!
 
+> To build on the Windows with Linux-Subsystem you may need to install `gettext` as a separate package.
+
 ### Installing Rust Toolchain
 
 Once you have `rustup` installed, make sure you have the `nightly` rust
