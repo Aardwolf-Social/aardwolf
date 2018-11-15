@@ -97,7 +97,10 @@ To run the server with Actix.rs as the backend (WIP):
     
     $ cargo run --bin aardwolf-server --features=aardwolf-actix
 
-Wait until you see *“Rocket has launched from http://localhost:[port]“* in the console. Now you’re ready to go!
+The console output should show you `Updating [lang]` where `[lang]` is the two character string for each i18n language file in the /po directory. There will also be one `....done` for each.  At this time you will also want to watch the /aardwolf.log because this is where the status updates will show.
+
+Wait until you see *“Rocket has launched from http://localhost:[port]“* in the `aardwolf.log`. 
+Now you’re ready to go!
 
 __NOTE: Build notes__
 At this time `gettext-rs` takes a_very_long_time_to_compile.  This is for reasons which are beyond the scope of this document.
