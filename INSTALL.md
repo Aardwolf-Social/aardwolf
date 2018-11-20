@@ -91,11 +91,11 @@ following command to set up the aardwolf database:
 Finally, we get to actually run the darn thing! 
 To run the server with Rocket.rs as the backend:
 	
-    $ cargo run --bin aardwolf-server --features=aardwolf-rocket
+    $ cargo run --bin aardwolf-server --features=rocket
 
 To run the server with Actix.rs as the backend (WIP):
     
-    $ cargo run --bin aardwolf-server --features=aardwolf-actix
+    $ cargo run --bin aardwolf-server --features=actix
 
 The console output should show you `Updating [lang]` where `[lang]` is the two character string for each i18n language file in the /po directory. There will also be one `....done` for each.  At this time you will also want to watch the /aardwolf.log because this is where the status updates will show.
 
