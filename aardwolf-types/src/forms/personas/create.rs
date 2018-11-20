@@ -6,50 +6,34 @@ use diesel::pg::PgConnection;
 
 use crate::{
     error::AardwolfFail,
-    forms::{
-        personas::{PersonaCreationFail, ValidatedPersonaCreationForm},
-        traits::DbAction,
-    },
+    forms::personas::{PersonaCreationFail, ValidatedPersonaCreationForm},
+    traits::DbAction,
+    wrapper::{DbActionWrapper, Wrapped},
 };
 
-pub struct CheckCreatePersonaPermission<U>(U)
+pub struct CheckCreatePersonaPermission<U>(pub U)
 where
-    U: PermissionedUser;
+    U: PermissionedUser + Clone;
 
-impl<U> CheckCreatePersonaPermission<U>
-where
-    U: PermissionedUser,
-{
-    pub fn new(user: U) -> Self {
-        CheckCreatePersonaPermission(user)
-    }
-
-    pub fn with(
-        self,
-        form: ValidatedPersonaCreationForm,
-    ) -> CheckCreatePersonaPermissionOperation<U> {
-        CheckCreatePersonaPermissionOperation(self.0, form)
-    }
-}
-
-pub struct CheckCreatePersonaPermissionOperation<U>(U, ValidatedPersonaCreationForm);
-
-impl<U>
-    DbAction<
-        (LocalPersonaCreator<U>, ValidatedPersonaCreationForm),
-        CheckCreatePersonaPermissionFail,
-    > for CheckCreatePersonaPermissionOperation<U>
+impl<U> Wrapped for CheckCreatePersonaPermission<U>
 where
     U: PermissionedUser + Clone,
 {
+    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
+}
+
+impl<U> DbAction for CheckCreatePersonaPermission<U>
+where
+    U: PermissionedUser + Clone,
+{
+    type Item = LocalPersonaCreator<U>;
+    type Error = CheckCreatePersonaPermissionFail;
+
     fn db_action(
         self,
         conn: &PgConnection,
-    ) -> Result<
-        (LocalPersonaCreator<U>, ValidatedPersonaCreationForm),
-        CheckCreatePersonaPermissionFail,
-    > {
-        Ok((self.0.can_make_persona(conn)?, self.1))
+    ) -> Result<LocalPersonaCreator<U>, CheckCreatePersonaPermissionFail> {
+        Ok(self.0.can_make_persona(conn)?)
     }
 }
 
@@ -72,28 +56,24 @@ impl From<PermissionError> for CheckCreatePersonaPermissionFail {
 
 impl AardwolfFail for CheckCreatePersonaPermissionFail {}
 
-pub struct CreatePersona;
-
-impl CreatePersona {
-    pub fn with<U>(
-        self,
-        (persona_creator, form): (LocalPersonaCreator<U>, ValidatedPersonaCreationForm),
-    ) -> CreatePersonaOperation<U>
-    where
-        U: PermissionedUser,
-    {
-        CreatePersonaOperation(persona_creator, form)
-    }
-}
-
-pub struct CreatePersonaOperation<U>(LocalPersonaCreator<U>, ValidatedPersonaCreationForm)
+pub struct CreatePersona<U>(pub LocalPersonaCreator<U>, pub ValidatedPersonaCreationForm)
 where
     U: PermissionedUser;
 
-impl<U> DbAction<(BaseActor, Persona), PersonaCreationFail> for CreatePersonaOperation<U>
+impl<U> Wrapped for CreatePersona<U>
 where
     U: PermissionedUser,
 {
+    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
+}
+
+impl<U> DbAction for CreatePersona<U>
+where
+    U: PermissionedUser,
+{
+    type Item = (BaseActor, Persona);
+    type Error = PersonaCreationFail;
+
     fn db_action(self, conn: &PgConnection) -> Result<(BaseActor, Persona), PersonaCreationFail> {
         Ok(self.0.create_persona(
             self.1.display_name,

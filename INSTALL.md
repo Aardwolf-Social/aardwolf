@@ -52,15 +52,17 @@ our project directory. In the `aardwolf` directory, run
 From now on, you won't have to use `+nightly` to run the correct
 toolchain version.
 
-__NOTE: For i18n-templates branch__
+__NOTE: Version pinning as of Nov/13/2018__
 
-Currently to compile on the `i18n-templates` branch, the nightly version is pinned to `nightly-2018-07-17` (see [`rust_toolchain`](rust_toolchain)). To Install this specific version of nightly, run
+The master branch has been tested with `rustc 1.31.0-nightly (e7f5d4805 2018-10-18)`. 
+This version is pinned the nightly version is pinned to `nightly-2018-10-12` (see [`rust_toolchain`](rust_toolchain)). 
+To Install this specific version of nightly, run
 
-    $ rustup install nightly-2018-07-17
+    $ rustup install nightly-2018-10-12
 
 Then to set this nightly version on the project directory, in the `aardwolf` directory, run
 
-    $ rustup override set nightly-2018-07-17
+    $ rustup override set nightly-2018-10-12
 
 To verify that the version in the project directory is what we just set, in the `aardwolf` directory, run
 
@@ -86,9 +88,20 @@ following command to set up the aardwolf database:
 
 ## Running the server
 
-Finally, we get to actually run the darn thing! To run the server, do
+Finally, we get to actually run the darn thing! 
+To run the server with Rocket.rs as the backend:
+	
+    $ cargo run --bin aardwolf-server --features=aardwolf-rocket
 
-    $ cargo run --bin aardwolf-server
+To run the server with Actix.rs as the backend (WIP):
+    
+    $ cargo run --bin aardwolf-server --features=aardwolf-actix
 
-and wait until you see *“Rocket has launched from http://localhost:7878“*
-in the console. Now you’re ready to go!
+The console output should show you `Updating [lang]` where `[lang]` is the two character string for each i18n language file in the /po directory. There will also be one `....done` for each.  At this time you will also want to watch the /aardwolf.log because this is where the status updates will show.
+
+Wait until you see *“Rocket has launched from http://localhost:[port]“* in the `aardwolf.log`. 
+Now you’re ready to go!
+
+__NOTE: Build notes__
+At this time `gettext-rs` takes a_very_long_time_to_compile.  This is for reasons which are beyond the scope of this document.
+Please try to be patient when running builds for the first time.

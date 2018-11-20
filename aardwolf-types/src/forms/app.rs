@@ -1,4 +1,10 @@
-use crate::{apps::App, error::AardwolfFail, forms::traits::Validate, scope::Scope};
+use crate::{
+    apps::App,
+    error::AardwolfFail,
+    scope::Scope,
+    traits::Validate,
+    wrapper::{ValidateWrapper, Wrapped},
+};
 
 #[derive(Clone, Debug, Fail, Serialize)]
 pub enum CreateAppError {
@@ -17,7 +23,14 @@ pub struct CreateApp {
     website: Option<String>,
 }
 
-impl Validate<App, CreateAppError> for CreateApp {
+impl Wrapped for CreateApp {
+    type Wrapper = ValidateWrapper<Self, <Self as Validate>::Item, <Self as Validate>::Error>;
+}
+
+impl Validate for CreateApp {
+    type Item = App;
+    type Error = CreateAppError;
+
     fn validate(self) -> Result<App, CreateAppError> {
         if self.client_name.is_empty() || self.client_name.len() > 256 {
             return Err(CreateAppError::ValidationError);

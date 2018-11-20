@@ -1,7 +1,11 @@
 use aardwolf_models::user::{email::Email, AuthenticatedUser, UserLike};
 use diesel::pg::PgConnection;
 
-use crate::{error::AardwolfFail, forms::traits::DbAction};
+use crate::{
+    error::AardwolfFail,
+    traits::DbAction,
+    wrapper::{DbActionWrapper, Wrapped},
+};
 
 #[derive(Clone, Debug, Fail, Serialize)]
 pub enum FetchUserFail {
@@ -22,33 +26,31 @@ impl From<diesel::result::Error> for FetchUserFail {
 
 impl AardwolfFail for FetchUserFail {}
 
-pub struct FetchUser;
+pub struct FetchUser(pub i32);
 
-impl FetchUser {
-    pub fn with(self, id: i32) -> FetchUserOperation {
-        FetchUserOperation(id)
-    }
+impl Wrapped for FetchUser {
+    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
 }
 
-pub struct FetchUserOperation(i32);
+impl DbAction for FetchUser {
+    type Item = AuthenticatedUser;
+    type Error = FetchUserFail;
 
-impl DbAction<AuthenticatedUser, FetchUserFail> for FetchUserOperation {
     fn db_action(self, conn: &PgConnection) -> Result<AuthenticatedUser, FetchUserFail> {
         AuthenticatedUser::get_authenticated_user_by_id(self.0, &conn).map_err(From::from)
     }
 }
 
-pub struct FetchUserAndEmail;
+pub struct FetchUserAndEmail(pub i32);
 
-impl FetchUserAndEmail {
-    pub fn with(self, id: i32) -> FetchUserAndEmailOperation {
-        FetchUserAndEmailOperation(id)
-    }
+impl Wrapped for FetchUserAndEmail {
+    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
 }
 
-pub struct FetchUserAndEmailOperation(i32);
+impl DbAction for FetchUserAndEmail {
+    type Item = (AuthenticatedUser, Email);
+    type Error = FetchUserFail;
 
-impl DbAction<(AuthenticatedUser, Email), FetchUserFail> for FetchUserAndEmailOperation {
     fn db_action(self, conn: &PgConnection) -> Result<(AuthenticatedUser, Email), FetchUserFail> {
         let user = AuthenticatedUser::get_authenticated_user_by_id(self.0, &conn)?;
 

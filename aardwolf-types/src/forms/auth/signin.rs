@@ -3,23 +3,21 @@ use diesel::{self, pg::PgConnection};
 
 use crate::{
     error::AardwolfFail,
-    forms::{
-        auth::{ValidateSignInFormFail, ValidatedSignInForm},
-        traits::DbAction,
-    },
+    forms::auth::{ValidateSignInFormFail, ValidatedSignInForm},
+    traits::DbAction,
+    wrapper::{DbActionWrapper, Wrapped},
 };
 
-pub struct SignIn;
+pub struct SignIn(pub ValidatedSignInForm);
 
-impl SignIn {
-    pub fn with(self, form: ValidatedSignInForm) -> SignInOperation {
-        SignInOperation(form)
-    }
+impl Wrapped for SignIn {
+    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
 }
 
-pub struct SignInOperation(ValidatedSignInForm);
+impl DbAction for SignIn {
+    type Item = AuthenticatedUser;
+    type Error = SignInFail;
 
-impl DbAction<AuthenticatedUser, SignInFail> for SignInOperation {
     fn db_action(self, conn: &PgConnection) -> Result<AuthenticatedUser, SignInFail> {
         UnauthenticatedUser::by_email_for_auth(&self.0.email, conn)
             .map_err(|_| SignInFail::GenericLoginError)

@@ -11,7 +11,6 @@ use failure::Fail;
 use futures::future::Future;
 
 use crate::{
-    action::{DbActionWrapper, ValidateWrapper},
     db::DbActionError,
     error::{RedirectError, RenderResult},
     types::user::SignedInUser,
@@ -111,15 +110,10 @@ impl From<ValidateSignUpFormFail> for SignUpError {
 pub(crate) fn sign_up(
     (state, form): (State<AppConfig>, Form<SignUpForm>),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
-    let res = perform!(
-        state,
-        form.into_inner(),
-        SignUpError,
-        [
-            (ValidateWrapper<_, _, _> => ValidateSignUpForm),
-            (DbActionWrapper<_, _, _> => SignUp),
-        ]
-    );
+    let res = perform!( state, SignUpError, [
+        (form = ValidateSignUpForm(form.into_inner())),
+        (_ = SignUp(form)),
+    ]);
 
     Box::new(
         res.map(|(email, token)| {
@@ -166,15 +160,10 @@ impl From<ValidateSignInFormFail> for SignInError {
 pub(crate) fn sign_in(
     (state, session, form): (State<AppConfig>, Session, Form<SignInForm>),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
-    let res = perform!(
-        state,
-        form.into_inner(),
-        SignInError,
-        [
-            (ValidateWrapper<_, _, _> => ValidateSignInForm),
-            (DbActionWrapper<_, _, _> => SignIn),
-        ]
-    );
+    let res = perform!(state, SignInError, [
+        (form = ValidateSignInForm(form.into_inner())),
+        (_ = SignIn(form)),
+    ]);
 
     Box::new(
         res.map_err(|e| RedirectError::new("/auth/sign_in", &Some(e.to_string())).into())
@@ -210,14 +199,9 @@ impl From<DbActionError<ConfirmAccountFail>> for ConfirmError {
 pub(crate) fn confirm(
     (state, query): (State<AppConfig>, Query<ConfirmationToken>),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
-    let res = perform!(
-        state,
-        query.into_inner(),
-        ConfirmError,
-        [
-            (DbActionWrapper<_, _, _> => ConfirmToken),
-        ]
-    );
+    let res = perform!(state, ConfirmError, [
+        (_ = ConfirmToken(query.into_inner())),
+    ]);
 
     Box::new(
         res.map(|_user| {
