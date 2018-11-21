@@ -3,7 +3,7 @@ use std::{fmt, io::Write};
 
 use bcrypt::{hash, verify, DEFAULT_COST};
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
-use rand::{distributions::Alphanumeric, OsRng, Rng};
+use rand::{distributions::Alphanumeric, rngs::OsRng, Rng};
 use serde::{
     de::{Deserialize, Deserializer},
     ser::{Serialize, Serializer},

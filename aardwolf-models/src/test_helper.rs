@@ -6,7 +6,7 @@ use chrono_tz::Tz;
 use diesel::{self, pg::PgConnection, Connection};
 use dotenv::dotenv;
 use mime::TEXT_PLAIN;
-use rand::{distributions::Alphanumeric, Error as RandError, OsRng, Rng};
+use rand::{distributions::Alphanumeric, rngs::OsRng, Error as RandError, Rng};
 use serde_json;
 use url::{ParseError as UrlParseError, Url as OrigUrl};
 
