@@ -23,7 +23,7 @@ use actix_web::{
 use config::Config;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
-use rocket_i18n::I18n;
+use rocket_i18n::{Internationalized, Translations};
 use tera::Tera;
 
 #[macro_use]
@@ -42,7 +42,13 @@ use self::db::{Db, Pool};
 pub struct AppConfig {
     db: Addr<Db>,
     templates: Arc<Tera>,
-    i18n: Arc<I18n>,
+    translations: Translations,
+}
+
+impl Internationalized for AppConfig {
+    fn get(&self) -> Translations {
+        self.translations.clone()
+    }
 }
 
 impl fmt::Debug for AppConfig {
@@ -134,11 +140,7 @@ pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
     );
 
     let template_dir = config.get_str("Templates.dir")?;
-
-    let mut templates = Tera::new(&template_dir)?;
-    rocket_i18n::tera(&mut templates);
-
-    let templates = Arc::new(templates);
+    let templates = Arc::new(Tera::new(&template_dir)?);
 
     #[cfg(debug_assertions)]
     let assets = assets::Assets::from_config(&config)?;
@@ -147,7 +149,7 @@ pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
         let state = AppConfig {
             db: db.clone(),
             templates: templates.clone(),
-            i18n: Arc::new(I18n::new("aardwolf")),
+            translations: rocket_i18n::i18n(vec!["en", "pl"]),
         };
 
         vec![

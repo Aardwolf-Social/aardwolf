@@ -113,11 +113,7 @@ fn app(config: config::Config, db_url: String) -> Result<Rocket, Box<dyn Error>>
         // .manage(SystemRandom::new());
         // Just for giggles, what happens if I put the rocket_i18n fairing here....
         // Register the fairing. The parameter is the domain you want to use (the name of your app most of the time)
-        .attach(rocket_i18n::I18n::new("aardwolf"))
-        // Eventually register the Tera filters (only works with the master branch of Rocket)
-        .attach(rocket_contrib::templates::Template::custom(|engines| {
-            rocket_i18n::tera(&mut engines.tera);
-        }));
+        .manage(rocket_i18n::i18n(vec!["en", "pl"]));
 
     // we need an instance of the app to access the config values in Rocket.toml,
     // so we pass it to the db_pool function, get the pool, and _then_ return the instance
