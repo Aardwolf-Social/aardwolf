@@ -10,7 +10,6 @@ members = [
     "aardwolf-types",
     "aardwolf-rocket",
     "aardwolf-actix",
-    "rocket_i18n"
 ]
 
 [features]
