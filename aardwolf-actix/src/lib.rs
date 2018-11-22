@@ -1,12 +1,3 @@
-#[macro_use]
-extern crate collection_macros;
-#[macro_use]
-extern crate failure;
-#[macro_use]
-extern crate log;
-#[macro_use]
-extern crate serde_derive;
-
 use std::{error::Error, fmt, sync::Arc};
 
 use actix::{self, Addr, SyncArbiter};
@@ -22,6 +13,7 @@ use actix_web::{
 };
 use config::Config;
 use diesel::pg::PgConnection;
+use log::error;
 use r2d2_diesel::ConnectionManager;
 use rocket_i18n::{Internationalized, Translations};
 use tera::Tera;
@@ -149,7 +141,8 @@ pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
         let state = AppConfig {
             db: db.clone(),
             templates: templates.clone(),
-            translations: rocket_i18n::i18n(vec!["en", "pl"]),
+            // TODO: domain and languages should be config'd
+            translations: rocket_i18n::i18n("aardwolf", vec!["en", "pl"]),
         };
 
         vec![

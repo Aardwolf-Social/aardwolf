@@ -7,6 +7,7 @@ use aardwolf_types::forms::auth::{
 use actix_web::{
     http::header::LOCATION, middleware::session::Session, Form, HttpResponse, Query, State,
 };
+use collection_macros::hashmap;
 use failure::Fail;
 use futures::future::Future;
 

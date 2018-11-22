@@ -2,6 +2,7 @@
 #![feature(custom_derive, proc_macro_hygiene, decl_macro)]
 
 extern crate aardwolf_models;
+extern crate aardwolf_templates;
 extern crate aardwolf_types;
 extern crate bcrypt;
 extern crate bs58;
@@ -20,12 +21,13 @@ extern crate rocket_contrib;
 extern crate rocket_i18n;
 extern crate serde;
 
+pub use aardwolf_templates::templates;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
 use rocket::{
-    http::Status,
+    http::{ContentType, Status},
     request::{self, FromRequest},
-    Outcome, Request, Rocket, State,
+    Outcome, Request, Response, Rocket, State,
 };
 use std::{error::Error, ops::Deref};
 
@@ -34,6 +36,25 @@ pub mod action;
 pub mod routes;
 pub mod session;
 pub mod types;
+
+pub fn render_template<F>(f: F) -> Response<'static>
+where
+    F: Fn(&mut std::io::Write) -> std::io::Result<()>,
+{
+    let mut buf = Vec::new();
+
+    match f(&mut buf) {
+        Ok(_) => Response::build()
+            .header(ContentType::HTML)
+            .sized_body(std::io::Cursor::new(buf))
+            .finalize(),
+        Err(e) => Response::build()
+            .status(Status::InternalServerError)
+            .header(ContentType::Plain)
+            .sized_body(std::io::Cursor::new(format!("{}", e)))
+            .finalize(),
+    }
+}
 
 pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
@@ -110,10 +131,8 @@ fn app(config: config::Config, db_url: String) -> Result<Rocket, Box<dyn Error>>
             routes![routes::applications::register_application],
         )
         .mount("/", routes)
-        // .manage(SystemRandom::new());
-        // Just for giggles, what happens if I put the rocket_i18n fairing here....
-        // Register the fairing. The parameter is the domain you want to use (the name of your app most of the time)
-        .manage(rocket_i18n::i18n(vec!["en", "pl"]));
+        // TODO: domain and languages should be config'd
+        .manage(rocket_i18n::i18n("aardwolf", vec!["en", "pl"]));
 
     // we need an instance of the app to access the config values in Rocket.toml,
     // so we pass it to the db_pool function, get the pool, and _then_ return the instance

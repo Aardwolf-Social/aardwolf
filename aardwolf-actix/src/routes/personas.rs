@@ -7,7 +7,9 @@ use aardwolf_types::{
     },
 };
 use actix_web::{Form, Path, State};
+use failure::Fail;
 use futures::Future;
+use serde_derive::Serialize;
 
 use crate::{db::DbActionError, error::RedirectError, types::user::SignedInUser, AppConfig};
 

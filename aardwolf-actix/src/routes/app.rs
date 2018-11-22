@@ -1,4 +1,5 @@
 use actix_web::{http::header::LOCATION, HttpResponse, State};
+use collection_macros::hashmap;
 
 use crate::{error::RenderResult, types::user::SignedInUserWithEmail, AppConfig};
 

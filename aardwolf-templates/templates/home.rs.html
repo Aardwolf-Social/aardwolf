@@ -1,0 +1,17 @@
+@use gettext::Catalog;
+
+@use crate::templates::{home::{feed, footer, nav}, shortcuts, new_post};
+
+@(catalog: Catalog, profile_link: &str, username: &str)
+
+@:nav(catalog.clone())
+<section class="section">
+    @:shortcuts(catalog.clone(), profile_link, username)
+</section>
+<section class="section">
+    <div class="container">
+        @:new_post(catalog.clone())
+        @:feed(catalog.clone())
+    </div>
+</section>
+@:footer(catalog)

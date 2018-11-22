@@ -23,6 +23,10 @@ version = "0.1"
 path = "../aardwolf-models"
 features = ["rocket"]
 
+[dependencies.aardwolf-templates]
+version = "0.1"
+path = "../aardwolf-templates"
+
 [dependencies.aardwolf-types]
 version = "0.1"
 path = "../aardwolf-types"
@@ -49,4 +53,5 @@ features = ["tera_templates", "json"]
 
 [dependencies.rocket_i18n]
 version = "0.2"
-git = "https://github.com/BaptisteGelez/rocket_i18n"
+git = "https://github.com/Aardwolf-Social/rocket_i18n.git"
+branch = "asonix/build"

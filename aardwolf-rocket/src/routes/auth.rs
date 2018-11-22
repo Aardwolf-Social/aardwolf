@@ -1,47 +1,44 @@
-use rocket::{
-    http::{Cookie, Cookies},
-    request::Form,
-    response::Redirect,
-};
-use rocket_contrib::templates::Template;
-
 use aardwolf_models::user::UserLike;
 use aardwolf_types::forms::auth::{
     ConfirmAccountFail, ConfirmToken, ConfirmationToken, SignIn, SignInErrorMessage, SignInFail,
     SignInForm, SignUp, SignUpErrorMessage, SignUpFail, SignUpForm, ValidateSignInForm,
     ValidateSignInFormFail, ValidateSignUpForm, ValidateSignUpFormFail,
 };
+use rocket::{
+    http::{Cookie, Cookies},
+    request::Form,
+    response::Redirect,
+    Response,
+};
+use rocket_i18n::I18n;
+
+use render_template;
+use templates;
 use types::user::SignedInUser;
 use DbConn;
 
 #[get("/sign_up?<error..>")]
-pub fn sign_up_form_with_error(error: Form<SignUpErrorMessage>) -> Template {
-    let token = "some csrf token";
-    Template::render(
-        "sign_up",
-        hashmap!{ "token" => token, "error_msg" => error.msg.as_str() },
-    )
+pub fn sign_up_form_with_error(i18n: I18n, error: Form<SignUpErrorMessage>) -> Response<'static> {
+    render_template(move |buf| {
+        templates::sign_up(buf, i18n.catalog.clone(), "csrf token", "aardwolf.social")
+    })
 }
 
 #[get("/sign_up")]
-pub fn sign_up_form() -> Template {
-    let token = "some csrf token";
-    Template::render("sign_up", hashmap!{ "token" => token })
+pub fn sign_up_form(i18n: I18n) -> Response<'static> {
+    render_template(move |buf| {
+        templates::sign_up(buf, i18n.catalog.clone(), "csrf token", "aardwolf.social")
+    })
 }
 
 #[get("/sign_in?<error..>")]
-pub fn sign_in_form_with_error(error: Form<SignInErrorMessage>) -> Template {
-    let token = "some csrf token";
-    Template::render(
-        "sign_in",
-        hashmap!{ "token" => token, "error_msg" => error.msg.as_str() },
-    )
+pub fn sign_in_form_with_error(i18n: I18n, error: Form<SignInErrorMessage>) -> Response<'static> {
+    render_template(move |buf| templates::sign_in(buf, i18n.catalog.clone(), "csrf token"))
 }
 
 #[get("/sign_in")]
-pub fn sign_in_form() -> Template {
-    let token = "some csrf token";
-    Template::render("sign_in", hashmap!{ "token" => token })
+pub fn sign_in_form(i18n: I18n) -> Response<'static> {
+    render_template(move |buf| templates::sign_in(buf, i18n.catalog.clone(), "csrf token"))
 }
 
 #[derive(Clone, Debug, Fail)]

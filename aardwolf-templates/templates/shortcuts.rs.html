@@ -1,0 +1,30 @@
+@use gettext::Catalog;
+@use rocket_i18n::i18n;
+
+@(catalog: Catalog, profile_link: &str, username: &str)
+
+<aside class="menu">
+    <a href="@profile_link">@username</a>
+    <ul class="menu-list">
+        <li><a class="fa fa-newspaper-o" aria-hidden="true">@i18n!(catalog, "News feed")</a></li>
+        <li><a class="fa fa-envelope" aria-hidden="true">@i18n!(catalog, "Messages")</a></li>
+    </ul>
+    <p class="menu-label">
+    <span class="fa fa-star" aria-hidden="true">@i18n!(catalog, "Shortcuts")</span>
+    </p>
+    <ul class="menu-list">
+        <li><a class="fa fa-calendar" aria-hidden="true">@i18n!(catalog, "Calendar")</a></li>
+        <li><a class="fa fa-users" aria-hidden="true">@i18n!(catalog, "Groups")</a></li>
+        <li><a class="fa fa-list" aria-hidden="true">@i18n!(catalog, "Lists")</a></li>
+        <li><a class="fa fa-picture-o" aria-hidden="true">@i18n!(catalog, "Photos")</a></li>
+        <li><a class="fa fa-bookmark" aria-hidden="true">@i18n!(catalog, "Favorites")</a></li>
+        <li><a class="fa fa-cloud" aria-hidden="true">@i18n!(catalog, "Weather")</a></li>     
+    </ul>
+    <p class="menu-label">
+    <span class="fa fa-lightbulb-o" aria-hidden="true">@i18n!(catalog, "Create")</span>
+    </p>
+    <ul class="menu-list">
+        <li><a class="fa fa-calendar-plus-o" aria-hidden="true">@i18n!(catalog, "New Event")</a></li>
+        <li><a class="fa fa-users" aria-hidden="true">@i18n!(catalog, "New Group")</a></li>
+    </ul>
+</aside>

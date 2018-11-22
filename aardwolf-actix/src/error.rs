@@ -3,6 +3,7 @@ use actix_web::{
     http::header::{CONTENT_TYPE, LOCATION},
     HttpResponse, ResponseError,
 };
+use failure::Fail;
 use serde::ser::{Serialize, Serializer};
 
 use crate::AppConfig;

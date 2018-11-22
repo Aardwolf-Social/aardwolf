@@ -1,0 +1,31 @@
+@use gettext::Catalog;
+@use rocket_i18n::i18n;
+
+@(catalog: Catalog)
+
+<aside class="menu">
+  <p class="menu-label">
+    <a class="fa fa-chevron-left">@i18n!(catalog, "Go back")</a>
+  </p>
+  <p class="menu-label">
+    <span class="fa fa-gears">@i18n!(catalog, "Settings")</span>
+  </p>
+  <ul class="menu-list">
+    <li><a class="fa fa-user">@i18n!(catalog, "Edit Profile")</a></li>
+    <li><a class="fa fa-sliders">@i18n!(catalog, "Preferences")</a></li>
+    <li><a class="fa fa-volume-off">@i18n!(catalog, "Muted Keywords")</a></li>
+    <li><a class="fa fa-volume-off">@i18n!(catalog, "Muted Users")</a></li>
+    <li><a class="fa fa-bell">@i18n!(catalog, "Notifications")</a></li>
+    <li><a class="fa fa-lok">@i18n!(catalog, "Security")</a></li>
+    <li><a class="fa fa-cloud-upload">@i18n!(catalog, "Data Import")</a></li>
+    <li><a class="fa fa-cloud-download">@i18n!(catalog, "Data Export")</a></li>
+    <li><a class="fa fa-list">@i18n!(catalog, "Authorized Apps")</a></li>
+    <li><a class="fa fa-users">@i18n!(catalog, "Authorized Followers")</a></li>
+  </ul>
+  <p class="menu-label">
+    <a class="fa fa-user-plus">@i18n!(catalog, "Invite People")</a>
+  </p>
+  <p class="menu-label">
+    <a class="fa fa-logout">@i18n!(catalog, "Logout")</a>
+  </p>
+</aside>
