@@ -1,9 +1,10 @@
+@use aardwolf_types::forms::auth::SignInErrorMessage;
 @use gettext::Catalog;
 @use rocket_i18n::i18n;
 
 @use crate::templates::base;
 
-@(catalog: Catalog, csrf: &str)
+@(catalog: Catalog, csrf: &str, error: Option<SignInErrorMessage>)
 
 @:base(catalog.clone(), i18n!(catalog, "Aardwolf | Sign In"), {
 <header>
@@ -33,7 +34,9 @@
                 <p class="subtitle">
                 @i18n!(catalog, "Welcome back!")
                 </p>
-                <span style="color: red;">@i18n!(catalog, "Sample Error")</span>
+                @if let Some(error) = error {
+                    <span style="color: red;">@i18n!(catalog, &error.msg)</span>
+                }
                 <form method="POST" action="/auth/sign_in">
                     <input type="hidden" name="csrf_token" value="@csrf">
                     <input type="email" name="email" id="email" placeholder="E-mail address">

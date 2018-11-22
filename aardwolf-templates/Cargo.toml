@@ -10,6 +10,10 @@ ructe = "0.3"
 [dependencies]
 gettext = "0.3"
 
+[dependencies.aardwolf-types]
+version = "0.1"
+path = "../aardwolf-types"
+
 [dependencies.rocket_i18n]
 version = "0.2"
 default-features = false

@@ -6,7 +6,7 @@ use crate::{
     wrapper::{ValidateWrapper, Wrapped},
 };
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]
 pub struct SignUpErrorMessage {
     pub msg: String,
@@ -36,6 +36,7 @@ impl AardwolfFail for ValidateSignUpFormFail {}
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]
 pub struct SignUpForm {
     pub csrf_token: String,
+    pub username: String,
     pub email: String,
     pub password: PlaintextPassword,
     pub password_confirmation: PlaintextPassword,

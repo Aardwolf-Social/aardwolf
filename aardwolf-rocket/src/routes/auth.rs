@@ -19,26 +19,42 @@ use DbConn;
 
 #[get("/sign_up?<error..>")]
 pub fn sign_up_form_with_error(i18n: I18n, error: Form<SignUpErrorMessage>) -> Response<'static> {
+    let error = error.into_inner();
     render_template(move |buf| {
-        templates::sign_up(buf, i18n.catalog.clone(), "csrf token", "aardwolf.social")
+        templates::sign_up(
+            buf,
+            i18n.catalog.clone(),
+            "csrf token",
+            "aardwolf.social",
+            Some(error.clone()),
+        )
     })
 }
 
 #[get("/sign_up")]
 pub fn sign_up_form(i18n: I18n) -> Response<'static> {
     render_template(move |buf| {
-        templates::sign_up(buf, i18n.catalog.clone(), "csrf token", "aardwolf.social")
+        templates::sign_up(
+            buf,
+            i18n.catalog.clone(),
+            "csrf token",
+            "aardwolf.social",
+            None,
+        )
     })
 }
 
 #[get("/sign_in?<error..>")]
 pub fn sign_in_form_with_error(i18n: I18n, error: Form<SignInErrorMessage>) -> Response<'static> {
-    render_template(move |buf| templates::sign_in(buf, i18n.catalog.clone(), "csrf token"))
+    let error = error.into_inner();
+    render_template(move |buf| {
+        templates::sign_in(buf, i18n.catalog.clone(), "csrf token", Some(error.clone()))
+    })
 }
 
 #[get("/sign_in")]
 pub fn sign_in_form(i18n: I18n) -> Response<'static> {
-    render_template(move |buf| templates::sign_in(buf, i18n.catalog.clone(), "csrf token"))
+    render_template(move |buf| templates::sign_in(buf, i18n.catalog.clone(), "csrf token", None))
 }
 
 #[derive(Clone, Debug, Fail)]
@@ -81,7 +97,8 @@ pub fn sign_up(form: Form<SignUpForm>, db: DbConn) -> Redirect {
         }
         Err(e) => {
             println!("unable to create account: {}, {:?}", e, e);
-            Redirect::to(format!("/auth/sign_up?msg={}", e))
+            // TODO: Percent Encode the error
+            Redirect::to(format!("/auth/sign_up?msg=Unable%20to%20create%20account"))
         }
     }
 }
@@ -124,7 +141,8 @@ pub fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redi
         }
         Err(e) => {
             println!("unable to log in: {}, {:?}", e, e);
-            Redirect::to(format!("/auth/sign_in?msg={}", e))
+            // TODO: Percent Encode the error
+            Redirect::to(format!("/auth/sign_in?msg=Unable%20to%20log%20in"))
         }
     }
 }

@@ -103,6 +103,8 @@ fn app(config: config::Config, db_url: String) -> Result<Rocket, Box<dyn Error>>
         routes::app::emoji,
         // themes
         routes::app::themes,
+        // styles
+        routes::app::stylesheets,
     ]);
 
     let auth = routes![

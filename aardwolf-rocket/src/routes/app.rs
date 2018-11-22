@@ -38,6 +38,14 @@ pub fn webroot(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
     NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
 }
 
+// Stylesheets root
+#[cfg(debug_assertions)]
+#[get("/stylesheets/<file..>")]
+pub fn stylesheets(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
+    let path = Path::new("web/stylesheets/").join(file);
+    NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
+}
+
 // Emoji folder
 #[cfg(debug_assertions)]
 #[get("/emoji/<file..>")]

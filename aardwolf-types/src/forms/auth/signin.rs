@@ -30,7 +30,7 @@ impl DbAction for SignIn {
 
 #[derive(Clone, Debug, Fail, Serialize)]
 pub enum SignInFail {
-    #[fail(display = "Sign up failed because {}", _0)]
+    #[fail(display = "Sign in failed because {}", _0)]
     ValidationError(#[cause] ValidateSignInFormFail),
     // this is the generic "login failed" error the user will see
     #[fail(display = "Invalid username or password")]
