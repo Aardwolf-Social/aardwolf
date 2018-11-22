@@ -1,4 +1,5 @@
 use aardwolf_models::user::UserLike;
+use aardwolf_templates::templates;
 use aardwolf_types::forms::auth::{
     ConfirmAccountFail, ConfirmToken, ConfirmationToken, SignIn, SignInErrorMessage, SignInFail,
     SignInForm, SignUp, SignUpErrorMessage, SignUpFail, SignUpForm, ValidateSignInForm,
@@ -7,79 +8,37 @@ use aardwolf_types::forms::auth::{
 use actix_web::{
     http::header::LOCATION, middleware::session::Session, Form, HttpResponse, Query, State,
 };
-use collection_macros::hashmap;
 use failure::Fail;
 use futures::future::Future;
+use rocket_i18n::I18n;
 
-use crate::{
-    db::DbActionError,
-    error::{RedirectError, RenderResult},
-    types::user::SignedInUser,
-    AppConfig,
-};
+use crate::{db::DbActionError, error::RedirectError, types::user::SignedInUser, AppConfig};
 
 pub(crate) fn sign_up_form(
-    (state, error): (State<AppConfig>, Option<Query<SignUpErrorMessage>>),
-) -> RenderResult {
-    match error {
-        Some(error) => sign_up_form_with_error(state, error.into_inner()),
-        None => sign_up_form_without_error(state),
-    }
-}
-
-fn sign_up_form_with_error(state: State<AppConfig>, msg: SignUpErrorMessage) -> RenderResult {
-    let token = "some csrf token";
-
-    state.render(
-        "sign_up",
-        &hashmap!{
-            "token" => token,
-            "error_msg" => msg.msg.as_str(),
-        },
-    )
-}
-
-fn sign_up_form_without_error(state: State<AppConfig>) -> RenderResult {
-    let token = "some csrf token";
-
-    state.render(
-        "sign_up",
-        &hashmap!{
-            "token" => token,
-        },
-    )
+    (state, error, i18n): (State<AppConfig>, Option<Query<SignUpErrorMessage>>, I18n),
+) -> HttpResponse {
+    state.render(move |buf| {
+        templates::sign_up(
+            buf,
+            i18n.catalog,
+            "csrf token",
+            "aardwolf.social",
+            error.map(|e| e.into_inner()),
+        )
+    })
 }
 
 pub(crate) fn sign_in_form(
-    (state, error): (State<AppConfig>, Option<Query<SignInErrorMessage>>),
-) -> RenderResult {
-    match error {
-        Some(error) => sign_in_form_with_error(state, error.into_inner()),
-        None => sign_in_form_without_error(state),
-    }
-}
-
-fn sign_in_form_with_error(state: State<AppConfig>, error: SignInErrorMessage) -> RenderResult {
-    let token = "some csrf token";
-
-    state.render(
-        "sign_in",
-        &hashmap!{
-            "token" => token,
-            "error_msg" => error.msg.as_str(),
-        },
-    )
-}
-
-fn sign_in_form_without_error(state: State<AppConfig>) -> RenderResult {
-    let token = "some csrf token";
-
-    state.render(
-        "sign_in",
-        &hashmap!{
-            "token" => token,
-        },
-    )
+    (state, error, i18n): (State<AppConfig>, Option<Query<SignInErrorMessage>>, I18n),
+) -> HttpResponse {
+    state.render(move |buf| {
+        templates::sign_in(
+            buf,
+            i18n.catalog,
+            "csrf token",
+            error.map(|e| e.into_inner()),
+        )
+    })
 }
 
 #[derive(Clone, Debug, Fail)]

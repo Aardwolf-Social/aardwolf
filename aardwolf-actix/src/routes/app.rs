@@ -1,14 +1,16 @@
+use aardwolf_models::user::UserLike;
+use aardwolf_templates::templates;
 use actix_web::{http::header::LOCATION, HttpResponse, State};
-use collection_macros::hashmap;
+use rocket_i18n::I18n;
 
-use crate::{error::RenderResult, types::user::SignedInUserWithEmail, AppConfig};
+use crate::{types::user::SignedInUserWithEmail, AppConfig};
 
 pub(crate) fn index(
-    (state, maybe_user): (State<AppConfig>, Option<SignedInUserWithEmail>),
-) -> RenderResult {
+    (state, maybe_user, i18n): (State<AppConfig>, Option<SignedInUserWithEmail>, I18n),
+) -> HttpResponse {
     match maybe_user {
-        Some(user) => logged_in_index((state, user)),
-        None => Ok(logged_out_index()),
+        Some(user) => logged_in_index((state, user, i18n)),
+        None => logged_out_index(),
     }
 }
 
@@ -18,12 +20,15 @@ fn logged_out_index() -> HttpResponse {
         .finish()
 }
 
-fn logged_in_index((state, user): (State<AppConfig>, SignedInUserWithEmail)) -> RenderResult {
-    let map = hashmap!{
-        "email" => user.1.to_verified()
-            .map(|verified| verified.email().to_owned())
-            .unwrap_or_else(|unverified| unverified.email().to_owned())
-    };
-
-    state.render("home", &map)
+fn logged_in_index(
+    (state, user, i18n): (State<AppConfig>, SignedInUserWithEmail, I18n),
+) -> HttpResponse {
+    state.render(move |buf| {
+        templates::home(
+            buf,
+            i18n.catalog.clone(),
+            user.0.id().to_string().as_ref(),
+            user.0.id().to_string().as_ref(),
+        )
+    })
 }
