@@ -23,7 +23,3 @@ script:
 
 rust:
   - nightly
-
-cache:
-  cargo: true
-  timeout: 1000
