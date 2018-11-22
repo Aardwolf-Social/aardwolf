@@ -7,8 +7,6 @@ extern crate aardwolf_types;
 extern crate bcrypt;
 extern crate bs58;
 extern crate chrono;
-#[macro_use]
-extern crate collection_macros;
 extern crate config;
 extern crate diesel;
 #[macro_use]
@@ -116,6 +114,7 @@ fn app(config: config::Config, db_url: String) -> Result<Rocket, Box<dyn Error>>
         routes::auth::sign_in,
         routes::auth::confirm,
         routes::auth::sign_out,
+        routes::auth::already_signed_out,
     ];
 
     let personas = routes![

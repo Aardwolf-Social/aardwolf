@@ -176,8 +176,13 @@ pub fn confirm(token: Form<ConfirmationToken>, db: DbConn) -> Result<Redirect, C
     })
 }
 
-#[post("/sign_out")]
+#[get("/sign_out")]
 pub fn sign_out(_user: SignedInUser, mut cookies: Cookies) -> Redirect {
     cookies.remove_private(Cookie::named("user_id"));
+    Redirect::to("/auth/sign_in")
+}
+
+#[get("/sign_out", rank = 2)]
+pub fn already_signed_out() -> Redirect {
     Redirect::to("/auth/sign_in")
 }
