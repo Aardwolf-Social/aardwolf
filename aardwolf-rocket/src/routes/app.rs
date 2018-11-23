@@ -8,20 +8,16 @@ use rocket::{
 use rocket_i18n::I18n;
 
 use render_template;
-use templates;
 use types::user::SignedInUserWithEmail;
 use DbConn;
 
 #[get("/")]
 pub fn home(user: SignedInUserWithEmail, i18n: I18n, _db: DbConn) -> Response<'static> {
-    render_template(move |buf| {
-        templates::home(
-            buf,
-            &i18n.catalog,
-            user.0.id().to_string().as_ref(),
-            user.0.id().to_string().as_ref(),
-        )
-    })
+    render_template(aardwolf_templates::Home::new(
+        &i18n.catalog,
+        user.0.id().to_string().as_ref(),
+        user.0.id().to_string().as_ref(),
+    ))
 }
 
 #[get("/", rank = 2)]

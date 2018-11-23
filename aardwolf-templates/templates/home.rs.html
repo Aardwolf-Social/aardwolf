@@ -1,18 +1,16 @@
-@use gettext::Catalog;
+@use crate::{Home, templates::{base, home::{feed, nav}, new_post, shortcuts}};
 
-@use crate::templates::{base, home::{feed, nav}, new_post, shortcuts};
+@(home: Home)
 
-@(catalog: &Catalog, profile_link: &str, username: &str)
-
-@:base(catalog, "Aardwolf | Home", {
-    @:nav(catalog)
+@:base(home.catalog, "Aardwolf | Home", {
+    @:nav(home.catalog)
     <section class="section">
-        @:shortcuts(catalog, profile_link, username)
+        @:shortcuts(home.shortcuts)
     </section>
     <section class="section">
         <div class="container">
-            @:new_post(catalog)
-            @:feed(catalog)
+            @:new_post(home.catalog)
+            @:feed(home.catalog)
         </div>
     </section>
 })

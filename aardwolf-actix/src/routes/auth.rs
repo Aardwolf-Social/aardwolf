@@ -1,5 +1,4 @@
 use aardwolf_models::user::UserLike;
-use aardwolf_templates::templates;
 use aardwolf_types::forms::auth::{
     ConfirmAccountFail, ConfirmToken, ConfirmationToken, SignIn, SignInFail, SignInForm, SignUp,
     SignUpFail, SignUpForm, ValidateSignInForm, ValidateSignInFormFail, ValidateSignUpForm,
@@ -17,21 +16,23 @@ use crate::{
 };
 
 pub(crate) fn sign_up_form(i18n: I18n) -> HttpResponse {
-    HttpResponse::Ok().with_ructe(move |buf| {
-        templates::sign_up(
-            buf,
-            aardwolf_templates::SignUp::new(&i18n.catalog, "csrf token", "", None, false),
-        )
-    })
+    HttpResponse::Ok().with_ructe(aardwolf_templates::SignUp::new(
+        &i18n.catalog,
+        "csrf token",
+        "",
+        None,
+        false,
+    ))
 }
 
 pub(crate) fn sign_in_form(i18n: I18n) -> HttpResponse {
-    HttpResponse::Ok().with_ructe(move |buf| {
-        templates::sign_in(
-            buf,
-            aardwolf_templates::SignIn::new(&i18n.catalog, "csrf token", "", None, false),
-        )
-    })
+    HttpResponse::Ok().with_ructe(aardwolf_templates::SignIn::new(
+        &i18n.catalog,
+        "csrf token",
+        "",
+        None,
+        false,
+    ))
 }
 
 #[derive(Clone, Debug, Fail)]
@@ -84,48 +85,23 @@ pub(crate) fn sign_up(
                 .finish()
         })
         .or_else(move |e| {
-            Ok(match e {
-                SignUpError::SignUp(e) => match e {
-                    SignUpFail::ValidationError(e) => {
-                        HttpResponse::BadRequest().with_ructe(move |buf| {
-                            templates::sign_up(
-                                buf,
-                                aardwolf_templates::SignUp::new(
-                                    &i18n.catalog,
-                                    "csrf token",
-                                    &form_state.email,
-                                    Some(&e),
-                                    false,
-                                ),
-                            )
-                        })
+            let (mut res, valid, system) = match *&e {
+                SignUpError::SignUp(ref e) => match *e {
+                    SignUpFail::ValidationError(ref e) => {
+                        (HttpResponse::BadRequest(), Some(e), false)
                     }
-                    _ => HttpResponse::InternalServerError().with_ructe(move |buf| {
-                        templates::sign_up(
-                            buf,
-                            aardwolf_templates::SignUp::new(
-                                &i18n.catalog,
-                                "csrf token",
-                                &form_state.email,
-                                None,
-                                true,
-                            ),
-                        )
-                    }),
+                    _ => (HttpResponse::InternalServerError(), None, true),
                 },
-                _ => HttpResponse::InternalServerError().with_ructe(move |buf| {
-                    templates::sign_up(
-                        buf,
-                        aardwolf_templates::SignUp::new(
-                            &i18n.catalog,
-                            "csrf token",
-                            &form_state.email,
-                            None,
-                            true,
-                        ),
-                    )
-                }),
-            })
+                _ => (HttpResponse::InternalServerError(), None, true),
+            };
+
+            Ok(res.with_ructe(aardwolf_templates::SignUp::new(
+                &i18n.catalog,
+                "csrf token",
+                &form_state.email,
+                valid,
+                system,
+            )))
         }),
     )
 }
@@ -177,48 +153,23 @@ pub(crate) fn sign_in(
         })
         .map(|_| HttpResponse::SeeOther().header(LOCATION, "/").finish())
         .or_else(move |e| {
-            Ok(match e {
-                SignInError::SignIn(e) => match e {
-                    SignInFail::ValidationError(e) => {
-                        HttpResponse::BadRequest().with_ructe(move |buf| {
-                            templates::sign_in(
-                                buf,
-                                aardwolf_templates::SignIn::new(
-                                    &i18n.catalog,
-                                    "csrf token",
-                                    &form_state.email,
-                                    Some(&e),
-                                    false,
-                                ),
-                            )
-                        })
+            let (mut res, validation, system) = match *&e {
+                SignInError::SignIn(ref e) => match *e {
+                    SignInFail::ValidationError(ref e) => {
+                        (HttpResponse::BadRequest(), Some(e), false)
                     }
-                    _ => HttpResponse::InternalServerError().with_ructe(move |buf| {
-                        templates::sign_in(
-                            buf,
-                            aardwolf_templates::SignIn::new(
-                                &i18n.catalog,
-                                "csrf token",
-                                &form_state.email,
-                                None,
-                                false,
-                            ),
-                        )
-                    }),
+                    _ => (HttpResponse::InternalServerError(), None, true),
                 },
-                _ => HttpResponse::InternalServerError().with_ructe(move |buf| {
-                    templates::sign_in(
-                        buf,
-                        aardwolf_templates::SignIn::new(
-                            &i18n.catalog,
-                            "csrf token",
-                            &form_state.email,
-                            None,
-                            false,
-                        ),
-                    )
-                }),
-            })
+                _ => (HttpResponse::InternalServerError(), None, true),
+            };
+
+            Ok(res.with_ructe(aardwolf_templates::SignIn::new(
+                &i18n.catalog,
+                "csrf token",
+                &form_state.email,
+                validation,
+                system,
+            )))
         }),
     )
 }

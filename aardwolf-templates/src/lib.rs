@@ -6,6 +6,52 @@ include!("../compiled_templates/templates.rs");
 use aardwolf_types::forms::auth::{ValidateSignInFormFail, ValidateSignUpFormFail};
 use gettext::Catalog;
 
+pub trait Renderable {
+    fn render(self, &mut std::io::Write) -> std::io::Result<()>;
+}
+
+impl<'a> Renderable for SignIn<'a> {
+    fn render(self, write: &mut std::io::Write) -> std::io::Result<()> {
+        templates::sign_in(write, self)
+    }
+}
+
+impl<'a> Renderable for SignUp<'a> {
+    fn render(self, write: &mut std::io::Write) -> std::io::Result<()> {
+        templates::sign_up(write, self)
+    }
+}
+
+impl<'a> Renderable for Home<'a> {
+    fn render(self, write: &mut std::io::Write) -> std::io::Result<()> {
+        templates::home(write, self)
+    }
+}
+
+pub struct Home<'a> {
+    catalog: &'a Catalog,
+    shortcuts: Shortcuts<'a>,
+}
+
+impl<'a> Home<'a> {
+    pub fn new(catalog: &'a Catalog, profile_link: &'a str, username: &'a str) -> Self {
+        Home {
+            catalog,
+            shortcuts: Shortcuts {
+                catalog,
+                profile_link,
+                username,
+            },
+        }
+    }
+}
+
+pub struct Shortcuts<'a> {
+    catalog: &'a Catalog,
+    profile_link: &'a str,
+    username: &'a str,
+}
+
 pub struct SignIn<'a> {
     catalog: &'a Catalog,
     csrf: &'a str,
@@ -29,7 +75,7 @@ impl<'a> SignIn<'a> {
                 Some(Alert {
                     catalog,
                     kind: AlertKind::Error,
-                    message: "There was an error creating your account",
+                    message: "There was an error logging in",
                 })
             } else {
                 None

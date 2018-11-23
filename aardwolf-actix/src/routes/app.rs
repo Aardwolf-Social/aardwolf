@@ -1,5 +1,4 @@
 use aardwolf_models::user::UserLike;
-use aardwolf_templates::templates;
 use actix_web::{http::header::LOCATION, HttpResponse};
 use rocket_i18n::I18n;
 
@@ -19,12 +18,9 @@ fn logged_out_index() -> HttpResponse {
 }
 
 fn logged_in_index((user, i18n): (SignedInUserWithEmail, I18n)) -> HttpResponse {
-    HttpResponse::Ok().with_ructe(move |buf| {
-        templates::home(
-            buf,
-            &i18n.catalog,
-            user.0.id().to_string().as_ref(),
-            user.0.id().to_string().as_ref(),
-        )
-    })
+    HttpResponse::Ok().with_ructe(aardwolf_templates::Home::new(
+        &i18n.catalog,
+        user.0.id().to_string().as_ref(),
+        user.0.id().to_string().as_ref(),
+    ))
 }

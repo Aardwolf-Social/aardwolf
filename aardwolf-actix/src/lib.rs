@@ -1,5 +1,6 @@
 use std::{error::Error, fmt};
 
+use aardwolf_templates::Renderable;
 use actix::{self, Addr, SyncArbiter};
 use actix_web::{
     dev::HttpResponseBuilder,
@@ -48,19 +49,19 @@ impl fmt::Debug for AppConfig {
 }
 
 pub trait WithRucte {
-    fn with_ructe<F>(&mut self, f: F) -> HttpResponse
+    fn with_ructe<R>(&mut self, r: R) -> HttpResponse
     where
-        F: FnOnce(&mut std::io::Write) -> std::io::Result<()>;
+        R: Renderable;
 }
 
 impl WithRucte for HttpResponseBuilder {
-    fn with_ructe<F>(&mut self, f: F) -> HttpResponse
+    fn with_ructe<R>(&mut self, r: R) -> HttpResponse
     where
-        F: FnOnce(&mut std::io::Write) -> std::io::Result<()>,
+        R: Renderable,
     {
         let mut buf = Vec::new();
 
-        match f(&mut buf) {
+        match r.render(&mut buf) {
             Ok(_) => self.header(CONTENT_TYPE, "text/html").body(buf),
             Err(e) => self
                 .header(CONTENT_TYPE, "text/plain")

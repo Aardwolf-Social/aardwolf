@@ -2,20 +2,19 @@ use std::io::{self, Write};
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
 use ::templates::{Html,ToHtml};
-use gettext::Catalog;
-use crate::templates::{base, home::{feed, nav}, new_post, shortcuts};
+use crate::{Home, templates::{base, home::{feed, nav}, new_post, shortcuts}};
 
-pub fn home(out: &mut Write, catalog: &Catalog, profile_link: &str, username: &str)
+pub fn home(out: &mut Write, home: Home)
 -> io::Result<()> {
-base(out, catalog, "Aardwolf | Home", |out| {
+base(out, home.catalog, "Aardwolf | Home", |out| {
 write!(out, "\n    ")?;
-nav(out, catalog)?;
+nav(out, home.catalog)?;
 write!(out, "\n    <section class=\"section\">\n        ")?;
-shortcuts(out, catalog, profile_link, username)?;
+shortcuts(out, home.shortcuts)?;
 write!(out, "\n    </section>\n    <section class=\"section\">\n        <div class=\"container\">\n            ")?;
-new_post(out, catalog)?;
+new_post(out, home.catalog)?;
 write!(out, "\n            ")?;
-feed(out, catalog)?;
+feed(out, home.catalog)?;
 write!(out, "\n        </div>\n    </section>\n")?;
 
 Ok(())
