@@ -7,9 +7,9 @@ use gettext::Catalog;
 use rocket_i18n::i18n;
 use crate::templates::base;
 
-pub fn sign_in(out: &mut Write, catalog: Catalog, csrf: &str, error: Option<SignInErrorMessage>)
+pub fn sign_in(out: &mut Write, catalog: &Catalog, csrf: &str, error: Option<SignInErrorMessage>)
 -> io::Result<()> {
-base(out, catalog.clone(), i18n!(catalog, "Aardwolf | Sign In"), |out| {
+base(out, catalog, i18n!(catalog, "Aardwolf | Sign In"), |out| {
 write!(out, "\n<header>\n    <h2 class=\"title\">")?;
 i18n!(catalog, "Aardwolf Instance").to_html(out)?;
 write!(out, "</h2>\n    <div style=\"text-align: right\">\n        <a href=\"sign_up\">")?;

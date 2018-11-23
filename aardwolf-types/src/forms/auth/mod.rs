@@ -13,7 +13,7 @@ pub use self::{
     },
     signup::{SignUp, SignUpFail},
     signup_form::{
-        SignUpErrorMessage, SignUpForm, ValidateSignUpForm, ValidateSignUpFormFail,
+        SignUpForm, SignUpFormState, ValidateSignUpForm, ValidateSignUpFormFail,
         ValidatedSignUpForm,
     },
 };

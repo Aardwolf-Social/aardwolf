@@ -125,6 +125,12 @@ impl ValidationError {
 /// asterisks.
 pub struct PlaintextPassword(String);
 
+impl PlaintextPassword {
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
+
 impl<'de> Deserialize<'de> for PlaintextPassword {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where

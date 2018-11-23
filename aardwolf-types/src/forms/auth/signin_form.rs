@@ -13,9 +13,16 @@ pub struct SignInErrorMessage {
 }
 
 #[derive(Clone, Debug, Fail, Serialize)]
-pub enum ValidateSignInFormFail {
-    #[fail(display = "Field `email` is required")]
-    EmptyEmailError,
+#[fail(display = "Missing required field")]
+pub struct ValidateSignInFormFail {
+    email: Option<String>,
+    password: Option<String>,
+}
+
+impl ValidateSignInFormFail {
+    pub fn is_empty(&self) -> bool {
+        self.email.is_none() && self.password.is_none()
+    }
 }
 
 impl AardwolfFail for ValidateSignInFormFail {}
@@ -39,13 +46,26 @@ impl Validate for ValidateSignInForm {
     type Error = ValidateSignInFormFail;
 
     fn validate(self) -> Result<ValidatedSignInForm, ValidateSignInFormFail> {
+        let mut validation_error = ValidateSignInFormFail {
+            email: None,
+            password: None,
+        };
+
         if self.0.email.is_empty() {
-            Err(ValidateSignInFormFail::EmptyEmailError)
-        } else {
+            validation_error.email = Some("Email must be present".to_owned());
+        }
+
+        if self.0.password.is_empty() {
+            validation_error.password = Some("Password must be present".to_owned());
+        }
+
+        if validation_error.is_empty() {
             Ok(ValidatedSignInForm {
                 email: self.0.email,
                 password: self.0.password,
             })
+        } else {
+            Err(validation_error)
         }
     }
 }

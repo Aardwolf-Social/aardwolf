@@ -2,8 +2,8 @@ use aardwolf_models::user::UserLike;
 use aardwolf_templates::templates;
 use aardwolf_types::forms::auth::{
     ConfirmAccountFail, ConfirmToken, ConfirmationToken, SignIn, SignInErrorMessage, SignInFail,
-    SignInForm, SignUp, SignUpErrorMessage, SignUpFail, SignUpForm, ValidateSignInForm,
-    ValidateSignInFormFail, ValidateSignUpForm, ValidateSignUpFormFail,
+    SignInForm, SignUp, SignUpFail, SignUpForm, ValidateSignInForm, ValidateSignInFormFail,
+    ValidateSignUpForm, ValidateSignUpFormFail,
 };
 use actix_web::{
     http::header::LOCATION, middleware::session::Session, Form, HttpResponse, Query, State,
@@ -14,16 +14,15 @@ use rocket_i18n::I18n;
 
 use crate::{db::DbActionError, error::RedirectError, types::user::SignedInUser, AppConfig};
 
-pub(crate) fn sign_up_form(
-    (state, error, i18n): (State<AppConfig>, Option<Query<SignUpErrorMessage>>, I18n),
-) -> HttpResponse {
+pub(crate) fn sign_up_form((state, i18n): (State<AppConfig>, I18n)) -> HttpResponse {
     state.render(move |buf| {
         templates::sign_up(
             buf,
-            i18n.catalog,
+            &i18n.catalog,
+            Default::default(),
             "csrf token",
-            "aardwolf.social",
-            error.map(|e| e.into_inner()),
+            None,
+            None,
         )
     })
 }
@@ -34,7 +33,7 @@ pub(crate) fn sign_in_form(
     state.render(move |buf| {
         templates::sign_in(
             buf,
-            i18n.catalog,
+            &i18n.catalog,
             "csrf token",
             error.map(|e| e.into_inner()),
         )
@@ -68,10 +67,14 @@ impl From<ValidateSignUpFormFail> for SignUpError {
 }
 
 pub(crate) fn sign_up(
-    (state, form): (State<AppConfig>, Form<SignUpForm>),
+    (state, form, i18n): (State<AppConfig>, Form<SignUpForm>, I18n),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
-    let res = perform!( state, SignUpError, [
-        (form = ValidateSignUpForm(form.into_inner())),
+    let state2 = state.clone();
+    let form = form.into_inner();
+    let form_state = form.as_state();
+
+    let res = perform!(state, SignUpError, [
+        (form = ValidateSignUpForm(form)),
         (_ = SignUp(form)),
     ]);
 
@@ -87,7 +90,33 @@ pub(crate) fn sign_up(
                 .header(LOCATION, "/auth/sign_in")
                 .finish()
         })
-        .map_err(|e| RedirectError::new("/auth/sign_up", &Some(e.to_string())).into()),
+        .or_else(move |e| match e {
+            SignUpError::SignUp(e) => match e {
+                SignUpFail::ValidationError(e) => Ok(state2.render(move |buf| {
+                    templates::sign_up(buf, &i18n.catalog, form_state, "csrf token", Some(e), None)
+                })),
+                e => Ok(state2.render(move |buf| {
+                    templates::sign_up(
+                        buf,
+                        &i18n.catalog,
+                        form_state,
+                        "csrf token",
+                        None,
+                        Some(format!("{}", e)),
+                    )
+                })),
+            },
+            e => Ok(state2.render(move |buf| {
+                templates::sign_up(
+                    buf,
+                    &i18n.catalog,
+                    form_state,
+                    "csrf token",
+                    None,
+                    Some(format!("{}", e)),
+                )
+            })),
+        }),
     )
 }
 

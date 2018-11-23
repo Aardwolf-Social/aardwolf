@@ -4,9 +4,9 @@
 
 @use crate::templates::base;
 
-@(catalog: Catalog, csrf: &str, error: Option<SignInErrorMessage>)
+@(catalog: &Catalog, csrf: &str, error: Option<SignInErrorMessage>)
 
-@:base(catalog.clone(), i18n!(catalog, "Aardwolf | Sign In"), {
+@:base(catalog, i18n!(catalog, "Aardwolf | Sign In"), {
 <header>
     <h2 class="title">@i18n!(catalog, "Aardwolf Instance")</h2>
     <div style="text-align: right">

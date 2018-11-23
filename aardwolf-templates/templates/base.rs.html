@@ -1,11 +1,11 @@
 @use gettext::Catalog;
 @use crate::templates::{footer, head};
 
-@(catalog: Catalog, title: &str, content: Content)
+@(catalog: &Catalog, title: &str, content: Content)
 
 <!DOCTYPE html>
 <html lang="en">
-    @:head(catalog.clone(), title)
+    @:head(catalog, title)
     <body>
         @:content()
         @:footer(catalog)

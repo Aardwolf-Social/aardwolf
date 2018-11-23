@@ -5,7 +5,7 @@ use ::templates::{Html,ToHtml};
 use gettext::Catalog;
 use rocket_i18n::i18n;
 
-pub fn shortcuts(out: &mut Write, catalog: Catalog, profile_link: &str, username: &str)
+pub fn shortcuts(out: &mut Write, catalog: &Catalog, profile_link: &str, username: &str)
 -> io::Result<()> {
 write!(out, "<aside class=\"menu\">\n    <a href=\"")?;
 profile_link.to_html(out)?;

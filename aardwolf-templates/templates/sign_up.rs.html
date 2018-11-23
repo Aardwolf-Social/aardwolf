@@ -1,12 +1,12 @@
-@use aardwolf_types::forms::auth::SignUpErrorMessage;
+@use aardwolf_types::forms::auth::{SignUpFormState, ValidateSignUpFormFail};
 @use gettext::Catalog;
 @use rocket_i18n::i18n;
 
-@use crate::templates::base;
+@use crate::templates::{base, ui::{alert, email_input, password_input}};
 
-@(catalog: Catalog, csrf: &str, domain: &str, error: Option<SignUpErrorMessage>)
+@(catalog: &Catalog, state: SignUpFormState, csrf: &str, validation_error: Option<ValidateSignUpFormFail>, server_error: Option<String>)
 
-@:base(catalog.clone(), i18n!(catalog, "Aardwolf | Sign In"), {
+@:base(catalog, i18n!(catalog, "Aardwolf | Sign Up"), {
 <header>
     <h2 class="title">@i18n!(catalog, "Aardwolf Instance")</h2>
     <div style="text-align: right">
@@ -34,19 +34,24 @@
                 <p class="subtitle">
                 @i18n!(catalog, "Feel free to sign up!")
                 </p>
-                @if let Some(error) = error {
-                    <span style="color: red;">@i18n!(catalog, &error.msg)</span>
-                }
                 <form method="POST" action="/auth/sign_up">
                     <input type="hidden" name="csrf_token" value="@csrf">
-                    <span class="icon icon-user"></span>
-                    <input type="text" name="username" id="username" placeholder="@["username@", domain].join("")">
-                    <span class="icon icon-envelope"></span>
-                    <input type="email" name="email" id="email" placeholder="E-mail address">
-                    <span class="icon icon-lock"></span>
-                    <input type="password" name="password" id="password" placeholder="Password">
-                    <span class="icon icon-lock"></span>
-                    <input type="password" name="password_confirmation", id="password_confirmation" placeholder="Confirm password">
+                    @if let Some(error) = validation_error {
+                        @:email_input(catalog, "email", "E-Mail Address", &state.email, error.email)
+                        @:password_input(catalog, "password", "Password", error.password)
+                        @:password_input(catalog, "password_confirmation", "Confirm Password", error.password_confirmation)
+                    } else {
+                        @if let Some(error) = server_error {
+                            @:alert(catalog, "error", &error)
+                            @:email_input(catalog, "email", "E-Mail Address", &state.email, None)
+                            @:password_input(catalog, "password", "Password", None)
+                            @:password_input(catalog, "password_confirmation", "Confirm Password", None)
+                        } else {
+                            @:email_input(catalog, "email", "E-mail Address", &state.email, None)
+                            @:password_input(catalog, "password", "Password", None)
+                            @:password_input(catalog, "password_confirmation", "Confirm Password", None)
+                        }
+                    }
                     <button>@i18n!(catalog, "Sign Up")</button>
                 </form>
             </div>

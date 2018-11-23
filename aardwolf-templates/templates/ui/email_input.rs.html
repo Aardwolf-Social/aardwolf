@@ -1,0 +1,7 @@
+@use gettext::Catalog;
+
+@use crate::templates::ui::input;
+
+@(catalog: &Catalog, name: &str, placeholder: &str, value: &str, error: Option<String>)
+
+@:input(catalog, "email", name, Some("envelope"), Some(placeholder), value, error)

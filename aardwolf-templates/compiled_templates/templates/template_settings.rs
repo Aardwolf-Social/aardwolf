@@ -5,7 +5,7 @@ use ::templates::{Html,ToHtml};
 use gettext::Catalog;
 use rocket_i18n::i18n;
 
-pub fn settings(out: &mut Write, catalog: Catalog)
+pub fn settings(out: &mut Write, catalog: &Catalog)
 -> io::Result<()> {
 write!(out, "<aside class=\"menu\">\n  <p class=\"menu-label\">\n    <a class=\"fa fa-chevron-left\">")?;
 i18n!(catalog, "Go back").to_html(out)?;

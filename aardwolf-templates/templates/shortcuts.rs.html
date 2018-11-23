@@ -1,7 +1,7 @@
 @use gettext::Catalog;
 @use rocket_i18n::i18n;
 
-@(catalog: Catalog, profile_link: &str, username: &str)
+@(catalog: &Catalog, profile_link: &str, username: &str)
 
 <aside class="menu">
     <a href="@profile_link">@username</a>

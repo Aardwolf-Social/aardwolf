@@ -26,7 +26,7 @@ fn logged_in_index(
     state.render(move |buf| {
         templates::home(
             buf,
-            i18n.catalog.clone(),
+            &i18n.catalog,
             user.0.id().to_string().as_ref(),
             user.0.id().to_string().as_ref(),
         )

@@ -17,7 +17,7 @@ pub fn home(user: SignedInUserWithEmail, i18n: I18n, _db: DbConn) -> Response<'s
     render_template(move |buf| {
         templates::home(
             buf,
-            i18n.catalog.clone(),
+            &i18n.catalog,
             user.0.id().to_string().as_ref(),
             user.0.id().to_string().as_ref(),
         )
