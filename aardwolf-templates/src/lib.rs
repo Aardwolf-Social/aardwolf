@@ -83,6 +83,7 @@ impl<'a> SignIn<'a> {
             email: EmailInput {
                 catalog,
                 name: "email",
+                label: "E-Mail Address",
                 placeholder: Some("E-Mail Address"),
                 value: email,
                 error: validation_error.and_then(|e| e.email.as_ref()),
@@ -90,6 +91,7 @@ impl<'a> SignIn<'a> {
             password: PasswordInput {
                 catalog,
                 name: "password",
+                label: "Password",
                 placeholder: Some("Password"),
                 error: validation_error.and_then(|e| e.password.as_ref()),
             },
@@ -129,6 +131,7 @@ impl<'a> SignUp<'a> {
             email: EmailInput {
                 catalog,
                 name: "email",
+                label: "E-Mail Address",
                 placeholder: Some("E-Mail Address"),
                 value: email,
                 error: validation_error.and_then(|e| e.email.as_ref()),
@@ -136,12 +139,14 @@ impl<'a> SignUp<'a> {
             password: PasswordInput {
                 catalog,
                 name: "password",
+                label: "Password",
                 placeholder: Some("Password"),
                 error: validation_error.and_then(|e| e.password.as_ref()),
             },
             password_confirmation: PasswordInput {
                 catalog,
                 name: "password_confirmation",
+                label: "Password Confirmation",
                 placeholder: Some("Password Confirmation"),
                 error: validation_error.and_then(|e| e.password_confirmation.as_ref()),
             },
@@ -156,6 +161,18 @@ pub enum AlertKind {
     Info,
 }
 
+impl std::fmt::Display for AlertKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        let s = match *self {
+            AlertKind::Error => "error",
+            AlertKind::Warning => "warning",
+            AlertKind::Info => "info",
+        };
+
+        write!(f, "{}", s)
+    }
+}
+
 pub struct Alert<'a> {
     catalog: &'a Catalog,
     kind: AlertKind,
@@ -166,6 +183,7 @@ pub struct Input<'a> {
     catalog: &'a Catalog,
     kind: &'a str,
     name: &'a str,
+    label: Option<&'a str>,
     icon: Option<&'a str>,
     placeholder: Option<&'a str>,
     value: &'a str,
@@ -177,6 +195,7 @@ impl<'a> From<PasswordInput<'a>> for Input<'a> {
         let PasswordInput {
             catalog,
             name,
+            label,
             placeholder,
             error,
         } = p;
@@ -185,6 +204,7 @@ impl<'a> From<PasswordInput<'a>> for Input<'a> {
             catalog,
             kind: "password",
             name,
+            label: Some(label),
             placeholder,
             icon: Some("lock"),
             value: "",
@@ -198,6 +218,7 @@ impl<'a> From<EmailInput<'a>> for Input<'a> {
         let EmailInput {
             catalog,
             name,
+            label,
             placeholder,
             value,
             error,
@@ -207,6 +228,7 @@ impl<'a> From<EmailInput<'a>> for Input<'a> {
             catalog,
             kind: "email",
             name,
+            label: Some(label),
             placeholder,
             icon: Some("envelope"),
             value,
@@ -220,6 +242,7 @@ impl<'a> From<TextInput<'a>> for Input<'a> {
         let TextInput {
             catalog,
             name,
+            label,
             placeholder,
             icon,
             value,
@@ -230,6 +253,7 @@ impl<'a> From<TextInput<'a>> for Input<'a> {
             catalog,
             kind: "text",
             name,
+            label: Some(label),
             placeholder,
             icon,
             value,
@@ -241,6 +265,7 @@ impl<'a> From<TextInput<'a>> for Input<'a> {
 pub struct PasswordInput<'a> {
     catalog: &'a Catalog,
     name: &'a str,
+    label: &'a str,
     placeholder: Option<&'a str>,
     error: Option<&'a String>,
 }
@@ -248,6 +273,7 @@ pub struct PasswordInput<'a> {
 pub struct EmailInput<'a> {
     catalog: &'a Catalog,
     name: &'a str,
+    label: &'a str,
     placeholder: Option<&'a str>,
     value: &'a str,
     error: Option<&'a String>,
@@ -256,6 +282,7 @@ pub struct EmailInput<'a> {
 pub struct TextInput<'a> {
     catalog: &'a Catalog,
     name: &'a str,
+    label: &'a str,
     placeholder: Option<&'a str>,
     icon: Option<&'a str>,
     value: &'a str,

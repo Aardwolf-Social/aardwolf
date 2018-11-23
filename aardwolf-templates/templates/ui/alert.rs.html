@@ -1,22 +1,14 @@
 @use rocket_i18n::i18n;
 
-@use crate::{Alert, AlertKind};
+@use crate::{Alert, templates::ui::icon};
 
 @(alert: Alert)
 
-<div class="aardwolf-alert">
+<div class="aardwolf-alert aardwolf-alert-@alert.kind">
     <div class="aardwolf-alert-meta">
-        @if alert.kind == AlertKind::Error {
-            @i18n!(alert.catalog, "Error")
-        } else {
-            @if alert.kind == AlertKind::Warning {
-                @i18n!(alert.catalog, "Warning")
-            } else {
-                @if alert.kind == AlertKind::Info {
-                    @i18n!(alert.catalog, "Info")
-                }
-            }
-        }
+        @:icon("warning")
     </div>
-    @i18n!(alert.catalog, alert.message)
+    <div class="aardwolf-alert-message">
+        @i18n!(alert.catalog, alert.message)
+    </div>
 </div>

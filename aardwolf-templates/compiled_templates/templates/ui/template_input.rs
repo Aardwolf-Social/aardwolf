@@ -7,15 +7,23 @@ use crate::{Input, templates::ui::icon};
 
 pub fn input(out: &mut Write, input: Input)
 -> io::Result<()> {
-write!(out, "<div class=\"aardwolf-input-wrapper\">\n    <div class=\"aardwolf-input aardwolf-")?;
-input.kind.to_html(out)?;
-write!(out, "-input\">\n        ")?;
+write!(out, "<div class=\"aardwolf-input-wrapper\">\n    <label for=\"")?;
+input.name.to_html(out)?;
+write!(out, "\">\n        ")?;
 if let Some(i) = input.icon {
 write!(out, "\n            ")?;
 icon(out, i)?;
 write!(out, "\n        ")?;
 }
 write!(out, "\n        ")?;
+if let Some(label) = input.label {
+write!(out, "\n            ")?;
+i18n!(input.catalog, label).to_html(out)?;
+write!(out, "\n        ")?;
+}
+write!(out, "\n    </label>\n    <div class=\"aardwolf-input aardwolf-")?;
+input.kind.to_html(out)?;
+write!(out, "-input\">\n        ")?;
 if let Some(placeholder) = input.placeholder {
 write!(out, "\n            <input type=\"")?;
 input.kind.to_html(out)?;
