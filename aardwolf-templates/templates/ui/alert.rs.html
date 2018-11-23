@@ -1,21 +1,22 @@
-@use gettext::Catalog;
 @use rocket_i18n::i18n;
 
-@(catalog: &Catalog, kind: &str, message: &str)
+@use crate::{Alert, AlertKind};
+
+@(alert: Alert)
 
 <div class="aardwolf-alert">
     <div class="aardwolf-alert-meta">
-        @if kind == "error" {
-            @i18n!(catalog, "Error")
+        @if alert.kind == AlertKind::Error {
+            @i18n!(alert.catalog, "Error")
         } else {
-            @if kind == "warning" {
-                @i18n!(catalog, "Warning")
+            @if alert.kind == AlertKind::Warning {
+                @i18n!(alert.catalog, "Warning")
             } else {
-                @if kind == "info" {
-                    @i18n!(catalog, "Info")
+                @if alert.kind == AlertKind::Info {
+                    @i18n!(alert.catalog, "Info")
                 }
             }
         }
     </div>
-    @i18n!(catalog, message)
+    @i18n!(alert.catalog, alert.message)
 </div>

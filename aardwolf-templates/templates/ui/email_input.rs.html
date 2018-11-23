@@ -1,7 +1,5 @@
-@use gettext::Catalog;
+@use crate::{EmailInput, templates::ui::input};
 
-@use crate::templates::ui::input;
+@(email_input: EmailInput)
 
-@(catalog: &Catalog, name: &str, placeholder: &str, value: &str, error: Option<String>)
-
-@:input(catalog, "email", name, Some("envelope"), Some(placeholder), value, error)
+@:input(email_input.into())

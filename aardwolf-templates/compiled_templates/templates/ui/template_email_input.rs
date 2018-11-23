@@ -2,12 +2,11 @@ use std::io::{self, Write};
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
 use ::templates::{Html,ToHtml};
-use gettext::Catalog;
-use crate::templates::ui::input;
+use crate::{EmailInput, templates::ui::input};
 
-pub fn email_input(out: &mut Write, catalog: &Catalog, name: &str, placeholder: &str, value: &str, error: Option<String>)
+pub fn email_input(out: &mut Write, email_input: EmailInput)
 -> io::Result<()> {
-input(out, catalog, "email", name, Some("envelope"), Some(placeholder), value, error)?;
+input(out, email_input.into())?;
 write!(out, "\n")?;
 Ok(())
 }

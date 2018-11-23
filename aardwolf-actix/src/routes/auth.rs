@@ -18,11 +18,7 @@ pub(crate) fn sign_up_form((state, i18n): (State<AppConfig>, I18n)) -> HttpRespo
     state.render(move |buf| {
         templates::sign_up(
             buf,
-            &i18n.catalog,
-            Default::default(),
-            "csrf token",
-            None,
-            None,
+            aardwolf_templates::SignUp::new(&i18n.catalog, "csrf token", "", None, false),
         )
     })
 }
@@ -93,27 +89,40 @@ pub(crate) fn sign_up(
         .or_else(move |e| match e {
             SignUpError::SignUp(e) => match e {
                 SignUpFail::ValidationError(e) => Ok(state2.render(move |buf| {
-                    templates::sign_up(buf, &i18n.catalog, form_state, "csrf token", Some(e), None)
-                })),
-                e => Ok(state2.render(move |buf| {
                     templates::sign_up(
                         buf,
-                        &i18n.catalog,
-                        form_state,
-                        "csrf token",
-                        None,
-                        Some(format!("{}", e)),
+                        aardwolf_templates::SignUp::new(
+                            &i18n.catalog,
+                            "csrf token",
+                            &form_state.email,
+                            Some(&e),
+                            false,
+                        ),
+                    )
+                })),
+                _ => Ok(state2.render(move |buf| {
+                    templates::sign_up(
+                        buf,
+                        aardwolf_templates::SignUp::new(
+                            &i18n.catalog,
+                            "csrf token",
+                            &form_state.email,
+                            None,
+                            true,
+                        ),
                     )
                 })),
             },
-            e => Ok(state2.render(move |buf| {
+            _ => Ok(state2.render(move |buf| {
                 templates::sign_up(
                     buf,
-                    &i18n.catalog,
-                    form_state,
-                    "csrf token",
-                    None,
-                    Some(format!("{}", e)),
+                    aardwolf_templates::SignUp::new(
+                        &i18n.catalog,
+                        "csrf token",
+                        &form_state.email,
+                        None,
+                        true,
+                    ),
                 )
             })),
         }),

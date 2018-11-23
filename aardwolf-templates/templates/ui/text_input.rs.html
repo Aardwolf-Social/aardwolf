@@ -1,7 +1,5 @@
-@use gettext::Catalog;
+@use crate::{TextInput, templates::ui::input};
 
-@use crate::templates::ui::input;
+@(text_input: TextInput)
 
-@(catalog: &Catalog, name: &str, icon: Option<&str>, placeholder: Option<&str>, value: &str, error: Option<String>)
-
-@:input(catalog, "text", name, icon, placeholder, value, error)
+@:input(text_input.into())

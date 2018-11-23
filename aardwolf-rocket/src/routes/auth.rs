@@ -39,11 +39,7 @@ pub fn sign_up_form(i18n: I18n) -> Response<'static> {
     render_template(move |buf| {
         templates::sign_up(
             buf,
-            &i18n.catalog,
-            Default::default(),
-            "csrf token",
-            None,
-            None,
+            aardwolf_templates::SignUp::new(&i18n.catalog, "csrf token", "", None, false),
         )
     })
 }
@@ -85,17 +81,28 @@ pub fn sign_up(form: Form<SignUpForm>, i18n: I18n, db: DbConn) -> ResponseOrRedi
         }
         Err(e) => match e {
             SignUpFail::ValidationError(e) => render_template(move |buf| {
-                templates::sign_up(buf, &i18n.catalog, form_state, "csrf token", Some(e), None)
-            })
-            .into(),
-            e => render_template(move |buf| {
                 templates::sign_up(
                     buf,
-                    &i18n.catalog,
-                    form_state,
-                    "csrf token",
-                    None,
-                    Some(format!("{}", e)),
+                    aardwolf_templates::SignUp::new(
+                        &i18n.catalog,
+                        "csrf token",
+                        &form_state.email,
+                        Some(&e),
+                        false,
+                    ),
+                )
+            })
+            .into(),
+            _ => render_template(move |buf| {
+                templates::sign_up(
+                    buf,
+                    aardwolf_templates::SignUp::new(
+                        &i18n.catalog,
+                        "csrf token",
+                        &form_state.email,
+                        None,
+                        true,
+                    ),
                 )
             })
             .into(),

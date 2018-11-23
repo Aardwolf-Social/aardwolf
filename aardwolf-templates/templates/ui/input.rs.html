@@ -1,22 +1,23 @@
-@use gettext::Catalog;
 @use rocket_i18n::i18n;
 
-@(catalog: &Catalog, kind: &str, name: &str, icon: Option<&str>, placeholder: Option<&str>, value: &str, error: Option<String>)
+@use crate::Input;
+
+@(input: Input)
 
 <div class="aardwolf-input-wrapper">
-    <div class="aardwolf-input aardwolf-@kind-input">
-        @if let Some(icon) = icon {
+    <div class="aardwolf-input aardwolf-@input.kind-input">
+        @if let Some(icon) = input.icon {
             <span class="icon icon-@icon"></span>
         }
-        @if let Some(placeholder) = placeholder {
-            <input type="@kind" name="@name" placeholder="@i18n!(catalog, placeholder)" value="@value" />
+        @if let Some(placeholder) = input.placeholder {
+            <input type="@input.kind" name="@input.name" placeholder="@i18n!(input.catalog, placeholder)" value="@input.value" />
         } else {
-            <input type="@kind" name="@name" value="@value" />
+            <input type="@input.kind" name="@input.name" value="@input.value" />
         }
     </div>
     <div class="aardwolf-input-meta">
-        @if let Some(error) = error {
-            <span class="aardwolf-input-error">@error</span>
+        @if let Some(error) = input.error {
+            <span class="aardwolf-input-error">@i18n!(input.catalog, error)</span>
         }
     </div>
 </div>

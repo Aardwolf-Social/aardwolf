@@ -2,27 +2,27 @@ use std::io::{self, Write};
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
 use ::templates::{Html,ToHtml};
-use gettext::Catalog;
 use rocket_i18n::i18n;
+use crate::{Alert, AlertKind};
 
-pub fn alert(out: &mut Write, catalog: &Catalog, kind: &str, message: &str)
+pub fn alert(out: &mut Write, alert: Alert)
 -> io::Result<()> {
 write!(out, "<div class=\"aardwolf-alert\">\n    <div class=\"aardwolf-alert-meta\">\n        ")?;
-if kind == "error" {
+if alert.kind == AlertKind::Error {
 write!(out, "\n            ")?;
-i18n!(catalog, "Error").to_html(out)?;
+i18n!(alert.catalog, "Error").to_html(out)?;
 write!(out, "\n        ")?;
 } else {
 write!(out, "\n            ")?;
-if kind == "warning" {
+if alert.kind == AlertKind::Warning {
 write!(out, "\n                ")?;
-i18n!(catalog, "Warning").to_html(out)?;
+i18n!(alert.catalog, "Warning").to_html(out)?;
 write!(out, "\n            ")?;
 } else {
 write!(out, "\n                ")?;
-if kind == "info" {
+if alert.kind == AlertKind::Info {
 write!(out, "\n                    ")?;
-i18n!(catalog, "Info").to_html(out)?;
+i18n!(alert.catalog, "Info").to_html(out)?;
 write!(out, "\n                ")?;
 }
 write!(out, "\n            ")?;
@@ -30,7 +30,7 @@ write!(out, "\n            ")?;
 write!(out, "\n        ")?;
 }
 write!(out, "\n    </div>\n    ")?;
-i18n!(catalog, message).to_html(out)?;
+i18n!(alert.catalog, alert.message).to_html(out)?;
 write!(out, "\n</div>\n")?;
 Ok(())
 }

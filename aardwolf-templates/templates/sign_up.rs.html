@@ -1,16 +1,14 @@
-@use aardwolf_types::forms::auth::{SignUpFormState, ValidateSignUpFormFail};
-@use gettext::Catalog;
 @use rocket_i18n::i18n;
 
-@use crate::templates::{base, ui::{alert, email_input, password_input}};
+@use crate::{SignUp, templates::{base, ui::{alert, email_input, password_input}}};
 
-@(catalog: &Catalog, state: SignUpFormState, csrf: &str, validation_error: Option<ValidateSignUpFormFail>, server_error: Option<String>)
+@(sign_up: SignUp)
 
-@:base(catalog, i18n!(catalog, "Aardwolf | Sign Up"), {
+@:base(sign_up.catalog, i18n!(sign_up.catalog, "Aardwolf | Sign Up"), {
 <header>
-    <h2 class="title">@i18n!(catalog, "Aardwolf Instance")</h2>
+    <h2 class="title">@i18n!(sign_up.catalog, "Aardwolf Instance")</h2>
     <div style="text-align: right">
-        <a href="sign_in">@i18n!(catalog, "Have an Account? - Login")</a>
+        <a href="sign_in">@i18n!(sign_up.catalog, "Have an Account? - Login")</a>
     </div>
 </header>
 <!-- End Page Header -->
@@ -20,39 +18,30 @@
         <div class="columns is-mobile">
             <div class="column">
                 <h1 class="title">
-                    @i18n!(catalog, "About Aardwolf")
+                    @i18n!(sign_up.catalog, "About Aardwolf")
                 </h1>
                 <p class="subtitle">
-                @i18n!(catalog, "This is who we are!")
+                @i18n!(sign_up.catalog, "This is who we are!")
                 </p>
-                @i18n!(catalog, "really-long-platform-description")
+                @i18n!(sign_up.catalog, "really-long-platform-description")
             </div>
             <div class="column">
                 <h1 class="title">
-                    @i18n!(catalog, "Create an Account")
+                    @i18n!(sign_up.catalog, "Create an Account")
                 </h1>
                 <p class="subtitle">
-                @i18n!(catalog, "Feel free to sign up!")
+                @i18n!(sign_up.catalog, "Feel free to sign up!")
                 </p>
                 <form method="POST" action="/auth/sign_up">
-                    <input type="hidden" name="csrf_token" value="@csrf">
-                    @if let Some(error) = validation_error {
-                        @:email_input(catalog, "email", "E-Mail Address", &state.email, error.email)
-                        @:password_input(catalog, "password", "Password", error.password)
-                        @:password_input(catalog, "password_confirmation", "Confirm Password", error.password_confirmation)
-                    } else {
-                        @if let Some(error) = server_error {
-                            @:alert(catalog, "error", &error)
-                            @:email_input(catalog, "email", "E-Mail Address", &state.email, None)
-                            @:password_input(catalog, "password", "Password", None)
-                            @:password_input(catalog, "password_confirmation", "Confirm Password", None)
-                        } else {
-                            @:email_input(catalog, "email", "E-mail Address", &state.email, None)
-                            @:password_input(catalog, "password", "Password", None)
-                            @:password_input(catalog, "password_confirmation", "Confirm Password", None)
-                        }
+                    <input type="hidden" name="csrf_token" value="@sign_up.csrf">
+                    @if let Some(a) = sign_up.alert {
+                        @:alert(a)
                     }
-                    <button>@i18n!(catalog, "Sign Up")</button>
+
+                    @:email_input(sign_up.email)
+                    @:password_input(sign_up.password)
+                    @:password_input(sign_up.password_confirmation)
+                    <button>@i18n!(sign_up.catalog, "Sign Up")</button>
                 </form>
             </div>
         </div>
