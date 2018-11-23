@@ -43,6 +43,13 @@ pub fn webroot(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
     NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
 }
 
+#[cfg(debug_assertions)]
+#[get("/images/<file..>")]
+pub fn images(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
+    let path = Path::new("web/images/").join(file);
+    NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
+}
+
 // Stylesheets root
 #[cfg(debug_assertions)]
 #[get("/stylesheets/<file..>")]

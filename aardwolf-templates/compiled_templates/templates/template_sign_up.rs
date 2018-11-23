@@ -7,7 +7,7 @@ use crate::{SignUp, templates::{base, ui::{alert, email_input, password_input}}}
 
 pub fn sign_up(out: &mut Write, sign_up: SignUp)
 -> io::Result<()> {
-base(out, sign_up.catalog, i18n!(sign_up.catalog, "Aardwolf | Sign Up"), |out| {
+base(out, sign_up.catalog, "Aardwolf | Sign Up", |out| {
 write!(out, "\n<header>\n    <h2 class=\"title\">")?;
 i18n!(sign_up.catalog, "Aardwolf Instance").to_html(out)?;
 write!(out, "</h2>\n    <div style=\"text-align: right\">\n        <a href=\"sign_in\">")?;

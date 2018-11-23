@@ -108,7 +108,6 @@ fn app(config: config::Config, db_url: String) -> Result<Rocket, Box<dyn Error>>
     let auth = routes![
         routes::auth::sign_up_form,
         routes::auth::sign_in_form,
-        routes::auth::sign_in_form_with_error,
         routes::auth::sign_up,
         routes::auth::sign_in,
         routes::auth::confirm,

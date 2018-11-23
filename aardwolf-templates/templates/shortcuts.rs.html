@@ -1,30 +1,32 @@
 @use gettext::Catalog;
 @use rocket_i18n::i18n;
 
+@use crate::templates::ui::icon;
+
 @(catalog: &Catalog, profile_link: &str, username: &str)
 
 <aside class="menu">
     <a href="@profile_link">@username</a>
     <ul class="menu-list">
-        <li><a class="fa fa-newspaper-o" aria-hidden="true">@i18n!(catalog, "News feed")</a></li>
-        <li><a class="fa fa-envelope" aria-hidden="true">@i18n!(catalog, "Messages")</a></li>
+        <li><a aria-hidden="true">@:icon("newspaper-o") @i18n!(catalog, "News feed")</a></li>
+        <li><a aria-hidden="true">@:icon("envelope") @i18n!(catalog, "Messages")</a></li>
     </ul>
     <p class="menu-label">
-    <span class="fa fa-star" aria-hidden="true">@i18n!(catalog, "Shortcuts")</span>
+    <span class="fa fa-star" aria-hidden="true">@:icon("star") @i18n!(catalog, "Shortcuts")</span>
     </p>
     <ul class="menu-list">
-        <li><a class="fa fa-calendar" aria-hidden="true">@i18n!(catalog, "Calendar")</a></li>
-        <li><a class="fa fa-users" aria-hidden="true">@i18n!(catalog, "Groups")</a></li>
-        <li><a class="fa fa-list" aria-hidden="true">@i18n!(catalog, "Lists")</a></li>
-        <li><a class="fa fa-picture-o" aria-hidden="true">@i18n!(catalog, "Photos")</a></li>
-        <li><a class="fa fa-bookmark" aria-hidden="true">@i18n!(catalog, "Favorites")</a></li>
-        <li><a class="fa fa-cloud" aria-hidden="true">@i18n!(catalog, "Weather")</a></li>     
+        <li><a aria-hidden="true">@:icon("calendar") @i18n!(catalog, "Calendar")</a></li>
+        <li><a aria-hidden="true">@:icon("users") @i18n!(catalog, "Groups")</a></li>
+        <li><a aria-hidden="true">@:icon("list") @i18n!(catalog, "Lists")</a></li>
+        <li><a aria-hidden="true">@:icon("picture-o") @i18n!(catalog, "Photos")</a></li>
+        <li><a aria-hidden="true">@:icon("bookmark") @i18n!(catalog, "Favorites")</a></li>
+        <li><a aria-hidden="true">@:icon("cloud") @i18n!(catalog, "Weather")</a></li>     
     </ul>
     <p class="menu-label">
-    <span class="fa fa-lightbulb-o" aria-hidden="true">@i18n!(catalog, "Create")</span>
+    <span class="fa fa-lightbulb-o" aria-hidden="true">@:icon("lightbulb-o") @i18n!(catalog, "Create")</span>
     </p>
     <ul class="menu-list">
-        <li><a class="fa fa-calendar-plus-o" aria-hidden="true">@i18n!(catalog, "New Event")</a></li>
-        <li><a class="fa fa-users" aria-hidden="true">@i18n!(catalog, "New Group")</a></li>
+        <li><a aria-hidden="true">@:icon("calendar-plus-o") @i18n!(catalog, "New Event")</a></li>
+        <li><a aria-hidden="true">@:icon("users") @i18n!(catalog, "New Group")</a></li>
     </ul>
 </aside>

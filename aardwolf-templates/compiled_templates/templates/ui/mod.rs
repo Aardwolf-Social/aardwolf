@@ -1,3 +1,6 @@
+mod template_icon;
+pub use self::template_icon::icon;
+
 mod template_input;
 pub use self::template_input::input;
 

@@ -1,15 +1,13 @@
 use aardwolf_models::user::UserLike;
 use aardwolf_templates::templates;
-use actix_web::{http::header::LOCATION, HttpResponse, State};
+use actix_web::{http::header::LOCATION, HttpResponse};
 use rocket_i18n::I18n;
 
-use crate::{types::user::SignedInUserWithEmail, AppConfig};
+use crate::{types::user::SignedInUserWithEmail, WithRucte};
 
-pub(crate) fn index(
-    (state, maybe_user, i18n): (State<AppConfig>, Option<SignedInUserWithEmail>, I18n),
-) -> HttpResponse {
+pub(crate) fn index((maybe_user, i18n): (Option<SignedInUserWithEmail>, I18n)) -> HttpResponse {
     match maybe_user {
-        Some(user) => logged_in_index((state, user, i18n)),
+        Some(user) => logged_in_index((user, i18n)),
         None => logged_out_index(),
     }
 }
@@ -20,10 +18,8 @@ fn logged_out_index() -> HttpResponse {
         .finish()
 }
 
-fn logged_in_index(
-    (state, user, i18n): (State<AppConfig>, SignedInUserWithEmail, I18n),
-) -> HttpResponse {
-    state.render(move |buf| {
+fn logged_in_index((user, i18n): (SignedInUserWithEmail, I18n)) -> HttpResponse {
+    HttpResponse::Ok().with_ructe(move |buf| {
         templates::home(
             buf,
             &i18n.catalog,

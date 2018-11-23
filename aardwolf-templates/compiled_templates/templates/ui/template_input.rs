@@ -3,17 +3,17 @@ use std::io::{self, Write};
 #[allow(unused)]
 use ::templates::{Html,ToHtml};
 use rocket_i18n::i18n;
-use crate::Input;
+use crate::{Input, templates::ui::icon};
 
 pub fn input(out: &mut Write, input: Input)
 -> io::Result<()> {
 write!(out, "<div class=\"aardwolf-input-wrapper\">\n    <div class=\"aardwolf-input aardwolf-")?;
 input.kind.to_html(out)?;
 write!(out, "-input\">\n        ")?;
-if let Some(icon) = input.icon {
-write!(out, "\n            <span class=\"icon icon-")?;
-icon.to_html(out)?;
-write!(out, "\"></span>\n        ")?;
+if let Some(i) = input.icon {
+write!(out, "\n            ")?;
+icon(out, i)?;
+write!(out, "\n        ")?;
 }
 write!(out, "\n        ")?;
 if let Some(placeholder) = input.placeholder {

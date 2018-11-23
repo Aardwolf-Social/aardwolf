@@ -3,8 +3,53 @@ extern crate gettext;
 extern crate rocket_i18n;
 include!("../compiled_templates/templates.rs");
 
-use aardwolf_types::forms::auth::ValidateSignUpFormFail;
+use aardwolf_types::forms::auth::{ValidateSignInFormFail, ValidateSignUpFormFail};
 use gettext::Catalog;
+
+pub struct SignIn<'a> {
+    catalog: &'a Catalog,
+    csrf: &'a str,
+    alert: Option<Alert<'a>>,
+    email: EmailInput<'a>,
+    password: PasswordInput<'a>,
+}
+
+impl<'a> SignIn<'a> {
+    pub fn new(
+        catalog: &'a Catalog,
+        csrf: &'a str,
+        email: &'a str,
+        validation_error: Option<&'a ValidateSignInFormFail>,
+        server_error: bool,
+    ) -> Self {
+        SignIn {
+            catalog,
+            csrf,
+            alert: if server_error {
+                Some(Alert {
+                    catalog,
+                    kind: AlertKind::Error,
+                    message: "There was an error creating your account",
+                })
+            } else {
+                None
+            },
+            email: EmailInput {
+                catalog,
+                name: "email",
+                placeholder: Some("E-Mail Address"),
+                value: email,
+                error: validation_error.and_then(|e| e.email.as_ref()),
+            },
+            password: PasswordInput {
+                catalog,
+                name: "password",
+                placeholder: Some("Password"),
+                error: validation_error.and_then(|e| e.password.as_ref()),
+            },
+        }
+    }
+}
 
 pub struct SignUp<'a> {
     catalog: &'a Catalog,
@@ -66,19 +111,19 @@ pub enum AlertKind {
 }
 
 pub struct Alert<'a> {
-    pub catalog: &'a Catalog,
-    pub kind: AlertKind,
-    pub message: &'a str,
+    catalog: &'a Catalog,
+    kind: AlertKind,
+    message: &'a str,
 }
 
 pub struct Input<'a> {
-    pub(crate) catalog: &'a Catalog,
-    pub(crate) kind: &'a str,
-    pub(crate) name: &'a str,
-    pub(crate) icon: Option<&'a str>,
-    pub(crate) placeholder: Option<&'a str>,
-    pub(crate) value: &'a str,
-    pub(crate) error: Option<&'a String>,
+    catalog: &'a Catalog,
+    kind: &'a str,
+    name: &'a str,
+    icon: Option<&'a str>,
+    placeholder: Option<&'a str>,
+    value: &'a str,
+    error: Option<&'a String>,
 }
 
 impl<'a> From<PasswordInput<'a>> for Input<'a> {
@@ -148,25 +193,25 @@ impl<'a> From<TextInput<'a>> for Input<'a> {
 }
 
 pub struct PasswordInput<'a> {
-    pub catalog: &'a Catalog,
-    pub name: &'a str,
-    pub placeholder: Option<&'a str>,
-    pub error: Option<&'a String>,
+    catalog: &'a Catalog,
+    name: &'a str,
+    placeholder: Option<&'a str>,
+    error: Option<&'a String>,
 }
 
 pub struct EmailInput<'a> {
-    pub catalog: &'a Catalog,
-    pub name: &'a str,
-    pub placeholder: Option<&'a str>,
-    pub value: &'a str,
-    pub error: Option<&'a String>,
+    catalog: &'a Catalog,
+    name: &'a str,
+    placeholder: Option<&'a str>,
+    value: &'a str,
+    error: Option<&'a String>,
 }
 
 pub struct TextInput<'a> {
-    pub catalog: &'a Catalog,
-    pub name: &'a str,
-    pub placeholder: Option<&'a str>,
-    pub icon: Option<&'a str>,
-    pub value: &'a str,
-    pub error: Option<&'a String>,
+    catalog: &'a Catalog,
+    name: &'a str,
+    placeholder: Option<&'a str>,
+    icon: Option<&'a str>,
+    value: &'a str,
+    error: Option<&'a String>,
 }

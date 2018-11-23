@@ -1,10 +1,10 @@
 use aardwolf_models::user::UserLike;
 use aardwolf_types::forms::auth::{
-    ConfirmAccountFail, ConfirmToken, ConfirmationToken, SignIn, SignInErrorMessage, SignInFail,
-    SignInForm, SignUp, SignUpFail, SignUpForm, ValidateSignInForm, ValidateSignUpForm,
+    ConfirmAccountFail, ConfirmToken, ConfirmationToken, SignIn, SignInFail, SignInForm, SignUp,
+    SignUpFail, SignUpForm, ValidateSignInForm, ValidateSignUpForm,
 };
 use rocket::{
-    http::{Cookie, Cookies},
+    http::{Cookie, Cookies, Status},
     request::Form,
     response::Redirect,
     Response,
@@ -44,17 +44,14 @@ pub fn sign_up_form(i18n: I18n) -> Response<'static> {
     })
 }
 
-#[get("/sign_in?<error..>")]
-pub fn sign_in_form_with_error(i18n: I18n, error: Form<SignInErrorMessage>) -> Response<'static> {
-    let error = error.into_inner();
-    render_template(move |buf| {
-        templates::sign_in(buf, &i18n.catalog, "csrf token", Some(error.clone()))
-    })
-}
-
 #[get("/sign_in")]
 pub fn sign_in_form(i18n: I18n) -> Response<'static> {
-    render_template(move |buf| templates::sign_in(buf, &i18n.catalog, "csrf token", None))
+    render_template(move |buf| {
+        templates::sign_in(
+            buf,
+            aardwolf_templates::SignIn::new(&i18n.catalog, "csrf token", "", None, false),
+        )
+    })
 }
 
 #[post("/sign_up", data = "<form>")]
@@ -80,42 +77,55 @@ pub fn sign_up(form: Form<SignUpForm>, i18n: I18n, db: DbConn) -> ResponseOrRedi
             Redirect::to("/auth/sign_in").into()
         }
         Err(e) => match e {
-            SignUpFail::ValidationError(e) => render_template(move |buf| {
-                templates::sign_up(
-                    buf,
-                    aardwolf_templates::SignUp::new(
-                        &i18n.catalog,
-                        "csrf token",
-                        &form_state.email,
-                        Some(&e),
-                        false,
-                    ),
-                )
-            })
-            .into(),
-            _ => render_template(move |buf| {
-                templates::sign_up(
-                    buf,
-                    aardwolf_templates::SignUp::new(
-                        &i18n.catalog,
-                        "csrf token",
-                        &form_state.email,
-                        None,
-                        true,
-                    ),
-                )
-            })
-            .into(),
+            SignUpFail::ValidationError(e) => {
+                let mut response = render_template(move |buf| {
+                    templates::sign_up(
+                        buf,
+                        aardwolf_templates::SignUp::new(
+                            &i18n.catalog,
+                            "csrf token",
+                            &form_state.email,
+                            Some(&e),
+                            false,
+                        ),
+                    )
+                });
+                response.set_status(Status::BadRequest);
+                response.into()
+            }
+            _ => {
+                let mut response = render_template(move |buf| {
+                    templates::sign_up(
+                        buf,
+                        aardwolf_templates::SignUp::new(
+                            &i18n.catalog,
+                            "csrf token",
+                            &form_state.email,
+                            None,
+                            true,
+                        ),
+                    )
+                });
+                response.set_status(Status::InternalServerError);
+                response.into()
+            }
         },
     }
 }
 
 #[post("/sign_in", data = "<form>")]
-pub fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redirect {
+pub fn sign_in(
+    form: Form<SignInForm>,
+    db: DbConn,
+    mut cookies: Cookies,
+    i18n: I18n,
+) -> ResponseOrRedirect {
     // TODO: check csrf token (this will probably be a request guard)
+    let form = form.into_inner();
+    let form_state = form.as_state();
 
     let res = perform!(&db, SignInFail, [
-        (form = ValidateSignInForm(form.into_inner())),
+        (form = ValidateSignInForm(form)),
         (_ = SignIn(form)),
     ]);
 
@@ -124,13 +134,42 @@ pub fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redi
             let mut cookie = Cookie::new("user_id", format!("{}", user.id()));
             cookie.set_http_only(true);
             cookies.add_private(cookie);
-            Redirect::to("/")
+            Redirect::to("/").into()
         }
-        Err(e) => {
-            println!("unable to log in: {}, {:?}", e, e);
-            // TODO: Percent Encode the error
-            Redirect::to(format!("/auth/sign_in?msg=Unable%20to%20log%20in"))
-        }
+        Err(e) => match e {
+            SignInFail::ValidationError(e) => {
+                let mut response = render_template(move |buf| {
+                    templates::sign_in(
+                        buf,
+                        aardwolf_templates::SignIn::new(
+                            &i18n.catalog,
+                            "csrf token",
+                            &form_state.email,
+                            Some(&e),
+                            false,
+                        ),
+                    )
+                });
+                response.set_status(Status::BadRequest);
+                response.into()
+            }
+            _ => {
+                let mut response = render_template(move |buf| {
+                    templates::sign_in(
+                        buf,
+                        aardwolf_templates::SignIn::new(
+                            &i18n.catalog,
+                            "csrf token",
+                            &form_state.email,
+                            None,
+                            true,
+                        ),
+                    )
+                });
+                response.set_status(Status::InternalServerError);
+                response.into()
+            }
+        },
     }
 }
 

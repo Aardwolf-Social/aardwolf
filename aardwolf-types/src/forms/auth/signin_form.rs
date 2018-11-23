@@ -6,17 +6,11 @@ use crate::{
     wrapper::{ValidateWrapper, Wrapped},
 };
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[cfg_attr(feature = "use-rocket", derive(FromForm))]
-pub struct SignInErrorMessage {
-    pub msg: String,
-}
-
 #[derive(Clone, Debug, Fail, Serialize)]
 #[fail(display = "Missing required field")]
 pub struct ValidateSignInFormFail {
-    email: Option<String>,
-    password: Option<String>,
+    pub email: Option<String>,
+    pub password: Option<String>,
 }
 
 impl ValidateSignInFormFail {
@@ -27,12 +21,24 @@ impl ValidateSignInFormFail {
 
 impl AardwolfFail for ValidateSignInFormFail {}
 
+pub struct SignInFormState {
+    pub email: String,
+}
+
 #[derive(Debug, Deserialize)]
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]
 pub struct SignInForm {
     pub csrf_token: String,
     pub email: String,
     pub password: PlaintextPassword,
+}
+
+impl SignInForm {
+    pub fn as_state(&self) -> SignInFormState {
+        SignInFormState {
+            email: self.email.clone(),
+        }
+    }
 }
 
 pub struct ValidateSignInForm(pub SignInForm);
