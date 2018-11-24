@@ -7,6 +7,7 @@ addons:
   postgresql: "9.6"
 
 before_script:
+  - echo "BEFORE SCRIPT"
   - psql -c 'CREATE DATABASE aardwolf_testing;' -U postgres
   - if which diesel; then echo "diesel already installed"; else cargo install diesel_cli --no-default-features --features=postgres; fi
   - pushd aardwolf-models
@@ -16,17 +17,9 @@ before_script:
   - popd
 
 script:
-  - |
-    for project in 'aardwolf-models' 'aardwolf-types' 'aardwolf-actix' 'aardwolf-rocket' '.'; do
-      pushd $project
-      cargo build --verbose
-      cargo test --verbose
-      popd
-    done
+  - echo "SCRIPT"
+  - cargo build --all --verbose
+  - cargo test --all --verbose
 
 rust:
   - nightly
-
-cache:
-  cargo: true
-  timeout: 1000

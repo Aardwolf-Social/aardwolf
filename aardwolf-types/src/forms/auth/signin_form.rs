@@ -6,7 +6,7 @@ use crate::{
     wrapper::{ValidateWrapper, Wrapped},
 };
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]
 pub struct SignInErrorMessage {
     pub msg: String,

@@ -4,6 +4,7 @@ use actix_web::{
     error::ResponseError, middleware::session::RequestSession, FromRequest, HttpRequest,
     HttpResponse,
 };
+use failure::Fail;
 use futures::future::{Future, IntoFuture};
 
 use crate::{db::DbActionError, error::RedirectError, from_session, AppConfig};

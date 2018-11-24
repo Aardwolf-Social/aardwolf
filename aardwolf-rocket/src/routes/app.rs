@@ -1,22 +1,27 @@
 use std::path::{Path, PathBuf};
 
-use rocket::response::{
-    status::NotFound,
-    {NamedFile, Redirect},
+use aardwolf_models::user::UserLike;
+use rocket::{
+    response::{status::NotFound, NamedFile, Redirect},
+    Response,
 };
-use rocket_contrib::templates::Template;
+use rocket_i18n::I18n;
 
+use render_template;
+use templates;
 use types::user::SignedInUserWithEmail;
 use DbConn;
 
 #[get("/")]
-pub fn home(user: SignedInUserWithEmail, _db: DbConn) -> Template {
-    let map = hashmap!{
-        "email" => user.1.to_verified()
-            .map(|verified| verified.email().to_owned())
-            .unwrap_or_else(|unverified| unverified.email().to_owned()),
-    };
-    Template::render("home", map)
+pub fn home(user: SignedInUserWithEmail, i18n: I18n, _db: DbConn) -> Response<'static> {
+    render_template(move |buf| {
+        templates::home(
+            buf,
+            i18n.catalog.clone(),
+            user.0.id().to_string().as_ref(),
+            user.0.id().to_string().as_ref(),
+        )
+    })
 }
 
 #[get("/", rank = 2)]
@@ -35,6 +40,14 @@ pub fn home_redirect() -> Redirect {
 #[get("/web/<file..>")]
 pub fn webroot(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
     let path = Path::new("dist/").join(file);
+    NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
+}
+
+// Stylesheets root
+#[cfg(debug_assertions)]
+#[get("/stylesheets/<file..>")]
+pub fn stylesheets(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
+    let path = Path::new("web/stylesheets/").join(file);
     NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
 }
 

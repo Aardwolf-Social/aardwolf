@@ -22,5 +22,8 @@ diesel.toml
 node_modules
 
 # Translations
-.po~
-translations
+**/*.po~
+translations/
+
+# Compiled templates
+src/templates.rs

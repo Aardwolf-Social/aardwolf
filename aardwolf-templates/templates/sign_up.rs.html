@@ -1,0 +1,56 @@
+@use aardwolf_types::forms::auth::SignUpErrorMessage;
+@use gettext::Catalog;
+@use rocket_i18n::i18n;
+
+@use crate::templates::base;
+
+@(catalog: Catalog, csrf: &str, domain: &str, error: Option<SignUpErrorMessage>)
+
+@:base(catalog.clone(), i18n!(catalog, "Aardwolf | Sign In"), {
+<header>
+    <h2 class="title">@i18n!(catalog, "Aardwolf Instance")</h2>
+    <div style="text-align: right">
+        <a href="sign_in">@i18n!(catalog, "Have an Account? - Login")</a>
+    </div>
+</header>
+<!-- End Page Header -->
+<section class="section">
+    <div class="container">
+
+        <div class="columns is-mobile">
+            <div class="column">
+                <h1 class="title">
+                    @i18n!(catalog, "About Aardwolf")
+                </h1>
+                <p class="subtitle">
+                @i18n!(catalog, "This is who we are!")
+                </p>
+                @i18n!(catalog, "really-long-platform-description")
+            </div>
+            <div class="column">
+                <h1 class="title">
+                    @i18n!(catalog, "Create an Account")
+                </h1>
+                <p class="subtitle">
+                @i18n!(catalog, "Feel free to sign up!")
+                </p>
+                @if let Some(error) = error {
+                    <span style="color: red;">@i18n!(catalog, &error.msg)</span>
+                }
+                <form method="POST" action="/auth/sign_up">
+                    <input type="hidden" name="csrf_token" value="@csrf">
+                    <span class="icon icon-user"></span>
+                    <input type="text" name="username" id="username" placeholder="@["username@", domain].join("")">
+                    <span class="icon icon-envelope"></span>
+                    <input type="email" name="email" id="email" placeholder="E-mail address">
+                    <span class="icon icon-lock"></span>
+                    <input type="password" name="password" id="password" placeholder="Password">
+                    <span class="icon icon-lock"></span>
+                    <input type="password" name="password_confirmation", id="password_confirmation" placeholder="Confirm password">
+                    <button>@i18n!(catalog, "Sign Up")</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+})
