@@ -1,11 +1,10 @@
 use aardwolf_models::user::UserLike;
 use aardwolf_types::forms::auth::{
-    ConfirmAccountFail, ConfirmToken, ConfirmationToken, SignIn, SignInErrorMessage, SignInFail,
-    SignInForm, SignUp, SignUpErrorMessage, SignUpFail, SignUpForm, ValidateSignInForm,
-    ValidateSignInFormFail, ValidateSignUpForm, ValidateSignUpFormFail,
+    ConfirmAccountFail, ConfirmToken, ConfirmationToken, SignIn, SignInFail, SignInForm, SignUp,
+    SignUpFail, SignUpForm, ValidateSignInForm, ValidateSignUpForm,
 };
 use rocket::{
-    http::{Cookie, Cookies},
+    http::{Cookie, Cookies, Status},
     request::Form,
     response::Redirect,
     Response,
@@ -13,73 +12,56 @@ use rocket::{
 use rocket_i18n::I18n;
 
 use render_template;
-use templates;
 use types::user::SignedInUser;
 use DbConn;
 
-#[get("/sign_up?<error..>")]
-pub fn sign_up_form_with_error(i18n: I18n, error: Form<SignUpErrorMessage>) -> Response<'static> {
-    let error = error.into_inner();
-    render_template(move |buf| {
-        templates::sign_up(
-            buf,
-            i18n.catalog.clone(),
-            "csrf token",
-            "aardwolf.social",
-            Some(error.clone()),
-        )
-    })
+#[derive(Responder)]
+pub enum ResponseOrRedirect {
+    Response(Response<'static>),
+    Redirect(Redirect),
+}
+
+impl From<Response<'static>> for ResponseOrRedirect {
+    fn from(r: Response<'static>) -> Self {
+        ResponseOrRedirect::Response(r)
+    }
+}
+
+impl From<Redirect> for ResponseOrRedirect {
+    fn from(r: Redirect) -> Self {
+        ResponseOrRedirect::Redirect(r)
+    }
 }
 
 #[get("/sign_up")]
 pub fn sign_up_form(i18n: I18n) -> Response<'static> {
-    render_template(move |buf| {
-        templates::sign_up(
-            buf,
-            i18n.catalog.clone(),
-            "csrf token",
-            "aardwolf.social",
-            None,
-        )
-    })
-}
-
-#[get("/sign_in?<error..>")]
-pub fn sign_in_form_with_error(i18n: I18n, error: Form<SignInErrorMessage>) -> Response<'static> {
-    let error = error.into_inner();
-    render_template(move |buf| {
-        templates::sign_in(buf, i18n.catalog.clone(), "csrf token", Some(error.clone()))
-    })
+    render_template(aardwolf_templates::SignUp::new(
+        &i18n.catalog,
+        "csrf token",
+        "",
+        None,
+        false,
+    ))
 }
 
 #[get("/sign_in")]
 pub fn sign_in_form(i18n: I18n) -> Response<'static> {
-    render_template(move |buf| templates::sign_in(buf, i18n.catalog.clone(), "csrf token", None))
+    render_template(aardwolf_templates::SignIn::new(
+        &i18n.catalog,
+        "csrf token",
+        "",
+        None,
+        false,
+    ))
 }
 
-#[derive(Clone, Debug, Fail)]
-pub enum SignUpError {
-    #[fail(display = "Error talking db")]
-    Database,
-    #[fail(display = "Error signing up: {}", _0)]
-    SignUp(#[cause] SignUpFail),
-}
-
-impl From<SignUpFail> for SignUpError {
-    fn from(e: SignUpFail) -> Self {
-        SignUpError::SignUp(e)
-    }
-}
-
-impl From<ValidateSignUpFormFail> for SignUpError {
-    fn from(e: ValidateSignUpFormFail) -> Self {
-        SignUpError::SignUp(e.into())
-    }
-}
 #[post("/sign_up", data = "<form>")]
-pub fn sign_up(form: Form<SignUpForm>, db: DbConn) -> Redirect {
-    let res = perform!(&db, SignUpError, [
-        (form = ValidateSignUpForm(form.into_inner())),
+pub fn sign_up(form: Form<SignUpForm>, i18n: I18n, db: DbConn) -> ResponseOrRedirect {
+    let sign_up_form = form.into_inner();
+    let form_state = sign_up_form.as_state();
+
+    let res = perform!(&db, SignUpFail, [
+        (form = ValidateSignUpForm(sign_up_form)),
         (_ = SignUp(form)),
     ]);
 
@@ -93,42 +75,40 @@ pub fn sign_up(form: Form<SignUpForm>, db: DbConn) -> Redirect {
                 token
             );
 
-            Redirect::to("/auth/sign_in")
+            Redirect::to("/auth/sign_in").into()
         }
         Err(e) => {
-            println!("unable to create account: {}, {:?}", e, e);
-            // TODO: Percent Encode the error
-            Redirect::to(format!("/auth/sign_up?msg=Unable%20to%20create%20account"))
+            let (status, valid, system) = match *&e {
+                SignUpFail::ValidationError(ref e) => (Status::BadRequest, Some(e), false),
+                _ => (Status::InternalServerError, None, true),
+            };
+
+            let mut response = render_template(aardwolf_templates::SignUp::new(
+                &i18n.catalog,
+                "csrf token",
+                &form_state.email,
+                valid,
+                system,
+            ));
+            response.set_status(status);
+            response.into()
         }
-    }
-}
-
-#[derive(Clone, Debug, Fail)]
-pub enum SignInError {
-    #[fail(display = "Error talking db")]
-    Database,
-    #[fail(display = "Error signing in: {}", _0)]
-    SignIn(#[cause] SignInFail),
-}
-
-impl From<SignInFail> for SignInError {
-    fn from(e: SignInFail) -> Self {
-        SignInError::SignIn(e)
-    }
-}
-
-impl From<ValidateSignInFormFail> for SignInError {
-    fn from(e: ValidateSignInFormFail) -> Self {
-        SignInError::SignIn(e.into())
     }
 }
 
 #[post("/sign_in", data = "<form>")]
-pub fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redirect {
+pub fn sign_in(
+    form: Form<SignInForm>,
+    db: DbConn,
+    mut cookies: Cookies,
+    i18n: I18n,
+) -> ResponseOrRedirect {
     // TODO: check csrf token (this will probably be a request guard)
+    let form = form.into_inner();
+    let form_state = form.as_state();
 
-    let res = perform!(&db, SignInError, [
-        (form = ValidateSignInForm(form.into_inner())),
+    let res = perform!(&db, SignInFail, [
+        (form = ValidateSignInForm(form)),
         (_ = SignIn(form)),
     ]);
 
@@ -137,33 +117,30 @@ pub fn sign_in(form: Form<SignInForm>, db: DbConn, mut cookies: Cookies) -> Redi
             let mut cookie = Cookie::new("user_id", format!("{}", user.id()));
             cookie.set_http_only(true);
             cookies.add_private(cookie);
-            Redirect::to("/")
+            Redirect::to("/").into()
         }
         Err(e) => {
-            println!("unable to log in: {}, {:?}", e, e);
-            // TODO: Percent Encode the error
-            Redirect::to(format!("/auth/sign_in?msg=Unable%20to%20log%20in"))
+            let (status, valid, system) = match *&e {
+                SignInFail::ValidationError(ref e) => (Status::BadRequest, Some(e), false),
+                _ => (Status::InternalServerError, None, true),
+            };
+
+            let mut response = render_template(aardwolf_templates::SignIn::new(
+                &i18n.catalog,
+                "csrf token",
+                &form_state.email,
+                valid,
+                system,
+            ));
+            response.set_status(status);
+            response.into()
         }
-    }
-}
-
-#[derive(Clone, Debug, Fail)]
-pub enum ConfirmError {
-    #[fail(display = "Error talking db")]
-    Database,
-    #[fail(display = "Error confirming account: {}", _0)]
-    Confirm(#[cause] ConfirmAccountFail),
-}
-
-impl From<ConfirmAccountFail> for ConfirmError {
-    fn from(e: ConfirmAccountFail) -> Self {
-        ConfirmError::Confirm(e)
     }
 }
 
 #[get("/confirmation?<token..>")]
-pub fn confirm(token: Form<ConfirmationToken>, db: DbConn) -> Result<Redirect, ConfirmError> {
-    let res = perform!(&db, ConfirmError, [
+pub fn confirm(token: Form<ConfirmationToken>, db: DbConn) -> Result<Redirect, ConfirmAccountFail> {
+    let res = perform!(&db, ConfirmAccountFail, [
        (_ = ConfirmToken(token.into_inner())),
     ]);
 

@@ -8,12 +8,12 @@ pub use self::{
     confirm_account::{ConfirmAccountFail, ConfirmToken, ConfirmationToken},
     signin::{SignIn, SignInFail},
     signin_form::{
-        SignInErrorMessage, SignInForm, ValidateSignInForm, ValidateSignInFormFail,
+        SignInForm, SignInFormState, ValidateSignInForm, ValidateSignInFormFail,
         ValidatedSignInForm,
     },
     signup::{SignUp, SignUpFail},
     signup_form::{
-        SignUpErrorMessage, SignUpForm, ValidateSignUpForm, ValidateSignUpFormFail,
+        SignUpForm, SignUpFormState, ValidateSignUpForm, ValidateSignUpFormFail,
         ValidatedSignUpForm,
     },
 };

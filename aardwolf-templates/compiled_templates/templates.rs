@@ -16,6 +16,8 @@ pub use self::template_home::home;
 
 pub mod home;
 
+pub mod ui;
+
 mod template_new_post;
 pub use self::template_new_post::new_post;
 

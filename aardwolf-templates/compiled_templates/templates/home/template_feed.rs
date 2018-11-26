@@ -5,7 +5,7 @@ use ::templates::{Html,ToHtml};
 use gettext::Catalog;
 use rocket_i18n::i18n;
 
-pub fn feed(out: &mut Write, catalog: Catalog)
+pub fn feed(out: &mut Write, catalog: &Catalog)
 -> io::Result<()> {
 write!(out, "<article class=\"media\">\n    <!-- Begin sample conversation -->\n    <figure class=\"media-left\">\n        <p class=\"image is-64x64\">\n        <img src=\"https://bulma.io/images/placeholders/128x128.png\" alt=\"")?;
 i18n!(catalog, "Username").to_html(out)?;

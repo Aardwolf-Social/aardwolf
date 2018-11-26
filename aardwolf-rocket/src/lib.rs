@@ -19,7 +19,7 @@ extern crate rocket_contrib;
 extern crate rocket_i18n;
 extern crate serde;
 
-pub use aardwolf_templates::templates;
+use aardwolf_templates::Renderable;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
 use rocket::{
@@ -35,13 +35,13 @@ pub mod routes;
 pub mod session;
 pub mod types;
 
-pub fn render_template<F>(f: F) -> Response<'static>
+pub fn render_template<R>(r: R) -> Response<'static>
 where
-    F: Fn(&mut std::io::Write) -> std::io::Result<()>,
+    R: Renderable,
 {
     let mut buf = Vec::new();
 
-    match f(&mut buf) {
+    match r.render(&mut buf) {
         Ok(_) => Response::build()
             .header(ContentType::HTML)
             .sized_body(std::io::Cursor::new(buf))
@@ -107,9 +107,7 @@ fn app(config: config::Config, db_url: String) -> Result<Rocket, Box<dyn Error>>
 
     let auth = routes![
         routes::auth::sign_up_form,
-        routes::auth::sign_up_form_with_error,
         routes::auth::sign_in_form,
-        routes::auth::sign_in_form_with_error,
         routes::auth::sign_up,
         routes::auth::sign_in,
         routes::auth::confirm,

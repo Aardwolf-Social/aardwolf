@@ -4,8 +4,9 @@ use std::io::{self, Write};
 use ::templates::{Html,ToHtml};
 use gettext::Catalog;
 use rocket_i18n::i18n;
+use crate::templates::ui::icon;
 
-pub fn footer(out: &mut Write, catalog: Catalog)
+pub fn footer(out: &mut Write, catalog: &Catalog)
 -> io::Result<()> {
 write!(out, "<footer class=\"footer\">\n  <div class=\"container\">\n\t<div class=\"content has-text-centered\">\n\t\t<a href=\"termsofservice.html\" class=\"footer_box\">")?;
 i18n!(catalog, "Terms of Service").to_html(out)?;

@@ -8,20 +8,16 @@ use rocket::{
 use rocket_i18n::I18n;
 
 use render_template;
-use templates;
 use types::user::SignedInUserWithEmail;
 use DbConn;
 
 #[get("/")]
 pub fn home(user: SignedInUserWithEmail, i18n: I18n, _db: DbConn) -> Response<'static> {
-    render_template(move |buf| {
-        templates::home(
-            buf,
-            i18n.catalog.clone(),
-            user.0.id().to_string().as_ref(),
-            user.0.id().to_string().as_ref(),
-        )
-    })
+    render_template(aardwolf_templates::Home::new(
+        &i18n.catalog,
+        user.0.id().to_string().as_ref(),
+        user.0.id().to_string().as_ref(),
+    ))
 }
 
 #[get("/", rank = 2)]
@@ -40,6 +36,13 @@ pub fn home_redirect() -> Redirect {
 #[get("/web/<file..>")]
 pub fn webroot(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
     let path = Path::new("dist/").join(file);
+    NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
+}
+
+#[cfg(debug_assertions)]
+#[get("/images/<file..>")]
+pub fn images(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
+    let path = Path::new("web/images/").join(file);
     NamedFile::open(&path).map_err(|_| NotFound(format!("Bad path: {:?}", path)))
 }
 

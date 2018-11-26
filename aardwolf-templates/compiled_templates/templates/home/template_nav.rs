@@ -5,7 +5,7 @@ use ::templates::{Html,ToHtml};
 use gettext::Catalog;
 use rocket_i18n::i18n;
 
-pub fn nav(out: &mut Write, catalog: Catalog)
+pub fn nav(out: &mut Write, catalog: &Catalog)
 -> io::Result<()> {
 write!(out, "<nav class=\"navbar\">\n    <div class=\"container\">\n        <div class=\"navbar-brand\">\n            <a class=\"navbar-item\">\n                <img src=\"/images/aardwolf-logo.png\" alt=\"Aardwolf\">\n            </a>\n            <span class=\"navbar-burger burger\" data-target=\"navbar_menu_hero_a\">\n                <span></span>\n                <span></span>\n                <span></span>\n            </span>\n        </div>\n        <div id=\"navbar_menu_hero_a\" class=\"navbar-menu\">\n            <div class=\"navbar-end\">\n                <a class=\"navbar-item is-active\">\n                    ")?;
 i18n!(catalog, "Home").to_html(out)?;

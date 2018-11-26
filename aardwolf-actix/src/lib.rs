@@ -1,7 +1,9 @@
 use std::{error::Error, fmt};
 
+use aardwolf_templates::Renderable;
 use actix::{self, Addr, SyncArbiter};
 use actix_web::{
+    dev::HttpResponseBuilder,
     fs::StaticFiles,
     http::{header::CONTENT_TYPE, Method},
     middleware::{
@@ -46,18 +48,22 @@ impl fmt::Debug for AppConfig {
     }
 }
 
-impl AppConfig {
-    fn render<F>(&self, f: F) -> HttpResponse
+pub trait WithRucte {
+    fn with_ructe<R>(&mut self, r: R) -> HttpResponse
     where
-        F: FnOnce(&mut std::io::Write) -> std::io::Result<()>,
+        R: Renderable;
+}
+
+impl WithRucte for HttpResponseBuilder {
+    fn with_ructe<R>(&mut self, r: R) -> HttpResponse
+    where
+        R: Renderable,
     {
         let mut buf = Vec::new();
 
-        match f(&mut buf) {
-            Ok(_) => HttpResponse::Ok()
-                .header(CONTENT_TYPE, "text/html")
-                .body(buf),
-            Err(e) => HttpResponse::InternalServerError()
+        match r.render(&mut buf) {
+            Ok(_) => self.header(CONTENT_TYPE, "text/html").body(buf),
+            Err(e) => self
                 .header(CONTENT_TYPE, "text/plain")
                 .body(format!("{}", e)),
         }
@@ -78,6 +84,7 @@ mod assets {
     #[derive(Clone, Debug)]
     pub struct Assets {
         web: String,
+        images: String,
         emoji: String,
         themes: String,
         stylesheets: String,
@@ -87,6 +94,7 @@ mod assets {
         pub fn from_config(config: &Config) -> Result<Self, Box<dyn Error>> {
             Ok(Assets {
                 web: config.get_str("Assets.web")?,
+                images: config.get_str("Assets.images")?,
                 emoji: config.get_str("Assets.emoji")?,
                 themes: config.get_str("Assets.themes")?,
                 stylesheets: config.get_str("Assets.stylesheets")?,
@@ -95,6 +103,10 @@ mod assets {
 
         pub fn web(&self) -> &str {
             &self.web
+        }
+
+        pub fn images(&self) -> &str {
+            &self.images
         }
 
         pub fn emoji(&self) -> &str {
@@ -189,6 +201,7 @@ pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
                     r.method(Method::GET).with(self::routes::app::index)
                 })
                 .handler("/web", StaticFiles::new(assets.web()).unwrap())
+                .handler("/images", StaticFiles::new(assets.images()).unwrap())
                 .handler("/themes", StaticFiles::new(assets.themes()).unwrap())
                 .handler("/emoji", StaticFiles::new(assets.emoji()).unwrap())
                 .handler(
