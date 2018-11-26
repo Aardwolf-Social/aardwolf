@@ -1,7 +1,7 @@
 #![allow(proc_macro_derive_resolution_fallback)]
 use std::{fmt, io::Write};
 
-use bcrypt::{hash, verify, DEFAULT_COST};
+use bcrypt::{hash, verify};
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
 use rand::{distributions::Alphanumeric, rngs::OsRng, Rng};
 use serde::{
@@ -47,7 +47,12 @@ pub fn create_token() -> Result<(EmailToken, HashedEmailToken), CreationError> {
         .collect::<Vec<_>>()
         .join("");
 
-    let hashed_token = hash(&token, DEFAULT_COST).map_err(|_| CreationError::Hash)?;
+    #[cfg(not(any(test, feature = "test")))]
+    let h = hash(&token, bcrypt::DEFAULT_COST);
+    #[cfg(any(test, feature = "test"))]
+    let h = hash(&token, 4);
+
+    let hashed_token = h.map_err(|_| CreationError::Hash)?;
 
     Ok((EmailToken(token), HashedEmailToken(hashed_token)))
 }

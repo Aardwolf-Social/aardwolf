@@ -8,11 +8,11 @@ use rocket::{
 use rocket_i18n::I18n;
 
 use render_template;
-use types::user::SignedInUserWithEmail;
+use types::user::SignedInUser;
 use DbConn;
 
 #[get("/")]
-pub fn home(user: SignedInUserWithEmail, i18n: I18n, _db: DbConn) -> Response<'static> {
+pub fn home(user: SignedInUser, i18n: I18n, _db: DbConn) -> Response<'static> {
     let res = render_template(&aardwolf_templates::Home::new(
         &i18n.catalog,
         user.0.id().to_string().as_ref(),

@@ -1,7 +1,7 @@
 #![allow(proc_macro_derive_resolution_fallback)]
 use std::{fmt, io::Write};
 
-use bcrypt::{hash, verify, DEFAULT_COST};
+use bcrypt::{hash, verify};
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
 use serde::de::{Deserialize, Deserializer};
 
@@ -264,13 +264,20 @@ impl Verify for Password {
 
 impl Create for Password {
     fn create(password: PlaintextPassword) -> Result<Password, CreationError> {
-        hash(&password.0, DEFAULT_COST)
-            .map_err(|e| {
-                error!("Error creating password: {}", e);
+        #[cfg(any(test, feature = "test"))]
+        warn!("BUILT IN TEST MODE");
 
-                CreationError::Bcrypt
-            })
-            .map(Password)
+        #[cfg(not(any(test, feature = "test")))]
+        let h = hash(&password.0, bcrypt::DEFAULT_COST);
+        #[cfg(any(test, feature = "test"))]
+        let h = hash(&password.0, 4);
+
+        h.map_err(|e| {
+            error!("Error creating password: {}", e);
+
+            CreationError::Bcrypt
+        })
+        .map(Password)
     }
 }
 
