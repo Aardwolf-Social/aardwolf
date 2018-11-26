@@ -47,6 +47,9 @@ pub fn create_token() -> Result<(EmailToken, HashedEmailToken), CreationError> {
         .collect::<Vec<_>>()
         .join("");
 
+    #[cfg(any(test, feature = "test"))]
+    warn!("BUILT IN TEST MODE");
+
     #[cfg(not(any(test, feature = "test")))]
     let h = hash(&token, bcrypt::DEFAULT_COST);
     #[cfg(any(test, feature = "test"))]
