@@ -102,3 +102,82 @@ impl From<CreationError> for SignUpFail {
         SignUpFail::CreateTokenError
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use aardwolf_test_helpers::models::{
+        create_plaintext_password, gen_string, with_connection, GenericError,
+    };
+    use diesel::pg::PgConnection;
+
+    use crate::{forms::auth::ValidatedSignUpForm, operations::sign_up::SignUp, traits::DbAction};
+
+    fn setup<F>(f: F)
+    where
+        F: FnOnce(&PgConnection, ValidatedSignUpForm) -> Result<(), GenericError>,
+    {
+        with_connection(|conn| {
+            let email = format!("{}@{}.{}", gen_string()?, gen_string()?, gen_string()?);
+            let pass = gen_string()?;
+
+            let form = ValidatedSignUpForm {
+                email,
+                password: create_plaintext_password(&pass)?,
+                password_confirmation: create_plaintext_password(&pass)?,
+            };
+
+            f(conn, form)
+        })
+    }
+
+    #[test]
+    fn sign_up_succeedes() {
+        setup(|conn, form| {
+            let operation = SignUp(form);
+
+            assert!(operation.db_action(conn).is_ok());
+            Ok(())
+        })
+    }
+
+    #[test]
+    fn password_mismatch_fails_signup() {
+        setup(|conn, mut form| {
+            form.password_confirmation = create_plaintext_password("not the password")?;
+
+            let operation = SignUp(form);
+
+            assert!(operation.db_action(conn).is_err());
+            Ok(())
+        });
+    }
+
+    #[test]
+    fn duplicate_email_fails_signup() {
+        with_connection(|conn| {
+            let email = format!("{}@{}.{}", gen_string()?, gen_string()?, gen_string()?);
+            let pass = gen_string()?;
+
+            let form = ValidatedSignUpForm {
+                email: email.clone(),
+                password: create_plaintext_password(&pass)?,
+                password_confirmation: create_plaintext_password(&pass)?,
+            };
+
+            let operation = SignUp(form);
+
+            assert!(operation.db_action(conn).is_ok());
+
+            let form = ValidatedSignUpForm {
+                email,
+                password: create_plaintext_password(&pass)?,
+                password_confirmation: create_plaintext_password(&pass)?,
+            };
+
+            let operation = SignUp(form);
+
+            assert!(operation.db_action(conn).is_err());
+            Ok(())
+        })
+    }
+}

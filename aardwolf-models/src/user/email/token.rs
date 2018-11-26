@@ -174,7 +174,7 @@ mod tests {
     #[test]
     fn create_and_verify_token() {
         let (email_token, hashed_token) = create_token().unwrap();
-        let verification_token = transmute_email_token(email_token).unwrap();
+        let verification_token = transmute_email_token(&email_token).unwrap();
 
         assert!(
             hashed_token.verify_email(verification_token).is_ok(),

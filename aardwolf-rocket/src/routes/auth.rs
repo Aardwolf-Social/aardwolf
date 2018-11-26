@@ -1,7 +1,11 @@
 use aardwolf_models::user::UserLike;
-use aardwolf_types::forms::auth::{
-    ConfirmAccountFail, ConfirmToken, ConfirmationToken, SignIn, SignInFail, SignInForm, SignUp,
-    SignUpFail, SignUpForm, ValidateSignInForm, ValidateSignUpForm,
+use aardwolf_types::{
+    forms::auth::{SignInForm, SignUpForm, ValidateSignInForm, ValidateSignUpForm},
+    operations::{
+        confirm_account::{ConfirmAccount, ConfirmAccountFail, ConfirmAccountToken},
+        sign_in::{SignIn, SignInFail},
+        sign_up::{SignUp, SignUpFail},
+    },
 };
 use rocket::{
     http::{Cookie, Cookies, Status},
@@ -156,9 +160,12 @@ pub fn sign_in(
 }
 
 #[get("/confirmation?<token..>")]
-pub fn confirm(token: Form<ConfirmationToken>, db: DbConn) -> Result<Redirect, ConfirmAccountFail> {
+pub fn confirm(
+    token: Form<ConfirmAccountToken>,
+    db: DbConn,
+) -> Result<Redirect, ConfirmAccountFail> {
     let res = perform!(&db, ConfirmAccountFail, [
-       (_ = ConfirmToken(token.into_inner())),
+       (_ = ConfirmAccount(token.into_inner())),
     ]);
 
     drop(db);

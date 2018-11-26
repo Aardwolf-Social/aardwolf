@@ -1,9 +1,14 @@
 use aardwolf_types::{
     error::AardwolfFail,
     forms::personas::{
-        CheckCreatePersonaPermission, CheckCreatePersonaPermissionFail,
-        CheckDeletePersonaPermission, CreatePersona, DeletePersona, FetchPersona,
-        PersonaCreationFail, PersonaCreationForm, PersonaDeletionFail, ValidatePersonaCreationForm,
+        CheckDeletePersonaPermission, DeletePersona, FetchPersona, PersonaCreationFail,
+        PersonaCreationForm, PersonaDeletionFail, ValidatePersonaCreationForm,
+    },
+    operations::{
+        check_create_persona_permission::{
+            CheckCreatePersonaPermission, CheckCreatePersonaPermissionFail,
+        },
+        create_persona::CreatePersona,
     },
 };
 use actix_web::{Form, Path, State};

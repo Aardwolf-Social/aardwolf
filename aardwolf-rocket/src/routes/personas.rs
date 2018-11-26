@@ -1,9 +1,17 @@
 use rocket::request::Form;
 
-use aardwolf_types::forms::personas::{
-    CheckCreatePersonaPermission, CheckCreatePersonaPermissionFail, CheckDeletePersonaPermission,
-    CheckDeletePersonaPermissionFail, CreatePersona, DeletePersona, FetchPersona, FetchPersonaFail,
-    PersonaCreationFail, PersonaCreationForm, PersonaDeletionFail, ValidatePersonaCreationForm,
+use aardwolf_types::{
+    forms::personas::{
+        CheckDeletePersonaPermission, CheckDeletePersonaPermissionFail, DeletePersona,
+        FetchPersona, FetchPersonaFail, PersonaCreationFail, PersonaCreationForm,
+        PersonaDeletionFail, ValidatePersonaCreationForm,
+    },
+    operations::{
+        check_create_persona_permission::{
+            CheckCreatePersonaPermission, CheckCreatePersonaPermissionFail,
+        },
+        create_persona::CreatePersona,
+    },
 };
 use types::user::SignedInUser;
 use DbConn;

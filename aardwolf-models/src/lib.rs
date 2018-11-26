@@ -3,7 +3,7 @@ extern crate chrono;
 extern crate chrono_tz;
 #[macro_use]
 extern crate diesel;
-#[cfg(test)]
+#[cfg(any(test, feature = "test"))]
 extern crate dotenv;
 #[macro_use]
 extern crate failure;
@@ -27,5 +27,5 @@ pub mod sql_types;
 pub mod timer;
 pub mod user;
 
-#[cfg(test)]
+#[cfg(any(test, feature = "test"))]
 pub mod test_helper;
