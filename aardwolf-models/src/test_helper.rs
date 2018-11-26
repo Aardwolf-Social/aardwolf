@@ -248,6 +248,28 @@ where
     f(base_actor)
 }
 
+pub fn user_with_base_actor<F>(
+    conn: &PgConnection,
+    user: &AuthenticatedUser,
+    f: F,
+) -> Result<(), GenericError>
+where
+    F: FnOnce(BaseActor) -> Result<(), GenericError>,
+{
+    let base_actor = NewBaseActor::new(
+        gen_string()?,
+        gen_url()?,
+        gen_url()?,
+        gen_url()?,
+        Some(user),
+        FollowPolicy::AutoAccept,
+        json!({}),
+    )
+    .insert(conn)?;
+
+    f(base_actor)
+}
+
 pub fn with_group<F>(conn: &PgConnection, base_actor: &BaseActor, f: F) -> Result<(), GenericError>
 where
     F: FnOnce(Group) -> Result<(), GenericError>,
