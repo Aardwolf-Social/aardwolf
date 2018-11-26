@@ -5,7 +5,7 @@ use ::templates::{Html,ToHtml};
 use rocket_i18n::i18n;
 use crate::{Alert, templates::ui::icon};
 
-pub fn alert(out: &mut Write, alert: Alert)
+pub fn alert(out: &mut Write, alert: &Alert)
 -> io::Result<()> {
 write!(out, "<div class=\"aardwolf-alert aardwolf-alert-")?;
 alert.kind.to_html(out)?;

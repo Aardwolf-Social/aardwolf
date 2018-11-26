@@ -16,6 +16,7 @@ use types::user::SignedInUser;
 use DbConn;
 
 #[derive(Responder)]
+#[cfg_attr(feature = "cargo-clippy", allow(clippy::large_enum_variant))]
 pub enum ResponseOrRedirect {
     Response(Response<'static>),
     Redirect(Redirect),
@@ -35,24 +36,32 @@ impl From<Redirect> for ResponseOrRedirect {
 
 #[get("/sign_up")]
 pub fn sign_up_form(i18n: I18n) -> Response<'static> {
-    render_template(aardwolf_templates::SignUp::new(
+    let res = render_template(&aardwolf_templates::SignUp::new(
         &i18n.catalog,
         "csrf token",
         "",
         None,
         false,
-    ))
+    ));
+
+    drop(i18n);
+
+    res
 }
 
 #[get("/sign_in")]
 pub fn sign_in_form(i18n: I18n) -> Response<'static> {
-    render_template(aardwolf_templates::SignIn::new(
+    let res = render_template(&aardwolf_templates::SignIn::new(
         &i18n.catalog,
         "csrf token",
         "",
         None,
         false,
-    ))
+    ));
+
+    drop(i18n);
+
+    res
 }
 
 #[post("/sign_up", data = "<form>")]
@@ -65,7 +74,7 @@ pub fn sign_up(form: Form<SignUpForm>, i18n: I18n, db: DbConn) -> ResponseOrRedi
         (_ = SignUp(form)),
     ]);
 
-    match res {
+    let res = match res {
         Ok((email, token)) => {
             // just printing this out for now so we can copy/paste into the browser to confirm accounts,
             // but obviously this will need to be emailed to the user
@@ -78,12 +87,12 @@ pub fn sign_up(form: Form<SignUpForm>, i18n: I18n, db: DbConn) -> ResponseOrRedi
             Redirect::to("/auth/sign_in").into()
         }
         Err(e) => {
-            let (status, valid, system) = match *&e {
+            let (status, valid, system) = match e {
                 SignUpFail::ValidationError(ref e) => (Status::BadRequest, Some(e), false),
                 _ => (Status::InternalServerError, None, true),
             };
 
-            let mut response = render_template(aardwolf_templates::SignUp::new(
+            let mut response = render_template(&aardwolf_templates::SignUp::new(
                 &i18n.catalog,
                 "csrf token",
                 &form_state.email,
@@ -93,7 +102,11 @@ pub fn sign_up(form: Form<SignUpForm>, i18n: I18n, db: DbConn) -> ResponseOrRedi
             response.set_status(status);
             response.into()
         }
-    }
+    };
+
+    drop(i18n);
+
+    res
 }
 
 #[post("/sign_in", data = "<form>")]
@@ -112,7 +125,7 @@ pub fn sign_in(
         (_ = SignIn(form)),
     ]);
 
-    match res {
+    let res = match res {
         Ok(user) => {
             let mut cookie = Cookie::new("user_id", format!("{}", user.id()));
             cookie.set_http_only(true);
@@ -120,12 +133,12 @@ pub fn sign_in(
             Redirect::to("/").into()
         }
         Err(e) => {
-            let (status, valid, system) = match *&e {
+            let (status, valid, system) = match e {
                 SignInFail::ValidationError(ref e) => (Status::BadRequest, Some(e), false),
                 _ => (Status::InternalServerError, None, true),
             };
 
-            let mut response = render_template(aardwolf_templates::SignIn::new(
+            let mut response = render_template(&aardwolf_templates::SignIn::new(
                 &i18n.catalog,
                 "csrf token",
                 &form_state.email,
@@ -135,7 +148,11 @@ pub fn sign_in(
             response.set_status(status);
             response.into()
         }
-    }
+    };
+
+    drop(i18n);
+
+    res
 }
 
 #[get("/confirmation?<token..>")]
@@ -143,6 +160,8 @@ pub fn confirm(token: Form<ConfirmationToken>, db: DbConn) -> Result<Redirect, C
     let res = perform!(&db, ConfirmAccountFail, [
        (_ = ConfirmToken(token.into_inner())),
     ]);
+
+    drop(db);
 
     Ok(match res {
         Ok(_) => Redirect::to("/auth/sign_in"),
@@ -155,6 +174,7 @@ pub fn confirm(token: Form<ConfirmationToken>, db: DbConn) -> Result<Redirect, C
 
 #[get("/sign_out")]
 pub fn sign_out(_user: SignedInUser, mut cookies: Cookies) -> Redirect {
+    drop(_user);
     cookies.remove_private(Cookie::named("user_id"));
     Redirect::to("/auth/sign_in")
 }

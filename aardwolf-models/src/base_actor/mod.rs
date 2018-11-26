@@ -176,9 +176,9 @@ impl NewBaseActor {
     ) -> Self {
         NewBaseActor {
             display_name,
-            profile_url: profile_url.into(),
-            inbox_url: inbox_url.into(),
-            outbox_url: outbox_url.into(),
+            profile_url,
+            inbox_url,
+            outbox_url,
             local_user: local_user.map(|lu| lu.id()),
             follow_policy,
             original_json,

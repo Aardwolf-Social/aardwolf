@@ -21,7 +21,7 @@ impl<'a> Home<'a> {
 }
 
 impl<'a> Renderable for Home<'a> {
-    fn render(self, write: &mut std::io::Write) -> std::io::Result<()> {
+    fn render(&self, write: &mut std::io::Write) -> std::io::Result<()> {
         crate::templates::home(write, self)
     }
 }

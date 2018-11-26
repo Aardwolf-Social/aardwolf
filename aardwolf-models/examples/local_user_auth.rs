@@ -64,7 +64,7 @@ fn main() {
             let user = match NewUser::new()
                 .insert(&connection)
                 .unwrap()
-                .to_verified(&connection)
+                .into_verified(&connection)
                 .unwrap()
             {
                 Ok(_) => panic!("Unexpected verified user"),
@@ -118,12 +118,12 @@ fn main() {
             let (unauthenticated_user, email) =
                 UnauthenticatedUser::by_email_id(payload.id, &connection).unwrap();
 
-            let user = match unauthenticated_user.to_verified(&connection).unwrap() {
+            let user = match unauthenticated_user.into_verified(&connection).unwrap() {
                 Ok(_unauthenticatec_user) => panic!("User shouldn't be verified"),
                 Err(unverified_user) => unverified_user,
             };
 
-            let email = match email.to_verified() {
+            let email = match email.into_verified() {
                 Ok(_verified_email) => panic!("Unverified user should not have a verified email"),
                 Err(unverified_email) => unverified_email,
             };

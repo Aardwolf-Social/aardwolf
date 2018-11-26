@@ -13,11 +13,17 @@ use DbConn;
 
 #[get("/")]
 pub fn home(user: SignedInUserWithEmail, i18n: I18n, _db: DbConn) -> Response<'static> {
-    render_template(aardwolf_templates::Home::new(
+    let res = render_template(&aardwolf_templates::Home::new(
         &i18n.catalog,
         user.0.id().to_string().as_ref(),
         user.0.id().to_string().as_ref(),
-    ))
+    ));
+
+    drop(user);
+    drop(i18n);
+    drop(_db);
+
+    res
 }
 
 #[get("/", rank = 2)]

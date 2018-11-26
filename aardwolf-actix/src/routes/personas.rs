@@ -14,7 +14,7 @@ use serde_derive::Serialize;
 use crate::{db::DbActionError, error::RedirectError, types::user::SignedInUser, AppConfig};
 
 pub(crate) fn new((_state, _user): (State<AppConfig>, SignedInUser)) -> String {
-    format!("placeholder")
+    "placeholder".to_string()
 }
 
 #[derive(Clone, Debug, Fail)]
@@ -78,7 +78,7 @@ pub(crate) fn create(
     ]);
 
     Box::new(
-        res.map(|(_base_actor, _persona)| format!("Created!"))
+        res.map(|(_base_actor, _persona)| "Created!".to_string())
             .map_err(|_| RedirectError::new("/personas/new", &None).into()),
     )
 }
@@ -116,7 +116,7 @@ pub(crate) fn delete(
     ]);
 
     Box::new(
-        res.map(|_| format!("Deleted!"))
+        res.map(|_| "Deleted!".to_string())
             .map_err(|_| RedirectError::new("/personas", &None).into()),
     )
 }

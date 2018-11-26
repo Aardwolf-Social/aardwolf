@@ -49,7 +49,7 @@ impl FromRequest<AppConfig> for SignedInUser {
     fn from_request(req: &HttpRequest<AppConfig>, _: &Self::Config) -> Self::Result {
         let state = req.state().clone();
 
-        let id_res = from_session(req.session(), "user_id", SignedInUserError::Cookie);
+        let id_res = from_session(&req.session(), "user_id", SignedInUserError::Cookie);
 
         let res = id_res
             .into_future()
@@ -74,7 +74,7 @@ impl FromRequest<AppConfig> for SignedInUserWithEmail {
     fn from_request(req: &HttpRequest<AppConfig>, _: &Self::Config) -> Self::Result {
         let state = req.state().clone();
 
-        let id_res = from_session(req.session(), "user_id", SignedInUserError::Cookie);
+        let id_res = from_session(&req.session(), "user_id", SignedInUserError::Cookie);
 
         let res = id_res
             .into_future()

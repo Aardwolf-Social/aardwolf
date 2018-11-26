@@ -16,23 +16,31 @@ use crate::{
 };
 
 pub(crate) fn sign_up_form(i18n: I18n) -> HttpResponse {
-    HttpResponse::Ok().with_ructe(aardwolf_templates::SignUp::new(
+    let res = HttpResponse::Ok().with_ructe(aardwolf_templates::SignUp::new(
         &i18n.catalog,
         "csrf token",
         "",
         None,
         false,
-    ))
+    ));
+
+    drop(i18n);
+
+    res
 }
 
 pub(crate) fn sign_in_form(i18n: I18n) -> HttpResponse {
-    HttpResponse::Ok().with_ructe(aardwolf_templates::SignIn::new(
+    let res = HttpResponse::Ok().with_ructe(aardwolf_templates::SignIn::new(
         &i18n.catalog,
         "csrf token",
         "",
         None,
         false,
-    ))
+    ));
+
+    drop(i18n);
+
+    res
 }
 
 #[derive(Clone, Debug, Fail)]
@@ -85,7 +93,7 @@ pub(crate) fn sign_up(
                 .finish()
         })
         .or_else(move |e| {
-            let (mut res, valid, system) = match *&e {
+            let (mut res, valid, system) = match e {
                 SignUpError::SignUp(ref e) => match *e {
                     SignUpFail::ValidationError(ref e) => {
                         (HttpResponse::BadRequest(), Some(e), false)
@@ -153,7 +161,7 @@ pub(crate) fn sign_in(
         })
         .map(|_| HttpResponse::SeeOther().header(LOCATION, "/").finish())
         .or_else(move |e| {
-            let (mut res, validation, system) = match *&e {
+            let (mut res, validation, system) = match e {
                 SignInError::SignIn(ref e) => match *e {
                     SignInFail::ValidationError(ref e) => {
                         (HttpResponse::BadRequest(), Some(e), false)

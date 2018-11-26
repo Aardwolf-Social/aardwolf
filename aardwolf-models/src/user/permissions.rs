@@ -280,6 +280,7 @@ impl RoleRevoker {
 pub struct PostMaker<'a>(&'a BaseActor);
 
 impl<'a> PostMaker<'a> {
+    #[cfg_attr(feature = "cargo-clippy", allow(clippy::too_many_arguments))]
     pub fn make_post(
         &self,
         name: Option<String>,
@@ -318,6 +319,7 @@ impl<'a> PostMaker<'a> {
 pub struct MediaPostMaker<'a>(&'a BaseActor);
 
 impl<'a> MediaPostMaker<'a> {
+    #[cfg_attr(feature = "cargo-clippy", allow(clippy::too_many_arguments))]
     pub fn make_media_post(
         &self,
         name: Option<String>,
@@ -358,6 +360,7 @@ impl<'a> MediaPostMaker<'a> {
 pub struct CommentMaker<'a>(&'a BaseActor);
 
 impl<'a> CommentMaker<'a> {
+    #[cfg_attr(feature = "cargo-clippy", allow(clippy::too_many_arguments))]
     pub fn make_comment(
         &self,
         name: Option<String>,
@@ -495,7 +498,7 @@ impl<'a> FollowRequestManager<'a> {
 
     pub fn reject_follow_request(
         &self,
-        follow_request: FollowRequest,
+        follow_request: &FollowRequest,
         conn: &PgConnection,
     ) -> Result<(), FollowRequestManagerError> {
         use diesel::prelude::*;
@@ -504,7 +507,7 @@ impl<'a> FollowRequestManager<'a> {
             return Err(FollowRequestManagerError::IdMismatch);
         }
 
-        diesel::delete(&follow_request)
+        diesel::delete(follow_request)
             .execute(conn)
             .map(|_| ())
             .map_err(From::from)
@@ -528,6 +531,7 @@ impl From<diesel::result::Error> for FollowRequestManagerError {
 pub struct LocalPersonaCreator<U: UserLike>(U);
 
 impl<U: UserLike> LocalPersonaCreator<U> {
+    #[cfg_attr(feature = "cargo-clippy", allow(clippy::too_many_arguments))]
     pub fn create_persona(
         &self,
         display_name: String,

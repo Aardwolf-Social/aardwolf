@@ -1,5 +1,5 @@
 @use crate::{EmailInput, templates::ui::input};
 
-@(email_input: EmailInput)
+@(email_input: &EmailInput)
 
-@:input(email_input.into())
+@:input(&email_input.into())

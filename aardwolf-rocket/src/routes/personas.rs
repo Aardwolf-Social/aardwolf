@@ -10,7 +10,8 @@ use DbConn;
 
 #[get("/new")]
 pub fn new(_user: SignedInUser) -> String {
-    format!("placeholder")
+    drop(_user);
+    "placeholder".to_string()
 }
 
 #[derive(Clone, Debug, Fail)]
@@ -54,7 +55,7 @@ pub fn create(
         (_ = CreatePersona(creator, form)),
     ])?;
 
-    Ok(format!("Created!"))
+    Ok("Created!".to_string())
 }
 
 #[derive(Clone, Debug, Fail)]
@@ -87,16 +88,17 @@ impl From<CheckDeletePersonaPermissionFail> for PersonaDeleteError {
 
 #[get("/delete/<id>")]
 pub fn delete(user: SignedInUser, id: i32, db: DbConn) -> Result<String, PersonaDeleteError> {
-    let _ = perform!(&db, PersonaDeleteError, [
+    perform!(&db, PersonaDeleteError, [
         (persona = FetchPersona(id)),
         (deleter = CheckDeletePersonaPermission(user.0, persona)),
         (_ = DeletePersona(deleter)),
     ])?;
 
-    Ok(format!("Deleted!"))
+    Ok("Deleted!".to_string())
 }
 
 #[get("/switch/<switch_persona>")]
 pub fn switch(_user: SignedInUser, switch_persona: i32) -> String {
+    drop(_user);
     format!("placeholder, {}", switch_persona)
 }

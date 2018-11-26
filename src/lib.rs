@@ -80,10 +80,11 @@ pub fn db_conn_string(config: &Config) -> Result<String, Error> {
         |(mut string_vec, mut error_vec), res| {
             match res {
                 Ok(string) => string_vec.push(string),
-                Err(error) => match error {
-                    ConfigError::NotFound(key) => error_vec.push(key),
-                    _ => (),
-                },
+                Err(error) => {
+                    if let ConfigError::NotFound(key) = error {
+                        error_vec.push(key);
+                    }
+                }
             }
 
             (string_vec, error_vec)

@@ -2,7 +2,7 @@
 
 @use crate::{Shortcuts, templates::ui::icon};
 
-@(shortcuts: Shortcuts)
+@(shortcuts: &Shortcuts)
 
 <aside class="menu">
     <a href="@shortcuts.profile_link">@shortcuts.username</a>

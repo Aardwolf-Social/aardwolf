@@ -92,17 +92,17 @@ pub struct ValidationError {
 
 impl ValidationError {
     /// Was there any error in password validation?
-    pub fn any(&self) -> bool {
+    pub fn any(self) -> bool {
         self.no_match || self.too_short
     }
 
     /// Passwords do not match
-    pub fn no_match(&self) -> bool {
+    pub fn no_match(self) -> bool {
         self.no_match
     }
 
     /// Password is too short
-    pub fn too_short(&self) -> bool {
+    pub fn too_short(self) -> bool {
         self.too_short
     }
 
