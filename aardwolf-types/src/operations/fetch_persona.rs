@@ -77,7 +77,7 @@ mod tests {
         setup(|conn, persona| {
             let operation = FetchPersona(persona.id() + 1);
 
-            assert!(operation.db_action(conn).is_ok());
+            assert!(operation.db_action(conn).is_err());
             Ok(())
         })
     }
