@@ -450,7 +450,7 @@ where
 {
     let unauthenticated_user = NewUser::new().insert(conn)?;
 
-    let unverified_user = match unauthenticated_user.to_verified(conn)? {
+    let unverified_user = match unauthenticated_user.into_verified(conn)? {
         Ok(_) => return Err(GenericError::Verified),
         Err(unverified_user) => unverified_user,
     };
@@ -497,7 +497,7 @@ where
 {
     let unauthenticated_user = NewUser::new().insert(conn)?;
 
-    let user = match unauthenticated_user.to_verified(conn)? {
+    let user = match unauthenticated_user.into_verified(conn)? {
         Ok(_) => return Err(GenericError::Verified),
         Err(unverified_user) => unverified_user,
     };
