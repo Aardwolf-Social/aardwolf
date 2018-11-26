@@ -51,7 +51,7 @@ impl DbAction for ConfirmToken {
         );
 
         let user = match unauthenticated_user
-            .to_verified(conn)
+            .into_verified(conn)
             .map_err(|_| ConfirmAccountFail::UserLookup)?
         {
             Ok(unauthenticated_user) => {
@@ -63,7 +63,7 @@ impl DbAction for ConfirmToken {
 
         info!("User is not yet verified");
 
-        let email = match email.to_verified() {
+        let email = match email.into_verified() {
             Ok(verified_email) => {
                 error!(
                     "Tried to verify already verified email: {}",

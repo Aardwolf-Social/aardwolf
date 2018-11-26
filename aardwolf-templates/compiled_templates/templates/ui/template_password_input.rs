@@ -4,9 +4,9 @@ use std::io::{self, Write};
 use ::templates::{Html,ToHtml};
 use crate::{PasswordInput, templates::ui::input};
 
-pub fn password_input(out: &mut Write, password_input: PasswordInput)
+pub fn password_input(out: &mut Write, password_input: &PasswordInput)
 -> io::Result<()> {
-input(out, password_input.into())?;
+input(out, &password_input.into())?;
 write!(out, "\n")?;
 Ok(())
 }

@@ -11,74 +11,47 @@ pub struct Input<'a> {
     pub(crate) error: Option<&'a String>,
 }
 
-impl<'a> From<PasswordInput<'a>> for Input<'a> {
-    fn from(p: PasswordInput<'a>) -> Self {
-        let PasswordInput {
-            catalog,
-            name,
-            label,
-            placeholder,
-            error,
-        } = p;
-
+impl<'a> From<&'a PasswordInput<'a>> for Input<'a> {
+    fn from(p: &'a PasswordInput<'a>) -> Self {
         Input {
-            catalog,
+            catalog: p.catalog,
             kind: "password",
-            name,
-            label: Some(label),
-            placeholder,
+            name: p.name,
+            label: Some(p.label),
+            placeholder: p.placeholder,
             icon: Some("lock"),
             value: "",
-            error,
+            error: p.error,
         }
     }
 }
 
-impl<'a> From<EmailInput<'a>> for Input<'a> {
-    fn from(e: EmailInput<'a>) -> Self {
-        let EmailInput {
-            catalog,
-            name,
-            label,
-            placeholder,
-            value,
-            error,
-        } = e;
-
+impl<'a> From<&'a EmailInput<'a>> for Input<'a> {
+    fn from(e: &'a EmailInput<'a>) -> Self {
         Input {
-            catalog,
+            catalog: e.catalog,
             kind: "email",
-            name,
-            label: Some(label),
-            placeholder,
+            name: e.name,
+            label: Some(e.label),
+            placeholder: e.placeholder,
             icon: Some("envelope"),
-            value,
-            error,
+            value: e.value,
+            error: e.error,
         }
     }
 }
 
-impl<'a> From<TextInput<'a>> for Input<'a> {
-    fn from(e: TextInput<'a>) -> Self {
-        let TextInput {
-            catalog,
-            name,
-            label,
-            placeholder,
-            icon,
-            value,
-            error,
-        } = e;
-
+impl<'a> From<&'a TextInput<'a>> for Input<'a> {
+    fn from(t: &'a TextInput<'a>) -> Self {
         Input {
-            catalog,
+            catalog: t.catalog,
             kind: "text",
-            name,
-            label: Some(label),
-            placeholder,
-            icon,
-            value,
-            error,
+            name: t.name,
+            label: Some(t.label),
+            placeholder: t.placeholder,
+            icon: t.icon,
+            value: t.value,
+            error: t.error,
         }
     }
 }

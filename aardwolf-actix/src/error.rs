@@ -33,7 +33,7 @@ impl ResponseError for RedirectError {
             .1
             .as_ref()
             .map(|m| format!("?msg={}", m))
-            .unwrap_or("".to_owned());
+            .unwrap_or_else(|| "".to_owned());
         let location = format!("{}{}", self.0, msg);
 
         println!("Redirecting to {}", location);

@@ -28,7 +28,10 @@ impl DbAction for SignUp {
                 .insert(conn)
                 .map_err(|_| SignUpFail::UserCreateError)?;
 
-            let user = match user.to_verified(conn).map_err(|_| SignUpFail::UserLookup)? {
+            let user = match user
+                .into_verified(conn)
+                .map_err(|_| SignUpFail::UserLookup)?
+            {
                 Ok(_unauthenticatec_user) => return Err(SignUpFail::VerifiedUser),
                 Err(unverified_user) => unverified_user,
             };

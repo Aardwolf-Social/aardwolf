@@ -35,7 +35,7 @@ pub mod routes;
 pub mod session;
 pub mod types;
 
-pub fn render_template<R>(r: R) -> Response<'static>
+pub fn render_template<R>(r: &R) -> Response<'static>
 where
     R: Renderable,
 {
@@ -84,11 +84,11 @@ fn db_pool(rocket: &Rocket) -> Result<Pool, Box<dyn Error>> {
     Ok(r2d2::Pool::builder().build(manager)?)
 }
 
-fn app(config: config::Config, db_url: String) -> Result<Rocket, Box<dyn Error>> {
+fn app(config: &config::Config, db_url: &str) -> Result<Rocket, Box<dyn Error>> {
     let c = rocket::Config::build(rocket::config::Environment::Development)
         .address(config.get_str("Web.Listen.address")?)
         .port(config.get::<u16>("Web.Listen.port")?)
-        .extra("database_url", db_url.as_str())
+        .extra("database_url", db_url)
         .unwrap();
 
     let mut routes = routes![routes::app::home, routes::app::home_redirect,];
@@ -139,7 +139,7 @@ fn app(config: config::Config, db_url: String) -> Result<Rocket, Box<dyn Error>>
     Ok(r.manage(pool))
 }
 
-pub fn run(config: config::Config, db_url: String) -> Result<(), Box<dyn Error>> {
+pub fn run(config: &config::Config, db_url: &str) -> Result<(), Box<dyn Error>> {
     app(config, db_url)?.launch();
     Ok(())
 }

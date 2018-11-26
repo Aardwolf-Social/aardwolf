@@ -5,7 +5,7 @@ use ::templates::{Html,ToHtml};
 use rocket_i18n::i18n;
 use crate::{Input, templates::ui::icon};
 
-pub fn input(out: &mut Write, input: Input)
+pub fn input(out: &mut Write, input: &Input)
 -> io::Result<()> {
 write!(out, "<div class=\"aardwolf-input-wrapper\">\n    <label for=\"")?;
 input.name.to_html(out)?;

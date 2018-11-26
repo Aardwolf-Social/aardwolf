@@ -28,7 +28,7 @@ mod rocket {
     use config::Config;
     use std::error::Error;
 
-    pub fn run(config: Config, db_url: String) -> Result<(), Box<dyn Error>> {
+    pub fn run(config: &Config, db_url: &str) -> Result<(), Box<dyn Error>> {
         aardwolf_rocket::run(config, db_url)
     }
 }
@@ -38,7 +38,7 @@ mod actix {
     use config::Config;
     use std::error::Error;
 
-    pub fn run(config: Config, db_url: String) -> Result<(), Box<dyn Error>> {
+    pub fn run(config: &Config, db_url: &str) -> Result<(), Box<dyn Error>> {
         aardwolf_actix::run(config, db_url)
     }
 }
@@ -53,10 +53,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     begin_log(&config);
 
     #[cfg(feature = "rocket")]
-    rocket::run(config, db_url)?;
+    rocket::run(&config, &db_url)?;
 
     #[cfg(feature = "actix")]
-    actix::run(config, db_url)?;
+    actix::run(&config, &db_url)?;
 
     Ok(())
 }

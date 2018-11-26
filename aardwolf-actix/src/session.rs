@@ -1,6 +1,6 @@
 use actix_web::middleware::session::Session;
 
-pub fn from_session<I, E>(session: Session, key: &str, err: E) -> Result<I, E>
+pub fn from_session<I, E>(session: &Session, key: &str, err: E) -> Result<I, E>
 where
     I: serde::de::DeserializeOwned,
 {

@@ -59,7 +59,7 @@ impl<'a> SignUp<'a> {
 }
 
 impl<'a> Renderable for SignUp<'a> {
-    fn render(self, write: &mut std::io::Write) -> std::io::Result<()> {
+    fn render(&self, write: &mut std::io::Write) -> std::io::Result<()> {
         crate::templates::sign_up(write, self)
     }
 }

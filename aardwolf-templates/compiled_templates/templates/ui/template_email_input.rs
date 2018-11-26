@@ -4,9 +4,9 @@ use std::io::{self, Write};
 use ::templates::{Html,ToHtml};
 use crate::{EmailInput, templates::ui::input};
 
-pub fn email_input(out: &mut Write, email_input: EmailInput)
+pub fn email_input(out: &mut Write, email_input: &EmailInput)
 -> io::Result<()> {
-input(out, email_input.into())?;
+input(out, &email_input.into())?;
 write!(out, "\n")?;
 Ok(())
 }

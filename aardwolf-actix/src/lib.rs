@@ -70,7 +70,7 @@ impl WithRucte for HttpResponseBuilder {
     }
 }
 
-fn db_pool(database_url: String) -> Result<Pool, Box<dyn Error>> {
+fn db_pool(database_url: &str) -> Result<Pool, Box<dyn Error>> {
     let manager = ConnectionManager::<PgConnection>::new(database_url);
     Ok(r2d2::Pool::builder().build(manager)?)
 }
@@ -123,7 +123,7 @@ mod assets {
     }
 }
 
-pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
+pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
     let sys = actix::System::new("aardwolf-actix");
 
     let pool = db_pool(database_url)?;

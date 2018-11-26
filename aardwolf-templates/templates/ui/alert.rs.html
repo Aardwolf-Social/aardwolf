@@ -2,7 +2,7 @@
 
 @use crate::{Alert, templates::ui::icon};
 
-@(alert: Alert)
+@(alert: &Alert)
 
 <div class="aardwolf-alert aardwolf-alert-@alert.kind">
     <div class="aardwolf-alert-meta">

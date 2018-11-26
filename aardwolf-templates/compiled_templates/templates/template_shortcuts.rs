@@ -5,7 +5,7 @@ use ::templates::{Html,ToHtml};
 use rocket_i18n::i18n;
 use crate::{Shortcuts, templates::ui::icon};
 
-pub fn shortcuts(out: &mut Write, shortcuts: Shortcuts)
+pub fn shortcuts(out: &mut Write, shortcuts: &Shortcuts)
 -> io::Result<()> {
 write!(out, "<aside class=\"menu\">\n    <a href=\"")?;
 shortcuts.profile_link.to_html(out)?;
