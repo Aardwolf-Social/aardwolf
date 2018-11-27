@@ -1,3 +1,13 @@
+# Assets - This is where static files are stored for running in development mode
+[Assets]
+web = "dist"
+themes = "web/themes"
+emoji = "web/emoji"
+
+# Templates - the directories where Tera templates are stored
+[Templates]
+dir = "./templates/**/*"
+
 # Log - This section describes how logging should be handled in the application
 [Log]
 # Specifies the file that the logs should be stored in
@@ -9,10 +19,11 @@ file = "aardwolf.log"
 # instance's public IP address.
 address = "127.0.0.1"
 # Listen.port - What port to listen on for requests. This can be any valid port number,
+# HTTP defaults to port 80, and https defaults to port 443.
 # NOTE: If you want to use port 80 or 443, you will have to run the service as root (sudo cargo run...)
 # Ports above 1024 do not require root/sudo priviledges (ex: 8080)
-port = 80
-#port = 8080
+#port = 80
+port = 8080
 
 # Database - This section describes how and where to connect to the database.
 [Database]

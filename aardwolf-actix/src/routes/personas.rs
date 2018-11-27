@@ -1,24 +1,25 @@
 use aardwolf_types::{
     error::AardwolfFail,
-    forms::personas::{
-        CheckCreatePersonaPermission, CheckCreatePersonaPermissionFail,
-        CheckDeletePersonaPermission, CreatePersona, DeletePersona, FetchPersona,
-        PersonaCreationFail, PersonaCreationForm, PersonaDeletionFail, ValidatePersonaCreationForm,
+    forms::personas::{PersonaCreationFail, PersonaCreationForm, ValidatePersonaCreationForm},
+    operations::{
+        check_create_persona_permission::{
+            CheckCreatePersonaPermission, CheckCreatePersonaPermissionFail,
+        },
+        check_delete_persona_permission::CheckDeletePersonaPermission,
+        create_persona::CreatePersona,
+        delete_persona::{DeletePersona, DeletePersonaFail},
+        fetch_persona::FetchPersona,
     },
 };
 use actix_web::{Form, Path, State};
+use failure::Fail;
 use futures::Future;
+use serde_derive::Serialize;
 
-use crate::{
-    action::{DbActionWrapper, ValidateWrapper},
-    db::DbActionError,
-    error::RedirectError,
-    types::user::SignedInUser,
-    AppConfig,
-};
+use crate::{db::DbActionError, error::RedirectError, types::user::SignedInUser, AppConfig};
 
 pub(crate) fn new((_state, _user): (State<AppConfig>, SignedInUser)) -> String {
-    format!("placeholder")
+    "placeholder".to_string()
 }
 
 #[derive(Clone, Debug, Fail)]
@@ -75,19 +76,14 @@ impl From<DbActionError<PersonaCreationFail>> for PersonaCreateError {
 pub(crate) fn create(
     (state, user, form): (State<AppConfig>, SignedInUser, Form<PersonaCreationForm>),
 ) -> Box<dyn Future<Item = String, Error = actix_web::error::Error>> {
-    let res = perform!(
-        state,
-        form.into_inner(),
-        PersonaCreateError,
-        [
-            (ValidateWrapper<_, _, _> => ValidatePersonaCreationForm),
-            (DbActionWrapper<_, _, _> => CheckCreatePersonaPermission::new(user.0)),
-            (DbActionWrapper<_, _, _> => CreatePersona),
-        ]
-    );
+    let res = perform!(state, PersonaCreateError, [
+        (form = ValidatePersonaCreationForm(form.into_inner())),
+        (creater = CheckCreatePersonaPermission(user.0)),
+        (_ = CreatePersona(creater, form)),
+    ]);
 
     Box::new(
-        res.map(|(_base_actor, _persona)| format!("Created!"))
+        res.map(|(_base_actor, _persona)| "Created!".to_string())
             .map_err(|_| RedirectError::new("/personas/new", &None).into()),
     )
 }
@@ -99,12 +95,12 @@ pub enum PersonaDeleteError {
     #[fail(display = "Error talking db")]
     Database,
     #[fail(display = "Error confirming account: {}", _0)]
-    Delete(#[cause] PersonaDeletionFail),
+    Delete(#[cause] DeletePersonaFail),
 }
 
 impl<E> From<DbActionError<E>> for PersonaDeleteError
 where
-    E: Into<PersonaDeletionFail> + AardwolfFail,
+    E: Into<DeletePersonaFail> + AardwolfFail,
 {
     fn from(e: DbActionError<E>) -> Self {
         match e {
@@ -118,19 +114,14 @@ where
 pub(crate) fn delete(
     (state, user, id): (State<AppConfig>, SignedInUser, Path<i32>),
 ) -> Box<dyn Future<Item = String, Error = actix_web::error::Error>> {
-    let res = perform!(
-        state,
-        id.into_inner(),
-        PersonaDeleteError,
-        [
-            (DbActionWrapper<_, _, _> => FetchPersona),
-            (DbActionWrapper<_, _, _> => CheckDeletePersonaPermission::new(user.0)),
-            (DbActionWrapper<_, _, _> => DeletePersona),
-        ]
-    );
+    let res = perform!(state, PersonaDeleteError, [
+        (persona = FetchPersona(id.into_inner())),
+        (deleter = CheckDeletePersonaPermission(user.0, persona)),
+        (_ = DeletePersona(deleter)),
+    ]);
 
     Box::new(
-        res.map(|_| format!("Deleted!"))
+        res.map(|_| "Deleted!".to_string())
             .map_err(|_| RedirectError::new("/personas", &None).into()),
     )
 }

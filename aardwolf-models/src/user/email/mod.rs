@@ -72,7 +72,7 @@ impl Email {
             .get_result(conn)
     }
 
-    pub fn to_verified(self) -> Result<VerifiedEmail, UnverifiedEmail> {
+    pub fn into_verified(self) -> Result<VerifiedEmail, UnverifiedEmail> {
         if self.verified {
             Ok(VerifiedEmail {
                 id: self.id,
@@ -177,7 +177,7 @@ impl UnverifiedEmail {
         user: UnverifiedUser,
         token: EmailVerificationToken,
     ) -> Result<(AuthenticatedUser, VerifyEmail), VerificationError> {
-        self.verify(token).map(|verify_email| {
+        let res = self.verify(token).map(|verify_email| {
             (
                 AuthenticatedUser {
                     id: user.id,
@@ -187,7 +187,11 @@ impl UnverifiedEmail {
                 },
                 verify_email,
             )
-        })
+        });
+
+        drop(user);
+
+        res
     }
 
     pub fn verify(self, token: EmailVerificationToken) -> Result<VerifyEmail, VerificationError> {
@@ -204,10 +208,7 @@ impl UnverifiedEmail {
                     updated_at: self.updated_at,
                 },
             )
-        } else if !self.verified {
-            Err(VerificationError::Process)
         } else {
-            // TODO: don't error if email is already verified
             Err(VerificationError::Process)
         }
     }
@@ -264,6 +265,7 @@ mod tests {
         with_connection(|conn| {
             with_unverified_user(conn, |user| {
                 with_unverified_email(conn, &user, |email, token| {
+                    let token = transmute_email_token(&token)?;
                     email.verify(token)?.store_verify(conn)?;
 
                     Ok(())

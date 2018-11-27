@@ -1,7 +1,7 @@
 #![allow(proc_macro_derive_resolution_fallback)]
 use std::{fmt, io::Write};
 
-use bcrypt::{hash, verify, DEFAULT_COST};
+use bcrypt::{hash, verify};
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
 use serde::de::{Deserialize, Deserializer};
 
@@ -92,17 +92,17 @@ pub struct ValidationError {
 
 impl ValidationError {
     /// Was there any error in password validation?
-    pub fn any(&self) -> bool {
+    pub fn any(self) -> bool {
         self.no_match || self.too_short
     }
 
     /// Passwords do not match
-    pub fn no_match(&self) -> bool {
+    pub fn no_match(self) -> bool {
         self.no_match
     }
 
     /// Password is too short
-    pub fn too_short(&self) -> bool {
+    pub fn too_short(self) -> bool {
         self.too_short
     }
 
@@ -124,6 +124,12 @@ impl ValidationError {
 /// Debug and Display are both implemented for PlaintextPassword, but they simply print eight
 /// asterisks.
 pub struct PlaintextPassword(String);
+
+impl PlaintextPassword {
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
 
 impl<'de> Deserialize<'de> for PlaintextPassword {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
@@ -258,13 +264,20 @@ impl Verify for Password {
 
 impl Create for Password {
     fn create(password: PlaintextPassword) -> Result<Password, CreationError> {
-        hash(&password.0, DEFAULT_COST)
-            .map_err(|e| {
-                error!("Error creating password: {}", e);
+        #[cfg(any(test, feature = "test"))]
+        warn!("BUILT IN TEST MODE");
 
-                CreationError::Bcrypt
-            })
-            .map(Password)
+        #[cfg(not(any(test, feature = "test")))]
+        let h = hash(&password.0, bcrypt::DEFAULT_COST);
+        #[cfg(any(test, feature = "test"))]
+        let h = hash(&password.0, 4);
+
+        h.map_err(|e| {
+            error!("Error creating password: {}", e);
+
+            CreationError::Bcrypt
+        })
+        .map(Password)
     }
 }
 

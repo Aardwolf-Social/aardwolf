@@ -1,5 +1,7 @@
-use aardwolf_models::user::{email::Email, AuthenticatedUser};
-use aardwolf_types::forms::user::{FetchUser, FetchUserAndEmail, FetchUserFail};
+use aardwolf_models::user::AuthenticatedUser;
+use aardwolf_types::operations::fetch_authenticated_user::{
+    FetchAuthenticatedUser, FetchAuthenticatedUserFail,
+};
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
 use rocket::{
@@ -9,19 +11,17 @@ use rocket::{
     {Outcome, Request, State},
 };
 
-use action::DbActionWrapper;
 use session::from_cookie;
 
 struct CookieError;
 
-impl From<FetchUserFail> for CookieError {
-    fn from(_: FetchUserFail) -> Self {
+impl From<FetchAuthenticatedUserFail> for CookieError {
+    fn from(_: FetchAuthenticatedUserFail) -> Self {
         CookieError
     }
 }
 
 pub struct SignedInUser(pub AuthenticatedUser);
-pub struct SignedInUserWithEmail(pub AuthenticatedUser, pub Email);
 
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
@@ -37,33 +37,11 @@ impl<'l, 'r> FromRequest<'l, 'r> for SignedInUser {
 
         from_cookie(&mut request.cookies(), "user_id", CookieError)
             .and_then(|user_id| {
-                perform!(&db, user_id, CookieError, [
-                    (DbActionWrapper<_, _, _> => FetchUser),
+                perform!(&db, CookieError, [
+                    (_ = FetchAuthenticatedUser(user_id)),
                 ])
             })
             .map(SignedInUser)
-            .ok()
-            .or_forward(())
-    }
-}
-
-impl<'l, 'r> FromRequest<'l, 'r> for SignedInUserWithEmail {
-    type Error = ();
-
-    fn from_request(request: &'l Request<'r>) -> request::Outcome<Self, Self::Error> {
-        let pool = request.guard::<State<Pool>>()?;
-        let db = match pool.get() {
-            Ok(db) => db,
-            Err(_) => return Outcome::Failure((Status::ServiceUnavailable, ())),
-        };
-
-        from_cookie(&mut request.cookies(), "user_id", CookieError)
-            .and_then(|user_id| {
-                perform!(&db, user_id, CookieError, [
-                    (DbActionWrapper<_, _, _> => FetchUserAndEmail),
-                ])
-            })
-            .map(|(user, email)| SignedInUserWithEmail(user, email))
             .ok()
             .or_forward(())
     }

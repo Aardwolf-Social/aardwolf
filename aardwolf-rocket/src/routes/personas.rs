@@ -1,18 +1,26 @@
 use rocket::request::Form;
 
-use aardwolf_types::forms::personas::{
-    CheckCreatePersonaPermission, CheckCreatePersonaPermissionFail, CheckDeletePersonaPermission,
-    CheckDeletePersonaPermissionFail, CreatePersona, DeletePersona, FetchPersona, FetchPersonaFail,
-    PersonaCreationFail, PersonaCreationForm, PersonaDeletionFail, ValidatePersonaCreationForm,
+use aardwolf_types::{
+    forms::personas::{PersonaCreationFail, PersonaCreationForm, ValidatePersonaCreationForm},
+    operations::{
+        check_create_persona_permission::{
+            CheckCreatePersonaPermission, CheckCreatePersonaPermissionFail,
+        },
+        check_delete_persona_permission::{
+            CheckDeletePersonaPermission, CheckDeletePersonaPermissionFail,
+        },
+        create_persona::CreatePersona,
+        delete_persona::{DeletePersona, DeletePersonaFail},
+        fetch_persona::{FetchPersona, FetchPersonaFail},
+    },
 };
 use types::user::SignedInUser;
 use DbConn;
 
-use crate::action::{DbActionWrapper, ValidateWrapper};
-
 #[get("/new")]
 pub fn new(_user: SignedInUser) -> String {
-    format!("placeholder")
+    drop(_user);
+    "placeholder".to_string()
 }
 
 #[derive(Clone, Debug, Fail)]
@@ -50,18 +58,13 @@ pub fn create(
     form: Form<PersonaCreationForm>,
     db: DbConn,
 ) -> Result<String, PersonaCreateError> {
-    let _ = perform!(
-        &db,
-        form.into_inner(),
-        PersonaCreateError,
-        [
-            (ValidateWrapper<_, _, _> => ValidatePersonaCreationForm),
-            (DbActionWrapper<_, _, _> => CheckCreatePersonaPermission::new(user.0)),
-            (DbActionWrapper<_, _, _> => CreatePersona),
-        ]
-    )?;
+    let _ = perform!(&db, PersonaCreateError, [
+        (form = ValidatePersonaCreationForm(form.into_inner())),
+        (creator = CheckCreatePersonaPermission(user.0)),
+        (_ = CreatePersona(creator, form)),
+    ])?;
 
-    Ok(format!("Created!"))
+    Ok("Created!".to_string())
 }
 
 #[derive(Clone, Debug, Fail)]
@@ -71,11 +74,11 @@ pub enum PersonaDeleteError {
     #[fail(display = "Error talking db")]
     Database,
     #[fail(display = "Error confirming account: {}", _0)]
-    Delete(#[cause] PersonaDeletionFail),
+    Delete(#[cause] DeletePersonaFail),
 }
 
-impl From<PersonaDeletionFail> for PersonaDeleteError {
-    fn from(e: PersonaDeletionFail) -> Self {
+impl From<DeletePersonaFail> for PersonaDeleteError {
+    fn from(e: DeletePersonaFail) -> Self {
         PersonaDeleteError::Delete(e)
     }
 }
@@ -94,21 +97,17 @@ impl From<CheckDeletePersonaPermissionFail> for PersonaDeleteError {
 
 #[get("/delete/<id>")]
 pub fn delete(user: SignedInUser, id: i32, db: DbConn) -> Result<String, PersonaDeleteError> {
-    let _ = perform!(
-        &db,
-        id,
-        PersonaDeleteError,
-        [
-            (DbActionWrapper<_, _, _> => FetchPersona),
-            (DbActionWrapper<_, _, _> => CheckDeletePersonaPermission::new(user.0)),
-            (DbActionWrapper<_, _, _> => DeletePersona),
-        ]
-    )?;
+    perform!(&db, PersonaDeleteError, [
+        (persona = FetchPersona(id)),
+        (deleter = CheckDeletePersonaPermission(user.0, persona)),
+        (_ = DeletePersona(deleter)),
+    ])?;
 
-    Ok(format!("Deleted!"))
+    Ok("Deleted!".to_string())
 }
 
 #[get("/switch/<switch_persona>")]
 pub fn switch(_user: SignedInUser, switch_persona: i32) -> String {
+    drop(_user);
     format!("placeholder, {}", switch_persona)
 }

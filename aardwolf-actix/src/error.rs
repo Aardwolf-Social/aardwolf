@@ -1,8 +1,6 @@
-use aardwolf_types::error::{AardwolfFail, RedirectFail, ResponseKind, TemplateFail};
-use actix_web::{
-    http::header::{CONTENT_TYPE, LOCATION},
-    HttpResponse, ResponseError,
-};
+use aardwolf_types::error::{AardwolfFail, RedirectFail};
+use actix_web::{http::header::LOCATION, HttpResponse, ResponseError};
+use failure::Fail;
 use serde::ser::{Serialize, Serializer};
 
 use crate::AppConfig;
@@ -35,7 +33,7 @@ impl ResponseError for RedirectError {
             .1
             .as_ref()
             .map(|m| format!("?msg={}", m))
-            .unwrap_or("".to_owned());
+            .unwrap_or_else(|| "".to_owned());
         let location = format!("{}{}", self.0, msg);
 
         println!("Redirecting to {}", location);
@@ -73,38 +71,7 @@ where
     }
 }
 
-impl<E> ErrorWrapper<E>
-where
-    Self: TemplateFail,
-    E: AardwolfFail,
-{
-    fn render(&self) -> String {
-        self.0
-            .templates
-            .render(self.template().name(), &self.1)
-            .unwrap_or(String::from("Error, Mr Robininininson"))
-    }
-}
-
 impl<E> AardwolfFail for ErrorWrapper<E> where E: AardwolfFail {}
-
-impl<E> ResponseError for ErrorWrapper<E>
-where
-    Self: TemplateFail,
-    E: AardwolfFail,
-{
-    fn error_response(&self) -> HttpResponse {
-        let mut res = match self.response_kind() {
-            ResponseKind::BadRequest => HttpResponse::BadRequest(),
-            ResponseKind::RequiresAuthentication => HttpResponse::Unauthorized(),
-            ResponseKind::RequiresPermission => HttpResponse::Forbidden(),
-            ResponseKind::NotFound => HttpResponse::NotFound(),
-            ResponseKind::InternalServerError => HttpResponse::InternalServerError(),
-        };
-
-        res.header(CONTENT_TYPE, "text/html").body(self.render())
-    }
-}
 
 impl<E> ResponseError for ErrorWrapper<E>
 where

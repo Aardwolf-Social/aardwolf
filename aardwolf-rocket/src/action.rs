@@ -1,82 +1,35 @@
-use std::marker::PhantomData;
-
-use aardwolf_types::forms::traits::{DbAction, Validate};
+use aardwolf_types::{
+    error::AardwolfFail,
+    traits::{DbAction, Validate},
+    wrapper::{DbActionWrapper, ValidateWrapper},
+};
 use diesel::pg::PgConnection;
-use failure::Fail;
+
+pub use aardwolf_types::wrapper::Wrapped;
 
 pub trait Action<T, E>
 where
-    E: Fail,
+    E: AardwolfFail,
 {
     fn action(self, db: &PgConnection) -> Result<T, E>;
 }
 
-pub struct ValidateWrapper<V, T, E>(V, PhantomData<T>, PhantomData<E>)
-where
-    V: Validate<T, E>,
-    E: Fail;
-
-impl<V, T, E> ValidateWrapper<V, T, E>
-where
-    V: Validate<T, E>,
-    E: Fail,
-{
-    pub fn new(validate: V) -> Self {
-        ValidateWrapper(validate, PhantomData, PhantomData)
-    }
-}
-
-impl<V, T, E> From<V> for ValidateWrapper<V, T, E>
-where
-    V: Validate<T, E>,
-    E: Fail,
-{
-    fn from(v: V) -> Self {
-        ValidateWrapper::new(v)
-    }
-}
-
 impl<V, T, E> Action<T, E> for ValidateWrapper<V, T, E>
 where
-    V: Validate<T, E>,
+    V: Validate<Item = T, Error = E>,
     T: Send + 'static,
-    E: Fail,
+    E: AardwolfFail,
 {
     fn action(self, _: &PgConnection) -> Result<T, E> {
         self.0.validate()
     }
 }
 
-pub struct DbActionWrapper<D, T, E>(D, PhantomData<T>, PhantomData<E>)
-where
-    D: DbAction<T, E>,
-    E: Fail;
-
-impl<D, T, E> DbActionWrapper<D, T, E>
-where
-    D: DbAction<T, E>,
-    E: Fail,
-{
-    pub fn new(db_action: D) -> Self {
-        DbActionWrapper(db_action, PhantomData, PhantomData)
-    }
-}
-
-impl<D, T, E> From<D> for DbActionWrapper<D, T, E>
-where
-    D: DbAction<T, E>,
-    E: Fail,
-{
-    fn from(d: D) -> Self {
-        DbActionWrapper::new(d)
-    }
-}
-
 impl<D, T, E> Action<T, E> for DbActionWrapper<D, T, E>
 where
-    D: DbAction<T, E> + Send + 'static,
+    D: DbAction<Item = T, Error = E> + Send + 'static,
     T: Send + 'static,
-    E: Fail,
+    E: AardwolfFail,
 {
     fn action(self, db: &PgConnection) -> Result<T, E> {
         self.0.db_action(db)
@@ -84,63 +37,75 @@ where
 }
 
 #[macro_export]
+/// The perform macro executes a series of `Action`s in order
+///
+/// It allows for fallible operations to be chained without the hassle of manually calling the
+/// methods.
+///
+/// For synchronous operations (e.g. this crate) it isn't as useful. An example usage of this macro
+/// is the following.
+///
+/// ```rust,ignore
+/// fn do_thing(form: Form, user: User, db: &PgConnection) -> Result<(), Error> {
+///     perform!(db, Error, [
+///         (validated = ValidateForm(form)),
+///         (updater = GetUpdater(user, validated)),
+///         (_ = UpdateRecord(updater)),
+///     ]);
+/// }
+/// ```
+///
+/// which could be expressed as the following without the macro
+///
+/// ```rust,ignore
+/// fn do_thing(form: Form, user: User, db: &PgConection) -> Result<(), Error> {
+///     use aardwolf_types::traits::{Validate, DbAction};
+///
+///     let validated = ValidateForm(form).validate()?;
+///     let updater = GetUpdater(user, validated).db_action(db)?;
+///     UpdateRecord(updater).db_action(db)?;
+///
+///     Ok(())
+/// }
+/// ```
 macro_rules! perform {
- ( $state:expr, $start:expr, $error_type:ty, [] ) => {{
-     Ok($start) as Result<_, $error_type>
+ ( $state:expr, $error_type:ty, [] ) => {{
+     Ok(()) as Result<(), $error_type>
+ }};
+ ( $state:expr, $error_type:ty, [($store:pat = $operation:expr),] ) => {{
+     use $crate::action::{Action, Wrapped};
+
+     $operation
+         .wrap()
+         .action($state.clone())
+         .map_err(|e| {
+             let e: $error_type = e.into();
+             e
+         })
  }};
  (
      $state:expr,
-     $start:expr,
      $error_type:ty,
      [
-         ($wrapper:ty => $first:expr),
-         $(($wrappers:ty => $rest:expr),)*
+         ($store:pat = $operation:expr),
+         $(($stores:pat = $operations:expr),)*
      ]
  ) => {{
-     use $crate::action::Action;
+     use $crate::action::{Action, Wrapped};
 
-     let wrapper: $wrapper = $first.with($start).into();
+     $operation
+         .wrap()
+         .action($state.clone())
+         .map_err(|e| {
+             let e: $error_type = e.into();
+             e
+         })
+         .and_then(move |item| {
+             let $store = item;
 
-     let res = wrapper.action($state.clone());
-
-     perform_inner!($state, $error_type, res, [ $(($wrappers => $rest),)* ])
+             perform!($state, $error_type, [
+                  $(($stores = $operations),)*
+             ])
+         })
  }};
-}
-
-macro_rules! perform_inner {
-    (
-        $state:expr,
-        $error_type:ty,
-        $first:expr,
-        []
-    ) => {{
-        $first.map_err(|e| {
-            let e: $error_type = e.into();
-            e
-        })
-    }};
-    (
-        $state:expr,
-        $error_type:ty,
-        $first:expr,
-        [
-            ($wrapper:ty => $item:expr),
-            $(($wrappers:ty => $items:expr),)*
-        ]
-    ) => {{
-        use $crate::action::Action;
-
-        $first
-            .map_err(|e| {
-                let e: $error_type = e.into();
-                e
-            })
-            .and_then(move |item| {
-                let wrapper: $wrapper = $item.with(item).into();
-
-                let res = wrapper.action($state.clone());
-
-                perform_inner!($state, $error_type, res, [ $(($wrappers => $items),)* ])
-            })
-    }};
 }

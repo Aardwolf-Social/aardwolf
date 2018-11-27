@@ -1,16 +1,9 @@
-#[macro_use]
-extern crate collection_macros;
-#[macro_use]
-extern crate failure;
-#[macro_use]
-extern crate log;
-#[macro_use]
-extern crate serde_derive;
+use std::{error::Error, fmt};
 
-use std::{error::Error, fmt, sync::Arc};
-
+use aardwolf_templates::Renderable;
 use actix::{self, Addr, SyncArbiter};
 use actix_web::{
+    dev::HttpResponseBuilder,
     fs::StaticFiles,
     http::{header::CONTENT_TYPE, Method},
     middleware::{
@@ -23,8 +16,7 @@ use actix_web::{
 use config::Config;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
-use rocket_i18n::I18n;
-use tera::Tera;
+use rocket_i18n::{Internationalized, Translations};
 
 #[macro_use]
 pub mod action;
@@ -41,8 +33,13 @@ use self::db::{Db, Pool};
 #[derive(Clone)]
 pub struct AppConfig {
     db: Addr<Db>,
-    templates: Arc<Tera>,
-    i18n: Arc<I18n>,
+    translations: Translations,
+}
+
+impl Internationalized for AppConfig {
+    fn get(&self) -> Translations {
+        self.translations.clone()
+    }
 }
 
 impl fmt::Debug for AppConfig {
@@ -51,35 +48,29 @@ impl fmt::Debug for AppConfig {
     }
 }
 
-impl AppConfig {
-    fn render<T: serde::Serialize>(&self, template: &str, data: &T) -> error::RenderResult {
-        let attempts = vec![
-            template.to_owned(),
-            format!("{}.html", template),
-            format!("{}.html.tera", template),
-        ];
+pub trait WithRucte {
+    fn with_ructe<R>(&mut self, r: R) -> HttpResponse
+    where
+        R: Renderable;
+}
 
-        let res = attempts
-            .iter()
-            .fold(None, |acc, template_name| {
-                acc.or_else(|| {
-                    self.templates
-                        .render(template_name, data)
-                        .map_err(|e| error!("Error rendering, {}, {:?}", e, e))
-                        .ok()
-                })
-            })
-            .ok_or(error::RenderError);
+impl WithRucte for HttpResponseBuilder {
+    fn with_ructe<R>(&mut self, r: R) -> HttpResponse
+    where
+        R: Renderable,
+    {
+        let mut buf = Vec::new();
 
-        res.map(|s| HttpResponse::Ok().header(CONTENT_TYPE, "text/html").body(s))
-            .map_err(|e| {
-                error!("Unable to render template");
-                e
-            })
+        match r.render(&mut buf) {
+            Ok(_) => self.header(CONTENT_TYPE, "text/html").body(buf),
+            Err(e) => self
+                .header(CONTENT_TYPE, "text/plain")
+                .body(format!("{}", e)),
+        }
     }
 }
 
-fn db_pool(database_url: String) -> Result<Pool, Box<dyn Error>> {
+fn db_pool(database_url: &str) -> Result<Pool, Box<dyn Error>> {
     let manager = ConnectionManager::<PgConnection>::new(database_url);
     Ok(r2d2::Pool::builder().build(manager)?)
 }
@@ -93,21 +84,29 @@ mod assets {
     #[derive(Clone, Debug)]
     pub struct Assets {
         web: String,
+        images: String,
         emoji: String,
         themes: String,
+        stylesheets: String,
     }
 
     impl Assets {
         pub fn from_config(config: &Config) -> Result<Self, Box<dyn Error>> {
             Ok(Assets {
                 web: config.get_str("Assets.web")?,
+                images: config.get_str("Assets.images")?,
                 emoji: config.get_str("Assets.emoji")?,
                 themes: config.get_str("Assets.themes")?,
+                stylesheets: config.get_str("Assets.stylesheets")?,
             })
         }
 
         pub fn web(&self) -> &str {
             &self.web
+        }
+
+        pub fn images(&self) -> &str {
+            &self.images
         }
 
         pub fn emoji(&self) -> &str {
@@ -117,10 +116,14 @@ mod assets {
         pub fn themes(&self) -> &str {
             &self.themes
         }
+
+        pub fn stylesheets(&self) -> &str {
+            &self.stylesheets
+        }
     }
 }
 
-pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
+pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
     let sys = actix::System::new("aardwolf-actix");
 
     let pool = db_pool(database_url)?;
@@ -133,21 +136,14 @@ pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
         config.get_str("Web.Listen.port")?
     );
 
-    let template_dir = config.get_str("Templates.dir")?;
-
-    let mut templates = Tera::new(&template_dir)?;
-    rocket_i18n::tera(&mut templates);
-
-    let templates = Arc::new(templates);
-
     #[cfg(debug_assertions)]
     let assets = assets::Assets::from_config(&config)?;
 
     HttpServer::new(move || {
         let state = AppConfig {
             db: db.clone(),
-            templates: templates.clone(),
-            i18n: Arc::new(I18n::new("aardwolf")),
+            // TODO: domain and languages should be config'd
+            translations: rocket_i18n::i18n("aardwolf", vec!["en", "pl"]),
         };
 
         vec![
@@ -169,7 +165,7 @@ pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
                     r.method(Method::GET).with(self::routes::auth::confirm)
                 })
                 .resource("/sign_out", |r| {
-                    r.method(Method::POST).with(self::routes::auth::sign_out)
+                    r.method(Method::GET).with(self::routes::auth::sign_out)
                 }),
             App::with_state(state.clone())
                 .prefix("/personas")
@@ -205,8 +201,13 @@ pub fn run(config: Config, database_url: String) -> Result<(), Box<dyn Error>> {
                     r.method(Method::GET).with(self::routes::app::index)
                 })
                 .handler("/web", StaticFiles::new(assets.web()).unwrap())
+                .handler("/images", StaticFiles::new(assets.images()).unwrap())
                 .handler("/themes", StaticFiles::new(assets.themes()).unwrap())
-                .handler("/emoji", StaticFiles::new(assets.emoji()).unwrap()),
+                .handler("/emoji", StaticFiles::new(assets.emoji()).unwrap())
+                .handler(
+                    "/stylesheets",
+                    StaticFiles::new(assets.stylesheets()).unwrap(),
+                ),
         ]
     })
     .bind(&listen_address)?

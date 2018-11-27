@@ -6,7 +6,7 @@ use chrono_tz::Tz;
 use diesel::{self, pg::PgConnection, Connection};
 use dotenv::dotenv;
 use mime::TEXT_PLAIN;
-use rand::{distributions::Alphanumeric, Error as RandError, OsRng, Rng};
+use rand::{distributions::Alphanumeric, rngs::OsRng, Error as RandError, Rng};
 use serde_json;
 use url::{ParseError as UrlParseError, Url as OrigUrl};
 
@@ -56,32 +56,48 @@ use user::{
 pub enum GenericError {
     #[fail(display = "Error in diesel: {}", _0)]
     Diesel(#[cause] diesel::result::Error),
+
     #[fail(display = "IO Error: {}", _0)]
     Io(#[cause] IoError),
+
     #[fail(display = "Failed to parse url: {}", _0)]
     Url(#[cause] UrlParseError),
+
     #[fail(display = "Failed to create file: {}", _0)]
     File(#[cause] FileCreationError),
+
     #[fail(display = "Failed to create event: {}", _0)]
     Event(#[cause] EventCreationError),
+
     #[fail(display = "Failed to create password: {}", _0)]
     Password(#[cause] PasswordCreationError),
+
     #[fail(display = "Failed in Serde JSON: {}", _0)]
     SerdeJson(#[cause] serde_json::Error),
+
     #[fail(display = "Failed to create Email: {}", _0)]
     EmailCreation(#[cause] EmailCreationError),
+
     #[fail(display = "Failed to verify Email: {}", _0)]
     EmailVerification(#[cause] EmailVerificationError),
+
     #[fail(display = "Failed to verify user: {}", _0)]
     UserVerification(#[cause] UserVerifyError),
+
     #[fail(display = "Failed to verify password: {}", _0)]
     PasswordVerification(#[cause] PasswordVerificationError),
+
     #[fail(display = "Failed to be random: {}", _0)]
     Rand(#[cause] RandError),
+
     #[fail(display = "Generated time is out of bounds")]
     TimeBounds,
+
     #[fail(display = "Item should not be verified at this point")]
     Verified,
+
+    #[fail(display = "Other error: {}", _0)]
+    Other(#[cause] failure::Error),
 }
 
 impl From<diesel::result::Error> for GenericError {
@@ -163,9 +179,9 @@ pub fn create_plaintext_password(pass: &str) -> Result<PlaintextPassword, Generi
     Ok(pass)
 }
 
-pub fn transmute_email_token(token: EmailToken) -> Result<EmailVerificationToken, GenericError> {
-    let v = serde_json::to_value(token)?;
-    let token = serde_json::from_value(v)?;
+pub fn transmute_email_token(token: &EmailToken) -> Result<EmailVerificationToken, GenericError> {
+    let s = serde_json::to_string(token)?;
+    let token = serde_json::from_str(&s)?;
 
     Ok(token)
 }
@@ -224,6 +240,28 @@ where
         gen_url()?,
         gen_url()?,
         None,
+        FollowPolicy::AutoAccept,
+        json!({}),
+    )
+    .insert(conn)?;
+
+    f(base_actor)
+}
+
+pub fn user_with_base_actor<F>(
+    conn: &PgConnection,
+    user: &AuthenticatedUser,
+    f: F,
+) -> Result<(), GenericError>
+where
+    F: FnOnce(BaseActor) -> Result<(), GenericError>,
+{
+    let base_actor = NewBaseActor::new(
+        gen_string()?,
+        gen_url()?,
+        gen_url()?,
+        gen_url()?,
+        Some(user),
         FollowPolicy::AutoAccept,
         json!({}),
     )
@@ -450,7 +488,7 @@ where
 {
     let unauthenticated_user = NewUser::new().insert(conn)?;
 
-    let unverified_user = match unauthenticated_user.to_verified(conn)? {
+    let unverified_user = match unauthenticated_user.into_verified(conn)? {
         Ok(_) => return Err(GenericError::Verified),
         Err(unverified_user) => unverified_user,
     };
@@ -460,13 +498,12 @@ where
 
 pub fn with_unverified_email<F, U>(conn: &PgConnection, user: &U, f: F) -> Result<(), GenericError>
 where
-    F: FnOnce(UnverifiedEmail, EmailVerificationToken) -> Result<(), GenericError>,
+    F: FnOnce(UnverifiedEmail, EmailToken) -> Result<(), GenericError>,
     U: UserLike,
 {
     let (email, token) = NewEmail::new(gen_string()?, user)?;
 
     let email = email.insert(conn)?;
-    let token = transmute_email_token(token)?;
 
     f(email, token)
 }
@@ -497,7 +534,7 @@ where
 {
     let unauthenticated_user = NewUser::new().insert(conn)?;
 
-    let user = match unauthenticated_user.to_verified(conn)? {
+    let user = match unauthenticated_user.into_verified(conn)? {
         Ok(_) => return Err(GenericError::Verified),
         Err(unverified_user) => unverified_user,
     };
@@ -507,7 +544,7 @@ where
 
     let (email, token) = NewEmail::new(gen_string()?, &user)?;
     let email = email.insert(conn)?;
-    let token = transmute_email_token(token)?;
+    let token = transmute_email_token(&token)?;
 
     let (user, email) = user.verify(email, token)?.store_verify(conn)?;
 

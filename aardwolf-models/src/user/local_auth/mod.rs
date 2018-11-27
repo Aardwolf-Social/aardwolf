@@ -53,12 +53,16 @@ impl LocalAuth {
             return Err(VerificationError::Process);
         }
 
-        self.password.verify(password).map(|_| AuthenticatedUser {
+        let res = self.password.verify(password).map(|_| AuthenticatedUser {
             id: user.id,
             primary_email: user.primary_email,
             created_at: user.created_at,
             updated_at: user.updated_at,
-        })
+        });
+
+        drop(user);
+
+        res
     }
 }
 
@@ -116,7 +120,7 @@ impl NewLocalAuth {
         let password = Password::create(password)?;
 
         Ok(NewLocalAuth {
-            password: password,
+            password,
             created_at: Utc::now(),
             user_id: user.id,
         })

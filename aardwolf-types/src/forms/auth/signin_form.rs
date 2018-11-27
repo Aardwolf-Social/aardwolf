@@ -1,20 +1,29 @@
 use aardwolf_models::user::local_auth::PlaintextPassword;
 
-use crate::{error::AardwolfFail, forms::traits::Validate};
-
-#[derive(Debug, Deserialize, Serialize)]
-#[cfg_attr(feature = "use-rocket", derive(FromForm))]
-pub struct SignInErrorMessage {
-    pub msg: String,
-}
+use crate::{
+    error::AardwolfFail,
+    traits::Validate,
+    wrapper::{ValidateWrapper, Wrapped},
+};
 
 #[derive(Clone, Debug, Fail, Serialize)]
-pub enum ValidateSignInFormFail {
-    #[fail(display = "Field `email` is required")]
-    EmptyEmailError,
+#[fail(display = "Missing required field")]
+pub struct ValidateSignInFormFail {
+    pub email: Option<String>,
+    pub password: Option<String>,
+}
+
+impl ValidateSignInFormFail {
+    pub fn is_empty(&self) -> bool {
+        self.email.is_none() && self.password.is_none()
+    }
 }
 
 impl AardwolfFail for ValidateSignInFormFail {}
+
+pub struct SignInFormState {
+    pub email: String,
+}
 
 #[derive(Debug, Deserialize)]
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]
@@ -24,25 +33,45 @@ pub struct SignInForm {
     pub password: PlaintextPassword,
 }
 
-pub struct ValidateSignInForm;
-
-impl ValidateSignInForm {
-    pub fn with(self, form: SignInForm) -> ValidateSignInFormOperation {
-        ValidateSignInFormOperation(form)
+impl SignInForm {
+    pub fn as_state(&self) -> SignInFormState {
+        SignInFormState {
+            email: self.email.clone(),
+        }
     }
 }
 
-pub struct ValidateSignInFormOperation(SignInForm);
+pub struct ValidateSignInForm(pub SignInForm);
 
-impl Validate<ValidatedSignInForm, ValidateSignInFormFail> for ValidateSignInFormOperation {
+impl Wrapped for ValidateSignInForm {
+    type Wrapper = ValidateWrapper<Self, <Self as Validate>::Item, <Self as Validate>::Error>;
+}
+
+impl Validate for ValidateSignInForm {
+    type Item = ValidatedSignInForm;
+    type Error = ValidateSignInFormFail;
+
     fn validate(self) -> Result<ValidatedSignInForm, ValidateSignInFormFail> {
+        let mut validation_error = ValidateSignInFormFail {
+            email: None,
+            password: None,
+        };
+
         if self.0.email.is_empty() {
-            Err(ValidateSignInFormFail::EmptyEmailError)
-        } else {
+            validation_error.email = Some("Email must be present".to_owned());
+        }
+
+        if self.0.password.is_empty() {
+            validation_error.password = Some("Password must be present".to_owned());
+        }
+
+        if validation_error.is_empty() {
             Ok(ValidatedSignInForm {
                 email: self.0.email,
                 password: self.0.password,
             })
+        } else {
+            Err(validation_error)
         }
     }
 }

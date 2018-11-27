@@ -268,7 +268,7 @@ impl UnauthenticatedUser {
         local_auth.log_in(self, password)
     }
 
-    pub fn to_verified(
+    pub fn into_verified(
         self,
         conn: &PgConnection,
     ) -> Result<Result<UnauthenticatedUser, UnverifiedUser>, diesel::result::Error> {
@@ -358,6 +358,12 @@ impl NewUser {
             created_at: Utc::now(),
             primary_email: None,
         }
+    }
+}
+
+impl Default for NewUser {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

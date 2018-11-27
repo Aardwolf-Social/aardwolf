@@ -13,8 +13,8 @@ use std::{
 use clap::App;
 
 fn check_out(output: &Result<Output, io::Error>) {
-    match output {
-        &Ok(ref o) if !o.status.success() => {
+    match *output {
+        Ok(ref o) if !o.status.success() => {
             eprintln!(
                 "got non-zero exit code, output was:\n\tstdout:\n{}\n\tstderr:\n{}",
                 String::from_utf8_lossy(&o.stdout),
@@ -22,7 +22,7 @@ fn check_out(output: &Result<Output, io::Error>) {
             );
             process::exit(255);
         }
-        &Err(ref e) => {
+        Err(ref e) => {
             match e.kind() {
                 ErrorKind::NotFound => {
                     eprintln!("Could not find `diesel` binary, please use `cargo install diesel_cli` to install it");
@@ -31,7 +31,7 @@ fn check_out(output: &Result<Output, io::Error>) {
             }
             process::exit(255);
         }
-        &Ok(_) => {}
+        Ok(_) => {}
     }
 }
 

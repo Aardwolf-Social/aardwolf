@@ -1,8 +1,9 @@
 use std::marker::PhantomData;
 
-use aardwolf_types::{error::AardwolfFail, forms::traits::DbAction};
+use aardwolf_types::{error::AardwolfFail, traits::DbAction};
 use crate::actix::{Handler, MailboxError, Message};
 use failure::Fail;
+use serde_derive::Serialize;
 
 use crate::db::Db;
 
@@ -57,7 +58,7 @@ where
 
 pub struct PerformDbAction<D, T, E>
 where
-    D: DbAction<T, E>,
+    D: DbAction<Item = T, Error = E>,
     E: AardwolfFail,
 {
     db_action: D,
@@ -67,7 +68,7 @@ where
 
 impl<D, T, E> PerformDbAction<D, T, E>
 where
-    D: DbAction<T, E>,
+    D: DbAction<Item = T, Error = E>,
     E: AardwolfFail,
 {
     pub fn new(db_action: D) -> Self {
@@ -81,7 +82,7 @@ where
 
 impl<D, T, E> Message for PerformDbAction<D, T, E>
 where
-    D: DbAction<T, E>,
+    D: DbAction<Item = T, Error = E>,
     E: AardwolfFail,
     T: 'static,
 {
@@ -90,7 +91,7 @@ where
 
 impl<D, T, E> Handler<PerformDbAction<D, T, E>> for Db
 where
-    D: DbAction<T, E>,
+    D: DbAction<Item = T, Error = E>,
     E: AardwolfFail,
     T: 'static,
 {

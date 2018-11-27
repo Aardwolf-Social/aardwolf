@@ -1,0 +1,12 @@
+@use gettext::Catalog;
+@use rocket_i18n::i18n;
+
+@(catalog: &Catalog, title: &str)
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@i18n!(catalog, title)</title>
+    <link rel="stylesheet" href="/web/app.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/scratchpad.css" />
+</head>

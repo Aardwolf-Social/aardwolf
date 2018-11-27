@@ -4,7 +4,8 @@ use rocket_contrib::json::Json;
 
 use aardwolf_types::{
     apps::{AppId, AppIdBuilder},
-    forms::{app::CreateApp, traits::Validate},
+    forms::app::CreateApp,
+    traits::Validate,
 };
 
 #[post("/apps", data = "<app>")]

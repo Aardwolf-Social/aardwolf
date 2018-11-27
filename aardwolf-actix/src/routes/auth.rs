@@ -1,85 +1,52 @@
 use aardwolf_models::user::UserLike;
-use aardwolf_types::forms::auth::{
-    ConfirmAccountFail, ConfirmToken, ConfirmationToken, SignIn, SignInErrorMessage, SignInFail,
-    SignInForm, SignUp, SignUpErrorMessage, SignUpFail, SignUpForm, ValidateSignInForm,
-    ValidateSignInFormFail, ValidateSignUpForm, ValidateSignUpFormFail,
+use aardwolf_types::{
+    forms::auth::{
+        SignInForm, SignUpForm, ValidateSignInForm, ValidateSignInFormFail, ValidateSignUpForm,
+        ValidateSignUpFormFail,
+    },
+    operations::{
+        confirm_account::{ConfirmAccount, ConfirmAccountFail, ConfirmAccountToken},
+        sign_in::{SignIn, SignInFail},
+        sign_up::{SignUp, SignUpFail},
+    },
 };
 use actix_web::{
     http::header::LOCATION, middleware::session::Session, Form, HttpResponse, Query, State,
 };
 use failure::Fail;
 use futures::future::Future;
+use rocket_i18n::I18n;
 
 use crate::{
-    action::{DbActionWrapper, ValidateWrapper},
-    db::DbActionError,
-    error::{RedirectError, RenderResult},
-    types::user::SignedInUser,
-    AppConfig,
+    db::DbActionError, error::RedirectError, types::user::SignedInUser, AppConfig, WithRucte,
 };
 
-pub(crate) fn sign_up_form(
-    (state, error): (State<AppConfig>, Option<Query<SignUpErrorMessage>>),
-) -> RenderResult {
-    match error {
-        Some(error) => sign_up_form_with_error(state, error.into_inner()),
-        None => sign_up_form_without_error(state),
-    }
+pub(crate) fn sign_up_form(i18n: I18n) -> HttpResponse {
+    let res = HttpResponse::Ok().with_ructe(aardwolf_templates::SignUp::new(
+        &i18n.catalog,
+        "csrf token",
+        "",
+        None,
+        false,
+    ));
+
+    drop(i18n);
+
+    res
 }
 
-fn sign_up_form_with_error(state: State<AppConfig>, msg: SignUpErrorMessage) -> RenderResult {
-    let token = "some csrf token";
+pub(crate) fn sign_in_form(i18n: I18n) -> HttpResponse {
+    let res = HttpResponse::Ok().with_ructe(aardwolf_templates::SignIn::new(
+        &i18n.catalog,
+        "csrf token",
+        "",
+        None,
+        false,
+    ));
 
-    state.render(
-        "sign_up",
-        &hashmap!{
-            "token" => token,
-            "error_msg" => msg.msg.as_str(),
-        },
-    )
-}
+    drop(i18n);
 
-fn sign_up_form_without_error(state: State<AppConfig>) -> RenderResult {
-    let token = "some csrf token";
-
-    state.render(
-        "sign_up",
-        &hashmap!{
-            "token" => token,
-        },
-    )
-}
-
-pub(crate) fn sign_in_form(
-    (state, error): (State<AppConfig>, Option<Query<SignInErrorMessage>>),
-) -> RenderResult {
-    match error {
-        Some(error) => sign_in_form_with_error(state, error.into_inner()),
-        None => sign_in_form_without_error(state),
-    }
-}
-
-fn sign_in_form_with_error(state: State<AppConfig>, error: SignInErrorMessage) -> RenderResult {
-    let token = "some csrf token";
-
-    state.render(
-        "sign_in",
-        &hashmap!{
-            "token" => token,
-            "error_msg" => error.msg.as_str(),
-        },
-    )
-}
-
-fn sign_in_form_without_error(state: State<AppConfig>) -> RenderResult {
-    let token = "some csrf token";
-
-    state.render(
-        "sign_in",
-        &hashmap!{
-            "token" => token,
-        },
-    )
+    res
 }
 
 #[derive(Clone, Debug, Fail)]
@@ -109,17 +76,15 @@ impl From<ValidateSignUpFormFail> for SignUpError {
 }
 
 pub(crate) fn sign_up(
-    (state, form): (State<AppConfig>, Form<SignUpForm>),
+    (state, form, i18n): (State<AppConfig>, Form<SignUpForm>, I18n),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
-    let res = perform!(
-        state,
-        form.into_inner(),
-        SignUpError,
-        [
-            (ValidateWrapper<_, _, _> => ValidateSignUpForm),
-            (DbActionWrapper<_, _, _> => SignUp),
-        ]
-    );
+    let form = form.into_inner();
+    let form_state = form.as_state();
+
+    let res = perform!(state, SignUpError, [
+        (form = ValidateSignUpForm(form)),
+        (_ = SignUp(form)),
+    ]);
 
     Box::new(
         res.map(|(email, token)| {
@@ -133,7 +98,25 @@ pub(crate) fn sign_up(
                 .header(LOCATION, "/auth/sign_in")
                 .finish()
         })
-        .map_err(|e| RedirectError::new("/auth/sign_up", &Some(e.to_string())).into()),
+        .or_else(move |e| {
+            let (mut res, valid, system) = match e {
+                SignUpError::SignUp(ref e) => match *e {
+                    SignUpFail::ValidationError(ref e) => {
+                        (HttpResponse::BadRequest(), Some(e), false)
+                    }
+                    _ => (HttpResponse::InternalServerError(), None, true),
+                },
+                _ => (HttpResponse::InternalServerError(), None, true),
+            };
+
+            Ok(res.with_ructe(aardwolf_templates::SignUp::new(
+                &i18n.catalog,
+                "csrf token",
+                &form_state.email,
+                valid,
+                system,
+            )))
+        }),
     )
 }
 
@@ -143,6 +126,8 @@ pub enum SignInError {
     Mailbox,
     #[fail(display = "Error talking db")]
     Database,
+    #[fail(display = "Error setting the cookie")]
+    Cookie,
     #[fail(display = "Error signing in: {}", _0)]
     SignIn(#[cause] SignInFail),
 }
@@ -164,26 +149,42 @@ impl From<ValidateSignInFormFail> for SignInError {
 }
 
 pub(crate) fn sign_in(
-    (state, session, form): (State<AppConfig>, Session, Form<SignInForm>),
+    (state, session, form, i18n): (State<AppConfig>, Session, Form<SignInForm>, I18n),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
-    let res = perform!(
-        state,
-        form.into_inner(),
-        SignInError,
-        [
-            (ValidateWrapper<_, _, _> => ValidateSignInForm),
-            (DbActionWrapper<_, _, _> => SignIn),
-        ]
-    );
+    let form = form.into_inner();
+    let form_state = form.as_state();
+
+    let res = perform!(state, SignInError, [
+        (form = ValidateSignInForm(form)),
+        (_ = SignIn(form)),
+    ]);
 
     Box::new(
-        res.map_err(|e| RedirectError::new("/auth/sign_in", &Some(e.to_string())).into())
-            .and_then(move |user| {
-                session
-                    .set("user_id", user.id())
-                    .map_err(|e| RedirectError::new("/auth/sign_in", &Some(e.to_string())).into())
-            })
-            .map(|_| HttpResponse::SeeOther().header(LOCATION, "/").finish()),
+        res.and_then(move |user| {
+            session
+                .set("user_id", user.id())
+                .map_err(|_| SignInError::Cookie)
+        })
+        .map(|_| HttpResponse::SeeOther().header(LOCATION, "/").finish())
+        .or_else(move |e| {
+            let (mut res, validation, system) = match e {
+                SignInError::SignIn(ref e) => match *e {
+                    SignInFail::ValidationError(ref e) => {
+                        (HttpResponse::BadRequest(), Some(e), false)
+                    }
+                    _ => (HttpResponse::InternalServerError(), None, true),
+                },
+                _ => (HttpResponse::InternalServerError(), None, true),
+            };
+
+            Ok(res.with_ructe(aardwolf_templates::SignIn::new(
+                &i18n.catalog,
+                "csrf token",
+                &form_state.email,
+                validation,
+                system,
+            )))
+        }),
     )
 }
 
@@ -208,16 +209,11 @@ impl From<DbActionError<ConfirmAccountFail>> for ConfirmError {
 }
 
 pub(crate) fn confirm(
-    (state, query): (State<AppConfig>, Query<ConfirmationToken>),
+    (state, query): (State<AppConfig>, Query<ConfirmAccountToken>),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
-    let res = perform!(
-        state,
-        query.into_inner(),
-        ConfirmError,
-        [
-            (DbActionWrapper<_, _, _> => ConfirmToken),
-        ]
-    );
+    let res = perform!(state, ConfirmError, [
+        (_ = ConfirmAccount(query.into_inner())),
+    ]);
 
     Box::new(
         res.map(|_user| {

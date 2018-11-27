@@ -41,6 +41,9 @@ version = "0.4.0-rc.1"
 optional = true
 
 [dependencies.rocket_contrib]
-features = ["tera_templates", "json"]
+features = ["json"]
 version = "0.4.0-rc.1"
 optional = true
+
+[dev-dependencies]
+aardwolf-test-helpers = { version = "0.1", path = "../aardwolf-test-helpers" }
