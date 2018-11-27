@@ -4,7 +4,7 @@ Our vision is to create a social-networking platform that mirrors the functional
 We welcome help from technical, as well as non-technical folks equally.  Even if you do not code, there is a growing list of items that you may still be able to help out with. <br />
 
 Please do not hesitate to ask questions, or volunteer for things that you might be interested in poking at.
-Also checkout the [Developer Documentation](https://github.com/Aardwolf-Social/aardwolf/tree/documentation-rework/doc/development)For more information on specific development targets.
+Also checkout the [Developer Documentation](https://github.com/Aardwolf-Social/aardwolf/tree/documentation-rework/doc/development) for more information on specific development targets.
 
 --------
 ## Requirements for Minimum Viable Product
