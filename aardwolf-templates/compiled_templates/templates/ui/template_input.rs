@@ -1,54 +1,53 @@
 use std::io::{self, Write};
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
-use ::templates::{Html,ToHtml};
+use super::{Html,ToHtml};
 use rocket_i18n::i18n;
 use crate::{Input, templates::ui::icon};
 
-pub fn input(out: &mut Write, input: &Input)
--> io::Result<()> {
-write!(out, "<div class=\"aardwolf-input-wrapper\">\n    <label for=\"")?;
+pub fn input(out: &mut Write, input: &Input) -> io::Result<()> {
+out.write_all(b"<div class=\"aardwolf-input-wrapper\">\n    <label for=\"")?;
 input.name.to_html(out)?;
-write!(out, "\">\n        ")?;
+out.write_all(b"\">\n        ")?;
 if let Some(i) = input.icon {
-write!(out, "\n            ")?;
+out.write_all(b"\n            ")?;
 icon(out, i)?;
-write!(out, "\n        ")?;
+out.write_all(b"\n        ")?;
 }
-write!(out, "\n        ")?;
+out.write_all(b"\n        ")?;
 if let Some(label) = input.label {
-write!(out, "\n            ")?;
+out.write_all(b"\n            ")?;
 i18n!(input.catalog, label).to_html(out)?;
-write!(out, "\n        ")?;
+out.write_all(b"\n        ")?;
 }
-write!(out, "\n    </label>\n    <div class=\"aardwolf-input aardwolf-")?;
+out.write_all(b"\n    </label>\n    <div class=\"aardwolf-input aardwolf-")?;
 input.kind.to_html(out)?;
-write!(out, "-input\">\n        ")?;
+out.write_all(b"-input\">\n        ")?;
 if let Some(placeholder) = input.placeholder {
-write!(out, "\n            <input type=\"")?;
+out.write_all(b"\n            <input type=\"")?;
 input.kind.to_html(out)?;
-write!(out, "\" name=\"")?;
+out.write_all(b"\" name=\"")?;
 input.name.to_html(out)?;
-write!(out, "\" placeholder=\"")?;
+out.write_all(b"\" placeholder=\"")?;
 i18n!(input.catalog, placeholder).to_html(out)?;
-write!(out, "\" value=\"")?;
+out.write_all(b"\" value=\"")?;
 input.value.to_html(out)?;
-write!(out, "\" />\n        ")?;
+out.write_all(b"\" />\n        ")?;
 } else {
-write!(out, "\n            <input type=\"")?;
+out.write_all(b"\n            <input type=\"")?;
 input.kind.to_html(out)?;
-write!(out, "\" name=\"")?;
+out.write_all(b"\" name=\"")?;
 input.name.to_html(out)?;
-write!(out, "\" value=\"")?;
+out.write_all(b"\" value=\"")?;
 input.value.to_html(out)?;
-write!(out, "\" />\n        ")?;
+out.write_all(b"\" />\n        ")?;
 }
-write!(out, "\n    </div>\n    <div class=\"aardwolf-input-meta\">\n        ")?;
+out.write_all(b"\n    </div>\n    <div class=\"aardwolf-input-meta\">\n        ")?;
 if let Some(error) = input.error {
-write!(out, "\n            <span class=\"aardwolf-input-error\">")?;
+out.write_all(b"\n            <span class=\"aardwolf-input-error\">")?;
 i18n!(input.catalog, error).to_html(out)?;
-write!(out, "</span>\n        ")?;
+out.write_all(b"</span>\n        ")?;
 }
-write!(out, "\n    </div>\n</div>\n")?;
+out.write_all(b"\n    </div>\n</div>\n")?;
 Ok(())
 }
