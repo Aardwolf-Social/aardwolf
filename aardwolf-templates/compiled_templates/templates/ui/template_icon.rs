@@ -1,12 +1,11 @@
 use std::io::{self, Write};
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
-use ::templates::{Html,ToHtml};
+use super::{Html,ToHtml};
 
-pub fn icon(out: &mut Write, icon: &str)
--> io::Result<()> {
-write!(out, "<i class=\"fa fa-")?;
+pub fn icon(out: &mut Write, icon: &str) -> io::Result<()> {
+out.write_all(b"<i class=\"fa fa-")?;
 icon.to_html(out)?;
-write!(out, "\"></i>\n")?;
+out.write_all(b"\"></i>\n")?;
 Ok(())
 }

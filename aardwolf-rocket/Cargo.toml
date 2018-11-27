@@ -48,7 +48,7 @@ version = "0.4.0-rc.1"
 
 [dependencies.rocket_contrib]
 version = "0.4.0-rc.1"
-features = ["tera_templates", "json"]
+features = ["json"]
 
 [dependencies.rocket_i18n]
 version = "0.2"

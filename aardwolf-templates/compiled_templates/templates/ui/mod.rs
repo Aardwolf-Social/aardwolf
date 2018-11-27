@@ -1,3 +1,6 @@
+#[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
+#[allow(unused)]
+use super::{Html,ToHtml};
 mod template_icon;
 pub use self::template_icon::icon;
 
