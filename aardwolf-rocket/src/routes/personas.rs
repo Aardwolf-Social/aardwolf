@@ -1,9 +1,18 @@
 use rocket::request::Form;
 
-use aardwolf_types::forms::personas::{
-    CheckCreatePersonaPermission, CheckCreatePersonaPermissionFail, CheckDeletePersonaPermission,
-    CheckDeletePersonaPermissionFail, CreatePersona, DeletePersona, FetchPersona, FetchPersonaFail,
-    PersonaCreationFail, PersonaCreationForm, PersonaDeletionFail, ValidatePersonaCreationForm,
+use aardwolf_types::{
+    forms::personas::{PersonaCreationFail, PersonaCreationForm, ValidatePersonaCreationForm},
+    operations::{
+        check_create_persona_permission::{
+            CheckCreatePersonaPermission, CheckCreatePersonaPermissionFail,
+        },
+        check_delete_persona_permission::{
+            CheckDeletePersonaPermission, CheckDeletePersonaPermissionFail,
+        },
+        create_persona::CreatePersona,
+        delete_persona::{DeletePersona, DeletePersonaFail},
+        fetch_persona::{FetchPersona, FetchPersonaFail},
+    },
 };
 use types::user::SignedInUser;
 use DbConn;
@@ -65,11 +74,11 @@ pub enum PersonaDeleteError {
     #[fail(display = "Error talking db")]
     Database,
     #[fail(display = "Error confirming account: {}", _0)]
-    Delete(#[cause] PersonaDeletionFail),
+    Delete(#[cause] DeletePersonaFail),
 }
 
-impl From<PersonaDeletionFail> for PersonaDeleteError {
-    fn from(e: PersonaDeletionFail) -> Self {
+impl From<DeletePersonaFail> for PersonaDeleteError {
+    fn from(e: DeletePersonaFail) -> Self {
         PersonaDeleteError::Delete(e)
     }
 }

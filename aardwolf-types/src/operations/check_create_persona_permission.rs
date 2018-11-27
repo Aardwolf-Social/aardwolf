@@ -1,16 +1,15 @@
-use aardwolf_models::{
-    base_actor::{persona::Persona, BaseActor},
-    user::{LocalPersonaCreator, PermissionError, PermissionedUser},
-};
+use aardwolf_models::user::{LocalPersonaCreator, PermissionError, PermissionedUser};
 use diesel::pg::PgConnection;
 
 use crate::{
     error::AardwolfFail,
-    forms::personas::{PersonaCreationFail, ValidatedPersonaCreationForm},
     traits::DbAction,
     wrapper::{DbActionWrapper, Wrapped},
 };
 
+/// This operation checks whether a user has permissiont to create a persona
+///
+/// If the user does have permission, a persona creator is returned.
 pub struct CheckCreatePersonaPermission<U>(pub U)
 where
     U: PermissionedUser + Clone;
@@ -40,8 +39,11 @@ where
 #[derive(Clone, Debug, Fail, Serialize)]
 pub enum CheckCreatePersonaPermissionFail {
     #[fail(display = "Could not check user permissions")]
+    /// There was an error checking the permission of the user
     Database,
+
     #[fail(display = "User does not haver permission to create persona")]
+    /// The user doesn't have permission to create a persona
     Permission,
 }
 
@@ -56,36 +58,38 @@ impl From<PermissionError> for CheckCreatePersonaPermissionFail {
 
 impl AardwolfFail for CheckCreatePersonaPermissionFail {}
 
-pub struct CreatePersona<U>(pub LocalPersonaCreator<U>, pub ValidatedPersonaCreationForm)
-where
-    U: PermissionedUser;
+#[cfg(test)]
+mod tests {
+    use aardwolf_test_helpers::models::{
+        gen_string, make_unverified_authenticated_user, make_verified_authenticated_user,
+        with_connection,
+    };
 
-impl<U> Wrapped for CreatePersona<U>
-where
-    U: PermissionedUser,
-{
-    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
-}
+    use crate::{
+        operations::check_create_persona_permission::CheckCreatePersonaPermission, traits::DbAction,
+    };
 
-impl<U> DbAction for CreatePersona<U>
-where
-    U: PermissionedUser,
-{
-    type Item = (BaseActor, Persona);
-    type Error = PersonaCreationFail;
+    #[test]
+    fn verified_user_can_create_persona() {
+        with_connection(|conn| {
+            make_verified_authenticated_user(conn, &gen_string()?, |user, _| {
+                let operation = CheckCreatePersonaPermission(user);
 
-    fn db_action(self, conn: &PgConnection) -> Result<(BaseActor, Persona), PersonaCreationFail> {
-        Ok(self.0.create_persona(
-            self.1.display_name,
-            self.1.profile_url,
-            self.1.inbox_url,
-            self.1.outbox_url,
-            self.1.follow_policy,
-            self.1.default_visibility,
-            self.1.is_searchable,
-            None,
-            self.1.shortname,
-            conn,
-        )?)
+                assert!(operation.db_action(conn).is_ok());
+                Ok(())
+            })
+        })
+    }
+
+    #[test]
+    fn unverified_user_cannot_create_persona() {
+        with_connection(|conn| {
+            make_unverified_authenticated_user(conn, &gen_string()?, |user| {
+                let operation = CheckCreatePersonaPermission(user);
+
+                assert!(operation.db_action(conn).is_err());
+                Ok(())
+            })
+        })
     }
 }

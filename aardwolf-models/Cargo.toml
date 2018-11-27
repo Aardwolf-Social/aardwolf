@@ -18,6 +18,11 @@ url = "1.7"
 
 [features]
 default = []
+test = ["dotenv"]
+
+[dependencies.dotenv]
+version = "0.13"
+optional = true
 
 [dependencies.diesel]
 version = "1.2"
@@ -28,6 +33,5 @@ version = "0.4.0-rc.1"
 optional = true
 
 [dev-dependencies]
-dotenv = "0.13"
 env_logger = "0.5"
 serde_derive = "1.0"

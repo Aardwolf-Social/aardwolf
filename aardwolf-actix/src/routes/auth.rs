@@ -1,8 +1,14 @@
 use aardwolf_models::user::UserLike;
-use aardwolf_types::forms::auth::{
-    ConfirmAccountFail, ConfirmToken, ConfirmationToken, SignIn, SignInFail, SignInForm, SignUp,
-    SignUpFail, SignUpForm, ValidateSignInForm, ValidateSignInFormFail, ValidateSignUpForm,
-    ValidateSignUpFormFail,
+use aardwolf_types::{
+    forms::auth::{
+        SignInForm, SignUpForm, ValidateSignInForm, ValidateSignInFormFail, ValidateSignUpForm,
+        ValidateSignUpFormFail,
+    },
+    operations::{
+        confirm_account::{ConfirmAccount, ConfirmAccountFail, ConfirmAccountToken},
+        sign_in::{SignIn, SignInFail},
+        sign_up::{SignUp, SignUpFail},
+    },
 };
 use actix_web::{
     http::header::LOCATION, middleware::session::Session, Form, HttpResponse, Query, State,
@@ -203,10 +209,10 @@ impl From<DbActionError<ConfirmAccountFail>> for ConfirmError {
 }
 
 pub(crate) fn confirm(
-    (state, query): (State<AppConfig>, Query<ConfirmationToken>),
+    (state, query): (State<AppConfig>, Query<ConfirmAccountToken>),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
     let res = perform!(state, ConfirmError, [
-        (_ = ConfirmToken(query.into_inner())),
+        (_ = ConfirmAccount(query.into_inner())),
     ]);
 
     Box::new(

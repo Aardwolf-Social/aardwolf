@@ -265,6 +265,7 @@ mod tests {
         with_connection(|conn| {
             with_unverified_user(conn, |user| {
                 with_unverified_email(conn, &user, |email, token| {
+                    let token = transmute_email_token(&token)?;
                     email.verify(token)?.store_verify(conn)?;
 
                     Ok(())

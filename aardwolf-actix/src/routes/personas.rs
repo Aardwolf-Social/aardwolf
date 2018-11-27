@@ -1,9 +1,14 @@
 use aardwolf_types::{
     error::AardwolfFail,
-    forms::personas::{
-        CheckCreatePersonaPermission, CheckCreatePersonaPermissionFail,
-        CheckDeletePersonaPermission, CreatePersona, DeletePersona, FetchPersona,
-        PersonaCreationFail, PersonaCreationForm, PersonaDeletionFail, ValidatePersonaCreationForm,
+    forms::personas::{PersonaCreationFail, PersonaCreationForm, ValidatePersonaCreationForm},
+    operations::{
+        check_create_persona_permission::{
+            CheckCreatePersonaPermission, CheckCreatePersonaPermissionFail,
+        },
+        check_delete_persona_permission::CheckDeletePersonaPermission,
+        create_persona::CreatePersona,
+        delete_persona::{DeletePersona, DeletePersonaFail},
+        fetch_persona::FetchPersona,
     },
 };
 use actix_web::{Form, Path, State};
@@ -90,12 +95,12 @@ pub enum PersonaDeleteError {
     #[fail(display = "Error talking db")]
     Database,
     #[fail(display = "Error confirming account: {}", _0)]
-    Delete(#[cause] PersonaDeletionFail),
+    Delete(#[cause] DeletePersonaFail),
 }
 
 impl<E> From<DbActionError<E>> for PersonaDeleteError
 where
-    E: Into<PersonaDeletionFail> + AardwolfFail,
+    E: Into<DeletePersonaFail> + AardwolfFail,
 {
     fn from(e: DbActionError<E>) -> Self {
         match e {

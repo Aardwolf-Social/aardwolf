@@ -44,3 +44,6 @@ optional = true
 features = ["tera_templates", "json"]
 version = "0.4.0-rc.1"
 optional = true
+
+[dev-dependencies]
+aardwolf-test-helpers = { version = "0.1", path = "../aardwolf-test-helpers" }

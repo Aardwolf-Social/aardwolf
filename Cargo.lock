@@ -93,10 +93,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "aardwolf-test-helpers"
+version = "0.1.0"
+dependencies = [
+ "aardwolf-models 0.1.0",
+]
+
+[[package]]
 name = "aardwolf-types"
 version = "0.1.0"
 dependencies = [
  "aardwolf-models 0.1.0",
+ "aardwolf-test-helpers 0.1.0",
  "actix 0.7.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "actix-web 0.7.14 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_builder 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",

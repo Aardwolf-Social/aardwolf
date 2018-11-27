@@ -1,5 +1,7 @@
-use aardwolf_models::user::{email::Email, AuthenticatedUser};
-use aardwolf_types::forms::user::{FetchUser, FetchUserAndEmail, FetchUserFail};
+use aardwolf_models::user::AuthenticatedUser;
+use aardwolf_types::operations::fetch_authenticated_user::{
+    FetchAuthenticatedUser, FetchAuthenticatedUserFail,
+};
 use actix_web::{
     error::ResponseError, middleware::session::RequestSession, FromRequest, HttpRequest,
     HttpResponse,
@@ -21,14 +23,14 @@ pub enum SignedInUserError {
     User,
 }
 
-impl From<DbActionError<FetchUserFail>> for SignedInUserError {
-    fn from(e: DbActionError<FetchUserFail>) -> Self {
+impl From<DbActionError<FetchAuthenticatedUserFail>> for SignedInUserError {
+    fn from(e: DbActionError<FetchAuthenticatedUserFail>) -> Self {
         match e {
             DbActionError::Connection => SignedInUserError::Database,
             DbActionError::Mailbox => SignedInUserError::Mailbox,
             DbActionError::Action(e) => match e {
-                FetchUserFail::Database => SignedInUserError::Database,
-                FetchUserFail::NotFound => SignedInUserError::User,
+                FetchAuthenticatedUserFail::Database => SignedInUserError::Database,
+                FetchAuthenticatedUserFail::NotFound => SignedInUserError::User,
             },
         }
     }
@@ -55,35 +57,10 @@ impl FromRequest<AppConfig> for SignedInUser {
             .into_future()
             .and_then(move |id| {
                 perform!(state, SignedInUserError, [
-                     (_ = FetchUser(id)),
+                     (_ = FetchAuthenticatedUser(id)),
                 ])
             })
             .map(SignedInUser)
-            .map_err(From::from);
-
-        Box::new(res)
-    }
-}
-
-pub struct SignedInUserWithEmail(pub AuthenticatedUser, pub Email);
-
-impl FromRequest<AppConfig> for SignedInUserWithEmail {
-    type Config = ();
-    type Result = Box<dyn Future<Item = Self, Error = actix_web::Error>>;
-
-    fn from_request(req: &HttpRequest<AppConfig>, _: &Self::Config) -> Self::Result {
-        let state = req.state().clone();
-
-        let id_res = from_session(&req.session(), "user_id", SignedInUserError::Cookie);
-
-        let res = id_res
-            .into_future()
-            .and_then(move |id| {
-                perform!(state, SignedInUserError, [
-                     (_ = FetchUserAndEmail(id)),
-                ])
-            })
-            .map(|(user, email)| SignedInUserWithEmail(user, email))
             .map_err(From::from);
 
         Box::new(res)
