@@ -16,6 +16,5 @@ version = "0.1"
 path = "../aardwolf-types"
 
 [dependencies.rocket_i18n]
-version = "0.2"
+version = "0.3"
 default-features = false
-git = "https://github.com/BaptisteGelez/rocket_i18n.git"

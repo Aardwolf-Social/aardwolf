@@ -20,10 +20,9 @@ rocket = ["aardwolf-rocket"]
 actix = ["aardwolf-actix"]
 
 [build-dependencies.rocket_i18n]
-version = "0.2"
+version = "0.3"
 default-features = false
 features = ["build"]
-git = "https://github.com/BaptisteGelez/rocket_i18n.git"
 
 [dependencies]
 config = "0.9.0"
