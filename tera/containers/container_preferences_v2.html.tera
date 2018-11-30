@@ -24,7 +24,7 @@
                 <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
                   <span>{{ "Language" | _ }}</span>
                   <span class="icon is-small">
-                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                    <span class="fa fa-angle-down" aria-hidden="true"></span>
                   </span>
                 </button>
               </div>
