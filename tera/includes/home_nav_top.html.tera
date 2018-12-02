@@ -24,7 +24,7 @@
 		<span class="navbar-item">
 		  <a class="button is-primary is-inverted">
 			<span class="icon">
-			  <i class="fa fa-github"></i>
+			  <span class="fa fa-github"></span>
 			</span>
 			<span>Download</span>
 		  </a>
@@ -32,7 +32,7 @@
 		<span class="navbar-item">
 			<a class="button is-dark" href="/auth/sign_out">
 				<span class="icon">
-					<i class="fas fa-logout"></i>
+					<span class="fa fa-logout"></span>
 				</span>
 				{{ "Logout" | _ }} 
 			</a>

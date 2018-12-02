@@ -40,7 +40,7 @@
             <input class="file-input" type="file" name="resume">
             <span class="file-cta">
               <span class="file-icon">
-                <i class="fa fa-upload"></i>
+                <span class="fa fa-upload"></span>
               </span>
               <span class="file-label">
                 {{ "Choose a file…" | _ }}
@@ -68,7 +68,7 @@
             <input class="file-input" type="file" name="resume">
             <span class="file-cta">
               <span class="file-icon">
-                <i class="fa fa-upload"></i>
+                <span class="fa fa-upload"></span>
               </span>
               <span class="file-label">
                 {{ "No file chosen" | _ }}
