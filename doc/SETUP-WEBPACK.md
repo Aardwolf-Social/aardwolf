@@ -1,3 +1,5 @@
+`
+
 # INTRODUCTION
 
 Rather than including full packages for application/web styling (Bulma.io, ForkAwesome, etc) we are using WebPack.  
@@ -6,9 +8,29 @@ be folks that would prefer to have local copies of everything.
 
 This document will describe how to use WebPack
 
-(( These instructions don't work yet :D --Placeholder ))
+(( UNTESTED ))
+
+Go into the aardwolf directory
+`cd /path/to/aardwolf`
+
+ Initialize the setup script (it is okay to accept the default values)
+ `init npm`
+ 
+ Install the dependencies
 ```
-# sudo apt install npm nodejs
-# npm install 
-# npm run build
+npm install bulma --save-dev
+npm install css-loader --save-dev
+npm install extract-text-webpack-plugin@next --save-dev
+npm install node-sass --save-dev
+npm install sass-loader --save-dev
+npm install style-loader --save-dev
+npm install webpack --save-dev
+npm install webpack-cli --save-dev
 ```
+Build the packages
+`npm run build`
+
+Thats it!
+
+Source URL:
+https://bulma.io/documentation/customize/with-webpack/
