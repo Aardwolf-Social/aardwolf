@@ -36,7 +36,6 @@ default-features = false
 features = ["postgres", "uuid", "chrono"]
 
 [dependencies.rocket_i18n]
-version = "0.2"
+version = "0.3"
 default-features = false
-git = "https://github.com/BaptisteGelez/rocket_i18n.git"
 features = ["actix-web"]
