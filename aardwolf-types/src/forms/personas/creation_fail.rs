@@ -1,5 +1,6 @@
 use aardwolf_models::user::PermissionError;
 use diesel::result::Error as DieselError;
+use openssl::error::ErrorStack;
 use url::ParseError as UrlParseError;
 
 use crate::error::AardwolfFail;
@@ -12,6 +13,8 @@ pub enum PersonaCreationFail {
     Permission,
     #[fail(display = "Error in database")]
     Database,
+    #[fail(display = "Error generating keys")]
+    Keygen,
 }
 
 impl AardwolfFail for PersonaCreationFail {}
@@ -34,5 +37,11 @@ impl From<PermissionError> for PersonaCreationFail {
             PermissionError::Diesel => PersonaCreationFail::Database,
             PermissionError::Permission => PersonaCreationFail::Permission,
         }
+    }
+}
+
+impl From<ErrorStack> for PersonaCreationFail {
+    fn from(_: ErrorStack) -> Self {
+        PersonaCreationFail::Keygen
     }
 }

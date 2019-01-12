@@ -3,6 +3,7 @@ use aardwolf_models::{
     user::{LocalPersonaCreator, PermissionedUser},
 };
 use diesel::pg::PgConnection;
+use openssl::rsa::Rsa;
 
 use crate::{
     forms::personas::{PersonaCreationFail, ValidatedPersonaCreationForm},
@@ -30,6 +31,10 @@ where
     type Error = PersonaCreationFail;
 
     fn db_action(self, conn: &PgConnection) -> Result<(BaseActor, Persona), PersonaCreationFail> {
+        let key = Rsa::generate(2048)?;
+        let priv_key = key.private_key_to_der()?;
+        let pub_key = key.public_key_to_der_pkcs1()?;
+
         Ok(self.0.create_persona(
             self.1.display_name,
             self.1.profile_url,
@@ -40,6 +45,8 @@ where
             self.1.is_searchable,
             None,
             self.1.shortname,
+            priv_key,
+            pub_key,
             conn,
         )?)
     }
@@ -52,9 +59,8 @@ mod tests {
         user::PermissionedUser,
     };
     use aardwolf_test_helpers::models::{
-        gen_string, make_verified_authenticated_user, with_connection, GenericError,
+        gen_string, make_verified_authenticated_user, with_connection,
     };
-    use failure::Error;
 
     use crate::{
         forms::personas::ValidatedPersonaCreationForm, operations::create_persona::CreatePersona,
@@ -66,9 +72,7 @@ mod tests {
         with_connection(|conn| {
             make_verified_authenticated_user(conn, &gen_string()?, |user, _| {
                 let creator = user
-                    .can_make_persona(conn)
-                    .map_err(Error::from)
-                    .map_err(GenericError::Other)?;
+                    .can_make_persona(conn)?;
 
                 let form = ValidatedPersonaCreationForm {
                     display_name: "username".to_owned(),

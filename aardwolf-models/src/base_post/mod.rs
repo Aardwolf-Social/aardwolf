@@ -2,7 +2,6 @@
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
 use mime::Mime as OrigMime;
-use serde_json::Value;
 
 pub mod direct_post;
 pub mod post;
@@ -22,7 +21,6 @@ pub struct BasePost {
     posted_by: i32,       // foreign key to BaseActor
     icon: Option<i32>,    // foreign key to Image
     visibility: PostVisibility,
-    original_json: Value, // original json
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
 }
@@ -52,10 +50,6 @@ impl BasePost {
         self.visibility
     }
 
-    pub fn original_json(&self) -> &Value {
-        &self.original_json
-    }
-
     pub fn is_visible_by(
         &self,
         actor: &BaseActor,
@@ -78,7 +72,6 @@ pub struct NewBasePost {
     posted_by: i32,
     icon: Option<i32>,
     visibility: PostVisibility,
-    original_json: Value,
 }
 
 impl NewBasePost {
@@ -96,7 +89,6 @@ impl NewBasePost {
         posted_by: &BaseActor,
         icon: Option<&Image>,
         visibility: PostVisibility,
-        original_json: Value,
     ) -> Self {
         NewBasePost {
             name,
@@ -104,7 +96,6 @@ impl NewBasePost {
             posted_by: posted_by.id(),
             icon: icon.map(|i| i.id()),
             visibility,
-            original_json,
         }
     }
 }

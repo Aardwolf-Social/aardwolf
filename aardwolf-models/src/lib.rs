@@ -10,11 +10,11 @@ extern crate failure;
 #[macro_use]
 extern crate log;
 extern crate mime;
+extern crate openssl;
 extern crate rand;
 #[cfg(feature = "rocket")]
 extern crate rocket;
 extern crate serde;
-#[macro_use]
 extern crate serde_json;
 extern crate url;
 

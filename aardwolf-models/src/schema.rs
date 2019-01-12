@@ -8,9 +8,10 @@ table! {
         outbox_url -> Varchar,
         local_user -> Nullable<Int4>,
         follow_policy -> Varchar,
-        original_json -> Jsonb,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
+        private_key_der -> Bytea,
+        public_key_der -> Bytea,
     }
 }
 
@@ -22,7 +23,6 @@ table! {
         posted_by -> Int4,
         icon -> Nullable<Int4>,
         visibility -> Varchar,
-        original_json -> Jsonb,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
     }

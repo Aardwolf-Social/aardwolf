@@ -32,6 +32,8 @@ pub enum PersonaCreateError {
     Permission,
     #[fail(display = "Submitted form is invalid")]
     Form,
+    #[fail(display = "Could not generate keys")]
+    Keygen,
 }
 
 impl From<PersonaCreationFail> for PersonaCreateError {
@@ -40,6 +42,7 @@ impl From<PersonaCreationFail> for PersonaCreateError {
             PersonaCreationFail::Validation => PersonaCreateError::Form,
             PersonaCreationFail::Permission => PersonaCreateError::Permission,
             PersonaCreationFail::Database => PersonaCreateError::Database,
+            PersonaCreationFail::Keygen => PersonaCreateError::Keygen,
         }
     }
 }

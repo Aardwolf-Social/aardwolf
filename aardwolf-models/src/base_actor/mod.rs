@@ -1,7 +1,6 @@
 #![allow(proc_macro_derive_resolution_fallback)]
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
-use serde_json::Value;
 
 use sql_types::{FollowPolicy, Url};
 
@@ -23,7 +22,8 @@ pub struct ModifiedBaseActor {
     inbox_url: Url,
     outbox_url: Url,
     follow_policy: FollowPolicy,
-    original_json: Value,
+    private_key_der: Vec<u8>,
+    public_key_der: Vec<u8>,
 }
 
 impl ModifiedBaseActor {
@@ -66,9 +66,10 @@ pub struct BaseActor {
     outbox_url: Url,             // max_length: 2048
     local_user: Option<i32>,     // foreign key to User
     follow_policy: FollowPolicy, // max_length: 8
-    original_json: Value,        // original json
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
+    private_key_der: Vec<u8>,
+    public_key_der: Vec<u8>,
 }
 
 impl BaseActor {
@@ -84,7 +85,8 @@ impl BaseActor {
             inbox_url: self.inbox_url,
             outbox_url: self.outbox_url,
             follow_policy: self.follow_policy,
-            original_json: self.original_json,
+            private_key_der: self.private_key_der,
+            public_key_der: self.public_key_der,
         }
     }
 
@@ -138,10 +140,6 @@ impl BaseActor {
     pub fn follow_policy(&self) -> FollowPolicy {
         self.follow_policy
     }
-
-    pub fn original_json(&self) -> &Value {
-        &self.original_json
-    }
 }
 
 #[derive(Insertable)]
@@ -153,7 +151,8 @@ pub struct NewBaseActor {
     outbox_url: Url,
     local_user: Option<i32>,
     follow_policy: FollowPolicy,
-    original_json: Value,
+    private_key_der: Vec<u8>,
+    public_key_der: Vec<u8>,
 }
 
 impl NewBaseActor {
@@ -172,7 +171,8 @@ impl NewBaseActor {
         outbox_url: Url,
         local_user: Option<&U>,
         follow_policy: FollowPolicy,
-        original_json: Value,
+        private_key_der: Vec<u8>,
+        public_key_der: Vec<u8>,
     ) -> Self {
         NewBaseActor {
             display_name,
@@ -181,7 +181,8 @@ impl NewBaseActor {
             outbox_url,
             local_user: local_user.map(|lu| lu.id()),
             follow_policy,
-            original_json,
+            private_key_der,
+            public_key_der,
         }
     }
 }
