@@ -39,3 +39,5 @@ features = ["postgres", "uuid", "chrono"]
 version = "0.3"
 default-features = false
 features = ["actix-web"]
+git = "https://github.com/Aardwolf-Social/rocket_i18n.git"
+branch = "asonix/rocket-stable"
