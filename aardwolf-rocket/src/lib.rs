@@ -1,5 +1,5 @@
 #![recursion_limit = "128"]
-#![feature(custom_derive, proc_macro_hygiene, decl_macro)]
+#![feature(proc_macro_hygiene, decl_macro)]
 
 extern crate aardwolf_models;
 extern crate aardwolf_templates;
@@ -131,7 +131,7 @@ fn app(config: &config::Config, db_url: &str) -> Result<Rocket, Box<dyn Error>> 
         )
         .mount("/", routes)
         // TODO: domain and languages should be config'd
-        .manage(rocket_i18n::i18n("aardwolf", vec!["en", "pl"]));
+        .manage(rocket_i18n::i18n(vec!["en", "pl"]));
 
     // we need an instance of the app to access the config values in Rocket.toml,
     // so we pass it to the db_pool function, get the pool, and _then_ return the instance
