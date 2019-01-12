@@ -4,7 +4,7 @@ use std::{error::Error as StdError, io::Write, str::FromStr};
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
 use url::Url as OrigUrl;
 
-#[derive(AsExpression, Debug, FromSqlRow)]
+#[derive(AsExpression, Clone, Debug, FromSqlRow)]
 #[sql_type = "Text"]
 pub struct Url(pub OrigUrl);
 

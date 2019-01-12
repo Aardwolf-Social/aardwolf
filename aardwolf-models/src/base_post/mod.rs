@@ -2,6 +2,7 @@
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
 use mime::Mime as OrigMime;
+use uuid::Uuid;
 
 pub mod direct_post;
 pub mod post;
@@ -23,6 +24,7 @@ pub struct BasePost {
     visibility: PostVisibility,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
+    local_uuid: Option<Uuid>,
 }
 
 impl BasePost {
@@ -72,6 +74,7 @@ pub struct NewBasePost {
     posted_by: i32,
     icon: Option<i32>,
     visibility: PostVisibility,
+    local_uuid: Option<Uuid>,
 }
 
 impl NewBasePost {
@@ -81,6 +84,23 @@ impl NewBasePost {
         diesel::insert_into(base_posts::table)
             .values(&self)
             .get_result(conn)
+    }
+
+    pub fn local(
+        name: Option<String>,
+        media_type: OrigMime,
+        posted_by: &BaseActor,
+        icon: Option<&Image>,
+        visibility: PostVisibility,
+    ) -> Self {
+        NewBasePost {
+            name,
+            media_type: media_type.into(),
+            posted_by: posted_by.id(),
+            icon: icon.map(|i| i.id()),
+            visibility,
+            local_uuid: Some(Uuid::new_v4()),
+        }
     }
 
     pub fn new(
@@ -96,6 +116,7 @@ impl NewBasePost {
             posted_by: posted_by.id(),
             icon: icon.map(|i| i.id()),
             visibility,
+            local_uuid: None,
         }
     }
 }

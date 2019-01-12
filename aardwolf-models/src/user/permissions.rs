@@ -543,12 +543,12 @@ impl<U: UserLike> LocalPersonaCreator<U> {
         use diesel::Connection;
 
         conn.transaction(|| {
-            NewBaseActor::new(
+            NewBaseActor::local(
                 display_name,
                 profile_url,
                 inbox_url,
                 outbox_url,
-                Some(&self.0),
+                &self.0,
                 follow_policy,
                 private_key_der,
                 public_key_der,

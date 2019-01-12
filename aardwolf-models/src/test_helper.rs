@@ -16,29 +16,29 @@ use base_actor::{
     follower::{Follower, NewFollower},
     group::{
         group_base_actor::{GroupBaseActor, NewGroupBaseActor},
-        {Group, NewGroup},
+        Group, NewGroup,
     },
     persona::{NewPersona, Persona},
-    {BaseActor, NewBaseActor},
+    BaseActor, NewBaseActor,
 };
 use base_post::{
     direct_post::{DirectPost, NewDirectPost},
     post::{
         comment::{
             reaction::{NewReaction, Reaction},
-            {Comment, NewComment},
+            Comment, NewComment,
         },
         media_post::{MediaPost, NewMediaPost},
-        {NewPost, Post},
+        NewPost, Post,
     },
-    {BasePost, NewBasePost},
+    BasePost, NewBasePost,
 };
 use file::{File, NewFile};
 use sql_types::{FollowPolicy, PostVisibility, ReactionType, Url};
 use timer::{
     event::{Event, NewEvent},
     event_notification::{EventNotification, NewEventNotification},
-    {NewTimer, Timer},
+    NewTimer, Timer,
 };
 use user::{
     email::{
@@ -48,8 +48,7 @@ use user::{
     local_auth::{
         LocalAuth, NewLocalAuth, PlaintextPassword,
     },
-    QueriedUser,
-    {AuthenticatedUser, NewUser, UnauthenticatedUser, UnverifiedUser, UserLike},
+    AuthenticatedUser, NewUser, UnauthenticatedUser, UnverifiedUser, UserLike,
 };
 
 pub type GenericError = Error;
@@ -122,12 +121,11 @@ where
 {
     let (pr, pu) = gen_keypair()?;
 
-    let base_actor = NewBaseActor::new::<QueriedUser>(
+    let base_actor = NewBaseActor::new(
         gen_string()?,
         gen_url()?,
         gen_url()?,
         gen_url()?,
-        None,
         FollowPolicy::AutoAccept,
         pr,
         pu,
@@ -153,12 +151,12 @@ where
 {
     let (pr, pu) = gen_keypair()?;
 
-    let base_actor = NewBaseActor::new(
+    let base_actor = NewBaseActor::local(
         gen_string()?,
         gen_url()?,
         gen_url()?,
         gen_url()?,
-        Some(user),
+        user,
         FollowPolicy::AutoAccept,
         pr,
         pu,
