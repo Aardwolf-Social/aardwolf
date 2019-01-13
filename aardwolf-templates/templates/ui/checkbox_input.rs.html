@@ -1,0 +1,22 @@
+@use rocket_i18n::i18n;
+
+@use crate::{CheckboxInput, templates::ui::icon};
+
+@(input: &CheckboxInput)
+
+<div class="aardwolf-input-wrapper">
+    <label for="@input.name">
+        @if let Some(ref i) = input.icon {
+            @:icon(i)
+        }
+        @i18n!(input.catalog, input.label)
+    </label>
+    <div class="aardwolf-input aardwolf-checkbox-input">
+        <input type="checkbox" name="@input.name" value="true" checked="@input.checked" />
+    </div>
+    <div class="aardwolf-input-meta">
+        @if let Some(error) = input.error {
+            <span class="aardwolf-input-error">@i18n!(input.catalog, error)</span>
+        }
+    </div>
+</div>

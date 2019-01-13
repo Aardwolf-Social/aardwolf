@@ -1,7 +1,7 @@
 use rocket::request::Form;
 
 use aardwolf_types::{
-    forms::personas::{PersonaCreationFail, PersonaCreationForm, ValidatePersonaCreationForm},
+    forms::personas::{PersonaCreationFail, PersonaCreationForm, ValidatePersonaCreationForm, ValidatePersonaCreationFail},
     operations::{
         check_create_persona_permission::{
             CheckCreatePersonaPermission, CheckCreatePersonaPermissionFail,
@@ -30,15 +30,21 @@ pub enum PersonaCreateError {
     #[fail(display = "User does not have permission to create a persona")]
     Permission,
     #[fail(display = "Submitted form is invalid")]
-    Form,
+    Form(#[cause] ValidatePersonaCreationFail),
     #[fail(display = "Could not generate keys")]
     Keygen,
+}
+
+impl From<ValidatePersonaCreationFail> for PersonaCreateError {
+    fn from(e: ValidatePersonaCreationFail) -> Self {
+        PersonaCreateError::Form(e)
+    }
 }
 
 impl From<PersonaCreationFail> for PersonaCreateError {
     fn from(e: PersonaCreationFail) -> Self {
         match e {
-            PersonaCreationFail::Validation => PersonaCreateError::Form,
+            PersonaCreationFail::Validation(e) => PersonaCreateError::Form(e),
             PersonaCreationFail::Permission => PersonaCreateError::Permission,
             PersonaCreationFail::Database => PersonaCreateError::Database,
             PersonaCreationFail::Keygen => PersonaCreateError::Keygen,
@@ -76,7 +82,7 @@ pub enum PersonaDeleteError {
     Mailbox,
     #[fail(display = "Error talking db")]
     Database,
-    #[fail(display = "Error confirming account: {}", _0)]
+    #[fail(display = "Error deleting persona: {}", _0)]
     Delete(#[cause] DeletePersonaFail),
 }
 

@@ -1,0 +1,32 @@
+@use rocket_i18n::i18n;
+
+@use crate::{FirstLogin, templates::{base, ui::{alert, text_input, select_input, checkbox_input}}};
+
+@(first_login: &FirstLogin)
+
+@:base(first_login.catalog, "Aardwolf | Get Posting", {
+<header>
+    <h2 class="title">@i18n!(first_login.catalog, "Get posting!")</h2>
+    <div style="text-align: right">
+        @i18n!(first_login.catalog, "Fill out your profile information")
+    </div>
+</header>
+<section>
+    <div class="container">
+        <div class="columns is-mobile">
+            @if let Some(ref a) = first_login.alert {
+                @:alert(a)
+            }
+            <form method="POST" action="/personas/create">
+                <input type="hidden" name="csrf_token" value="@first_login.csrf">
+                @:text_input(&first_login.display_name)
+                @:text_input(&first_login.shortname)
+                @:select_input(&first_login.follow_policy)
+                @:select_input(&first_login.default_visibility)
+                @:checkbox_input(&first_login.is_searchable)
+                <button>@i18n!(first_login.catalog, "Create Persona")</button>
+            </form>
+        </div>
+    </div>
+</section>
+});
