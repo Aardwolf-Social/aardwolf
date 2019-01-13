@@ -572,7 +572,6 @@ impl<U: UserLike> LocalPersonaCreator<U> {
                             .set(primary_persona.eq(persona.id()))
                             .execute(conn)
                             .map(|_| (base_actor, persona))
-
                     } else {
                         Ok((base_actor, persona))
                     }

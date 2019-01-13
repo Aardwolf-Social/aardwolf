@@ -14,6 +14,7 @@ pub struct PersonaCreationForm {
     follow_policy: FollowPolicy,
     default_visibility: PostVisibility,
     shortname: String,
+    #[serde(default)]
     is_searchable: bool,
 }
 
