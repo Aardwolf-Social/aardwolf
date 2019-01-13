@@ -9,6 +9,7 @@ use crate::{
 #[derive(Clone, Debug, Deserialize)]
 #[cfg_attr(feature = "use-rocket", derive(FromForm))]
 pub struct PersonaCreationForm {
+    csrf_token: String,
     display_name: String,
     follow_policy: FollowPolicy,
     default_visibility: PostVisibility,

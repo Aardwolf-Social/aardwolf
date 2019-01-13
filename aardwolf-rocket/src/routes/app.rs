@@ -13,7 +13,7 @@ use types::user::SignedInUser;
 use DbConn;
 
 #[get("/")]
-pub fn home(mut cookies: Cookies, user: SignedInUser, i18n: I18n, _db: DbConn) -> ResponseOrRedirect {
+pub fn home(user: SignedInUser, mut cookies: Cookies, i18n: I18n, _db: DbConn) -> ResponseOrRedirect {
     let res = if cookies.get_private("persona_id").is_some() {
         render_template(&aardwolf_templates::Home::new(
             &i18n.catalog,
