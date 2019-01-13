@@ -18,7 +18,7 @@ fn logged_out_index() -> HttpResponse {
 }
 
 fn logged_in_index((session, user, i18n): (Session, SignedInUser, I18n)) -> HttpResponse {
-    if let Ok(Some(_persona_id)) = session.get::<i32>("persona_id") {
+    if session.get::<i32>("persona_id").unwrap_or(None).is_some() || user.0.primary_persona().is_some() {
         HttpResponse::Ok().with_ructe(aardwolf_templates::Home::new(
             &i18n.catalog,
             user.0.id().to_string().as_ref(),

@@ -268,6 +268,7 @@ table! {
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
         primary_email -> Nullable<Int4>,
+        primary_persona -> Nullable<Int4>,
     }
 }
 
@@ -295,6 +296,7 @@ joinable!(role_permissions -> permissions (permission_id));
 joinable!(role_permissions -> roles (role_id));
 joinable!(user_roles -> roles (role_id));
 joinable!(user_roles -> users (user_id));
+joinable!(users -> personas (primary_persona));
 
 allow_tables_to_appear_in_same_query!(
     base_actors,

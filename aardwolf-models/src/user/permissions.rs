@@ -563,7 +563,20 @@ impl<U: UserLike> LocalPersonaCreator<U> {
                     &base_actor,
                 )
                 .insert(conn)
-                .map(|persona| (base_actor, persona))
+                .and_then(|persona| {
+                    use diesel::prelude::*;
+                    use crate::schema::users::dsl::{users, id, primary_persona};
+
+                    if self.0.primary_persona().is_none() {
+                        diesel::update(users.filter(id.eq(self.0.id())))
+                            .set(primary_persona.eq(persona.id()))
+                            .execute(conn)
+                            .map(|_| (base_actor, persona))
+
+                    } else {
+                        Ok((base_actor, persona))
+                    }
+                })
             })
         })
     }

@@ -23,6 +23,7 @@ use sql_types::Role;
 pub trait UserLike {
     fn id(&self) -> i32;
     fn primary_email(&self) -> Option<i32>;
+    fn primary_persona(&self) -> Option<i32>;
     fn created_at(&self) -> DateTime<Utc>;
     fn updated_at(&self) -> DateTime<Utc>;
 
@@ -96,6 +97,7 @@ pub struct AuthenticatedUser {
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
     primary_email: Option<i32>,
+    primary_persona: Option<i32>,
 }
 
 impl AuthenticatedUser {
@@ -147,6 +149,10 @@ impl UserLike for AuthenticatedUser {
 
     fn primary_email(&self) -> Option<i32> {
         self.primary_email
+    }
+
+    fn primary_persona(&self) -> Option<i32> {
+        self.primary_persona
     }
 
     fn created_at(&self) -> DateTime<Utc> {
@@ -202,6 +208,10 @@ impl UserLike for UnverifiedUser {
         None
     }
 
+    fn primary_persona(&self) -> Option<i32> {
+        None
+    }
+
     fn created_at(&self) -> DateTime<Utc> {
         self.created_at
     }
@@ -230,6 +240,7 @@ pub struct QueriedUser {
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
     primary_email: Option<i32>,
+    primary_persona: Option<i32>,
 }
 
 impl UserLike for QueriedUser {
@@ -239,6 +250,10 @@ impl UserLike for QueriedUser {
 
     fn primary_email(&self) -> Option<i32> {
         self.primary_email
+    }
+
+    fn primary_persona(&self) -> Option<i32> {
+        None
     }
 
     fn created_at(&self) -> DateTime<Utc> {
@@ -257,6 +272,7 @@ pub struct UnauthenticatedUser {
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
     primary_email: Option<i32>,
+    primary_persona: Option<i32>,
 }
 
 impl UnauthenticatedUser {
@@ -326,6 +342,10 @@ impl UserLike for UnauthenticatedUser {
 
     fn primary_email(&self) -> Option<i32> {
         self.primary_email
+    }
+
+    fn primary_persona(&self) -> Option<i32> {
+        self.primary_persona
     }
 
     fn created_at(&self) -> DateTime<Utc> {

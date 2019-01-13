@@ -182,6 +182,7 @@ impl UnverifiedEmail {
                 AuthenticatedUser {
                     id: user.id,
                     primary_email: None,
+                    primary_persona: None,
                     created_at: user.created_at,
                     updated_at: user.updated_at,
                 },

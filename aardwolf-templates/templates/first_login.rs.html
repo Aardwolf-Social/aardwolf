@@ -14,10 +14,10 @@
 <section>
     <div class="container">
         <div class="columns is-mobile">
-            @if let Some(ref a) = first_login.alert {
-                @:alert(a)
-            }
             <form method="POST" action="/personas/create">
+                @if let Some(ref a) = first_login.alert {
+                    @:alert(a)
+                }
                 <input type="hidden" name="csrf_token" value="@first_login.csrf">
                 @:text_input(&first_login.display_name)
                 @:text_input(&first_login.shortname)
