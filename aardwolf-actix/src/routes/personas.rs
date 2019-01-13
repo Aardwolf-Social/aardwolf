@@ -80,7 +80,7 @@ pub(crate) fn create(
     (state, user, form): (State<AppConfig>, SignedInUser, Form<PersonaCreationForm>),
 ) -> Box<dyn Future<Item = String, Error = actix_web::error::Error>> {
     let res = perform!(state, PersonaCreateError, [
-        (form = ValidatePersonaCreationForm(form.into_inner())),
+        (form = ValidatePersonaCreationForm(form.into_inner(), "/users".to_owned())),
         (creater = CheckCreatePersonaPermission(user.0)),
         (_ = CreatePersona(creater, form)),
     ]);

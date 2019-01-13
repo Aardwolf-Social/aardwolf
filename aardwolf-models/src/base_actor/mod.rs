@@ -1,6 +1,7 @@
 #![allow(proc_macro_derive_resolution_fallback)]
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
+use uuid::Uuid;
 
 use sql_types::{FollowPolicy, Url};
 
@@ -70,6 +71,7 @@ pub struct BaseActor {
     updated_at: DateTime<Utc>,
     private_key_der: Vec<u8>,
     public_key_der: Vec<u8>,
+    local_uuid: Option<Uuid>,
 }
 
 impl BaseActor {
@@ -153,6 +155,7 @@ pub struct NewBaseActor {
     follow_policy: FollowPolicy,
     private_key_der: Vec<u8>,
     public_key_der: Vec<u8>,
+    local_uuid: Option<Uuid>,
 }
 
 impl NewBaseActor {
@@ -164,12 +167,12 @@ impl NewBaseActor {
             .get_result(conn)
     }
 
-    pub fn new<U: UserLike>(
+    pub fn local<U: UserLike>(
         display_name: String,
         profile_url: Url,
         inbox_url: Url,
         outbox_url: Url,
-        local_user: Option<&U>,
+        local_user: &U,
         follow_policy: FollowPolicy,
         private_key_der: Vec<u8>,
         public_key_der: Vec<u8>,
@@ -179,10 +182,33 @@ impl NewBaseActor {
             profile_url,
             inbox_url,
             outbox_url,
-            local_user: local_user.map(|lu| lu.id()),
+            local_user: Some(local_user.id()),
             follow_policy,
             private_key_der,
             public_key_der,
+            local_uuid: Some(Uuid::new_v4()),
+        }
+    }
+
+    pub fn new(
+        display_name: String,
+        profile_url: Url,
+        inbox_url: Url,
+        outbox_url: Url,
+        follow_policy: FollowPolicy,
+        private_key_der: Vec<u8>,
+        public_key_der: Vec<u8>,
+    ) -> Self {
+        NewBaseActor {
+            display_name,
+            profile_url,
+            inbox_url,
+            outbox_url,
+            local_user: None,
+            follow_policy,
+            private_key_der,
+            public_key_der,
+            local_uuid: None,
         }
     }
 }

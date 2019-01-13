@@ -17,6 +17,7 @@ extern crate rocket;
 extern crate serde;
 extern crate serde_json;
 extern crate url;
+extern crate uuid;
 
 pub mod base_actor;
 pub mod base_post;

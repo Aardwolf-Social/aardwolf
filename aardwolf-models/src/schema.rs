@@ -12,6 +12,7 @@ table! {
         updated_at -> Timestamptz,
         private_key_der -> Bytea,
         public_key_der -> Bytea,
+        local_uuid -> Nullable<Uuid>,
     }
 }
 
@@ -25,6 +26,7 @@ table! {
         visibility -> Varchar,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
+        local_uuid -> Nullable<Uuid>,
     }
 }
 

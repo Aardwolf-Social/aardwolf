@@ -62,7 +62,7 @@ pub fn create(
     db: DbConn,
 ) -> Result<String, PersonaCreateError> {
     let _ = perform!(&db, PersonaCreateError, [
-        (form = ValidatePersonaCreationForm(form.into_inner())),
+        (form = ValidatePersonaCreationForm(form.into_inner(), "/users".to_owned())),
         (creator = CheckCreatePersonaPermission(user.0)),
         (_ = CreatePersona(creator, form)),
     ])?;
