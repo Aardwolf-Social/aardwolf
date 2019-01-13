@@ -1,7 +1,6 @@
 use chrono::offset::Utc;
 use diesel::{self, pg::PgConnection};
 use mime::Mime as OrigMime;
-use serde_json::Value;
 
 use super::UserLike;
 use base_actor::{
@@ -287,7 +286,6 @@ impl<'a> PostMaker<'a> {
         media_type: OrigMime,
         icon: Option<&Image>,
         visibility: PostVisibility,
-        original_json: Value,
         content: String,
         source: String,
         conn: &PgConnection,
@@ -303,7 +301,6 @@ impl<'a> PostMaker<'a> {
                     self.0,
                     icon,
                     visibility,
-                    original_json,
                 ))
                 .get_result(conn)
                 .and_then(|base_post: BasePost| {
@@ -326,7 +323,6 @@ impl<'a> MediaPostMaker<'a> {
         media_type: OrigMime,
         icon: Option<&Image>,
         visibility: PostVisibility,
-        original_json: Value,
         content: String,
         source: String,
         media: &File,
@@ -342,7 +338,6 @@ impl<'a> MediaPostMaker<'a> {
                     media_type,
                     icon,
                     visibility,
-                    original_json,
                     content,
                     source,
                     conn,
@@ -367,7 +362,6 @@ impl<'a> CommentMaker<'a> {
         media_type: OrigMime,
         icon: Option<&Image>,
         visibility: PostVisibility,
-        original_json: Value,
         content: String,
         source: String,
         conversation: &Post,
@@ -402,7 +396,6 @@ impl<'a> CommentMaker<'a> {
                     media_type,
                     icon,
                     visibility,
-                    original_json,
                     content,
                     source,
                     conn,
@@ -543,6 +536,8 @@ impl<U: UserLike> LocalPersonaCreator<U> {
         is_searchable: bool,
         avatar: Option<&Image>,
         shortname: String,
+        private_key_der: Vec<u8>,
+        public_key_der: Vec<u8>,
         conn: &PgConnection,
     ) -> Result<(BaseActor, Persona), diesel::result::Error> {
         use diesel::Connection;
@@ -555,7 +550,8 @@ impl<U: UserLike> LocalPersonaCreator<U> {
                 outbox_url,
                 Some(&self.0),
                 follow_policy,
-                json!({}),
+                private_key_der,
+                public_key_der,
             )
             .insert(conn)
             .and_then(|base_actor| {
