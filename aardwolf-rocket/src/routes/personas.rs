@@ -1,5 +1,4 @@
-use rocket::request::Form;
-
+use aardwolf_models::sql_types::{PostVisibility, FollowPolicy};
 use aardwolf_types::{
     forms::personas::{PersonaCreationFail, PersonaCreationForm, ValidatePersonaCreationForm, ValidatePersonaCreationFail},
     operations::{
@@ -14,13 +13,32 @@ use aardwolf_types::{
         fetch_persona::{FetchPersona, FetchPersonaFail},
     },
 };
+use rocket::{Response, http::{Cookie, Cookies, Status}, response::Redirect, request::Form};
+
+use ResponseOrRedirect;
+use render_template;
 use types::user::SignedInUser;
 use DbConn;
+use rocket_i18n::I18n;
 
-#[get("/new")]
-pub fn new(_user: SignedInUser) -> String {
+#[get("/create")]
+pub fn new(_user: SignedInUser, i18n: I18n) -> Response<'static> {
+    let res = render_template(&aardwolf_templates::FirstLogin::new(
+        &i18n.catalog,
+        "csrf",
+        "",
+        "",
+        FollowPolicy::AutoAccept,
+        PostVisibility::Public,
+        false,
+        None,
+        false,
+    ));
+
     drop(_user);
-    "placeholder".to_string()
+    drop(i18n);
+
+    res
 }
 
 #[derive(Clone, Debug, Fail)]
@@ -65,15 +83,53 @@ impl From<CheckCreatePersonaPermissionFail> for PersonaCreateError {
 pub fn create(
     user: SignedInUser,
     form: Form<PersonaCreationForm>,
+    i18n: I18n,
+    mut cookies: Cookies,
     db: DbConn,
-) -> Result<String, PersonaCreateError> {
-    let _ = perform!(&db, PersonaCreateError, [
-        (form = ValidatePersonaCreationForm(form.into_inner(), "/users".to_owned())),
+) -> ResponseOrRedirect {
+    let form = form.into_inner();
+    let form_state = form.as_state();
+
+    let res = perform!(&db, PersonaCreateError, [
+        (form = ValidatePersonaCreationForm(form)),
         (creator = CheckCreatePersonaPermission(user.0)),
         (_ = CreatePersona(creator, form)),
-    ])?;
+    ]);
 
-    Ok("Created!".to_string())
+    let res = match res {
+        Ok((_actor, persona)) => {
+            let mut cookie = Cookie::new("persona_id", format!("{}", persona.id()));
+            cookie.set_http_only(true);
+            cookies.add_private(cookie);
+            Redirect::to("/").into()
+        }
+        Err(e) => {
+            let (status, validation, system) = match e {
+                PersonaCreateError::Form(ref e) => {
+                    (Status::BadRequest, Some(e), false)
+                },
+                _ => (Status::InternalServerError, None, true)
+            };
+
+            let mut response = render_template(&aardwolf_templates::FirstLogin::new(
+                &i18n.catalog,
+                "csrf",
+                &form_state.display_name,
+                &form_state.shortname,
+                form_state.follow_policy,
+                form_state.default_visibility,
+                form_state.is_searchable,
+                validation,
+                system,
+            ));
+            response.set_status(status);
+            response.into()
+        }
+    };
+
+    drop(i18n);
+
+    res
 }
 
 #[derive(Clone, Debug, Fail)]

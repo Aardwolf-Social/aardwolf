@@ -54,7 +54,7 @@ impl ValidatePersonaCreationFail {
 
 impl AardwolfFail for ValidatePersonaCreationFail {}
 
-pub struct ValidatePersonaCreationForm(pub PersonaCreationForm, pub String);
+pub struct ValidatePersonaCreationForm(pub PersonaCreationForm);
 
 impl Wrapped for ValidatePersonaCreationForm {
     type Wrapper = ValidateWrapper<Self, <Self as Validate>::Item, <Self as Validate>::Error>;

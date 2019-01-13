@@ -36,10 +36,22 @@ impl<'l, 'r> FromRequest<'l, 'r> for SignedInUser {
         };
 
         from_cookie(&mut request.cookies(), "user_id", CookieError)
+            .map(|id| {
+                println!("Got id: {}", id);
+                id
+            })
+            .map_err(|e| {
+                println!("Error getting cookie");
+                e
+            })
             .and_then(|user_id| {
                 perform!(&db, CookieError, [
                     (_ = FetchAuthenticatedUser(user_id)),
                 ])
+            })
+            .map_err(|e| {
+                println!("Error looking up user");
+                e
             })
             .map(SignedInUser)
             .ok()

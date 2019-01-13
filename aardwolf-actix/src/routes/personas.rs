@@ -107,7 +107,7 @@ pub(crate) fn create(
     let form_state = form.as_state();
 
     let res = perform!(state, PersonaCreateError, [
-        (form = ValidatePersonaCreationForm(form, "/users".to_owned())),
+        (form = ValidatePersonaCreationForm(form)),
         (creater = CheckCreatePersonaPermission(user.0)),
         (_ = CreatePersona(creater, form)),
     ]);
