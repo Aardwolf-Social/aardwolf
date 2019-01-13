@@ -18,7 +18,7 @@ use base_post::{
     {BasePost, NewBasePost},
 };
 use file::{image::Image, File};
-use sql_types::{FollowPolicy, Permission, PostVisibility, Role, Url};
+use sql_types::{FollowPolicy, Permission, PostVisibility, Role};
 
 #[derive(Clone, Debug, Fail)]
 pub enum PermissionError {
@@ -528,9 +528,6 @@ impl<U: UserLike> LocalPersonaCreator<U> {
     pub fn create_persona(
         &self,
         display_name: String,
-        profile_url: Url,
-        inbox_url: Url,
-        outbox_url: Url,
         follow_policy: FollowPolicy,
         default_visibility: PostVisibility,
         is_searchable: bool,
@@ -545,9 +542,6 @@ impl<U: UserLike> LocalPersonaCreator<U> {
         conn.transaction(|| {
             NewBaseActor::local(
                 display_name,
-                profile_url,
-                inbox_url,
-                outbox_url,
                 &self.0,
                 follow_policy,
                 private_key_der,

@@ -169,24 +169,25 @@ impl NewBaseActor {
 
     pub fn local<U: UserLike>(
         display_name: String,
-        profile_url: Url,
-        inbox_url: Url,
-        outbox_url: Url,
         local_user: &U,
         follow_policy: FollowPolicy,
         private_key_der: Vec<u8>,
         public_key_der: Vec<u8>,
     ) -> Self {
+        let uuid = Uuid::new_v4();
+        // use throw-away unique URL since we can infer local URLs.
+        let local_url: Url = format!("https://example.com/{}", uuid).parse().unwrap();
+
         NewBaseActor {
             display_name,
-            profile_url,
-            inbox_url,
-            outbox_url,
+            profile_url: local_url.clone(),
+            inbox_url: local_url.clone(),
+            outbox_url: local_url,
             local_user: Some(local_user.id()),
             follow_policy,
             private_key_der,
             public_key_der,
-            local_uuid: Some(Uuid::new_v4()),
+            local_uuid: Some(uuid),
         }
     }
 

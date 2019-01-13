@@ -37,9 +37,6 @@ where
 
         Ok(self.0.create_persona(
             self.1.display_name,
-            self.1.profile_url,
-            self.1.inbox_url,
-            self.1.outbox_url,
             self.1.follow_policy,
             self.1.default_visibility,
             self.1.is_searchable,
@@ -77,9 +74,6 @@ mod tests {
                 let form = ValidatedPersonaCreationForm {
                     display_name: "username".to_owned(),
                     follow_policy: FollowPolicy::AutoAccept,
-                    profile_url: "https://example.com".parse()?,
-                    inbox_url: "https://example.com".parse()?,
-                    outbox_url: "https://example.com".parse()?,
                     default_visibility: PostVisibility::Public,
                     shortname: "shortname".to_owned(),
                     is_searchable: true,

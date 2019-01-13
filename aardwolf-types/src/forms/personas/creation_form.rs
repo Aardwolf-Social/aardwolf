@@ -1,4 +1,4 @@
-use aardwolf_models::sql_types::{FollowPolicy, PostVisibility, Url};
+use aardwolf_models::sql_types::{FollowPolicy, PostVisibility};
 
 use crate::{
     traits::{Validate},
@@ -95,16 +95,9 @@ impl Validate for ValidatePersonaCreationForm {
             return Err(err);
         }
 
-        // Local accounts get a generic URL, since their URLs should be generated using the
-        // local_uuid field.
-        let generic_url: Url = "https://example.com".parse().unwrap();
-
         Ok(ValidatedPersonaCreationForm {
             display_name: self.0.display_name,
             follow_policy: self.0.follow_policy,
-            profile_url: generic_url.clone(),
-            inbox_url: generic_url.clone(),
-            outbox_url: generic_url,
             default_visibility: self.0.default_visibility,
             shortname: self.0.shortname,
             is_searchable: self.0.is_searchable,
@@ -115,9 +108,6 @@ impl Validate for ValidatePersonaCreationForm {
 pub struct ValidatedPersonaCreationForm {
     pub(crate) display_name: String,
     pub(crate) follow_policy: FollowPolicy,
-    pub(crate) profile_url: Url,
-    pub(crate) inbox_url: Url,
-    pub(crate) outbox_url: Url,
     pub(crate) default_visibility: PostVisibility,
     pub(crate) shortname: String,
     pub(crate) is_searchable: bool,

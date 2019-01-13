@@ -12,7 +12,11 @@
         @i18n!(input.catalog, input.label)
     </label>
     <div class="aardwolf-input aardwolf-checkbox-input">
-        <input type="checkbox" name="@input.name" value="true" checked="@input.checked" />
+        @if input.checked {
+            <input type="checkbox" name="@input.name" value="true" checked />
+        } else {
+            <input type="checkbox" name="@input.name" value="true" />
+        }
     </div>
     <div class="aardwolf-input-meta">
         @if let Some(error) = input.error {
