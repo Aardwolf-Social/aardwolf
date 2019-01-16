@@ -15,6 +15,10 @@ gettext = "0.3"
 version = "0.1"
 path = "../aardwolf-types"
 
+[dependencies.aardwolf-models]
+version = "0.1"
+path = "../aardwolf-models"
+
 [dependencies.rocket_i18n]
 version = "0.3"
 git = "https://github.com/Aardwolf-Social/rocket_i18n.git"

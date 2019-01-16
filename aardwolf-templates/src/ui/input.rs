@@ -82,3 +82,12 @@ pub struct TextInput<'a> {
     pub(crate) value: &'a str,
     pub(crate) error: Option<&'a String>,
 }
+
+pub struct CheckboxInput<'a> {
+    pub(crate) catalog: &'a Catalog,
+    pub(crate) name: &'a str,
+    pub(crate) label: &'a str,
+    pub(crate) icon: Option<&'a str>,
+    pub(crate) checked: bool,
+    pub(crate) error: Option<&'a String>,
+}

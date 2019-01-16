@@ -143,7 +143,7 @@ pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
         let state = AppConfig {
             db: db.clone(),
             // TODO: domain and languages should be config'd
-            translations: rocket_i18n::i18n(vec!["en", "pl"]),
+            translations: rocket_i18n::i18n("aardwolf", vec!["en", "pl"]),
         };
 
         vec![
@@ -173,10 +173,8 @@ pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
                 .middleware(SessionStorage::new(
                     CookieSessionBackend::signed(&[0; 32]).secure(false),
                 ))
-                .resource("/new", |r| {
-                    r.method(Method::GET).with(self::routes::personas::new);
-                })
                 .resource("/create", |r| {
+                    r.method(Method::GET).with(self::routes::personas::new);
                     r.method(Method::POST).with(self::routes::personas::create)
                 })
                 .resource("/delete", |r| {

@@ -35,6 +35,10 @@ pub mod routes;
 pub mod session;
 pub mod types;
 
+mod response_or_redirect;
+
+pub use response_or_redirect::ResponseOrRedirect;
+
 pub fn render_template<R>(r: &R) -> Response<'static>
 where
     R: Renderable,
@@ -131,7 +135,7 @@ fn app(config: &config::Config, db_url: &str) -> Result<Rocket, Box<dyn Error>> 
         )
         .mount("/", routes)
         // TODO: domain and languages should be config'd
-        .manage(rocket_i18n::i18n(vec!["en", "pl"]));
+        .manage(rocket_i18n::i18n("aardwolf", vec!["en", "pl"]));
 
     // we need an instance of the app to access the config values in Rocket.toml,
     // so we pass it to the db_pool function, get the pool, and _then_ return the instance

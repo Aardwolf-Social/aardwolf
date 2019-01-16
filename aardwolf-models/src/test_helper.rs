@@ -153,9 +153,6 @@ where
 
     let base_actor = NewBaseActor::local(
         gen_string()?,
-        gen_url()?,
-        gen_url()?,
-        gen_url()?,
         user,
         FollowPolicy::AutoAccept,
         pr,
