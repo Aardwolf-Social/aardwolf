@@ -7,9 +7,7 @@ where
     I: FromStr,
 {
     match cookies.get_private(key) {
-        Some(cookie) => {
-            Ok(cookie.value().parse::<I>().map_err(|_| err)?)
-        },
+        Some(cookie) => Ok(cookie.value().parse::<I>().map_err(|_| err)?),
         None => Err(err),
     }
 }

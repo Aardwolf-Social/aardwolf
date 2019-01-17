@@ -37,7 +37,7 @@ pub mod types;
 
 mod response_or_redirect;
 
-pub use response_or_redirect::ResponseOrRedirect;
+pub use crate::response_or_redirect::ResponseOrRedirect;
 
 pub fn render_template<R>(r: &R) -> Response<'static>
 where

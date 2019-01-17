@@ -15,10 +15,7 @@ use rocket::{
 };
 use rocket_i18n::I18n;
 
-use ResponseOrRedirect;
-use render_template;
-use types::user::SignedInUser;
-use DbConn;
+use crate::{render_template, types::user::SignedInUser, DbConn, ResponseOrRedirect};
 
 #[get("/sign_up")]
 pub fn sign_up_form(i18n: I18n) -> Response<'static> {
