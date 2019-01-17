@@ -1,7 +1,11 @@
 #![allow(proc_macro_derive_resolution_fallback)]
 use chrono::{offset::Utc, DateTime};
 
-use crate::{base_post::BasePost, schema::links, sql_types::{Lang, Url}};
+use crate::{
+    base_post::BasePost,
+    schema::links,
+    sql_types::{Lang, Url},
+};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "links"]

@@ -1,55 +1,52 @@
-use std::{env, };
+use std::env;
 
 use chrono::{offset::Utc, DateTime, Duration as OldDuration};
 use chrono_tz::Tz;
 use diesel::{pg::PgConnection, Connection};
 use dotenv::dotenv;
-use failure::{Fail, Error};
+use failure::{Error, Fail};
 use mime::TEXT_PLAIN;
 use openssl::rsa::Rsa;
 use rand::{distributions::Alphanumeric, rngs::OsRng, Rng};
 use serde_json;
-use url::{Url as OrigUrl};
+use url::Url as OrigUrl;
 
-use crate::{base_actor::{
-    follow_request::{FollowRequest, NewFollowRequest},
-    follower::{Follower, NewFollower},
-    group::{
-        group_base_actor::{GroupBaseActor, NewGroupBaseActor},
-        Group, NewGroup,
-    },
-    persona::{NewPersona, Persona},
-    BaseActor, NewBaseActor,
-},
-base_post::{
-    direct_post::{DirectPost, NewDirectPost},
-    post::{
-        comment::{
-            reaction::{NewReaction, Reaction},
-            Comment, NewComment,
+use crate::{
+    base_actor::{
+        follow_request::{FollowRequest, NewFollowRequest},
+        follower::{Follower, NewFollower},
+        group::{
+            group_base_actor::{GroupBaseActor, NewGroupBaseActor},
+            Group, NewGroup,
         },
-        media_post::{MediaPost, NewMediaPost},
-        NewPost, Post,
+        persona::{NewPersona, Persona},
+        BaseActor, NewBaseActor,
     },
-    BasePost, NewBasePost,
-},
-file::{File, NewFile},
-sql_types::{FollowPolicy, PostVisibility, ReactionType, Url},
-timer::{
-    event::{Event, NewEvent},
-    event_notification::{EventNotification, NewEventNotification},
-    NewTimer, Timer,
-},
-user::{
-    email::{
-        EmailToken, EmailVerificationToken, NewEmail,
-        UnverifiedEmail, VerifiedEmail,
+    base_post::{
+        direct_post::{DirectPost, NewDirectPost},
+        post::{
+            comment::{
+                reaction::{NewReaction, Reaction},
+                Comment, NewComment,
+            },
+            media_post::{MediaPost, NewMediaPost},
+            NewPost, Post,
+        },
+        BasePost, NewBasePost,
     },
-    local_auth::{
-        LocalAuth, NewLocalAuth, PlaintextPassword,
+    file::{File, NewFile},
+    sql_types::{FollowPolicy, PostVisibility, ReactionType, Url},
+    timer::{
+        event::{Event, NewEvent},
+        event_notification::{EventNotification, NewEventNotification},
+        NewTimer, Timer,
     },
-    AuthenticatedUser, NewUser, UnauthenticatedUser, UnverifiedUser, UserLike,
-}};
+    user::{
+        email::{EmailToken, EmailVerificationToken, NewEmail, UnverifiedEmail, VerifiedEmail},
+        local_auth::{LocalAuth, NewLocalAuth, PlaintextPassword},
+        AuthenticatedUser, NewUser, UnauthenticatedUser, UnverifiedUser, UserLike,
+    },
+};
 
 pub type GenericError = Error;
 
@@ -138,7 +135,10 @@ where
 pub fn gen_keypair() -> Result<(Vec<u8>, Vec<u8>), GenericError> {
     let priv_key = Rsa::generate(2048)?;
 
-    Ok((priv_key.private_key_to_der()?, priv_key.public_key_to_der_pkcs1()?))
+    Ok((
+        priv_key.private_key_to_der()?,
+        priv_key.public_key_to_der_pkcs1()?,
+    ))
 }
 
 pub fn user_with_base_actor<F>(
@@ -151,14 +151,8 @@ where
 {
     let (pr, pu) = gen_keypair()?;
 
-    let base_actor = NewBaseActor::local(
-        gen_string()?,
-        user,
-        FollowPolicy::AutoAccept,
-        pr,
-        pu,
-    )
-    .insert(conn)?;
+    let base_actor =
+        NewBaseActor::local(gen_string()?, user, FollowPolicy::AutoAccept, pr, pu).insert(conn)?;
 
     f(base_actor)
 }
@@ -242,14 +236,8 @@ pub fn with_base_post<F>(
 where
     F: FnOnce(BasePost) -> Result<(), GenericError>,
 {
-    let base_post = NewBasePost::new(
-        None,
-        TEXT_PLAIN,
-        posted_by,
-        None,
-        PostVisibility::Public,
-    )
-    .insert(conn)?;
+    let base_post =
+        NewBasePost::new(None, TEXT_PLAIN, posted_by, None, PostVisibility::Public).insert(conn)?;
 
     f(base_post)
 }

@@ -2,7 +2,10 @@
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
 
-use crate::{base_actor::BaseActor, file::image::Image, schema::personas, sql_types::PostVisibility, user::UserLike};
+use crate::{
+    base_actor::BaseActor, file::image::Image, schema::personas, sql_types::PostVisibility,
+    user::UserLike,
+};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "personas"]
@@ -53,8 +56,8 @@ impl Persona {
         user: &U,
         conn: &PgConnection,
     ) -> Result<bool, diesel::result::Error> {
-        use diesel::prelude::*;
         use crate::schema::base_actors;
+        use diesel::prelude::*;
 
         personas::table
             .inner_join(base_actors::table)

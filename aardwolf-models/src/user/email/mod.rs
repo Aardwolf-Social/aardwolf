@@ -5,7 +5,13 @@ use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
 use log::error;
 
-use crate::{user::{email::token::{create_token, HashedEmailToken}, AuthenticatedUser, UnverifiedUser, UserLike}, schema::emails};
+use crate::{
+    schema::emails,
+    user::{
+        email::token::{create_token, HashedEmailToken},
+        AuthenticatedUser, UnverifiedUser, UserLike,
+    },
+};
 
 pub use self::token::{CreationError, EmailToken, EmailVerificationToken, VerificationError};
 
@@ -124,8 +130,8 @@ impl VerifyEmail {
         self,
         conn: &PgConnection,
     ) -> Result<VerifiedEmail, diesel::result::Error> {
-        use diesel::prelude::*;
         use crate::schema::emails;
+        use diesel::prelude::*;
 
         diesel::update(emails::table)
             .set(&EmailVerificationChangeset {

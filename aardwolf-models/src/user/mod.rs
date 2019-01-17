@@ -8,10 +8,14 @@ pub mod local_auth;
 mod permissions;
 pub mod role;
 
-use crate::{user::{
-    email::{Email, EmailVerificationToken, UnverifiedEmail, VerifiedEmail, VerifyEmail},
-    local_auth::LocalAuth,
-}, schema::users, sql_types::Role};
+use crate::{
+    schema::users,
+    sql_types::Role,
+    user::{
+        email::{Email, EmailVerificationToken, UnverifiedEmail, VerifiedEmail, VerifyEmail},
+        local_auth::LocalAuth,
+    },
+};
 
 pub use self::{
     local_auth::{PlaintextPassword, VerificationError},
@@ -40,8 +44,8 @@ pub trait UserLike {
     }
 
     fn has_role(&self, name: Role, conn: &PgConnection) -> Result<bool, diesel::result::Error> {
-        use diesel::prelude::*;
         use crate::schema::{roles, user_roles};
+        use diesel::prelude::*;
 
         roles::dsl::roles
             .inner_join(user_roles::dsl::user_roles)
@@ -311,8 +315,8 @@ impl UnauthenticatedUser {
         email_id: i32,
         conn: &PgConnection,
     ) -> Result<(Self, Email), diesel::result::Error> {
-        use diesel::prelude::*;
         use crate::schema::emails;
+        use diesel::prelude::*;
 
         users::dsl::users
             .inner_join(emails::dsl::emails.on(emails::dsl::user_id.eq(users::dsl::id)))
@@ -324,8 +328,8 @@ impl UnauthenticatedUser {
         email: &str,
         conn: &PgConnection,
     ) -> Result<(Self, Email, LocalAuth), diesel::result::Error> {
-        use diesel::prelude::*;
         use crate::schema::{emails, local_auth};
+        use diesel::prelude::*;
 
         users::dsl::users
             .inner_join(emails::dsl::emails.on(emails::dsl::user_id.eq(users::dsl::id)))

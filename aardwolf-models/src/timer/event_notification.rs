@@ -2,7 +2,10 @@
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
 
-use crate::{schema::event_notifications, timer::{event::Event, Timer}};
+use crate::{
+    schema::event_notifications,
+    timer::{event::Event, Timer},
+};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "event_notifications"]

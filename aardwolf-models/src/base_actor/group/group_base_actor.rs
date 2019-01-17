@@ -2,7 +2,10 @@
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
 
-use crate::{base_actor::{group::Group, BaseActor}, schema::group_base_actors};
+use crate::{
+    base_actor::{group::Group, BaseActor},
+    schema::group_base_actors,
+};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "group_base_actors"]

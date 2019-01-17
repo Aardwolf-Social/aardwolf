@@ -4,7 +4,12 @@ use diesel::{self, pg::PgConnection};
 
 mod password;
 
-use crate::{schema::local_auth, user::{local_auth::password::Password, AuthenticatedUser, UnauthenticatedUser, UnverifiedUser}};
+use crate::{
+    schema::local_auth,
+    user::{
+        local_auth::password::Password, AuthenticatedUser, UnauthenticatedUser, UnverifiedUser,
+    },
+};
 
 pub use self::password::{
     CreationError as PasswordCreationError, PlaintextPassword, ValidationError, VerificationError,
