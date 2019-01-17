@@ -4,6 +4,7 @@ use std::{fmt, io::Write};
 use bcrypt::{hash, verify};
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
 use failure::Fail;
+#[cfg(any(test, feature = "test"))]
 use log::warn;
 use rand::{distributions::Alphanumeric, rngs::OsRng, Rng};
 use serde::{
