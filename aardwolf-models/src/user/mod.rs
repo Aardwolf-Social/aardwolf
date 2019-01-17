@@ -131,7 +131,6 @@ impl AuthenticatedUser {
             .map_err(From::from)
             .map(|_| {
                 self.primary_email = Some(email.id());
-                ()
             })
     }
 
