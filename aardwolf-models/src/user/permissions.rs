@@ -1,5 +1,6 @@
 use chrono::offset::Utc;
 use diesel::{self, pg::PgConnection};
+use failure::Fail;
 use mime::Mime as OrigMime;
 
 use crate::{user::UserLike, base_actor::{

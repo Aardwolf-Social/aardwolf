@@ -2,6 +2,7 @@
 use chrono::{offset::Utc, DateTime};
 use chrono_tz::Tz;
 use diesel::{self, pg::PgConnection};
+use failure::Fail;
 
 use crate::{base_actor::persona::Persona, schema::events, sql_types::Timezone, timer::Timer};
 

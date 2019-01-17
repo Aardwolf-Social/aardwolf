@@ -3,6 +3,7 @@ use std::path::Path;
 
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
+use failure::Fail;
 
 pub mod image;
 

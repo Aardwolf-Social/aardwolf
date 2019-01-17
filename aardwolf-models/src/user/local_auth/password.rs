@@ -3,6 +3,8 @@ use std::{fmt, io::Write};
 
 use bcrypt::{hash, verify};
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
+use failure::Fail;
+use log::{error, warn};
 use serde::de::{Deserialize, Deserializer};
 
 /// Create a trait used to verify passwords.

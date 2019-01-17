@@ -3,6 +3,7 @@ name = "aardwolf-models"
 version = "0.1.0"
 authors = ["asonix <asonix@asonix.dog>"]
 description = "Database interaction for the Aardwolf project"
+edition = "2018"
 
 [dependencies]
 bcrypt = "0.2"

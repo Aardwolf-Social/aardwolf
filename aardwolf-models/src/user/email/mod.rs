@@ -3,6 +3,7 @@ mod token;
 
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
+use log::error;
 
 use crate::{user::{email::token::{create_token, HashedEmailToken}, AuthenticatedUser, UnverifiedUser, UserLike}, schema::emails};
 
