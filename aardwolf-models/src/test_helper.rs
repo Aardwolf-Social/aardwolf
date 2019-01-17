@@ -11,7 +11,7 @@ use rand::{distributions::Alphanumeric, rngs::OsRng, Rng};
 use serde_json;
 use url::{Url as OrigUrl};
 
-use base_actor::{
+use crate::{base_actor::{
     follow_request::{FollowRequest, NewFollowRequest},
     follower::{Follower, NewFollower},
     group::{
@@ -20,8 +20,8 @@ use base_actor::{
     },
     persona::{NewPersona, Persona},
     BaseActor, NewBaseActor,
-};
-use base_post::{
+},
+base_post::{
     direct_post::{DirectPost, NewDirectPost},
     post::{
         comment::{
@@ -32,15 +32,15 @@ use base_post::{
         NewPost, Post,
     },
     BasePost, NewBasePost,
-};
-use file::{File, NewFile};
-use sql_types::{FollowPolicy, PostVisibility, ReactionType, Url};
-use timer::{
+},
+file::{File, NewFile},
+sql_types::{FollowPolicy, PostVisibility, ReactionType, Url},
+timer::{
     event::{Event, NewEvent},
     event_notification::{EventNotification, NewEventNotification},
     NewTimer, Timer,
-};
-use user::{
+},
+user::{
     email::{
         EmailToken, EmailVerificationToken, NewEmail,
         UnverifiedEmail, VerifiedEmail,
@@ -49,7 +49,7 @@ use user::{
         LocalAuth, NewLocalAuth, PlaintextPassword,
     },
     AuthenticatedUser, NewUser, UnauthenticatedUser, UnverifiedUser, UserLike,
-};
+}};
 
 pub type GenericError = Error;
 

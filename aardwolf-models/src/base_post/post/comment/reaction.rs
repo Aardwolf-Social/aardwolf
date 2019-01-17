@@ -2,9 +2,7 @@
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
 
-use super::Comment;
-use schema::reactions;
-use sql_types::ReactionType;
+use crate::{base_post::post::comment::Comment, schema::reactions, sql_types::ReactionType};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "reactions"]

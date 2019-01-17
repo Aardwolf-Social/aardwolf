@@ -1,5 +1,4 @@
 #![allow(proc_macro_derive_resolution_fallback)]
-// use std::path::{Path, PathBuf};
 use std::path::Path;
 
 use chrono::{offset::Utc, DateTime};
@@ -7,7 +6,7 @@ use diesel::{self, pg::PgConnection};
 
 pub mod image;
 
-use schema::files;
+use crate::schema::files;
 
 #[derive(Clone, Copy, Debug, Eq, Fail, PartialEq)]
 pub enum FileCreationError {

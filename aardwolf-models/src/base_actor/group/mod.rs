@@ -4,8 +4,7 @@ use diesel::{self, pg::PgConnection};
 
 pub mod group_base_actor;
 
-use base_actor::BaseActor;
-use schema::groups;
+use crate::{base_actor::BaseActor, schema::groups};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "groups"]

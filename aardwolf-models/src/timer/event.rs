@@ -3,10 +3,7 @@ use chrono::{offset::Utc, DateTime};
 use chrono_tz::Tz;
 use diesel::{self, pg::PgConnection};
 
-use base_actor::persona::Persona;
-use schema::events;
-use sql_types::Timezone;
-use timer::Timer;
+use crate::{base_actor::persona::Persona, schema::events, sql_types::Timezone, timer::Timer};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "events"]

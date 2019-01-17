@@ -7,11 +7,7 @@ use uuid::Uuid;
 pub mod direct_post;
 pub mod post;
 
-use self::direct_post::DirectPost;
-use base_actor::BaseActor;
-use file::image::Image;
-use schema::base_posts;
-use sql_types::{Mime, PostVisibility};
+use crate::{base_post::direct_post::DirectPost, base_actor::BaseActor, file::image::Image, schema::base_posts, sql_types::{Mime, PostVisibility}};
 
 #[derive(Debug, Queryable, QueryableByName)]
 #[table_name = "base_posts"]

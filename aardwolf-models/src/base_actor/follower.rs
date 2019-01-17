@@ -2,8 +2,7 @@
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
 
-use base_actor::{follow_request::FollowRequest, BaseActor};
-use schema::followers;
+use crate::{base_actor::{follow_request::FollowRequest, BaseActor}, schema::followers};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "followers"]

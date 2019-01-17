@@ -2,10 +2,9 @@
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
 
-pub mod reaction;
+use crate::{base_post::post::Post, schema::comments};
 
-use super::Post;
-use schema::comments;
+pub mod reaction;
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "comments"]

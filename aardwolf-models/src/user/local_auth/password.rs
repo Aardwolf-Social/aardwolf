@@ -10,7 +10,7 @@ use serde::de::{Deserialize, Deserializer};
 /// This trait exists to ensure passwords can only be verified if this trait is in scope. In the
 /// majority of cases, this trait will not be in scope.
 pub(crate) trait Verify {
-    fn verify(&self, PlaintextPassword) -> Result<(), VerificationError>;
+    fn verify(&self, _: PlaintextPassword) -> Result<(), VerificationError>;
 }
 
 /// Create a trait used to create passwords.
@@ -18,7 +18,7 @@ pub(crate) trait Verify {
 /// This trait exists to ensure passwords can only be created if this trait is in scope. In the
 /// majority of cases, this trait will not be in scope.
 pub(crate) trait Create: Sized {
-    fn create(PlaintextPassword) -> Result<Self, CreationError>;
+    fn create(_: PlaintextPassword) -> Result<Self, CreationError>;
 }
 
 /// Create a trait used to validate passwords.
@@ -35,7 +35,7 @@ pub(crate) trait Validate: Sized {
     /// be the same, it does not matter which is returned.
     ///
     /// On a failed compare, a `ValidationError` *must* be returned.
-    fn compare(self, Self) -> Result<Self, ValidationError>;
+    fn compare(self, _: Self) -> Result<Self, ValidationError>;
 
     /// Verify that the password is valid by performing checks on the inner string.
     ///

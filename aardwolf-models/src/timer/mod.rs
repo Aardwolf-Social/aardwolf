@@ -5,7 +5,7 @@ use diesel::{self, pg::PgConnection};
 pub mod event;
 pub mod event_notification;
 
-use schema::timers;
+use crate::schema::timers;
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "timers"]
