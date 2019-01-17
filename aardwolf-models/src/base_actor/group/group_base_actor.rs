@@ -54,7 +54,7 @@ impl NewGroupBaseActor {
 
 #[cfg(test)]
 mod tests {
-    use test_helper::*;
+    use crate::test_helper::*;
 
     #[test]
     fn create_group_base_actor() {

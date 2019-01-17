@@ -284,7 +284,7 @@ impl Create for Password {
 #[cfg(test)]
 mod tests {
     use super::{Create, Password, Validate, Verify};
-    use test_helper::create_plaintext_password;
+    use crate::test_helper::create_plaintext_password;
 
     #[test]
     fn create_and_verify_password() {

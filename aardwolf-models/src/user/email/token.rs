@@ -177,7 +177,7 @@ mod rocket {
 #[cfg(test)]
 mod tests {
     use super::{create_token, EmailVerificationToken, VerifyEmail};
-    use test_helper::transmute_email_token;
+    use crate::test_helper::transmute_email_token;
 
     #[test]
     fn create_and_verify_token() {

@@ -389,7 +389,7 @@ impl Default for NewUser {
 #[cfg(test)]
 mod tests {
     use super::UnauthenticatedUser;
-    use test_helper::*;
+    use crate::test_helper::*;
 
     #[test]
     fn create_user() {

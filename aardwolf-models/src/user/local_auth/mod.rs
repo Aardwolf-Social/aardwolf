@@ -130,7 +130,7 @@ impl NewLocalAuth {
 #[cfg(test)]
 mod tests {
     use super::NewLocalAuth;
-    use test_helper::*;
+    use crate::test_helper::*;
 
     #[test]
     fn create_local_auth() {

@@ -101,7 +101,7 @@ mod tests {
     use chrono_tz::Tz;
 
     use super::NewEvent;
-    use test_helper::*;
+    use crate::test_helper::*;
 
     #[test]
     fn create_event() {

@@ -54,7 +54,7 @@ impl NewFollowRequest {
 
 #[cfg(test)]
 mod tests {
-    use test_helper::*;
+    use crate::test_helper::*;
 
     #[test]
     fn create_follow_request() {

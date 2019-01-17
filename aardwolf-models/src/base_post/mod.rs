@@ -119,7 +119,7 @@ impl NewBasePost {
 
 #[cfg(test)]
 mod tests {
-    use test_helper::*;
+    use crate::test_helper::*;
 
     #[test]
     fn create_base_post() {

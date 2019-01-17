@@ -70,7 +70,7 @@ impl NewFile {
 #[cfg(test)]
 mod tests {
     use super::NewFile;
-    use test_helper::*;
+    use crate::test_helper::*;
 
     #[test]
     fn create_file() {
