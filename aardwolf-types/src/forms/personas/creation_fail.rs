@@ -2,7 +2,7 @@ use aardwolf_models::user::PermissionError;
 use diesel::result::Error as DieselError;
 use openssl::error::ErrorStack;
 
-use crate::{forms::personas::ValidatePersonaCreationFail, error::AardwolfFail};
+use crate::{error::AardwolfFail, forms::personas::ValidatePersonaCreationFail};
 
 #[derive(Clone, Debug, Fail, Serialize)]
 pub enum PersonaCreationFail {

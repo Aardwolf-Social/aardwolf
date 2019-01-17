@@ -1,9 +1,9 @@
 use aardwolf_models::sql_types::{FollowPolicy, PostVisibility};
 
 use crate::{
-    traits::{Validate},
-    wrapper::{ValidateWrapper, Wrapped},
     error::AardwolfFail,
+    traits::Validate,
+    wrapper::{ValidateWrapper, Wrapped},
 };
 
 #[derive(Clone, Debug, Deserialize)]
@@ -50,7 +50,11 @@ pub struct ValidatePersonaCreationFail {
 
 impl ValidatePersonaCreationFail {
     pub fn is_empty(&self) -> bool {
-        self.display_name.is_none() && self.follow_policy.is_none() && self.default_visibility.is_none() && self.shortname.is_none() && self.is_searchable.is_none()
+        self.display_name.is_none()
+            && self.follow_policy.is_none()
+            && self.default_visibility.is_none()
+            && self.shortname.is_none()
+            && self.is_searchable.is_none()
     }
 }
 

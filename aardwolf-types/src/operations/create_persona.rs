@@ -68,8 +68,7 @@ mod tests {
     fn create_persona_works() {
         with_connection(|conn| {
             make_verified_authenticated_user(conn, &gen_string()?, |user, _| {
-                let creator = user
-                    .can_make_persona(conn)?;
+                let creator = user.can_make_persona(conn)?;
 
                 let form = ValidatedPersonaCreationForm {
                     display_name: "username".to_owned(),
