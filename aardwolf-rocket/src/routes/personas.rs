@@ -16,6 +16,7 @@ use aardwolf_types::{
         fetch_persona::{FetchPersona, FetchPersonaFail},
     },
 };
+use failure::Fail;
 use rocket::{
     http::{Cookie, Cookies, Status},
     request::Form,
