@@ -1,7 +1,10 @@
 use aardwolf_models::sql_types::{FollowPolicy, PostVisibility};
 use aardwolf_types::{
     error::AardwolfFail,
-    forms::personas::{PersonaCreationFail, PersonaCreationForm, ValidatePersonaCreationForm, ValidatePersonaCreationFail},
+    forms::personas::{
+        PersonaCreationFail, PersonaCreationForm, ValidatePersonaCreationFail,
+        ValidatePersonaCreationForm,
+    },
     operations::{
         check_create_persona_permission::{
             CheckCreatePersonaPermission, CheckCreatePersonaPermissionFail,
@@ -12,13 +15,17 @@ use aardwolf_types::{
         fetch_persona::FetchPersona,
     },
 };
-use actix_web::{http::header::LOCATION, HttpResponse, middleware::session::Session, Form, Path, State};
+use actix_web::{
+    http::header::LOCATION, middleware::session::Session, Form, HttpResponse, Path, State,
+};
 use failure::Fail;
 use futures::Future;
-use serde_derive::Serialize;
 use rocket_i18n::I18n;
+use serde_derive::Serialize;
 
-use crate::{db::DbActionError, error::RedirectError, types::user::SignedInUser, AppConfig, WithRucte};
+use crate::{
+    db::DbActionError, error::RedirectError, types::user::SignedInUser, AppConfig, WithRucte,
+};
 
 pub(crate) fn new((_user, i18n): (SignedInUser, I18n)) -> HttpResponse {
     let res = HttpResponse::Ok().with_ructe(aardwolf_templates::FirstLogin::new(
@@ -101,7 +108,13 @@ impl From<DbActionError<PersonaCreationFail>> for PersonaCreateError {
 }
 
 pub(crate) fn create(
-    (session, state, user, form, i18n): (Session, State<AppConfig>, SignedInUser, Form<PersonaCreationForm>, I18n),
+    (session, state, user, form, i18n): (
+        Session,
+        State<AppConfig>,
+        SignedInUser,
+        Form<PersonaCreationForm>,
+        I18n,
+    ),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::error::Error>> {
     let form = form.into_inner();
     let form_state = form.as_state();
@@ -121,10 +134,8 @@ pub(crate) fn create(
         .map(|_| HttpResponse::SeeOther().header(LOCATION, "/").finish())
         .or_else(move |e| {
             let (mut res, validation, system) = match e {
-                PersonaCreateError::Form(ref e) => {
-                    (HttpResponse::BadRequest(), Some(e), false)
-                },
-                _ => (HttpResponse::InternalServerError(), None, true)
+                PersonaCreateError::Form(ref e) => (HttpResponse::BadRequest(), Some(e), false),
+                _ => (HttpResponse::InternalServerError(), None, true),
             };
 
             Ok(res.with_ructe(aardwolf_templates::FirstLogin::new(
@@ -138,7 +149,7 @@ pub(crate) fn create(
                 validation,
                 system,
             )))
-        })
+        }),
     )
 }
 
