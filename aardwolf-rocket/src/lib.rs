@@ -132,6 +132,11 @@ fn app(config: &config::Config, db_url: &str) -> Result<Rocket, Box<dyn Error>> 
         .extra("database_url", db_url)
         .unwrap();
 
+    let url_generator = UrlGenerator {
+        domain: config.get_str("Instance.domain")?,
+        https: config.get_bool("Instance.https")?,
+    };
+
     let mut routes = routes![routes::app::home, routes::app::home_redirect,];
 
     #[cfg(debug_assertions)]
@@ -177,10 +182,7 @@ fn app(config: &config::Config, db_url: &str) -> Result<Rocket, Box<dyn Error>> 
     // we need an instance of the app to access the config values in Rocket.toml,
     // so we pass it to the db_pool function, get the pool, and _then_ return the instance
     let pool = db_pool(&r)?;
-    Ok(r.manage(pool).manage(UrlGenerator {
-        domain: "example.com".to_owned(),
-        https: true,
-    }))
+    Ok(r.manage(pool).manage(url_generator))
 }
 
 pub fn run(config: &config::Config, db_url: &str) -> Result<(), Box<dyn Error>> {
