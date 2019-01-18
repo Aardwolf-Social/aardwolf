@@ -8,7 +8,7 @@ use crate::{
         follow_request::{FollowRequest, NewFollowRequest},
         follower::{Follower, NewFollower},
         persona::{NewPersona, Persona},
-        {BaseActor, NewBaseActor},
+        BaseActor, GenerateUrls, NewBaseActor,
     },
     base_post::{
         post::{
@@ -291,6 +291,7 @@ impl<'a> PostMaker<'a> {
         visibility: PostVisibility,
         content: String,
         source: String,
+        generate_id: impl Fn(&uuid::Uuid) -> String,
         conn: &PgConnection,
     ) -> Result<(BasePost, Post), diesel::result::Error> {
         use crate::schema::{base_posts, posts};
@@ -298,8 +299,13 @@ impl<'a> PostMaker<'a> {
 
         conn.transaction(|| {
             diesel::insert_into(base_posts::table)
-                .values(&NewBasePost::new(
-                    name, media_type, self.0, icon, visibility,
+                .values(&NewBasePost::local(
+                    name,
+                    media_type,
+                    self.0,
+                    icon,
+                    visibility,
+                    generate_id,
                 ))
                 .get_result(conn)
                 .and_then(|base_post: BasePost| {
@@ -325,6 +331,7 @@ impl<'a> MediaPostMaker<'a> {
         content: String,
         source: String,
         media: &File,
+        generate_id: impl Fn(&uuid::Uuid) -> String,
         conn: &PgConnection,
     ) -> Result<(BasePost, Post, MediaPost), diesel::result::Error> {
         use crate::schema::media_posts;
@@ -332,7 +339,16 @@ impl<'a> MediaPostMaker<'a> {
 
         conn.transaction(|| {
             PostMaker(self.0)
-                .make_post(name, media_type, icon, visibility, content, source, conn)
+                .make_post(
+                    name,
+                    media_type,
+                    icon,
+                    visibility,
+                    content,
+                    source,
+                    generate_id,
+                    conn,
+                )
                 .and_then(|(base_post, post)| {
                     diesel::insert_into(media_posts::table)
                         .values(&NewMediaPost::new(media, &post))
@@ -357,6 +373,7 @@ impl<'a> CommentMaker<'a> {
         source: String,
         conversation: &Post,
         parent: &Post,
+        generate_id: impl Fn(&uuid::Uuid) -> String,
         conn: &PgConnection,
     ) -> Result<(BasePost, Post, Comment), CommentError> {
         use crate::schema::{base_posts, comments};
@@ -382,7 +399,16 @@ impl<'a> CommentMaker<'a> {
 
         conn.transaction(|| {
             PostMaker(self.0)
-                .make_post(name, media_type, icon, visibility, content, source, conn)
+                .make_post(
+                    name,
+                    media_type,
+                    icon,
+                    visibility,
+                    content,
+                    source,
+                    generate_id,
+                    conn,
+                )
                 .and_then(|(base_post, post)| {
                     diesel::insert_into(comments::table)
                         .values(NewComment::new(conversation, parent, &post))
@@ -518,6 +544,7 @@ impl<U: UserLike> LocalPersonaCreator<U> {
         shortname: String,
         private_key_der: Vec<u8>,
         public_key_der: Vec<u8>,
+        generate_id: impl GenerateUrls,
         conn: &PgConnection,
     ) -> Result<(BaseActor, Persona), diesel::result::Error> {
         use diesel::Connection;
@@ -529,6 +556,7 @@ impl<U: UserLike> LocalPersonaCreator<U> {
                 follow_policy,
                 private_key_der,
                 public_key_der,
+                generate_id,
             )
             .insert(conn)
             .and_then(|base_actor| {

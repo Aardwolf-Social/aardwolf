@@ -13,6 +13,7 @@ table! {
         private_key_der -> Bytea,
         public_key_der -> Bytea,
         local_uuid -> Nullable<Uuid>,
+        activitypub_id -> Varchar,
     }
 }
 
@@ -27,6 +28,7 @@ table! {
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
         local_uuid -> Nullable<Uuid>,
+        activitypub_id -> Varchar,
     }
 }
 
