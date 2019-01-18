@@ -2,24 +2,27 @@ use std::path::{Path, PathBuf};
 
 use aardwolf_models::user::UserLike;
 use rocket::{
-    response::{status::NotFound, NamedFile, Redirect},
     http::Cookies,
+    response::{status::NotFound, NamedFile, Redirect},
 };
 use rocket_i18n::I18n;
 
-use ResponseOrRedirect;
-use render_template;
-use types::user::SignedInUser;
-use DbConn;
+use crate::{render_template, types::user::SignedInUser, DbConn, ResponseOrRedirect};
 
 #[get("/")]
-pub fn home(user: SignedInUser, mut cookies: Cookies, i18n: I18n, _db: DbConn) -> ResponseOrRedirect {
+pub fn home(
+    user: SignedInUser,
+    mut cookies: Cookies,
+    i18n: I18n,
+    _db: DbConn,
+) -> ResponseOrRedirect {
     let res = if cookies.get_private("persona_id").is_some() || user.0.primary_persona().is_some() {
         render_template(&aardwolf_templates::Home::new(
             &i18n.catalog,
             user.0.id().to_string().as_ref(),
             user.0.id().to_string().as_ref(),
-        )).into()
+        ))
+        .into()
     } else {
         Redirect::to("/personas/create").into()
     };

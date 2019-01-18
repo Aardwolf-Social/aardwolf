@@ -1,23 +1,8 @@
 #![recursion_limit = "128"]
 #![feature(proc_macro_hygiene, decl_macro)]
 
-extern crate aardwolf_models;
-extern crate aardwolf_templates;
-extern crate aardwolf_types;
-extern crate bcrypt;
-extern crate bs58;
-extern crate chrono;
-extern crate config;
-extern crate diesel;
-#[macro_use]
-extern crate failure;
-extern crate r2d2;
-extern crate r2d2_diesel;
 #[macro_use]
 extern crate rocket;
-extern crate rocket_contrib;
-extern crate rocket_i18n;
-extern crate serde;
 
 use aardwolf_templates::Renderable;
 use diesel::pg::PgConnection;
@@ -37,7 +22,7 @@ pub mod types;
 
 mod response_or_redirect;
 
-pub use response_or_redirect::ResponseOrRedirect;
+pub use crate::response_or_redirect::ResponseOrRedirect;
 
 pub fn render_template<R>(r: &R) -> Response<'static>
 where

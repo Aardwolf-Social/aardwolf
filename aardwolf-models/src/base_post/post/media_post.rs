@@ -2,9 +2,7 @@
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
 
-use super::Post;
-use file::File;
-use schema::media_posts;
+use crate::{base_post::post::Post, file::File, schema::media_posts};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "media_posts"]
@@ -56,7 +54,7 @@ impl NewMediaPost {
 
 #[cfg(test)]
 mod tests {
-    use test_helper::*;
+    use crate::test_helper::*;
 
     #[test]
     fn create_media_post() {

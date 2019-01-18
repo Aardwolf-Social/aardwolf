@@ -2,7 +2,7 @@ use aardwolf_models::sql_types::{FollowPolicy, PostVisibility};
 use aardwolf_types::forms::personas::ValidatePersonaCreationFail;
 use gettext::Catalog;
 
-use crate::{Alert, AlertKind, TextInput, CheckboxInput, SelectInput, SelectOption, Renderable};
+use crate::{Alert, AlertKind, CheckboxInput, Renderable, SelectInput, SelectOption, TextInput};
 
 pub struct FirstLogin<'a> {
     pub(crate) catalog: &'a Catalog,
@@ -65,7 +65,7 @@ impl<'a> FirstLogin<'a> {
                 options: vec![
                     SelectOption {
                         value: "ACCEPT",
-                        display: "Automatically accept new followers"
+                        display: "Automatically accept new followers",
                     },
                     SelectOption {
                         value: "REJECT",
@@ -86,7 +86,7 @@ impl<'a> FirstLogin<'a> {
                 options: vec![
                     SelectOption {
                         value: "PUB",
-                        display: "Visible to everyone"
+                        display: "Visible to everyone",
                     },
                     SelectOption {
                         value: "FL",

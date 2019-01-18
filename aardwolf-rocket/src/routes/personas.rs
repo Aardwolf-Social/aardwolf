@@ -1,6 +1,9 @@
-use aardwolf_models::sql_types::{PostVisibility, FollowPolicy};
+use aardwolf_models::sql_types::{FollowPolicy, PostVisibility};
 use aardwolf_types::{
-    forms::personas::{PersonaCreationFail, PersonaCreationForm, ValidatePersonaCreationForm, ValidatePersonaCreationFail},
+    forms::personas::{
+        PersonaCreationFail, PersonaCreationForm, ValidatePersonaCreationFail,
+        ValidatePersonaCreationForm,
+    },
     operations::{
         check_create_persona_permission::{
             CheckCreatePersonaPermission, CheckCreatePersonaPermissionFail,
@@ -13,13 +16,16 @@ use aardwolf_types::{
         fetch_persona::{FetchPersona, FetchPersonaFail},
     },
 };
-use rocket::{Response, http::{Cookie, Cookies, Status}, response::Redirect, request::Form};
-
-use ResponseOrRedirect;
-use render_template;
-use types::user::SignedInUser;
-use DbConn;
+use failure::Fail;
+use rocket::{
+    http::{Cookie, Cookies, Status},
+    request::Form,
+    response::Redirect,
+    Response,
+};
 use rocket_i18n::I18n;
+
+use crate::{render_template, types::user::SignedInUser, DbConn, ResponseOrRedirect};
 
 #[get("/create")]
 pub fn new(_user: SignedInUser, i18n: I18n) -> Response<'static> {
@@ -105,10 +111,8 @@ pub fn create(
         }
         Err(e) => {
             let (status, validation, system) = match e {
-                PersonaCreateError::Form(ref e) => {
-                    (Status::BadRequest, Some(e), false)
-                },
-                _ => (Status::InternalServerError, None, true)
+                PersonaCreateError::Form(ref e) => (Status::BadRequest, Some(e), false),
+                _ => (Status::InternalServerError, None, true),
             };
 
             let mut response = render_template(&aardwolf_templates::FirstLogin::new(

@@ -11,7 +11,7 @@ use rocket::{
     {Outcome, Request, State},
 };
 
-use session::from_cookie;
+use crate::session::from_cookie;
 
 struct CookieError;
 

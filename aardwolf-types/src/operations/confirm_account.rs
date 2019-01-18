@@ -142,7 +142,7 @@ mod tests {
 
             let operation = ConfirmAccount(ConfirmAccountToken {
                 id: email.id(),
-                token: token,
+                token,
             });
 
             assert!(operation.db_action(conn).is_ok());
@@ -158,7 +158,7 @@ mod tests {
 
                 let operation = ConfirmAccount(ConfirmAccountToken {
                     id: email.id(),
-                    token: token,
+                    token,
                 });
 
                 assert!(operation.db_action(conn).is_ok());
@@ -170,7 +170,7 @@ mod tests {
 
                 let operation = ConfirmAccount(ConfirmAccountToken {
                     id: email.id(),
-                    token: token,
+                    token,
                 });
 
                 assert!(operation.db_action(conn).is_ok());

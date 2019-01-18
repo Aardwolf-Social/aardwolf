@@ -3,6 +3,7 @@ name = "aardwolf-rocket"
 version = "0.1.0"
 authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Elijah Mark Anderson <kd0bpv@gmail.com>", "Paul Woolcock <paul@woolcock.us>", "asonix <asonix@asonix.dog>"]
 description = "Powering connected social communities with free software."
+edition = "2018"
 
 [features]
 default = []

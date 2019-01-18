@@ -1,19 +1,7 @@
-extern crate aardwolf;
-
-#[cfg(feature = "actix")]
-extern crate aardwolf_actix;
-#[cfg(feature = "rocket")]
-extern crate aardwolf_rocket;
-
-extern crate config;
-#[macro_use]
-extern crate clap;
-extern crate yaml_rust;
-
 use std::error::Error;
 
 use aardwolf::{begin_log, configure};
-use clap::App;
+use clap::{load_yaml, App};
 
 fn cli<'a, 'b>(yaml: &'a yaml_rust::yaml::Yaml) -> App<'a, 'b> {
     App::from_yaml(yaml)

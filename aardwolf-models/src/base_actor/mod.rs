@@ -3,7 +3,11 @@ use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
 use uuid::Uuid;
 
-use sql_types::{FollowPolicy, Url};
+use crate::{
+    schema::base_actors,
+    sql_types::{FollowPolicy, Url},
+    user::UserLike,
+};
 
 pub mod follow_request;
 pub mod follower;
@@ -11,8 +15,6 @@ pub mod group;
 pub mod persona;
 
 use self::follower::Follower;
-use schema::base_actors;
-use user::UserLike;
 
 #[derive(Debug, AsChangeset)]
 #[table_name = "base_actors"]
@@ -105,8 +107,8 @@ impl BaseActor {
         follows: i32,
         conn: &PgConnection,
     ) -> Result<bool, diesel::result::Error> {
+        use crate::schema::followers;
         use diesel::prelude::*;
-        use schema::followers;
 
         followers::table
             .filter(followers::dsl::follower.eq(self.id))
@@ -216,7 +218,7 @@ impl NewBaseActor {
 
 #[cfg(test)]
 mod tests {
-    use test_helper::*;
+    use crate::test_helper::*;
 
     #[test]
     fn create_base_actor() {

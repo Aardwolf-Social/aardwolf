@@ -1,8 +1,7 @@
 #![allow(proc_macro_derive_resolution_fallback)]
 use chrono::{offset::Utc, DateTime};
 
-use schema::permissions;
-use sql_types::Permission as PermissionSql;
+use crate::{schema::permissions, sql_types::Permission as PermissionSql};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "permissions"]

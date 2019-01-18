@@ -4,12 +4,16 @@ use diesel::{self, pg::PgConnection};
 
 mod password;
 
-use self::password::Password;
+use crate::{
+    schema::local_auth,
+    user::{
+        local_auth::password::Password, AuthenticatedUser, UnauthenticatedUser, UnverifiedUser,
+    },
+};
+
 pub use self::password::{
     CreationError as PasswordCreationError, PlaintextPassword, ValidationError, VerificationError,
 };
-use schema::local_auth;
-use user::{AuthenticatedUser, UnauthenticatedUser, UnverifiedUser};
 
 /// `LocalAuth` can be queried from the database, but is only really usable as a tool to "log in" a
 /// user.
@@ -131,7 +135,7 @@ impl NewLocalAuth {
 #[cfg(test)]
 mod tests {
     use super::NewLocalAuth;
-    use test_helper::*;
+    use crate::test_helper::*;
 
     #[test]
     fn create_local_auth() {

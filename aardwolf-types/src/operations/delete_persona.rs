@@ -81,8 +81,7 @@ mod tests {
             make_verified_authenticated_user(conn, &gen_string()?, |user, _email| {
                 user_with_base_actor(conn, &user, |base_actor| {
                     with_persona(conn, &base_actor, |persona| {
-                        let deleter = user
-                            .can_delete_persona(persona, conn)?;
+                        let deleter = user.can_delete_persona(persona, conn)?;
 
                         let operation = DeletePersona(deleter);
 

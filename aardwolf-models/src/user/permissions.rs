@@ -1,24 +1,27 @@
 use chrono::offset::Utc;
 use diesel::{self, pg::PgConnection};
+use failure::Fail;
 use mime::Mime as OrigMime;
 
-use super::UserLike;
-use base_actor::{
-    follow_request::{FollowRequest, NewFollowRequest},
-    follower::{Follower, NewFollower},
-    persona::{NewPersona, Persona},
-    {BaseActor, NewBaseActor},
-};
-use base_post::{
-    post::{
-        comment::{Comment, NewComment},
-        media_post::{MediaPost, NewMediaPost},
-        {NewPost, Post},
+use crate::{
+    base_actor::{
+        follow_request::{FollowRequest, NewFollowRequest},
+        follower::{Follower, NewFollower},
+        persona::{NewPersona, Persona},
+        {BaseActor, NewBaseActor},
     },
-    {BasePost, NewBasePost},
+    base_post::{
+        post::{
+            comment::{Comment, NewComment},
+            media_post::{MediaPost, NewMediaPost},
+            {NewPost, Post},
+        },
+        {BasePost, NewBasePost},
+    },
+    file::{image::Image, File},
+    sql_types::{FollowPolicy, Permission, PostVisibility, Role},
+    user::UserLike,
 };
-use file::{image::Image, File};
-use sql_types::{FollowPolicy, Permission, PostVisibility, Role};
 
 #[derive(Clone, Debug, Fail)]
 pub enum PermissionError {
@@ -179,8 +182,8 @@ pub trait PermissionedUser: UserLike + Sized {
     }
 
     fn has_permission(&self, permission: Permission, conn: &PgConnection) -> PermissionResult<()> {
+        use crate::schema::{permissions, role_permissions, roles, user_roles};
         use diesel::prelude::*;
-        use schema::{permissions, role_permissions, roles, user_roles};
 
         roles::dsl::roles
             .inner_join(user_roles::dsl::user_roles)
@@ -217,8 +220,8 @@ impl RoleGranter {
         role: Role,
         conn: &PgConnection,
     ) -> Result<(), diesel::result::Error> {
+        use crate::schema::{roles, user_roles};
         use diesel::prelude::*;
-        use schema::{roles, user_roles};
 
         if user.has_role(role, conn)? {
             return Ok(());
@@ -254,8 +257,8 @@ impl RoleRevoker {
         role: Role,
         conn: &PgConnection,
     ) -> Result<(), diesel::result::Error> {
+        use crate::schema::{roles, user_roles};
         use diesel::prelude::*;
-        use schema::{roles, user_roles};
 
         if !user.has_role(role, conn)? {
             return Ok(());
@@ -290,17 +293,13 @@ impl<'a> PostMaker<'a> {
         source: String,
         conn: &PgConnection,
     ) -> Result<(BasePost, Post), diesel::result::Error> {
+        use crate::schema::{base_posts, posts};
         use diesel::prelude::*;
-        use schema::{base_posts, posts};
 
         conn.transaction(|| {
             diesel::insert_into(base_posts::table)
                 .values(&NewBasePost::new(
-                    name,
-                    media_type,
-                    self.0,
-                    icon,
-                    visibility,
+                    name, media_type, self.0, icon, visibility,
                 ))
                 .get_result(conn)
                 .and_then(|base_post: BasePost| {
@@ -328,20 +327,12 @@ impl<'a> MediaPostMaker<'a> {
         media: &File,
         conn: &PgConnection,
     ) -> Result<(BasePost, Post, MediaPost), diesel::result::Error> {
+        use crate::schema::media_posts;
         use diesel::prelude::*;
-        use schema::media_posts;
 
         conn.transaction(|| {
             PostMaker(self.0)
-                .make_post(
-                    name,
-                    media_type,
-                    icon,
-                    visibility,
-                    content,
-                    source,
-                    conn,
-                )
+                .make_post(name, media_type, icon, visibility, content, source, conn)
                 .and_then(|(base_post, post)| {
                     diesel::insert_into(media_posts::table)
                         .values(&NewMediaPost::new(media, &post))
@@ -368,8 +359,8 @@ impl<'a> CommentMaker<'a> {
         parent: &Post,
         conn: &PgConnection,
     ) -> Result<(BasePost, Post, Comment), CommentError> {
+        use crate::schema::{base_posts, comments};
         use diesel::prelude::*;
-        use schema::{base_posts, comments};
 
         let conversation_base: BasePost = base_posts::table
             .filter(base_posts::dsl::id.eq(conversation.base_post()))
@@ -391,15 +382,7 @@ impl<'a> CommentMaker<'a> {
 
         conn.transaction(|| {
             PostMaker(self.0)
-                .make_post(
-                    name,
-                    media_type,
-                    icon,
-                    visibility,
-                    content,
-                    source,
-                    conn,
-                )
+                .make_post(name, media_type, icon, visibility, content, source, conn)
                 .and_then(|(base_post, post)| {
                     diesel::insert_into(comments::table)
                         .values(NewComment::new(conversation, parent, &post))
@@ -433,8 +416,8 @@ impl<'a> ActorFollower<'a> {
         target_actor: &BaseActor,
         conn: &PgConnection,
     ) -> Result<FollowRequest, FollowError> {
+        use crate::schema::follow_requests;
         use diesel::prelude::*;
-        use schema::follow_requests;
 
         match target_actor.follow_policy() {
             FollowPolicy::AutoAccept | FollowPolicy::ManualReview => {
@@ -470,8 +453,8 @@ impl<'a> FollowRequestManager<'a> {
         follow_request: FollowRequest,
         conn: &PgConnection,
     ) -> Result<Follower, FollowRequestManagerError> {
+        use crate::schema::followers;
         use diesel::prelude::*;
-        use schema::followers;
 
         if follow_request.requested_follow() != self.0.id() {
             return Err(FollowRequestManagerError::IdMismatch);
@@ -558,8 +541,8 @@ impl<U: UserLike> LocalPersonaCreator<U> {
                 )
                 .insert(conn)
                 .and_then(|persona| {
+                    use crate::schema::users::dsl::{id, primary_persona, users};
                     use diesel::prelude::*;
-                    use crate::schema::users::dsl::{users, id, primary_persona};
 
                     if self.0.primary_persona().is_none() {
                         diesel::update(users.filter(id.eq(self.0.id())))

@@ -1,7 +1,7 @@
 #![allow(proc_macro_derive_resolution_fallback)]
 use chrono::{offset::Utc, DateTime};
 
-use schema::user_roles;
+use crate::schema::user_roles;
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "user_roles"]

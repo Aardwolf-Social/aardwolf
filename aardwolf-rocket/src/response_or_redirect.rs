@@ -1,4 +1,4 @@
-use rocket::{Response, response::Redirect};
+use rocket::{response::Redirect, Response};
 
 #[derive(Responder)]
 #[cfg_attr(feature = "cargo-clippy", allow(clippy::large_enum_variant))]
@@ -18,4 +18,3 @@ impl From<Redirect> for ResponseOrRedirect {
         ResponseOrRedirect::Redirect(r)
     }
 }
-

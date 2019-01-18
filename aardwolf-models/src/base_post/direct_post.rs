@@ -2,9 +2,7 @@
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
 
-use base_actor::BaseActor;
-use base_post::BasePost;
-use schema::direct_posts;
+use crate::{base_actor::BaseActor, base_post::BasePost, schema::direct_posts};
 
 #[derive(Debug, Queryable, QueryableByName)]
 #[table_name = "direct_posts"]
@@ -62,7 +60,7 @@ impl NewDirectPost {
 
 #[cfg(test)]
 mod tests {
-    use test_helper::*;
+    use crate::test_helper::*;
 
     #[test]
     fn create_direct_post() {

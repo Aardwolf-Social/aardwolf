@@ -3,11 +3,17 @@ mod token;
 
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
+use log::error;
 
-use self::token::{create_token, HashedEmailToken};
+use crate::{
+    schema::emails,
+    user::{
+        email::token::{create_token, HashedEmailToken},
+        AuthenticatedUser, UnverifiedUser, UserLike,
+    },
+};
+
 pub use self::token::{CreationError, EmailToken, EmailVerificationToken, VerificationError};
-use schema::emails;
-use user::{AuthenticatedUser, UnverifiedUser, UserLike};
 
 pub struct VerifiedEmail {
     id: i32,
@@ -124,8 +130,8 @@ impl VerifyEmail {
         self,
         conn: &PgConnection,
     ) -> Result<VerifiedEmail, diesel::result::Error> {
+        use crate::schema::emails;
         use diesel::prelude::*;
-        use schema::emails;
 
         diesel::update(emails::table)
             .set(&EmailVerificationChangeset {
@@ -250,7 +256,7 @@ impl NewEmail {
 
 #[cfg(test)]
 mod tests {
-    use test_helper::*;
+    use crate::test_helper::*;
 
     #[test]
     fn create_email() {

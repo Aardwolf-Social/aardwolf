@@ -4,6 +4,7 @@ mod creation_form;
 pub use self::{
     creation_fail::PersonaCreationFail,
     creation_form::{
-        PersonaCreationForm, ValidatePersonaCreationForm, ValidatedPersonaCreationForm, ValidatePersonaCreationFail,
+        PersonaCreationForm, ValidatePersonaCreationFail, ValidatePersonaCreationForm,
+        ValidatedPersonaCreationForm,
     },
 };
