@@ -25,7 +25,7 @@ pub struct ModifiedBaseActor {
     inbox_url: Url,
     outbox_url: Url,
     follow_policy: FollowPolicy,
-    private_key_der: Vec<u8>,
+    private_key_der: Option<Vec<u8>>,
     public_key_der: Vec<u8>,
 }
 
@@ -71,7 +71,7 @@ pub struct BaseActor {
     follow_policy: FollowPolicy, // max_length: 8
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
-    private_key_der: Vec<u8>,
+    private_key_der: Option<Vec<u8>>,
     public_key_der: Vec<u8>,
     local_uuid: Option<Uuid>,
 }
@@ -155,7 +155,7 @@ pub struct NewBaseActor {
     outbox_url: Url,
     local_user: Option<i32>,
     follow_policy: FollowPolicy,
-    private_key_der: Vec<u8>,
+    private_key_der: Option<Vec<u8>>,
     public_key_der: Vec<u8>,
     local_uuid: Option<Uuid>,
 }
@@ -187,7 +187,7 @@ impl NewBaseActor {
             outbox_url: local_url,
             local_user: Some(local_user.id()),
             follow_policy,
-            private_key_der,
+            private_key_der: Some(private_key_der),
             public_key_der,
             local_uuid: Some(uuid),
         }
@@ -199,7 +199,6 @@ impl NewBaseActor {
         inbox_url: Url,
         outbox_url: Url,
         follow_policy: FollowPolicy,
-        private_key_der: Vec<u8>,
         public_key_der: Vec<u8>,
     ) -> Self {
         NewBaseActor {
@@ -209,7 +208,7 @@ impl NewBaseActor {
             outbox_url,
             local_user: None,
             follow_policy,
-            private_key_der,
+            private_key_der: None,
             public_key_der,
             local_uuid: None,
         }

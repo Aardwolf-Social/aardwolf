@@ -116,7 +116,7 @@ pub fn with_base_actor<F>(conn: &PgConnection, f: F) -> Result<(), GenericError>
 where
     F: FnOnce(BaseActor) -> Result<(), GenericError>,
 {
-    let (pr, pu) = gen_keypair()?;
+    let (_pr, pu) = gen_keypair()?;
 
     let base_actor = NewBaseActor::new(
         gen_string()?,
@@ -124,7 +124,6 @@ where
         gen_url()?,
         gen_url()?,
         FollowPolicy::AutoAccept,
-        pr,
         pu,
     )
     .insert(conn)?;
