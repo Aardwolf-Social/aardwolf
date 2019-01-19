@@ -58,15 +58,15 @@ impl From<diesel::result::Error> for SignInFail {
 mod tests {
     use aardwolf_test_helpers::models::{
         create_plaintext_password, gen_string, make_verified_authenticated_user, with_connection,
-        GenericError,
     };
     use diesel::pg::PgConnection;
+    use failure::Error;
 
     use crate::{forms::auth::ValidatedSignInForm, operations::sign_in::SignIn, traits::DbAction};
 
     fn setup<F>(f: F)
     where
-        F: FnOnce(&PgConnection, ValidatedSignInForm) -> Result<(), GenericError>,
+        F: FnOnce(&PgConnection, ValidatedSignInForm) -> Result<(), Error>,
     {
         with_connection(|conn| {
             let pass = gen_string()?;

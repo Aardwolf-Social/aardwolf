@@ -110,9 +110,9 @@ mod tests {
     use aardwolf_models::user::email::{EmailToken, UnverifiedEmail};
     use aardwolf_test_helpers::models::{
         transmute_email_token, with_connection, with_unverified_email, with_unverified_user,
-        GenericError,
     };
     use diesel::pg::PgConnection;
+    use failure::Error;
 
     use crate::{
         operations::confirm_account::{ConfirmAccount, ConfirmAccountToken},
@@ -121,14 +121,14 @@ mod tests {
 
     fn setup<F>(f: F)
     where
-        F: FnOnce(&PgConnection, UnverifiedEmail, EmailToken) -> Result<(), GenericError>,
+        F: FnOnce(&PgConnection, UnverifiedEmail, EmailToken) -> Result<(), Error>,
     {
         with_connection(|conn| setup_with_conn(conn, f))
     }
 
-    fn setup_with_conn<F>(conn: &PgConnection, f: F) -> Result<(), GenericError>
+    fn setup_with_conn<F>(conn: &PgConnection, f: F) -> Result<(), Error>
     where
-        F: FnOnce(&PgConnection, UnverifiedEmail, EmailToken) -> Result<(), GenericError>,
+        F: FnOnce(&PgConnection, UnverifiedEmail, EmailToken) -> Result<(), Error>,
     {
         with_unverified_user(conn, |user| {
             with_unverified_email(conn, &user, |email, token| f(conn, email, token))
