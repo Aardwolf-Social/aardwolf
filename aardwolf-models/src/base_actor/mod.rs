@@ -95,6 +95,34 @@ impl BaseActor {
         }
     }
 
+    pub fn by_persona_id(
+        persona_id: i32,
+        conn: &PgConnection,
+    ) -> Result<Self, diesel::result::Error> {
+        use crate::schema::personas;
+        use diesel::prelude::*;
+
+        base_actors::table
+            .inner_join(personas::table.on(base_actors::dsl::id.eq(personas::dsl::base_actor)))
+            .filter(personas::dsl::id.eq(persona_id))
+            .select((
+                base_actors::dsl::id,
+                base_actors::dsl::display_name,
+                base_actors::dsl::profile_url,
+                base_actors::dsl::inbox_url,
+                base_actors::dsl::outbox_url,
+                base_actors::dsl::local_user,
+                base_actors::dsl::follow_policy,
+                base_actors::dsl::created_at,
+                base_actors::dsl::updated_at,
+                base_actors::dsl::private_key_der,
+                base_actors::dsl::public_key_der,
+                base_actors::dsl::local_uuid,
+                base_actors::dsl::activitypub_id,
+            ))
+            .get_result(conn)
+    }
+
     pub fn is_following(
         &self,
         follows: &BaseActor,
