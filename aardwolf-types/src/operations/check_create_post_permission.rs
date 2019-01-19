@@ -10,7 +10,7 @@ use crate::{
     wrapper::{DbActionWrapper, Wrapped},
 };
 
-pub struct CheckCreatePostPermission<U>(pub U, BaseActor)
+pub struct CheckCreatePostPermission<U>(pub U, pub BaseActor)
 where
     U: PermissionedUser + Clone;
 

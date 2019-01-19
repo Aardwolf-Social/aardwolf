@@ -6,6 +6,7 @@ pub mod create_persona;
 pub mod create_post;
 pub mod delete_persona;
 pub mod fetch_authenticated_user;
+pub mod fetch_base_actor;
 pub mod fetch_persona;
 pub mod sign_in;
 pub mod sign_up;

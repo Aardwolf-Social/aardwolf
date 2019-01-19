@@ -4,8 +4,10 @@ use aardwolf_models::{
     user::LocalPostCreator,
 };
 use diesel::pg::PgConnection;
+use serde_derive::Serialize;
 
 use crate::{
+    error::AardwolfFail,
     forms::posts::ValidatedPostCreationForm,
     traits::DbAction,
     wrapper::{DbActionWrapper, Wrapped},
@@ -44,7 +46,7 @@ where
     }
 }
 
-#[derive(Clone, Debug, Fail)]
+#[derive(Clone, Debug, Fail, Serialize)]
 pub enum CreatePostFail {
     #[fail(display = "Error in db")]
     Database,
@@ -55,6 +57,8 @@ impl From<diesel::result::Error> for CreatePostFail {
         CreatePostFail::Database
     }
 }
+
+impl AardwolfFail for CreatePostFail {}
 
 #[cfg(test)]
 mod tests {
