@@ -101,7 +101,7 @@ impl NewBasePost {
 
         NewBasePost {
             name,
-            media_type: media_type,
+            media_type,
             posted_by: posted_by.id(),
             icon: icon.map(|i| i.id()),
             visibility,
@@ -120,7 +120,7 @@ impl NewBasePost {
     ) -> Self {
         NewBasePost {
             name,
-            media_type: media_type,
+            media_type,
             posted_by: posted_by.id(),
             icon: icon.map(|i| i.id()),
             visibility,
