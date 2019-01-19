@@ -19,7 +19,8 @@ use crate::{
 pub use self::{
     local_auth::{PlaintextPassword, VerificationError},
     permissions::{
-        LocalPersonaCreator, PermissionError, PermissionResult, PermissionedUser, PersonaDeleter,
+        LocalPersonaCreator, LocalPostCreator, PermissionError, PermissionResult, PermissionedUser,
+        PersonaDeleter,
     },
 };
 

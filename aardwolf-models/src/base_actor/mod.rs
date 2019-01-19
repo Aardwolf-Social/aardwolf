@@ -3,6 +3,7 @@ use diesel::{self, pg::PgConnection};
 use uuid::Uuid;
 
 use crate::{
+    generate_urls::GenerateUrls,
     schema::base_actors,
     sql_types::{FollowPolicy, Url},
     user::UserLike,
@@ -58,7 +59,7 @@ impl ModifiedBaseActor {
     }
 }
 
-#[derive(Debug, Queryable, QueryableByName)]
+#[derive(Clone, Debug, Queryable, QueryableByName)]
 #[table_name = "base_actors"]
 pub struct BaseActor {
     id: i32,
@@ -216,13 +217,6 @@ impl NewBaseActor {
             activitypub_id,
         }
     }
-}
-
-pub trait GenerateUrls {
-    fn activitypub_id(&self, uuid: &Uuid) -> String;
-    fn profile_url(&self, uuid: &Uuid) -> Url;
-    fn inbox_url(&self, uuid: &Uuid) -> Url;
-    fn outbox_url(&self, uuid: &Uuid) -> Url;
 }
 
 #[cfg(test)]
