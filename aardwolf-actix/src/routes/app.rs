@@ -1,4 +1,5 @@
-use aardwolf_models::user::UserLike;
+use aardwolf_models::{sql_types::PostVisibility, user::UserLike};
+use aardwolf_types::forms::posts::PostCreationFormState;
 use actix_web::{http::header::LOCATION, middleware::session::Session, HttpResponse};
 use rocket_i18n::I18n;
 
@@ -27,6 +28,14 @@ fn logged_in_index((session, user, i18n): (Session, SignedInUser, I18n)) -> Http
             &i18n.catalog,
             user.0.id().to_string().as_ref(),
             user.0.id().to_string().as_ref(),
+            "csrf token",
+            &PostCreationFormState {
+                source: "".to_owned(),
+                name: None,
+                visibility: PostVisibility::Public, // TODO: this comes from the persona
+            },
+            None,
+            false,
         ))
     } else {
         HttpResponse::SeeOther()

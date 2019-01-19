@@ -1,6 +1,7 @@
 use std::path::{Path, PathBuf};
 
-use aardwolf_models::user::UserLike;
+use aardwolf_models::{sql_types::PostVisibility, user::UserLike};
+use aardwolf_types::forms::posts::PostCreationFormState;
 use rocket::{
     http::Cookies,
     response::{status::NotFound, NamedFile, Redirect},
@@ -21,6 +22,14 @@ pub fn home(
             &i18n.catalog,
             user.0.id().to_string().as_ref(),
             user.0.id().to_string().as_ref(),
+            "csrf token",
+            &PostCreationFormState {
+                source: "".to_owned(),
+                name: None,
+                visibility: PostVisibility::Public, // TODO: this comes from the persona
+            },
+            None,
+            false,
         ))
         .into()
     } else {
