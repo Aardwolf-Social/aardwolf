@@ -83,7 +83,7 @@ impl<'a> Home<'a> {
                     icon: None,
                     placeholder: Some("mh, nsfw, etc."),
                     value: state.name.as_ref().map(|s| (*s).as_ref()).unwrap_or(""),
-                    error: validation_error.and_then(|e| e.source.as_ref()),
+                    error: validation_error.and_then(|e| e.name.as_ref()),
                 },
             },
             shortcuts: Shortcuts {
