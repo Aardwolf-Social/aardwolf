@@ -21,7 +21,6 @@ pub struct PostCreationForm {
 impl PostCreationForm {
     pub fn as_state(&self) -> PostCreationFormState {
         PostCreationFormState {
-            csrf_token: self.csrf_token.clone(),
             visibility: self.visibility,
             name: self.name.clone(),
             source: self.source.clone(),
@@ -30,7 +29,6 @@ impl PostCreationForm {
 }
 
 pub struct PostCreationFormState {
-    pub csrf_token: String,
     pub visibility: PostVisibility,
     pub name: Option<String>,
     pub source: String,
