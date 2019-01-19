@@ -150,7 +150,11 @@ fn app(config: &config::Config, db_url: &str) -> Result<Rocket, Box<dyn Error>> 
         https: config.get_bool("Instance.https")?,
     };
 
-    let mut routes = routes![routes::app::home, routes::app::home_redirect,];
+    let mut routes = routes![
+        routes::app::home,
+        routes::app::first_login_redirect,
+        routes::app::home_redirect,
+    ];
 
     #[cfg(debug_assertions)]
     routes.extend(routes![
@@ -181,9 +185,12 @@ fn app(config: &config::Config, db_url: &str) -> Result<Rocket, Box<dyn Error>> 
         routes::personas::switch,
     ];
 
+    let posts = routes![routes::posts::create,];
+
     let r = rocket::custom(c)
         .mount("/auth", auth)
         .mount("/personas", personas)
+        .mount("/posts", posts)
         .mount(
             "/api/v1",
             routes![routes::applications::register_application],
