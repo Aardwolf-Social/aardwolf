@@ -21,11 +21,11 @@ use rocket::{
     http::{Cookie, Cookies, Status},
     request::Form,
     response::Redirect,
-    Response,
+    Response, State,
 };
 use rocket_i18n::I18n;
 
-use crate::{render_template, types::user::SignedInUser, DbConn, ResponseOrRedirect};
+use crate::{render_template, types::user::SignedInUser, DbConn, ResponseOrRedirect, UrlGenerator};
 
 #[get("/create")]
 pub fn new(_user: SignedInUser, i18n: I18n) -> Response<'static> {
@@ -87,6 +87,7 @@ impl From<CheckCreatePersonaPermissionFail> for PersonaCreateError {
 
 #[post("/create", data = "<form>")]
 pub fn create(
+    generator: State<UrlGenerator>,
     user: SignedInUser,
     form: Form<PersonaCreationForm>,
     i18n: I18n,
@@ -99,7 +100,7 @@ pub fn create(
     let res = perform!(&db, PersonaCreateError, [
         (form = ValidatePersonaCreationForm(form)),
         (creator = CheckCreatePersonaPermission(user.0)),
-        (_ = CreatePersona(creator, form)),
+        (_ = CreatePersona(creator, form, generator.inner().clone())),
     ]);
 
     let res = match res {

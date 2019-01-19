@@ -27,6 +27,7 @@ pub struct BasePost {
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
     local_uuid: Option<Uuid>,
+    activitypub_id: String,
 }
 
 impl BasePost {
@@ -77,6 +78,7 @@ pub struct NewBasePost {
     icon: Option<i32>,
     visibility: PostVisibility,
     local_uuid: Option<Uuid>,
+    activitypub_id: String,
 }
 
 impl NewBasePost {
@@ -94,14 +96,18 @@ impl NewBasePost {
         posted_by: &BaseActor,
         icon: Option<&Image>,
         visibility: PostVisibility,
+        generate_id: impl Fn(&Uuid) -> String,
     ) -> Self {
+        let uuid = Uuid::new_v4();
+
         NewBasePost {
             name,
             media_type: media_type.into(),
             posted_by: posted_by.id(),
             icon: icon.map(|i| i.id()),
             visibility,
-            local_uuid: Some(Uuid::new_v4()),
+            activitypub_id: generate_id(&uuid),
+            local_uuid: Some(uuid),
         }
     }
 
@@ -111,6 +117,7 @@ impl NewBasePost {
         posted_by: &BaseActor,
         icon: Option<&Image>,
         visibility: PostVisibility,
+        activitypub_id: String,
     ) -> Self {
         NewBasePost {
             name,
@@ -119,6 +126,7 @@ impl NewBasePost {
             icon: icon.map(|i| i.id()),
             visibility,
             local_uuid: None,
+            activitypub_id,
         }
     }
 }

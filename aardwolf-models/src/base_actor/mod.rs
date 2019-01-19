@@ -74,6 +74,7 @@ pub struct BaseActor {
     private_key_der: Option<Vec<u8>>,
     public_key_der: Vec<u8>,
     local_uuid: Option<Uuid>,
+    activitypub_id: String,
 }
 
 impl BaseActor {
@@ -158,6 +159,7 @@ pub struct NewBaseActor {
     private_key_der: Option<Vec<u8>>,
     public_key_der: Vec<u8>,
     local_uuid: Option<Uuid>,
+    activitypub_id: String,
 }
 
 impl NewBaseActor {
@@ -175,20 +177,20 @@ impl NewBaseActor {
         follow_policy: FollowPolicy,
         private_key_der: Vec<u8>,
         public_key_der: Vec<u8>,
+        generate_urls: impl GenerateUrls,
     ) -> Self {
         let uuid = Uuid::new_v4();
-        // use throw-away unique URL since we can infer local URLs.
-        let local_url: Url = format!("https://example.com/{}", uuid).parse().unwrap();
 
         NewBaseActor {
             display_name,
-            profile_url: local_url.clone(),
-            inbox_url: local_url.clone(),
-            outbox_url: local_url,
+            profile_url: generate_urls.profile_url(&uuid),
+            inbox_url: generate_urls.inbox_url(&uuid),
+            outbox_url: generate_urls.outbox_url(&uuid),
             local_user: Some(local_user.id()),
             follow_policy,
             private_key_der: Some(private_key_der),
             public_key_der,
+            activitypub_id: generate_urls.activitypub_id(&uuid),
             local_uuid: Some(uuid),
         }
     }
@@ -200,6 +202,7 @@ impl NewBaseActor {
         outbox_url: Url,
         follow_policy: FollowPolicy,
         public_key_der: Vec<u8>,
+        activitypub_id: String,
     ) -> Self {
         NewBaseActor {
             display_name,
@@ -211,8 +214,16 @@ impl NewBaseActor {
             private_key_der: None,
             public_key_der,
             local_uuid: None,
+            activitypub_id,
         }
     }
+}
+
+pub trait GenerateUrls {
+    fn activitypub_id(&self, uuid: &Uuid) -> String;
+    fn profile_url(&self, uuid: &Uuid) -> Url;
+    fn inbox_url(&self, uuid: &Uuid) -> Url;
+    fn outbox_url(&self, uuid: &Uuid) -> Url;
 }
 
 #[cfg(test)]

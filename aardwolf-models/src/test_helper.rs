@@ -10,6 +10,7 @@ use openssl::rsa::Rsa;
 use rand::{distributions::Alphanumeric, rngs::OsRng, Rng};
 use serde_json;
 use url::Url as OrigUrl;
+use uuid::Uuid;
 
 use crate::{
     base_actor::{
@@ -20,7 +21,7 @@ use crate::{
             Group, NewGroup,
         },
         persona::{NewPersona, Persona},
-        BaseActor, NewBaseActor,
+        BaseActor, GenerateUrls, NewBaseActor,
     },
     base_post::{
         direct_post::{DirectPost, NewDirectPost},
@@ -125,6 +126,7 @@ where
         gen_url()?,
         FollowPolicy::AutoAccept,
         pu,
+        gen_string()?,
     )
     .insert(conn)?;
 
@@ -140,6 +142,26 @@ pub fn gen_keypair() -> Result<(Vec<u8>, Vec<u8>), GenericError> {
     ))
 }
 
+pub struct UrlGenerator;
+
+impl GenerateUrls for UrlGenerator {
+    fn activitypub_id(&self, uuid: &Uuid) -> String {
+        uuid.to_string()
+    }
+
+    fn profile_url(&self, uuid: &Uuid) -> Url {
+        format!("https://example.com/{}", uuid).parse().unwrap()
+    }
+
+    fn inbox_url(&self, uuid: &Uuid) -> Url {
+        format!("https://example.com/{}", uuid).parse().unwrap()
+    }
+
+    fn outbox_url(&self, uuid: &Uuid) -> Url {
+        format!("https://example.com/{}", uuid).parse().unwrap()
+    }
+}
+
 pub fn user_with_base_actor<F>(
     conn: &PgConnection,
     user: &AuthenticatedUser,
@@ -150,8 +172,15 @@ where
 {
     let (pr, pu) = gen_keypair()?;
 
-    let base_actor =
-        NewBaseActor::local(gen_string()?, user, FollowPolicy::AutoAccept, pr, pu).insert(conn)?;
+    let base_actor = NewBaseActor::local(
+        gen_string()?,
+        user,
+        FollowPolicy::AutoAccept,
+        pr,
+        pu,
+        UrlGenerator,
+    )
+    .insert(conn)?;
 
     f(base_actor)
 }
@@ -235,8 +264,15 @@ pub fn with_base_post<F>(
 where
     F: FnOnce(BasePost) -> Result<(), GenericError>,
 {
-    let base_post =
-        NewBasePost::new(None, TEXT_PLAIN, posted_by, None, PostVisibility::Public).insert(conn)?;
+    let base_post = NewBasePost::local(
+        None,
+        TEXT_PLAIN,
+        posted_by,
+        None,
+        PostVisibility::Public,
+        |uuid| format!("{}", uuid),
+    )
+    .insert(conn)?;
 
     f(base_post)
 }

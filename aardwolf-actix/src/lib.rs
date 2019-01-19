@@ -1,5 +1,6 @@
 use std::{error::Error, fmt};
 
+use aardwolf_models::{base_actor::GenerateUrls, sql_types::Url};
 use aardwolf_templates::Renderable;
 use actix::{self, Addr, SyncArbiter};
 use actix_web::{
@@ -17,6 +18,7 @@ use config::Config;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
 use rocket_i18n::{Internationalized, Translations};
+use uuid::Uuid;
 
 #[macro_use]
 pub mod action;
@@ -31,9 +33,60 @@ pub use crate::session::from_session;
 use self::db::{Db, Pool};
 
 #[derive(Clone)]
+pub struct UrlGenerator {
+    domain: String,
+    https: bool,
+}
+
+impl GenerateUrls for UrlGenerator {
+    fn activitypub_id(&self, uuid: &Uuid) -> String {
+        format!(
+            "{}://{}/users/{}",
+            if self.https { "https" } else { "http" },
+            self.domain,
+            uuid
+        )
+    }
+
+    fn profile_url(&self, uuid: &Uuid) -> Url {
+        format!(
+            "{}://{}/users/{}/profile",
+            if self.https { "https" } else { "http" },
+            self.domain,
+            uuid
+        )
+        .parse()
+        .unwrap()
+    }
+
+    fn inbox_url(&self, uuid: &Uuid) -> Url {
+        format!(
+            "{}://{}/users/{}/inbox",
+            if self.https { "https" } else { "http" },
+            self.domain,
+            uuid
+        )
+        .parse()
+        .unwrap()
+    }
+
+    fn outbox_url(&self, uuid: &Uuid) -> Url {
+        format!(
+            "{}://{}/users/{}/outbox",
+            if self.https { "https" } else { "http" },
+            self.domain,
+            uuid
+        )
+        .parse()
+        .unwrap()
+    }
+}
+
+#[derive(Clone)]
 pub struct AppConfig {
     db: Addr<Db>,
     translations: Translations,
+    generator: UrlGenerator,
 }
 
 impl Internationalized for AppConfig {
@@ -136,6 +189,11 @@ pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
         config.get_str("Web.Listen.port")?
     );
 
+    let url_generator = UrlGenerator {
+        domain: config.get_str("Instance.domain")?,
+        https: config.get_bool("Instance.https")?,
+    };
+
     #[cfg(debug_assertions)]
     let assets = assets::Assets::from_config(&config)?;
 
@@ -144,6 +202,7 @@ pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
             db: db.clone(),
             // TODO: domain and languages should be config'd
             translations: rocket_i18n::i18n("aardwolf", vec!["en", "pl"]),
+            generator: url_generator.clone(),
         };
 
         vec![

@@ -1,5 +1,5 @@
 use aardwolf_models::{
-    base_actor::{persona::Persona, BaseActor},
+    base_actor::{persona::Persona, BaseActor, GenerateUrls},
     user::{LocalPersonaCreator, PermissionedUser},
 };
 use diesel::pg::PgConnection;
@@ -12,20 +12,27 @@ use crate::{
 };
 
 /// This operation creates a persona
-pub struct CreatePersona<U>(pub LocalPersonaCreator<U>, pub ValidatedPersonaCreationForm)
-where
-    U: PermissionedUser;
-
-impl<U> Wrapped for CreatePersona<U>
+pub struct CreatePersona<U, G>(
+    pub LocalPersonaCreator<U>,
+    pub ValidatedPersonaCreationForm,
+    pub G,
+)
 where
     U: PermissionedUser,
+    G: GenerateUrls;
+
+impl<U, G> Wrapped for CreatePersona<U, G>
+where
+    U: PermissionedUser,
+    G: GenerateUrls,
 {
     type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
 }
 
-impl<U> DbAction for CreatePersona<U>
+impl<U, G> DbAction for CreatePersona<U, G>
 where
     U: PermissionedUser,
+    G: GenerateUrls,
 {
     type Item = (BaseActor, Persona);
     type Error = PersonaCreationFail;
@@ -44,6 +51,7 @@ where
             self.1.shortname,
             priv_key,
             pub_key,
+            self.2,
             conn,
         )?)
     }
@@ -56,7 +64,7 @@ mod tests {
         user::PermissionedUser,
     };
     use aardwolf_test_helpers::models::{
-        gen_string, make_verified_authenticated_user, with_connection,
+        gen_string, make_verified_authenticated_user, with_connection, UrlGenerator,
     };
 
     use crate::{
@@ -78,7 +86,7 @@ mod tests {
                     is_searchable: true,
                 };
 
-                let operation = CreatePersona(creator, form);
+                let operation = CreatePersona(creator, form, UrlGenerator);
 
                 assert!(operation.db_action(conn).is_ok());
                 Ok(())

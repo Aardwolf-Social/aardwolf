@@ -122,7 +122,7 @@ pub(crate) fn create(
     let res = perform!(state, PersonaCreateError, [
         (form = ValidatePersonaCreationForm(form)),
         (creater = CheckCreatePersonaPermission(user.0)),
-        (_ = CreatePersona(creater, form)),
+        (_ = CreatePersona(creater, form, state.generator.clone())),
     ]);
 
     Box::new(
