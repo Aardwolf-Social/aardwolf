@@ -239,6 +239,15 @@ pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
                     r.method(Method::GET).with(self::routes::auth::sign_out)
                 }),
             App::with_state(state.clone())
+                .prefix("/posts")
+                .middleware(Logger::default())
+                .middleware(SessionStorage::new(
+                    CookieSessionBackend::signed(&[0; 32]).secure(false),
+                ))
+                .resource("/create", |r| {
+                    r.method(Method::POST).with(self::routes::posts::create)
+                }),
+            App::with_state(state.clone())
                 .prefix("/personas")
                 .middleware(Logger::default())
                 .middleware(SessionStorage::new(
