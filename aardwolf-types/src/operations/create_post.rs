@@ -32,7 +32,7 @@ where
 
     fn db_action(self, conn: &PgConnection) -> Result<(BasePost, Post), CreatePostFail> {
         Ok(self.0.create_post(
-            None,
+            self.1.name,
             self.1.media_type,
             None,
             self.1.visibility,
@@ -81,6 +81,7 @@ mod tests {
                         visibility: PostVisibility::Public,
                         content: "<b>A Post</b>".to_owned(),
                         source: "**A Post**".to_owned(),
+                        name: None,
                     };
 
                     let operation = CreatePost(creator, form, UrlGenerator);
