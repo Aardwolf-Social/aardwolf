@@ -3,7 +3,7 @@ use std::io::{self, Write};
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
 use super::{Html,ToHtml};
-use gettext_macros::i18n;
+use rocket_i18n::i18n;
 use crate::{SignUp, templates::{base, ui::{alert, email_input, password_input}}};
 
 pub fn sign_up(out: &mut Write, sign_up: &SignUp) -> io::Result<()> {

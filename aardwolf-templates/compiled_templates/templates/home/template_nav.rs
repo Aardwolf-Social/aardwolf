@@ -4,7 +4,7 @@ use std::io::{self, Write};
 #[allow(unused)]
 use super::{Html,ToHtml};
 use gettext::Catalog;
-use gettext_macros::i18n;
+use rocket_i18n::i18n;
 
 pub fn nav(out: &mut Write, catalog: &Catalog) -> io::Result<()> {
 out.write_all(b"<nav class=\"navbar\">\n    <div class=\"container\">\n        <div class=\"navbar-brand\">\n            <a class=\"navbar-item\">\n                <img src=\"/images/aardwolf-logo.png\" alt=\"Aardwolf\">\n            </a>\n            <span class=\"navbar-burger burger\" data-target=\"navbar_menu_hero_a\">\n                <span></span>\n                <span></span>\n                <span></span>\n            </span>\n        </div>\n        <div id=\"navbar_menu_hero_a\" class=\"navbar-menu\">\n            <div class=\"navbar-end\">\n                <a class=\"navbar-item is-active\">\n                    ")?;

@@ -1,33 +1,26 @@
 @use gettext::Catalog;
 @use gettext_macros::i18n;
 
-@(catalog: &Catalog)
+@use crate::{NewPost, templates::ui::{alert, select_input, text_input, textarea_input}};
+
+@(catalog: &Catalog, username: &str, new_post: &NewPost)
 
 <article class="media"><!-- Begin new post -->
     <figure class="media-left">
         <p class="image is-64x64">
-        <img src="https://bulma.io/images/placeholders/128x128.png" alt="@i18n!(catalog, "Username")">
+        <img src="https://bulma.io/images/placeholders/128x128.png" alt="@username">
         </p>
     </figure>
     <div class="media-content">
-        <div class="field">
-            <p class="control">
-            <textarea class="textarea" placeholder="@i18n!(catalog, "Add a comment...")"></textarea>
-            </p>
-        </div>
-        <nav class="level">
-            <div class="level-left">
-                <div class="level-item">
-                    <a class="button is-info">@i18n!(catalog, "Awoo")</a>
-                </div>
-            </div>
-            <div class="level-right">
-                <div class="level-item">
-                    <label class="checkbox">
-                        <input type="checkbox"> @i18n!(catalog, "Press enter to awoo")
-                    </label>
-                </div>
-            </div>
-        </nav>
+        <form method="POST" action="/posts/create">
+            @if let Some(ref a) = new_post.alert {
+                @:alert(a)
+            }
+            <input type="hidden" name="csrf_token" value="@new_post.csrf">
+            @:textarea_input(&new_post.source)
+            @:select_input(&new_post.visibility)
+            @:text_input(&new_post.name)
+            <button>@i18n!(catalog, "Awoo!")</button>
+        </form>
     </div>
 </article><!-- End of new post -->

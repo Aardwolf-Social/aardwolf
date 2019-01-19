@@ -3,7 +3,7 @@ use std::io::{self, Write};
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
 use super::{Html,ToHtml};
-use gettext_macros::i18n;
+use rocket_i18n::i18n;
 use crate::{Shortcuts, templates::ui::icon};
 
 pub fn shortcuts(out: &mut Write, shortcuts: &Shortcuts) -> io::Result<()> {

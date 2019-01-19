@@ -4,9 +4,9 @@ use std::io::{self, Write};
 #[allow(unused)]
 use super::{Html,ToHtml};
 use rocket_i18n::i18n;
-use crate::{Input, templates::ui::icon};
+use crate::{TextareaInput, templates::ui::icon};
 
-pub fn input(out: &mut Write, input: &Input) -> io::Result<()> {
+pub fn textarea_input(out: &mut Write, input: &TextareaInput) -> io::Result<()> {
 out.write_all(b"<div class=\"aardwolf-input-wrapper\">\n    <label for=\"")?;
 input.name.to_html(out)?;
 out.write_all(b"\">\n        ")?;
@@ -21,27 +21,21 @@ out.write_all(b"\n            ")?;
 i18n!(input.catalog, label).to_html(out)?;
 out.write_all(b"\n        ")?;
 }
-out.write_all(b"\n    </label>\n    <div class=\"aardwolf-input aardwolf-")?;
-input.kind.to_html(out)?;
-out.write_all(b"-input\">\n        ")?;
+out.write_all(b"\n    </label>\n    <div class=\"aardwolf-input aardwolf-textarea-input\">\n        ")?;
 if let Some(placeholder) = input.placeholder {
-out.write_all(b"\n            <input type=\"")?;
-input.kind.to_html(out)?;
-out.write_all(b"\" name=\"")?;
+out.write_all(b"\n            <textarea name=\"")?;
 input.name.to_html(out)?;
 out.write_all(b"\" placeholder=\"")?;
 i18n!(input.catalog, placeholder).to_html(out)?;
 out.write_all(b"\" value=\"")?;
 input.value.to_html(out)?;
-out.write_all(b"\" />\n        ")?;
+out.write_all(b"\"></textarea>\n        ")?;
 } else {
-out.write_all(b"\n            <input type=\"")?;
-input.kind.to_html(out)?;
-out.write_all(b"\" name=\"")?;
+out.write_all(b"\n            <textarea name=\"")?;
 input.name.to_html(out)?;
 out.write_all(b"\" value=\"")?;
 input.value.to_html(out)?;
-out.write_all(b"\" />\n        ")?;
+out.write_all(b"\"></textarea>\n        ")?;
 }
 out.write_all(b"\n    </div>\n    <div class=\"aardwolf-input-meta\">\n        ")?;
 if let Some(error) = input.error {
