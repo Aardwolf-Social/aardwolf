@@ -1,6 +1,6 @@
 use std::{error::Error, fmt};
 
-use aardwolf_models::{base_actor::GenerateUrls, sql_types::Url};
+use aardwolf_models::{base_actor::BaseActor, generate_urls::GenerateUrls, sql_types::Url};
 use aardwolf_templates::Renderable;
 use actix::{self, Addr, SyncArbiter};
 use actix_web::{
@@ -79,6 +79,19 @@ impl GenerateUrls for UrlGenerator {
         )
         .parse()
         .unwrap()
+    }
+
+    fn post_id(&self, _: &BaseActor, uuid: &Uuid) -> String {
+        format!(
+            "{}://{}/posts/{}",
+            if self.https { "https" } else { "http" },
+            self.domain,
+            uuid
+        )
+    }
+
+    fn post_url(&self, base_actor: &BaseActor, uuid: &Uuid) -> Url {
+        self.post_id(base_actor, uuid).parse().unwrap()
     }
 }
 

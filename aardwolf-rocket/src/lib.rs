@@ -5,7 +5,7 @@
 extern crate rocket;
 use std::{error::Error, ops::Deref};
 
-use aardwolf_models::{base_actor::GenerateUrls, sql_types::Url};
+use aardwolf_models::{base_actor::BaseActor, generate_urls::GenerateUrls, sql_types::Url};
 use aardwolf_templates::Renderable;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
@@ -73,6 +73,19 @@ impl GenerateUrls for UrlGenerator {
         )
         .parse()
         .unwrap()
+    }
+
+    fn post_id(&self, _: &BaseActor, uuid: &Uuid) -> String {
+        format!(
+            "{}://{}/posts/{}",
+            if self.https { "https" } else { "http" },
+            self.domain,
+            uuid
+        )
+    }
+
+    fn post_url(&self, base_actor: &BaseActor, uuid: &Uuid) -> Url {
+        self.post_id(base_actor, uuid).parse().unwrap()
     }
 }
 
