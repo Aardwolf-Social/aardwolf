@@ -1,7 +1,5 @@
-extern crate aardwolf_models;
-extern crate aardwolf_types;
-extern crate gettext;
-extern crate rocket_i18n;
+#![allow(clippy::inline_fn_without_body)]
+#![allow(clippy::into_iter_on_ref)]
 include!("../compiled_templates/templates.rs");
 
 mod first_login;
