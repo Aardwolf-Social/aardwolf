@@ -1,7 +1,9 @@
-[Assets]
-##
-# Assets - This is where static files are stored for running in development mode
+[Instance]
+domain = "localhost:8080"
+https = false
 
+# Assets - This is where static files are stored for running in development mode
+[Assets]
 web = "dist"
 themes = "web/themes"
 emoji = "web/emoji"
