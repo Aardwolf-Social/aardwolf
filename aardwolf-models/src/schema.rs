@@ -10,7 +10,7 @@ table! {
         follow_policy -> Varchar,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
-        private_key_der -> Bytea,
+        private_key_der -> Nullable<Bytea>,
         public_key_der -> Bytea,
         local_uuid -> Nullable<Uuid>,
         activitypub_id -> Varchar,
