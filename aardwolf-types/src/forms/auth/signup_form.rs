@@ -6,12 +6,12 @@ use crate::{
     wrapper::{ValidateWrapper, Wrapped},
 };
 
-#[derive(Clone, Fail, Debug, Deserialize, Serialize)]
+#[derive(Clone, Fail, Debug, Serialize)]
 #[fail(display = "There was an error validating the form")]
 pub struct ValidateSignUpFormFail {
-    pub email: Option<String>,
-    pub password: Option<String>,
-    pub password_confirmation: Option<String>,
+    pub email: Option<SignUpEmailValidationFail>,
+    pub password: Option<SignUpPasswordValidationFail>,
+    pub password_confirmation: Option<SignUpPasswordConfirmationValidationFail>,
 }
 
 impl ValidateSignUpFormFail {
@@ -24,21 +24,42 @@ impl From<ValidationError> for ValidateSignUpFormFail {
     fn from(e: ValidationError) -> Self {
         ValidateSignUpFormFail {
             email: None,
-            password: {
-                if e.no_match() {
-                    Some("Passwords don't match".to_owned())
-                } else if e.too_short() {
-                    Some("Password is too short".to_owned())
-                } else {
-                    None
-                }
+            password: if e.too_short() {
+                Some(SignUpPasswordValidationFail::TooShort)
+            } else {
+                None
             },
-            password_confirmation: None,
+            password_confirmation: if e.no_match() {
+                Some(SignUpPasswordConfirmationValidationFail::Match)
+            } else {
+                None
+            },
         }
     }
 }
 
 impl AardwolfFail for ValidateSignUpFormFail {}
+
+#[derive(Clone, Debug, Serialize)]
+pub enum SignUpEmailValidationFail {
+    Empty,
+    /// TODO: implement this
+    Malformed,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub enum SignUpPasswordValidationFail {
+    Empty,
+    /// TODO: implement this
+    TooShort,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub enum SignUpPasswordConfirmationValidationFail {
+    Empty,
+    /// TODO: implement this
+    Match,
+}
 
 pub struct SignUpFormState {
     pub email: String,
@@ -87,27 +108,27 @@ impl Validate for ValidateSignUpForm {
         };
 
         if self.0.email.is_empty() {
-            validation_error.email = Some("Email must not be blank".to_owned());
+            validation_error.email = Some(SignUpEmailValidationFail::Empty);
         }
 
         if self.0.password.is_empty() {
-            validation_error.password = Some("Password must not be blank".to_owned());
+            validation_error.password = Some(SignUpPasswordValidationFail::Empty);
         }
 
         if self.0.password_confirmation.is_empty() {
             validation_error.password_confirmation =
-                Some("Password Confirmation must not be blank".to_owned());
+                Some(SignUpPasswordConfirmationValidationFail::Empty);
         }
 
-        if validation_error.is_empty() {
-            Ok(ValidatedSignUpForm {
-                email: self.0.email,
-                password: self.0.password,
-                password_confirmation: self.0.password_confirmation,
-            })
-        } else {
-            Err(validation_error)
+        if !validation_error.is_empty() {
+            return Err(validation_error);
         }
+
+        Ok(ValidatedSignUpForm {
+            email: self.0.email,
+            password: self.0.password,
+            password_confirmation: self.0.password_confirmation,
+        })
     }
 }
 
