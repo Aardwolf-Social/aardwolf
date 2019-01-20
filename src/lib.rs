@@ -3,6 +3,9 @@ use std::{env, fmt};
 use clap::App;
 use config::{Config, ConfigError};
 use failure::{Backtrace, Context, Error, Fail, ResultExt};
+use gettext_macros::init_i18n;
+
+init_i18n!("aardwolf", en, pl);
 
 pub fn configure(app: App) -> Result<Config, Error> {
     // Set defaults

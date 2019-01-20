@@ -1,13 +1,14 @@
 use aardwolf_models::sql_types::{FollowPolicy, PostVisibility};
 use aardwolf_types::forms::personas::ValidatePersonaCreationFail;
 use gettext::Catalog;
+use gettext_macros::i18n;
 
 use crate::{Alert, AlertKind, CheckboxInput, Renderable, SelectInput, SelectOption, TextInput};
 
 pub struct FirstLogin<'a> {
     pub(crate) catalog: &'a Catalog,
     pub(crate) csrf: &'a str,
-    pub(crate) alert: Option<Alert<'a>>,
+    pub(crate) alert: Option<Alert>,
     pub(crate) display_name: TextInput<'a>,
     pub(crate) shortname: TextInput<'a>,
     pub(crate) follow_policy: SelectInput<'a>,
@@ -33,84 +34,78 @@ impl<'a> FirstLogin<'a> {
             csrf,
             alert: if server_error {
                 Some(Alert {
-                    catalog,
                     kind: AlertKind::Error,
-                    message: "There was an error creating your persona",
+                    message: i18n!(catalog, "There was an error creating your persona"),
                 })
             } else {
                 None
             },
             display_name: TextInput {
-                catalog,
                 name: "display_name",
-                label: "Display Name",
+                label: i18n!(catalog, "Display Name"),
                 icon: None,
-                placeholder: Some("Display name"),
+                placeholder: Some(i18n!(catalog, "Display name")),
                 value: display_name,
-                error: validation_error.and_then(|e| e.display_name.as_ref()),
+                error: validation_error.and_then(|e| e.display_name.clone()),
             },
             shortname: TextInput {
-                catalog,
                 name: "shortname",
-                label: "Username",
+                label: i18n!(catalog, "Username"),
                 icon: None,
-                placeholder: Some("Username"),
+                placeholder: Some(i18n!(catalog, "Username")),
                 value: shortname,
-                error: validation_error.and_then(|e| e.shortname.as_ref()),
+                error: validation_error.and_then(|e| e.shortname.clone()),
             },
             follow_policy: SelectInput {
-                catalog,
                 name: "follow_policy",
-                label: "Follow Policy",
+                label: i18n!(catalog, "Follow Policy"),
                 selected: follow_policy.to_string(),
                 options: vec![
                     SelectOption {
                         value: "ACCEPT",
-                        display: "Automatically accept new followers",
+                        display: i18n!(catalog, "Automatically accept new followers"),
                     },
                     SelectOption {
                         value: "REJECT",
-                        display: "Automatically reject new followers",
+                        display: i18n!(catalog, "Automatically reject new followers"),
                     },
                     SelectOption {
                         value: "MANUAL",
-                        display: "Manually review new followers",
+                        display: i18n!(catalog, "Manually review new followers"),
                     },
                 ],
-                error: validation_error.and_then(|e| e.follow_policy.as_ref()),
+                error: validation_error.and_then(|e| e.follow_policy.clone()),
             },
             default_visibility: SelectInput {
-                catalog,
                 name: "default_visibility",
-                label: "Post Visibility",
+                label: i18n!(catalog, "Post Visibility"),
                 selected: default_visibility.to_string(),
                 options: vec![
                     SelectOption {
                         value: "PUB",
-                        display: "Visible to everyone",
+                        display: i18n!(catalog, "Visible to everyone"),
                     },
                     SelectOption {
                         value: "FL",
-                        display: "Visible to followers",
+                        display: i18n!(catalog, "Visible to followers"),
                     },
                     SelectOption {
                         value: "MUT",
-                        display: "Visible to mutuals",
+                        display: i18n!(catalog, "Visible to mutuals"),
                     },
                     SelectOption {
                         value: "LIST",
-                        display: "Only visible to mentioned users",
+                        display: i18n!(catalog, "Only visible to mentioned users"),
                     },
                 ],
-                error: validation_error.and_then(|e| e.default_visibility.as_ref()),
+                error: validation_error.and_then(|e| e.default_visibility.clone()),
             },
             is_searchable: CheckboxInput {
-                catalog,
                 name: "is_searchable",
-                label: "Allow people to search for this profile",
+                label: i18n!(catalog, "Allow people to search for this profile"),
                 icon: None,
                 checked: is_searchable,
-                error: validation_error.and_then(|e| e.is_searchable.as_ref()),
+                error: validation_error.and_then(|e| e.is_searchable.clone()),
             },
         }
     }

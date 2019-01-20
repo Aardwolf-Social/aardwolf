@@ -4,7 +4,7 @@ use std::io::{self, Write};
 #[allow(unused)]
 use super::{Html,ToHtml};
 use gettext::Catalog;
-use rocket_i18n::i18n;
+use gettext_macros::i18n;
 
 pub fn new_post(out: &mut Write, catalog: &Catalog) -> io::Result<()> {
 out.write_all(b"<article class=\"media\"><!-- Begin new post -->\n    <figure class=\"media-left\">\n        <p class=\"image is-64x64\">\n        <img src=\"https://bulma.io/images/placeholders/128x128.png\" alt=\"")?;

@@ -1,5 +1,3 @@
-@use rocket_i18n::i18n;
-
 @use crate::{Alert, templates::ui::icon};
 
 @(alert: &Alert)
@@ -9,6 +7,6 @@
         @:icon("warning")
     </div>
     <div class="aardwolf-alert-message">
-        @i18n!(alert.catalog, alert.message)
+        @alert.message
     </div>
 </div>

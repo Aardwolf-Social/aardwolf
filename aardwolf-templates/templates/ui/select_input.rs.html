@@ -1,31 +1,29 @@
-@use rocket_i18n::i18n;
-
 @use crate::SelectInput;
 
 @(input: &SelectInput)
 
 <div class="aardwolf-input-wrapper">
     <label for="@input.name">
-        @i18n!(input.catalog, input.label)
+        @input.label
     </label>
     <div class="aardwolf-input aardwolf-select-input">
         <select name="@input.name">
             @for option in input.options.iter() {
                 @if option.value == input.selected {
                     <option value="@option.value" selected>
-                        @i18n!(input.catalog, option.display)
+                        @option.display
                     </option>
                 } else {
                     <option value="@option.value">
-                        @i18n!(input.catalog, option.display)
+                        @option.display
                     </option>
                 }
             }
         </select>
     </div>
     <div class="aardwolf-input-meta">
-        @if let Some(error) = input.error {
-            <span class="aardwolf-input-error">@i18n!(input.catalog, error)</span>
+        @if let Some(ref error) = input.error {
+            <span class="aardwolf-input-error">@error</span>
         }
     </div>
 </div>

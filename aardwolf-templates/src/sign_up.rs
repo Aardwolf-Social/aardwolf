@@ -1,12 +1,13 @@
 use aardwolf_types::forms::auth::ValidateSignUpFormFail;
 use gettext::Catalog;
+use gettext_macros::i18n;
 
 use crate::{Alert, AlertKind, EmailInput, PasswordInput, Renderable};
 
 pub struct SignUp<'a> {
     pub(crate) catalog: &'a Catalog,
     pub(crate) csrf: &'a str,
-    pub(crate) alert: Option<Alert<'a>>,
+    pub(crate) alert: Option<Alert>,
     pub(crate) email: EmailInput<'a>,
     pub(crate) password: PasswordInput<'a>,
     pub(crate) password_confirmation: PasswordInput<'a>,
@@ -25,34 +26,30 @@ impl<'a> SignUp<'a> {
             csrf,
             alert: if server_error {
                 Some(Alert {
-                    catalog,
                     kind: AlertKind::Error,
-                    message: "There was an error creating your account",
+                    message: i18n!(catalog, "There was an error creating your account"),
                 })
             } else {
                 None
             },
             email: EmailInput {
-                catalog,
                 name: "email",
-                label: "E-Mail Address",
-                placeholder: Some("E-Mail Address"),
+                label: i18n!(catalog, "E-Mail Address"),
+                placeholder: Some(i18n!(catalog, "E-Mail Address")),
                 value: email,
-                error: validation_error.and_then(|e| e.email.as_ref()),
+                error: validation_error.and_then(|e| e.email.clone()),
             },
             password: PasswordInput {
-                catalog,
                 name: "password",
-                label: "Password",
-                placeholder: Some("Password"),
-                error: validation_error.and_then(|e| e.password.as_ref()),
+                label: i18n!(catalog, "Password"),
+                placeholder: Some(i18n!(catalog, "Password")),
+                error: validation_error.and_then(|e| e.password.clone()),
             },
             password_confirmation: PasswordInput {
-                catalog,
                 name: "password_confirmation",
-                label: "Password Confirmation",
-                placeholder: Some("Password Confirmation"),
-                error: validation_error.and_then(|e| e.password_confirmation.as_ref()),
+                label: i18n!(catalog, "Password Confirmation"),
+                placeholder: Some(i18n!(catalog, "Password Confirmation")),
+                error: validation_error.and_then(|e| e.password_confirmation.clone()),
             },
         }
     }
