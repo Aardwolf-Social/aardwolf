@@ -8,9 +8,12 @@ table! {
         outbox_url -> Varchar,
         local_user -> Nullable<Int4>,
         follow_policy -> Varchar,
-        original_json -> Jsonb,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
+        private_key_der -> Nullable<Bytea>,
+        public_key_der -> Bytea,
+        local_uuid -> Nullable<Uuid>,
+        activitypub_id -> Varchar,
     }
 }
 
@@ -22,9 +25,10 @@ table! {
         posted_by -> Int4,
         icon -> Nullable<Int4>,
         visibility -> Varchar,
-        original_json -> Jsonb,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
+        local_uuid -> Nullable<Uuid>,
+        activitypub_id -> Varchar,
     }
 }
 
@@ -266,6 +270,7 @@ table! {
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
         primary_email -> Nullable<Int4>,
+        primary_persona -> Nullable<Int4>,
     }
 }
 
@@ -293,6 +298,7 @@ joinable!(role_permissions -> permissions (permission_id));
 joinable!(role_permissions -> roles (role_id));
 joinable!(user_roles -> roles (role_id));
 joinable!(user_roles -> users (user_id));
+joinable!(users -> personas (primary_persona));
 
 allow_tables_to_appear_in_same_query!(
     base_actors,

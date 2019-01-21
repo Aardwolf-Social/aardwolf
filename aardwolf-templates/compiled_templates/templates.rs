@@ -14,8 +14,16 @@ pub mod home;
 mod template_base;
 pub use self::template_base::base;
 
+<<<<<<< HEAD
 mod template_html_head;
 pub use self::template_html_head::html_head;
+=======
+mod template_first_login;
+pub use self::template_first_login::first_login;
+
+mod template_new_post;
+pub use self::template_new_post::new_post;
+>>>>>>> master
 
 pub mod widgets;
 
@@ -32,6 +40,7 @@ pub mod posts;
 /// formats the value using Display and then html-encodes the result.
 pub trait ToHtml {
     /// Write self to `out`, which is in html representation.
+    #[inline]
     fn to_html(&self, out: &mut Write) -> io::Result<()>;
 }
 
@@ -41,24 +50,57 @@ pub trait ToHtml {
 pub struct Html<T> (pub T);
 
 impl<T: Display> ToHtml for Html<T> {
+    #[inline]
     fn to_html(&self, out: &mut Write) -> io::Result<()> {
         write!(out, "{}", self.0)
     }
 }
 
 impl<T: Display> ToHtml for T {
+    #[inline]
     fn to_html(&self, out: &mut Write) -> io::Result<()> {
-        let mut buf = Vec::new();
-        write!(buf, "{}", self)?;
-        out.write_all(&buf.into_iter().fold(Vec::new(), |mut v, c| {
-            match c {
-                b'<' => v.extend_from_slice(b"&lt;"),
-                b'>' => v.extend_from_slice(b"&gt;"),
-                b'&' => v.extend_from_slice(b"&amp;"),
-                c => v.push(c),
-            };
-            v
-        }))
+        write!(ToHtmlEscapingWriter(out), "{}", self)
+    }
+}
+
+struct ToHtmlEscapingWriter<'a>(&'a mut Write);
+
+impl<'a> Write for ToHtmlEscapingWriter<'a> {
+    #[inline]
+    // This takes advantage of the fact that `write` doesn't have to write everything,
+    // and the call will be retried with the rest of the data
+    // (it is a part of `write_all`'s loop or similar.)
+    fn write(&mut self, data: &[u8]) -> io::Result<usize> {
+        // quickly skip over data that doesn't need escaping
+        let n = data.into_iter().take_while(|&&c| c != b'"' && c != b'&' && c != b'\'' && c != b'<' && c != b'>').count();
+        if n > 0 {
+            self.0.write(&data[0..n])
+        } else {
+            Self::write_one_byte_escaped(&mut self.0, data)
+        }
+    }
+
+    #[inline]
+    fn flush(&mut self) -> io::Result<()> {
+        self.0.flush()
+    }
+}
+
+impl<'a> ToHtmlEscapingWriter<'a> {
+    #[inline(never)]
+    fn write_one_byte_escaped(out: &mut Write, data: &[u8]) -> io::Result<usize> {
+        let next = data.get(0);
+        out.write_all(match next {
+            Some(b'"') => b"&quot;",
+            Some(b'&') => b"&amp;",
+            Some(b'<') => b"&lt;",
+            Some(b'>') => b"&gt;",
+            None => return Ok(0),
+            // we know this function is called only for chars that need escaping,
+            // so we don't have to handle the "other" case (this one is for `'`)
+            _ => b"&#39;",
+        })?;
+        Ok(1)
     }
 }
 

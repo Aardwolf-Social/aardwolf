@@ -1,25 +1,27 @@
 use chrono::offset::Utc;
 use diesel::{self, pg::PgConnection};
+use failure::Fail;
 use mime::Mime as OrigMime;
-use serde_json::Value;
 
-use super::UserLike;
-use base_actor::{
-    follow_request::{FollowRequest, NewFollowRequest},
-    follower::{Follower, NewFollower},
-    persona::{NewPersona, Persona},
-    {BaseActor, NewBaseActor},
-};
-use base_post::{
-    post::{
-        comment::{Comment, NewComment},
-        media_post::{MediaPost, NewMediaPost},
-        {NewPost, Post},
+use crate::{
+    base_actor::{
+        follow_request::{FollowRequest, NewFollowRequest},
+        follower::{Follower, NewFollower},
+        persona::{NewPersona, Persona},
+        BaseActor, GenerateUrls, NewBaseActor,
     },
-    {BasePost, NewBasePost},
+    base_post::{
+        post::{
+            comment::{Comment, NewComment},
+            media_post::{MediaPost, NewMediaPost},
+            {NewPost, Post},
+        },
+        {BasePost, NewBasePost},
+    },
+    file::{image::Image, File},
+    sql_types::{FollowPolicy, Permission, PostVisibility, Role},
+    user::UserLike,
 };
-use file::{image::Image, File};
-use sql_types::{FollowPolicy, Permission, PostVisibility, Role, Url};
 
 #[derive(Clone, Debug, Fail)]
 pub enum PermissionError {
@@ -180,8 +182,8 @@ pub trait PermissionedUser: UserLike + Sized {
     }
 
     fn has_permission(&self, permission: Permission, conn: &PgConnection) -> PermissionResult<()> {
+        use crate::schema::{permissions, role_permissions, roles, user_roles};
         use diesel::prelude::*;
-        use schema::{permissions, role_permissions, roles, user_roles};
 
         roles::dsl::roles
             .inner_join(user_roles::dsl::user_roles)
@@ -218,8 +220,8 @@ impl RoleGranter {
         role: Role,
         conn: &PgConnection,
     ) -> Result<(), diesel::result::Error> {
+        use crate::schema::{roles, user_roles};
         use diesel::prelude::*;
-        use schema::{roles, user_roles};
 
         if user.has_role(role, conn)? {
             return Ok(());
@@ -255,8 +257,8 @@ impl RoleRevoker {
         role: Role,
         conn: &PgConnection,
     ) -> Result<(), diesel::result::Error> {
+        use crate::schema::{roles, user_roles};
         use diesel::prelude::*;
-        use schema::{roles, user_roles};
 
         if !user.has_role(role, conn)? {
             return Ok(());
@@ -287,23 +289,23 @@ impl<'a> PostMaker<'a> {
         media_type: OrigMime,
         icon: Option<&Image>,
         visibility: PostVisibility,
-        original_json: Value,
         content: String,
         source: String,
+        generate_id: impl Fn(&uuid::Uuid) -> String,
         conn: &PgConnection,
     ) -> Result<(BasePost, Post), diesel::result::Error> {
+        use crate::schema::{base_posts, posts};
         use diesel::prelude::*;
-        use schema::{base_posts, posts};
 
         conn.transaction(|| {
             diesel::insert_into(base_posts::table)
-                .values(&NewBasePost::new(
+                .values(&NewBasePost::local(
                     name,
                     media_type,
                     self.0,
                     icon,
                     visibility,
-                    original_json,
+                    generate_id,
                 ))
                 .get_result(conn)
                 .and_then(|base_post: BasePost| {
@@ -326,14 +328,14 @@ impl<'a> MediaPostMaker<'a> {
         media_type: OrigMime,
         icon: Option<&Image>,
         visibility: PostVisibility,
-        original_json: Value,
         content: String,
         source: String,
         media: &File,
+        generate_id: impl Fn(&uuid::Uuid) -> String,
         conn: &PgConnection,
     ) -> Result<(BasePost, Post, MediaPost), diesel::result::Error> {
+        use crate::schema::media_posts;
         use diesel::prelude::*;
-        use schema::media_posts;
 
         conn.transaction(|| {
             PostMaker(self.0)
@@ -342,9 +344,9 @@ impl<'a> MediaPostMaker<'a> {
                     media_type,
                     icon,
                     visibility,
-                    original_json,
                     content,
                     source,
+                    generate_id,
                     conn,
                 )
                 .and_then(|(base_post, post)| {
@@ -367,15 +369,15 @@ impl<'a> CommentMaker<'a> {
         media_type: OrigMime,
         icon: Option<&Image>,
         visibility: PostVisibility,
-        original_json: Value,
         content: String,
         source: String,
         conversation: &Post,
         parent: &Post,
+        generate_id: impl Fn(&uuid::Uuid) -> String,
         conn: &PgConnection,
     ) -> Result<(BasePost, Post, Comment), CommentError> {
+        use crate::schema::{base_posts, comments};
         use diesel::prelude::*;
-        use schema::{base_posts, comments};
 
         let conversation_base: BasePost = base_posts::table
             .filter(base_posts::dsl::id.eq(conversation.base_post()))
@@ -402,9 +404,9 @@ impl<'a> CommentMaker<'a> {
                     media_type,
                     icon,
                     visibility,
-                    original_json,
                     content,
                     source,
+                    generate_id,
                     conn,
                 )
                 .and_then(|(base_post, post)| {
@@ -440,8 +442,8 @@ impl<'a> ActorFollower<'a> {
         target_actor: &BaseActor,
         conn: &PgConnection,
     ) -> Result<FollowRequest, FollowError> {
+        use crate::schema::follow_requests;
         use diesel::prelude::*;
-        use schema::follow_requests;
 
         match target_actor.follow_policy() {
             FollowPolicy::AutoAccept | FollowPolicy::ManualReview => {
@@ -477,8 +479,8 @@ impl<'a> FollowRequestManager<'a> {
         follow_request: FollowRequest,
         conn: &PgConnection,
     ) -> Result<Follower, FollowRequestManagerError> {
+        use crate::schema::followers;
         use diesel::prelude::*;
-        use schema::followers;
 
         if follow_request.requested_follow() != self.0.id() {
             return Err(FollowRequestManagerError::IdMismatch);
@@ -535,27 +537,26 @@ impl<U: UserLike> LocalPersonaCreator<U> {
     pub fn create_persona(
         &self,
         display_name: String,
-        profile_url: Url,
-        inbox_url: Url,
-        outbox_url: Url,
         follow_policy: FollowPolicy,
         default_visibility: PostVisibility,
         is_searchable: bool,
         avatar: Option<&Image>,
         shortname: String,
+        private_key_der: Vec<u8>,
+        public_key_der: Vec<u8>,
+        generate_id: impl GenerateUrls,
         conn: &PgConnection,
     ) -> Result<(BaseActor, Persona), diesel::result::Error> {
         use diesel::Connection;
 
         conn.transaction(|| {
-            NewBaseActor::new(
+            NewBaseActor::local(
                 display_name,
-                profile_url,
-                inbox_url,
-                outbox_url,
-                Some(&self.0),
+                &self.0,
                 follow_policy,
-                json!({}),
+                private_key_der,
+                public_key_der,
+                generate_id,
             )
             .insert(conn)
             .and_then(|base_actor| {
@@ -567,7 +568,19 @@ impl<U: UserLike> LocalPersonaCreator<U> {
                     &base_actor,
                 )
                 .insert(conn)
-                .map(|persona| (base_actor, persona))
+                .and_then(|persona| {
+                    use crate::schema::users::dsl::{id, primary_persona, users};
+                    use diesel::prelude::*;
+
+                    if self.0.primary_persona().is_none() {
+                        diesel::update(users.filter(id.eq(self.0.id())))
+                            .set(primary_persona.eq(persona.id()))
+                            .execute(conn)
+                            .map(|_| (base_actor, persona))
+                    } else {
+                        Ok((base_actor, persona))
+                    }
+                })
             })
         })
     }

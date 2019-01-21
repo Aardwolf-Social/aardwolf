@@ -3,6 +3,7 @@ name = "aardwolf-rocket"
 version = "0.1.0"
 authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Elijah Mark Anderson <kd0bpv@gmail.com>", "Paul Woolcock <paul@woolcock.us>", "asonix <asonix@asonix.dog>"]
 description = "Powering connected social communities with free software."
+edition = "2018"
 
 [features]
 default = []
@@ -16,6 +17,7 @@ r2d2 = "0.8"
 r2d2-diesel = "1.0"
 serde = "1.0.21"
 log = "0.4.1"
+uuid = "0.6"
 
 [dependencies.aardwolf-models]
 version = "0.1"
@@ -41,14 +43,16 @@ default-features = false
 features = ["postgres", "uuid", "chrono"]
 
 [dependencies.rocket]
-version = "0.4.0-rc.1"
+version = "0.4.0"
 
 [dependencies.rocket_codegen]
-version = "0.4.0-rc.1"
+version = "0.4.0"
 
 [dependencies.rocket_contrib]
-version = "0.4.0-rc.1"
+version = "0.4.0"
 features = ["json"]
 
 [dependencies.rocket_i18n]
 version = "0.3"
+git = "https://github.com/Aardwolf-Social/rocket_i18n.git"
+branch = "asonix/rocket-stable"

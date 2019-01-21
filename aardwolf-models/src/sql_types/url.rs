@@ -4,7 +4,7 @@ use std::{error::Error as StdError, io::Write, str::FromStr};
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
 use url::Url as OrigUrl;
 
-#[derive(AsExpression, Debug, FromSqlRow)]
+#[derive(AsExpression, Clone, Debug, FromSqlRow)]
 #[sql_type = "Text"]
 pub struct Url(pub OrigUrl);
 
@@ -48,6 +48,7 @@ impl FromStr for Url {
 mod rocket {
     use std::str::Utf8Error;
 
+    use failure::Fail;
     use rocket::{http::RawStr, request::FromFormValue};
     use url::ParseError;
 
@@ -64,7 +65,7 @@ mod rocket {
     #[derive(Debug, Fail)]
     pub enum UrlParseError {
         #[fail(display = "Failed to parse URL, {:?}", _0)]
-        Url(ParseError),
+        Url(#[cause] ParseError),
         #[fail(display = "Failed to read bytes, {}", _0)]
         Decode(#[cause] Utf8Error),
     }

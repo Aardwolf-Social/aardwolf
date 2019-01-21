@@ -5,8 +5,7 @@ pub mod permission;
 pub mod role_permission;
 pub mod user_role;
 
-use schema::roles;
-use sql_types::Role as RoleSql;
+use crate::{schema::roles, sql_types::Role as RoleSql};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "roles"]

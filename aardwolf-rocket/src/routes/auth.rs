@@ -15,28 +15,7 @@ use rocket::{
 };
 use rocket_i18n::I18n;
 
-use render_template;
-use types::user::SignedInUser;
-use DbConn;
-
-#[derive(Responder)]
-#[cfg_attr(feature = "cargo-clippy", allow(clippy::large_enum_variant))]
-pub enum ResponseOrRedirect {
-    Response(Response<'static>),
-    Redirect(Redirect),
-}
-
-impl From<Response<'static>> for ResponseOrRedirect {
-    fn from(r: Response<'static>) -> Self {
-        ResponseOrRedirect::Response(r)
-    }
-}
-
-impl From<Redirect> for ResponseOrRedirect {
-    fn from(r: Redirect) -> Self {
-        ResponseOrRedirect::Redirect(r)
-    }
-}
+use crate::{render_template, types::user::SignedInUser, DbConn, ResponseOrRedirect};
 
 #[get("/sign_up")]
 pub fn sign_up_form(i18n: I18n) -> Response<'static> {
@@ -131,7 +110,7 @@ pub fn sign_in(
 
     let res = match res {
         Ok(user) => {
-            let mut cookie = Cookie::new("user_id", format!("{}", user.id()));
+            let mut cookie = Cookie::new("user_id", user.id().to_string());
             cookie.set_http_only(true);
             cookies.add_private(cookie);
             Redirect::to("/").into()

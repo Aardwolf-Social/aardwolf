@@ -1,16 +1,10 @@
-extern crate aardwolf;
-#[macro_use]
-extern crate clap;
-extern crate config;
-extern crate failure;
-
 use std::{
     error::Error as StdError,
     io::{self, ErrorKind},
     process::{self, Command, Output},
 };
 
-use clap::App;
+use clap::{load_yaml, App};
 
 fn check_out(output: &Result<Output, io::Error>) {
     match *output {

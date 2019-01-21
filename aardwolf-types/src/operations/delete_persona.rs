@@ -70,9 +70,8 @@ mod tests {
     use aardwolf_models::user::PermissionedUser;
     use aardwolf_test_helpers::models::{
         gen_string, make_verified_authenticated_user, user_with_base_actor, with_connection,
-        with_persona, GenericError,
+        with_persona,
     };
-    use failure::Error;
 
     use crate::{operations::delete_persona::DeletePersona, traits::DbAction};
 
@@ -82,10 +81,7 @@ mod tests {
             make_verified_authenticated_user(conn, &gen_string()?, |user, _email| {
                 user_with_base_actor(conn, &user, |base_actor| {
                     with_persona(conn, &base_actor, |persona| {
-                        let deleter = user
-                            .can_delete_persona(persona, conn)
-                            .map_err(Error::from)
-                            .map_err(GenericError::Other)?;
+                        let deleter = user.can_delete_persona(persona, conn)?;
 
                         let operation = DeletePersona(deleter);
 

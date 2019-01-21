@@ -1,176 +1,55 @@
 use std::env;
-use std::io::Error as IoError;
 
 use chrono::{offset::Utc, DateTime, Duration as OldDuration};
 use chrono_tz::Tz;
-use diesel::{self, pg::PgConnection, Connection};
+use diesel::{pg::PgConnection, Connection};
 use dotenv::dotenv;
+use failure::{Error, Fail};
 use mime::TEXT_PLAIN;
-use rand::{distributions::Alphanumeric, rngs::OsRng, Error as RandError, Rng};
+use openssl::rsa::Rsa;
+use rand::{distributions::Alphanumeric, rngs::OsRng, Rng};
 use serde_json;
-use url::{ParseError as UrlParseError, Url as OrigUrl};
+use url::Url as OrigUrl;
+use uuid::Uuid;
 
-use base_actor::{
-    follow_request::{FollowRequest, NewFollowRequest},
-    follower::{Follower, NewFollower},
-    group::{
-        group_base_actor::{GroupBaseActor, NewGroupBaseActor},
-        {Group, NewGroup},
-    },
-    persona::{NewPersona, Persona},
-    {BaseActor, NewBaseActor},
-};
-use base_post::{
-    direct_post::{DirectPost, NewDirectPost},
-    post::{
-        comment::{
-            reaction::{NewReaction, Reaction},
-            {Comment, NewComment},
+use crate::{
+    base_actor::{
+        follow_request::{FollowRequest, NewFollowRequest},
+        follower::{Follower, NewFollower},
+        group::{
+            group_base_actor::{GroupBaseActor, NewGroupBaseActor},
+            Group, NewGroup,
         },
-        media_post::{MediaPost, NewMediaPost},
-        {NewPost, Post},
+        persona::{NewPersona, Persona},
+        BaseActor, GenerateUrls, NewBaseActor,
     },
-    {BasePost, NewBasePost},
-};
-use file::{File, FileCreationError, NewFile};
-use sql_types::{FollowPolicy, PostVisibility, ReactionType, Url};
-use timer::{
-    event::{Event, EventCreationError, NewEvent},
-    event_notification::{EventNotification, NewEventNotification},
-    {NewTimer, Timer},
-};
-use user::{
-    email::{
-        CreationError as EmailCreationError, EmailToken, EmailVerificationToken, NewEmail,
-        UnverifiedEmail, VerificationError as EmailVerificationError, VerifiedEmail,
+    base_post::{
+        direct_post::{DirectPost, NewDirectPost},
+        post::{
+            comment::{
+                reaction::{NewReaction, Reaction},
+                Comment, NewComment,
+            },
+            media_post::{MediaPost, NewMediaPost},
+            NewPost, Post,
+        },
+        BasePost, NewBasePost,
     },
-    local_auth::{
-        LocalAuth, NewLocalAuth, PasswordCreationError, PlaintextPassword,
-        VerificationError as PasswordVerificationError,
+    file::{File, NewFile},
+    sql_types::{FollowPolicy, PostVisibility, ReactionType, Url},
+    timer::{
+        event::{Event, NewEvent},
+        event_notification::{EventNotification, NewEventNotification},
+        NewTimer, Timer,
     },
-    QueriedUser,
-    {AuthenticatedUser, NewUser, UnauthenticatedUser, UnverifiedUser, UserLike, UserVerifyError},
+    user::{
+        email::{EmailToken, EmailVerificationToken, NewEmail, UnverifiedEmail, VerifiedEmail},
+        local_auth::{LocalAuth, NewLocalAuth, PlaintextPassword},
+        AuthenticatedUser, NewUser, UnauthenticatedUser, UnverifiedUser, UserLike,
+    },
 };
 
-#[derive(Debug, Fail)]
-pub enum GenericError {
-    #[fail(display = "Error in diesel: {}", _0)]
-    Diesel(#[cause] diesel::result::Error),
-
-    #[fail(display = "IO Error: {}", _0)]
-    Io(#[cause] IoError),
-
-    #[fail(display = "Failed to parse url: {}", _0)]
-    Url(#[cause] UrlParseError),
-
-    #[fail(display = "Failed to create file: {}", _0)]
-    File(#[cause] FileCreationError),
-
-    #[fail(display = "Failed to create event: {}", _0)]
-    Event(#[cause] EventCreationError),
-
-    #[fail(display = "Failed to create password: {}", _0)]
-    Password(#[cause] PasswordCreationError),
-
-    #[fail(display = "Failed in Serde JSON: {}", _0)]
-    SerdeJson(#[cause] serde_json::Error),
-
-    #[fail(display = "Failed to create Email: {}", _0)]
-    EmailCreation(#[cause] EmailCreationError),
-
-    #[fail(display = "Failed to verify Email: {}", _0)]
-    EmailVerification(#[cause] EmailVerificationError),
-
-    #[fail(display = "Failed to verify user: {}", _0)]
-    UserVerification(#[cause] UserVerifyError),
-
-    #[fail(display = "Failed to verify password: {}", _0)]
-    PasswordVerification(#[cause] PasswordVerificationError),
-
-    #[fail(display = "Failed to be random: {}", _0)]
-    Rand(#[cause] RandError),
-
-    #[fail(display = "Generated time is out of bounds")]
-    TimeBounds,
-
-    #[fail(display = "Item should not be verified at this point")]
-    Verified,
-
-    #[fail(display = "Other error: {}", _0)]
-    Other(#[cause] failure::Error),
-}
-
-impl From<diesel::result::Error> for GenericError {
-    fn from(e: diesel::result::Error) -> Self {
-        GenericError::Diesel(e)
-    }
-}
-
-impl From<IoError> for GenericError {
-    fn from(e: IoError) -> Self {
-        GenericError::Io(e)
-    }
-}
-
-impl From<UrlParseError> for GenericError {
-    fn from(e: UrlParseError) -> Self {
-        GenericError::Url(e)
-    }
-}
-
-impl From<FileCreationError> for GenericError {
-    fn from(e: FileCreationError) -> Self {
-        GenericError::File(e)
-    }
-}
-
-impl From<EventCreationError> for GenericError {
-    fn from(e: EventCreationError) -> Self {
-        GenericError::Event(e)
-    }
-}
-
-impl From<PasswordCreationError> for GenericError {
-    fn from(e: PasswordCreationError) -> Self {
-        GenericError::Password(e)
-    }
-}
-
-impl From<serde_json::Error> for GenericError {
-    fn from(e: serde_json::Error) -> Self {
-        GenericError::SerdeJson(e)
-    }
-}
-
-impl From<EmailCreationError> for GenericError {
-    fn from(e: EmailCreationError) -> Self {
-        GenericError::EmailCreation(e)
-    }
-}
-
-impl From<EmailVerificationError> for GenericError {
-    fn from(e: EmailVerificationError) -> Self {
-        GenericError::EmailVerification(e)
-    }
-}
-
-impl From<UserVerifyError> for GenericError {
-    fn from(e: UserVerifyError) -> Self {
-        GenericError::UserVerification(e)
-    }
-}
-
-impl From<PasswordVerificationError> for GenericError {
-    fn from(e: PasswordVerificationError) -> Self {
-        GenericError::PasswordVerification(e)
-    }
-}
-
-impl From<RandError> for GenericError {
-    fn from(e: RandError) -> Self {
-        GenericError::Rand(e)
-    }
-}
+pub type GenericError = Error;
 
 pub fn create_plaintext_password(pass: &str) -> Result<PlaintextPassword, GenericError> {
     let v = serde_json::Value::String(pass.to_owned());
@@ -207,10 +86,14 @@ pub fn gen_bool() -> Result<bool, GenericError> {
 pub fn gen_datetime() -> Result<DateTime<Utc>, GenericError> {
     let hours = OsRng::new()?.gen_range(0, 10000);
 
-    Utc::now()
+    Ok(Utc::now()
         .checked_add_signed(OldDuration::hours(hours))
-        .ok_or(GenericError::TimeBounds)
+        .ok_or(TimeBounds)?)
 }
+
+#[derive(Debug, Fail)]
+#[fail(display = "Error in time bounds")]
+pub struct TimeBounds;
 
 pub fn with_connection<F>(f: F)
 where
@@ -234,18 +117,49 @@ pub fn with_base_actor<F>(conn: &PgConnection, f: F) -> Result<(), GenericError>
 where
     F: FnOnce(BaseActor) -> Result<(), GenericError>,
 {
-    let base_actor = NewBaseActor::new::<QueriedUser>(
+    let (_pr, pu) = gen_keypair()?;
+
+    let base_actor = NewBaseActor::new(
         gen_string()?,
         gen_url()?,
         gen_url()?,
         gen_url()?,
-        None,
         FollowPolicy::AutoAccept,
-        json!({}),
+        pu,
+        gen_string()?,
     )
     .insert(conn)?;
 
     f(base_actor)
+}
+
+pub fn gen_keypair() -> Result<(Vec<u8>, Vec<u8>), GenericError> {
+    let priv_key = Rsa::generate(2048)?;
+
+    Ok((
+        priv_key.private_key_to_der()?,
+        priv_key.public_key_to_der_pkcs1()?,
+    ))
+}
+
+pub struct UrlGenerator;
+
+impl GenerateUrls for UrlGenerator {
+    fn activitypub_id(&self, uuid: &Uuid) -> String {
+        uuid.to_string()
+    }
+
+    fn profile_url(&self, uuid: &Uuid) -> Url {
+        format!("https://example.com/{}", uuid).parse().unwrap()
+    }
+
+    fn inbox_url(&self, uuid: &Uuid) -> Url {
+        format!("https://example.com/{}", uuid).parse().unwrap()
+    }
+
+    fn outbox_url(&self, uuid: &Uuid) -> Url {
+        format!("https://example.com/{}", uuid).parse().unwrap()
+    }
 }
 
 pub fn user_with_base_actor<F>(
@@ -256,14 +170,15 @@ pub fn user_with_base_actor<F>(
 where
     F: FnOnce(BaseActor) -> Result<(), GenericError>,
 {
-    let base_actor = NewBaseActor::new(
+    let (pr, pu) = gen_keypair()?;
+
+    let base_actor = NewBaseActor::local(
         gen_string()?,
-        gen_url()?,
-        gen_url()?,
-        gen_url()?,
-        Some(user),
+        user,
         FollowPolicy::AutoAccept,
-        json!({}),
+        pr,
+        pu,
+        UrlGenerator,
     )
     .insert(conn)?;
 
@@ -349,13 +264,13 @@ pub fn with_base_post<F>(
 where
     F: FnOnce(BasePost) -> Result<(), GenericError>,
 {
-    let base_post = NewBasePost::new(
+    let base_post = NewBasePost::local(
         None,
         TEXT_PLAIN,
         posted_by,
         None,
         PostVisibility::Public,
-        json!({}),
+        |uuid| format!("{}", uuid),
     )
     .insert(conn)?;
 
@@ -489,7 +404,7 @@ where
     let unauthenticated_user = NewUser::new().insert(conn)?;
 
     let unverified_user = match unauthenticated_user.into_verified(conn)? {
-        Ok(_) => return Err(GenericError::Verified),
+        Ok(_) => return Err(AlreadyVerified.into()),
         Err(unverified_user) => unverified_user,
     };
 
@@ -535,7 +450,7 @@ where
     let unauthenticated_user = NewUser::new().insert(conn)?;
 
     let user = match unauthenticated_user.into_verified(conn)? {
-        Ok(_) => return Err(GenericError::Verified),
+        Ok(_) => return Err(AlreadyVerified.into()),
         Err(unverified_user) => unverified_user,
     };
 
@@ -550,6 +465,10 @@ where
 
     f(user, email)
 }
+
+#[derive(Debug, Fail)]
+#[fail(display = "User is already verified")]
+pub struct AlreadyVerified;
 
 pub fn make_unverified_authenticated_user<F>(
     conn: &PgConnection,

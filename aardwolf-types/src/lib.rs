@@ -1,7 +1,4 @@
-#![cfg_attr(
-    feature = "use-rocket",
-    feature(custom_derive, proc_macro_hygiene, decl_macro)
-)]
+#![cfg_attr(feature = "use-rocket", feature(proc_macro_hygiene, decl_macro))]
 
 #[macro_use]
 extern crate derive_builder;

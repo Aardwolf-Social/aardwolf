@@ -1,9 +1,13 @@
 #![allow(proc_macro_derive_resolution_fallback)]
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
-use serde_json::Value;
+use uuid::Uuid;
 
-use sql_types::{FollowPolicy, Url};
+use crate::{
+    schema::base_actors,
+    sql_types::{FollowPolicy, Url},
+    user::UserLike,
+};
 
 pub mod follow_request;
 pub mod follower;
@@ -11,8 +15,6 @@ pub mod group;
 pub mod persona;
 
 use self::follower::Follower;
-use schema::base_actors;
-use user::UserLike;
 
 #[derive(Debug, AsChangeset)]
 #[table_name = "base_actors"]
@@ -23,7 +25,8 @@ pub struct ModifiedBaseActor {
     inbox_url: Url,
     outbox_url: Url,
     follow_policy: FollowPolicy,
-    original_json: Value,
+    private_key_der: Option<Vec<u8>>,
+    public_key_der: Vec<u8>,
 }
 
 impl ModifiedBaseActor {
@@ -66,9 +69,12 @@ pub struct BaseActor {
     outbox_url: Url,             // max_length: 2048
     local_user: Option<i32>,     // foreign key to User
     follow_policy: FollowPolicy, // max_length: 8
-    original_json: Value,        // original json
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
+    private_key_der: Option<Vec<u8>>,
+    public_key_der: Vec<u8>,
+    local_uuid: Option<Uuid>,
+    activitypub_id: String,
 }
 
 impl BaseActor {
@@ -84,7 +90,8 @@ impl BaseActor {
             inbox_url: self.inbox_url,
             outbox_url: self.outbox_url,
             follow_policy: self.follow_policy,
-            original_json: self.original_json,
+            private_key_der: self.private_key_der,
+            public_key_der: self.public_key_der,
         }
     }
 
@@ -101,8 +108,8 @@ impl BaseActor {
         follows: i32,
         conn: &PgConnection,
     ) -> Result<bool, diesel::result::Error> {
+        use crate::schema::followers;
         use diesel::prelude::*;
-        use schema::followers;
 
         followers::table
             .filter(followers::dsl::follower.eq(self.id))
@@ -138,10 +145,6 @@ impl BaseActor {
     pub fn follow_policy(&self) -> FollowPolicy {
         self.follow_policy
     }
-
-    pub fn original_json(&self) -> &Value {
-        &self.original_json
-    }
 }
 
 #[derive(Insertable)]
@@ -153,7 +156,10 @@ pub struct NewBaseActor {
     outbox_url: Url,
     local_user: Option<i32>,
     follow_policy: FollowPolicy,
-    original_json: Value,
+    private_key_der: Option<Vec<u8>>,
+    public_key_der: Vec<u8>,
+    local_uuid: Option<Uuid>,
+    activitypub_id: String,
 }
 
 impl NewBaseActor {
@@ -165,30 +171,64 @@ impl NewBaseActor {
             .get_result(conn)
     }
 
-    pub fn new<U: UserLike>(
+    pub fn local<U: UserLike>(
+        display_name: String,
+        local_user: &U,
+        follow_policy: FollowPolicy,
+        private_key_der: Vec<u8>,
+        public_key_der: Vec<u8>,
+        generate_urls: impl GenerateUrls,
+    ) -> Self {
+        let uuid = Uuid::new_v4();
+
+        NewBaseActor {
+            display_name,
+            profile_url: generate_urls.profile_url(&uuid),
+            inbox_url: generate_urls.inbox_url(&uuid),
+            outbox_url: generate_urls.outbox_url(&uuid),
+            local_user: Some(local_user.id()),
+            follow_policy,
+            private_key_der: Some(private_key_der),
+            public_key_der,
+            activitypub_id: generate_urls.activitypub_id(&uuid),
+            local_uuid: Some(uuid),
+        }
+    }
+
+    pub fn new(
         display_name: String,
         profile_url: Url,
         inbox_url: Url,
         outbox_url: Url,
-        local_user: Option<&U>,
         follow_policy: FollowPolicy,
-        original_json: Value,
+        public_key_der: Vec<u8>,
+        activitypub_id: String,
     ) -> Self {
         NewBaseActor {
             display_name,
             profile_url,
             inbox_url,
             outbox_url,
-            local_user: local_user.map(|lu| lu.id()),
+            local_user: None,
             follow_policy,
-            original_json,
+            private_key_der: None,
+            public_key_der,
+            local_uuid: None,
+            activitypub_id,
         }
     }
 }
 
+pub trait GenerateUrls {
+    fn activitypub_id(&self, uuid: &Uuid) -> String;
+    fn profile_url(&self, uuid: &Uuid) -> Url;
+    fn inbox_url(&self, uuid: &Uuid) -> Url;
+    fn outbox_url(&self, uuid: &Uuid) -> Url;
+}
+
 #[cfg(test)]
 mod tests {
-    use test_helper::*;
+    use crate::test_helper::*;
 
     #[test]
     fn create_base_actor() {

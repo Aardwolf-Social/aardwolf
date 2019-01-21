@@ -2,16 +2,18 @@
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
 use mime::Mime as OrigMime;
-use serde_json::Value;
+use uuid::Uuid;
 
 pub mod direct_post;
 pub mod post;
 
-use self::direct_post::DirectPost;
-use base_actor::BaseActor;
-use file::image::Image;
-use schema::base_posts;
-use sql_types::{Mime, PostVisibility};
+use crate::{
+    base_actor::BaseActor,
+    base_post::direct_post::DirectPost,
+    file::image::Image,
+    schema::base_posts,
+    sql_types::{Mime, PostVisibility},
+};
 
 #[derive(Debug, Queryable, QueryableByName)]
 #[table_name = "base_posts"]
@@ -22,9 +24,10 @@ pub struct BasePost {
     posted_by: i32,       // foreign key to BaseActor
     icon: Option<i32>,    // foreign key to Image
     visibility: PostVisibility,
-    original_json: Value, // original json
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
+    local_uuid: Option<Uuid>,
+    activitypub_id: String,
 }
 
 impl BasePost {
@@ -52,10 +55,6 @@ impl BasePost {
         self.visibility
     }
 
-    pub fn original_json(&self) -> &Value {
-        &self.original_json
-    }
-
     pub fn is_visible_by(
         &self,
         actor: &BaseActor,
@@ -78,7 +77,8 @@ pub struct NewBasePost {
     posted_by: i32,
     icon: Option<i32>,
     visibility: PostVisibility,
-    original_json: Value,
+    local_uuid: Option<Uuid>,
+    activitypub_id: String,
 }
 
 impl NewBasePost {
@@ -90,13 +90,34 @@ impl NewBasePost {
             .get_result(conn)
     }
 
+    pub fn local(
+        name: Option<String>,
+        media_type: OrigMime,
+        posted_by: &BaseActor,
+        icon: Option<&Image>,
+        visibility: PostVisibility,
+        generate_id: impl Fn(&Uuid) -> String,
+    ) -> Self {
+        let uuid = Uuid::new_v4();
+
+        NewBasePost {
+            name,
+            media_type: media_type.into(),
+            posted_by: posted_by.id(),
+            icon: icon.map(|i| i.id()),
+            visibility,
+            activitypub_id: generate_id(&uuid),
+            local_uuid: Some(uuid),
+        }
+    }
+
     pub fn new(
         name: Option<String>,
         media_type: OrigMime,
         posted_by: &BaseActor,
         icon: Option<&Image>,
         visibility: PostVisibility,
-        original_json: Value,
+        activitypub_id: String,
     ) -> Self {
         NewBasePost {
             name,
@@ -104,14 +125,15 @@ impl NewBasePost {
             posted_by: posted_by.id(),
             icon: icon.map(|i| i.id()),
             visibility,
-            original_json,
+            local_uuid: None,
+            activitypub_id,
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use test_helper::*;
+    use crate::test_helper::*;
 
     #[test]
     fn create_base_post() {

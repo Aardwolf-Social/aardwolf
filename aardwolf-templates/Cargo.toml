@@ -2,6 +2,7 @@
 name = "aardwolf-templates"
 version = "0.1.0"
 authors = ["asonix <asonix@asonix.dog>"]
+edition = "2018"
 build = "build.rs"
 
 [build-dependencies]
@@ -15,6 +16,12 @@ gettext = "0.3"
 version = "0.1"
 path = "../aardwolf-types"
 
+[dependencies.aardwolf-models]
+version = "0.1"
+path = "../aardwolf-models"
+
 [dependencies.rocket_i18n]
 version = "0.3"
+git = "https://github.com/Aardwolf-Social/rocket_i18n.git"
+branch = "asonix/rocket-stable"
 default-features = false
