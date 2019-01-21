@@ -24,7 +24,6 @@ node_modules
 
 # Translations
 **/*.po~
-aardwolf-templates/translations/
 
 # Compiled templates
 src/templates.rs
