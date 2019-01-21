@@ -1,4 +1,6 @@
-use aardwolf_types::forms::auth::ValidateSignInFormFail;
+use aardwolf_types::forms::auth::{
+    SignInEmailValidationFail, SignInPasswordValidationFail, ValidateSignInFormFail,
+};
 use gettext::Catalog;
 use gettext_macros::i18n;
 
@@ -36,13 +38,23 @@ impl<'a> SignIn<'a> {
                 label: i18n!(catalog, "E-Mail Address"),
                 placeholder: Some(i18n!(catalog, "E-Mail Address")),
                 value: email,
-                error: validation_error.and_then(|e| e.email.clone()),
+                error: validation_error.and_then(|e| {
+                    e.email.as_ref().map(|e| match *e {
+                        SignInEmailValidationFail::Empty => i18n!(catalog, "Email cannot be empty"),
+                    })
+                }),
             },
             password: PasswordInput {
                 name: "password",
                 label: i18n!(catalog, "Password"),
                 placeholder: Some(i18n!(catalog, "Password")),
-                error: validation_error.and_then(|e| e.password.clone()),
+                error: validation_error.and_then(|e| {
+                    e.password.as_ref().map(|e| match *e {
+                        SignInPasswordValidationFail::Empty => {
+                            i18n!(catalog, "Password cannot be empty")
+                        }
+                    })
+                }),
             },
         }
     }

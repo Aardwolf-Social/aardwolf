@@ -1,4 +1,7 @@
-use aardwolf_types::forms::auth::ValidateSignUpFormFail;
+use aardwolf_types::forms::auth::{
+    SignUpEmailValidationFail, SignUpPasswordConfirmationValidationFail,
+    SignUpPasswordValidationFail, ValidateSignUpFormFail,
+};
 use gettext::Catalog;
 use gettext_macros::i18n;
 
@@ -37,19 +40,44 @@ impl<'a> SignUp<'a> {
                 label: i18n!(catalog, "E-Mail Address"),
                 placeholder: Some(i18n!(catalog, "E-Mail Address")),
                 value: email,
-                error: validation_error.and_then(|e| e.email.clone()),
+                error: validation_error.and_then(|e| {
+                    e.email.as_ref().map(|e| match *e {
+                        SignUpEmailValidationFail::Empty => i18n!(catalog, "Email cannot be empty"),
+                        SignUpEmailValidationFail::Malformed => {
+                            i18n!(catalog, "Invalid email address")
+                        }
+                    })
+                }),
             },
             password: PasswordInput {
                 name: "password",
                 label: i18n!(catalog, "Password"),
                 placeholder: Some(i18n!(catalog, "Password")),
-                error: validation_error.and_then(|e| e.password.clone()),
+                error: validation_error.and_then(|e| {
+                    e.password.as_ref().map(|e| match *e {
+                        SignUpPasswordValidationFail::Empty => {
+                            i18n!(catalog, "Password cannot be empty")
+                        }
+                        SignUpPasswordValidationFail::TooShort => {
+                            i18n!(catalog, "Password is too short")
+                        }
+                    })
+                }),
             },
             password_confirmation: PasswordInput {
                 name: "password_confirmation",
                 label: i18n!(catalog, "Password Confirmation"),
                 placeholder: Some(i18n!(catalog, "Password Confirmation")),
-                error: validation_error.and_then(|e| e.password_confirmation.clone()),
+                error: validation_error.and_then(|e| {
+                    e.password_confirmation.as_ref().map(|e| match *e {
+                        SignUpPasswordConfirmationValidationFail::Empty => {
+                            i18n!(catalog, "Password confirmation cannot be empty")
+                        }
+                        SignUpPasswordConfirmationValidationFail::Match => {
+                            i18n!(catalog, "Password confirmation must match password")
+                        }
+                    })
+                }),
             },
         }
     }

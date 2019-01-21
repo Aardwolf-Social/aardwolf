@@ -1,5 +1,7 @@
 use aardwolf_models::sql_types::{FollowPolicy, PostVisibility};
-use aardwolf_types::forms::personas::ValidatePersonaCreationFail;
+use aardwolf_types::forms::personas::{
+    ValidateDisplayNameFail, ValidatePersonaCreationFail, ValidateShortnameFail,
+};
 use gettext::Catalog;
 use gettext_macros::i18n;
 
@@ -46,7 +48,13 @@ impl<'a> FirstLogin<'a> {
                 icon: None,
                 placeholder: Some(i18n!(catalog, "Display name")),
                 value: display_name,
-                error: validation_error.and_then(|e| e.display_name.clone()),
+                error: validation_error.and_then(|e| {
+                    e.display_name.as_ref().map(|e| match *e {
+                        ValidateDisplayNameFail::Empty => {
+                            i18n!(catalog, "Display name must not be empty")
+                        }
+                    })
+                }),
             },
             shortname: TextInput {
                 name: "shortname",
@@ -54,7 +62,17 @@ impl<'a> FirstLogin<'a> {
                 icon: None,
                 placeholder: Some(i18n!(catalog, "Username")),
                 value: shortname,
-                error: validation_error.and_then(|e| e.shortname.clone()),
+                error: validation_error.and_then(|e| {
+                    e.shortname.as_ref().map(|e| match *e {
+                        ValidateShortnameFail::Empty => {
+                            i18n!(catalog, "Username must not be empty")
+                        }
+                        ValidateShortnameFail::SpecialCharacters => {
+                            i18n!(catalog, "Username must not contain special characters")
+                        }
+                        ValidateShortnameFail::TooLong => i18n!(catalog, "Username is too long"),
+                    })
+                }),
             },
             follow_policy: SelectInput {
                 name: "follow_policy",
@@ -74,7 +92,7 @@ impl<'a> FirstLogin<'a> {
                         display: i18n!(catalog, "Manually review new followers"),
                     },
                 ],
-                error: validation_error.and_then(|e| e.follow_policy.clone()),
+                error: validation_error.and_then(|e| e.follow_policy.as_ref().map(|e| match *e {})),
             },
             default_visibility: SelectInput {
                 name: "default_visibility",
@@ -98,14 +116,15 @@ impl<'a> FirstLogin<'a> {
                         display: i18n!(catalog, "Only visible to mentioned users"),
                     },
                 ],
-                error: validation_error.and_then(|e| e.default_visibility.clone()),
+                error: validation_error
+                    .and_then(|e| e.default_visibility.as_ref().map(|e| match *e {})),
             },
             is_searchable: CheckboxInput {
                 name: "is_searchable",
                 label: i18n!(catalog, "Allow people to search for this profile"),
                 icon: None,
                 checked: is_searchable,
-                error: validation_error.and_then(|e| e.is_searchable.clone()),
+                error: validation_error.and_then(|e| e.is_searchable.as_ref().map(|e| match *e {})),
             },
         }
     }
