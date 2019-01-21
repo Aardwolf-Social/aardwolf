@@ -11,8 +11,9 @@ ructe = "0.5"
 
 [dependencies]
 gettext = "0.3"
-gettext-macros = "0.2"
+gettext-macros = { version = "0.2", git = "https://github.com/Aardwolf-Social/gettext-macros.git" }
 gettext-utils = "0.1"
+rocket_i18n = { version = "0.4", default-features = false }
 
 [dependencies.aardwolf-types]
 version = "0.1"

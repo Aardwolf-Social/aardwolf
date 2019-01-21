@@ -23,8 +23,6 @@ actix = ["aardwolf-actix"]
 [dependencies]
 config = "0.9.0"
 failure = "0.1"
-gettext = "0.3"
-gettext-macros = "0.2"
 log = "0.4"
 yaml-rust = "0.3"
 # Use simple log files or stdout/stderr. Conflicts with use-systemd and
