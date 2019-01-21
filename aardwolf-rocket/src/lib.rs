@@ -175,8 +175,8 @@ fn app(config: &config::Config, db_url: &str) -> Result<Rocket, Box<dyn Error>> 
             "/api/v1",
             routes![routes::applications::register_application],
         )
-        .mount("/", routes);
-    //.manage(include_i18n);
+        .mount("/", routes)
+        .manage(aardwolf_templates::managed_state());
 
     // we need an instance of the app to access the config values in Rocket.toml,
     // so we pass it to the db_pool function, get the pool, and _then_ return the instance
