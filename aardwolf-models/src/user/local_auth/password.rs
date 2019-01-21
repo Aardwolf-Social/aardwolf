@@ -3,6 +3,10 @@ use std::{fmt, io::Write};
 
 use bcrypt::{hash, verify};
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
+use failure::Fail;
+use log::error;
+#[cfg(any(test, feature = "test"))]
+use log::warn;
 use serde::de::{Deserialize, Deserializer};
 
 /// Create a trait used to verify passwords.
@@ -10,7 +14,7 @@ use serde::de::{Deserialize, Deserializer};
 /// This trait exists to ensure passwords can only be verified if this trait is in scope. In the
 /// majority of cases, this trait will not be in scope.
 pub(crate) trait Verify {
-    fn verify(&self, PlaintextPassword) -> Result<(), VerificationError>;
+    fn verify(&self, _: PlaintextPassword) -> Result<(), VerificationError>;
 }
 
 /// Create a trait used to create passwords.
@@ -18,7 +22,7 @@ pub(crate) trait Verify {
 /// This trait exists to ensure passwords can only be created if this trait is in scope. In the
 /// majority of cases, this trait will not be in scope.
 pub(crate) trait Create: Sized {
-    fn create(PlaintextPassword) -> Result<Self, CreationError>;
+    fn create(_: PlaintextPassword) -> Result<Self, CreationError>;
 }
 
 /// Create a trait used to validate passwords.
@@ -35,7 +39,7 @@ pub(crate) trait Validate: Sized {
     /// be the same, it does not matter which is returned.
     ///
     /// On a failed compare, a `ValidationError` *must* be returned.
-    fn compare(self, Self) -> Result<Self, ValidationError>;
+    fn compare(self, _: Self) -> Result<Self, ValidationError>;
 
     /// Verify that the password is valid by performing checks on the inner string.
     ///
@@ -284,7 +288,7 @@ impl Create for Password {
 #[cfg(test)]
 mod tests {
     use super::{Create, Password, Validate, Verify};
-    use test_helper::create_plaintext_password;
+    use crate::test_helper::create_plaintext_password;
 
     #[test]
     fn create_and_verify_password() {

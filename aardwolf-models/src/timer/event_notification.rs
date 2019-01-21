@@ -2,8 +2,10 @@
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
 
-use schema::event_notifications;
-use timer::{event::Event, Timer};
+use crate::{
+    schema::event_notifications,
+    timer::{event::Event, Timer},
+};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "event_notifications"]
@@ -56,7 +58,7 @@ impl NewEventNotification {
 
 #[cfg(test)]
 mod tests {
-    use test_helper::*;
+    use crate::test_helper::*;
 
     #[test]
     fn create_event() {

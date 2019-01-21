@@ -1,7 +1,7 @@
 use std::marker::PhantomData;
 
-use aardwolf_types::{error::AardwolfFail, traits::DbAction};
 use crate::actix::{Handler, MailboxError, Message};
+use aardwolf_types::{error::AardwolfFail, traits::DbAction};
 use failure::Fail;
 use serde_derive::Serialize;
 

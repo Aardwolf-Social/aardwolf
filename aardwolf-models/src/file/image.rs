@@ -1,8 +1,7 @@
 #![allow(proc_macro_derive_resolution_fallback)]
 use chrono::{offset::Utc, DateTime};
 
-use file::File;
-use schema::images;
+use crate::{file::File, schema::images};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "images"]

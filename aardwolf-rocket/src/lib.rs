@@ -1,24 +1,11 @@
 #![recursion_limit = "128"]
-#![feature(custom_derive, proc_macro_hygiene, decl_macro)]
+#![feature(proc_macro_hygiene, decl_macro)]
 
-extern crate aardwolf_models;
-extern crate aardwolf_templates;
-extern crate aardwolf_types;
-extern crate bcrypt;
-extern crate bs58;
-extern crate chrono;
-extern crate config;
-extern crate diesel;
-#[macro_use]
-extern crate failure;
-extern crate r2d2;
-extern crate r2d2_diesel;
 #[macro_use]
 extern crate rocket;
-extern crate rocket_contrib;
-extern crate rocket_i18n;
-extern crate serde;
+use std::{error::Error, ops::Deref};
 
+use aardwolf_models::{base_actor::GenerateUrls, sql_types::Url};
 use aardwolf_templates::Renderable;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
@@ -27,13 +14,67 @@ use rocket::{
     request::{self, FromRequest},
     Outcome, Request, Response, Rocket, State,
 };
-use std::{error::Error, ops::Deref};
+use uuid::Uuid;
 
 #[macro_use]
 pub mod action;
 pub mod routes;
 pub mod session;
 pub mod types;
+
+mod response_or_redirect;
+
+pub use crate::response_or_redirect::ResponseOrRedirect;
+
+#[derive(Clone)]
+pub struct UrlGenerator {
+    domain: String,
+    https: bool,
+}
+
+impl GenerateUrls for UrlGenerator {
+    fn activitypub_id(&self, uuid: &Uuid) -> String {
+        format!(
+            "{}://{}/users/{}",
+            if self.https { "https" } else { "http" },
+            self.domain,
+            uuid
+        )
+    }
+
+    fn profile_url(&self, uuid: &Uuid) -> Url {
+        format!(
+            "{}://{}/users/{}/profile",
+            if self.https { "https" } else { "http" },
+            self.domain,
+            uuid
+        )
+        .parse()
+        .unwrap()
+    }
+
+    fn inbox_url(&self, uuid: &Uuid) -> Url {
+        format!(
+            "{}://{}/users/{}/inbox",
+            if self.https { "https" } else { "http" },
+            self.domain,
+            uuid
+        )
+        .parse()
+        .unwrap()
+    }
+
+    fn outbox_url(&self, uuid: &Uuid) -> Url {
+        format!(
+            "{}://{}/users/{}/outbox",
+            if self.https { "https" } else { "http" },
+            self.domain,
+            uuid
+        )
+        .parse()
+        .unwrap()
+    }
+}
 
 pub fn render_template<R>(r: &R) -> Response<'static>
 where
@@ -91,6 +132,11 @@ fn app(config: &config::Config, db_url: &str) -> Result<Rocket, Box<dyn Error>> 
         .extra("database_url", db_url)
         .unwrap();
 
+    let url_generator = UrlGenerator {
+        domain: config.get_str("Instance.domain")?,
+        https: config.get_bool("Instance.https")?,
+    };
+
     let mut routes = routes![routes::app::home, routes::app::home_redirect,];
 
     #[cfg(debug_assertions)]
@@ -136,7 +182,7 @@ fn app(config: &config::Config, db_url: &str) -> Result<Rocket, Box<dyn Error>> 
     // we need an instance of the app to access the config values in Rocket.toml,
     // so we pass it to the db_pool function, get the pool, and _then_ return the instance
     let pool = db_pool(&r)?;
-    Ok(r.manage(pool))
+    Ok(r.manage(pool).manage(url_generator))
 }
 
 pub fn run(config: &config::Config, db_url: &str) -> Result<(), Box<dyn Error>> {

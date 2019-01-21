@@ -1,28 +1,33 @@
 #![allow(proc_macro_derive_resolution_fallback)]
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, connection::Connection, pg::PgConnection};
+use failure::Fail;
 
 pub mod email;
 pub mod local_auth;
 mod permissions;
 pub mod role;
 
-use self::{
-    email::{Email, EmailVerificationToken, UnverifiedEmail, VerifiedEmail, VerifyEmail},
-    local_auth::LocalAuth,
+use crate::{
+    schema::users,
+    sql_types::Role,
+    user::{
+        email::{Email, EmailVerificationToken, UnverifiedEmail, VerifiedEmail, VerifyEmail},
+        local_auth::LocalAuth,
+    },
 };
+
 pub use self::{
     local_auth::{PlaintextPassword, VerificationError},
     permissions::{
         LocalPersonaCreator, PermissionError, PermissionResult, PermissionedUser, PersonaDeleter,
     },
 };
-use schema::users;
-use sql_types::Role;
 
 pub trait UserLike {
     fn id(&self) -> i32;
     fn primary_email(&self) -> Option<i32>;
+    fn primary_persona(&self) -> Option<i32>;
     fn created_at(&self) -> DateTime<Utc>;
     fn updated_at(&self) -> DateTime<Utc>;
 
@@ -39,8 +44,8 @@ pub trait UserLike {
     }
 
     fn has_role(&self, name: Role, conn: &PgConnection) -> Result<bool, diesel::result::Error> {
+        use crate::schema::{roles, user_roles};
         use diesel::prelude::*;
-        use schema::{roles, user_roles};
 
         roles::dsl::roles
             .inner_join(user_roles::dsl::user_roles)
@@ -96,6 +101,7 @@ pub struct AuthenticatedUser {
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
     primary_email: Option<i32>,
+    primary_persona: Option<i32>,
 }
 
 impl AuthenticatedUser {
@@ -125,7 +131,6 @@ impl AuthenticatedUser {
             .map_err(From::from)
             .map(|_| {
                 self.primary_email = Some(email.id());
-                ()
             })
     }
 
@@ -147,6 +152,10 @@ impl UserLike for AuthenticatedUser {
 
     fn primary_email(&self) -> Option<i32> {
         self.primary_email
+    }
+
+    fn primary_persona(&self) -> Option<i32> {
+        self.primary_persona
     }
 
     fn created_at(&self) -> DateTime<Utc> {
@@ -202,6 +211,10 @@ impl UserLike for UnverifiedUser {
         None
     }
 
+    fn primary_persona(&self) -> Option<i32> {
+        None
+    }
+
     fn created_at(&self) -> DateTime<Utc> {
         self.created_at
     }
@@ -230,6 +243,7 @@ pub struct QueriedUser {
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
     primary_email: Option<i32>,
+    primary_persona: Option<i32>,
 }
 
 impl UserLike for QueriedUser {
@@ -239,6 +253,10 @@ impl UserLike for QueriedUser {
 
     fn primary_email(&self) -> Option<i32> {
         self.primary_email
+    }
+
+    fn primary_persona(&self) -> Option<i32> {
+        None
     }
 
     fn created_at(&self) -> DateTime<Utc> {
@@ -257,6 +275,7 @@ pub struct UnauthenticatedUser {
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
     primary_email: Option<i32>,
+    primary_persona: Option<i32>,
 }
 
 impl UnauthenticatedUser {
@@ -295,8 +314,8 @@ impl UnauthenticatedUser {
         email_id: i32,
         conn: &PgConnection,
     ) -> Result<(Self, Email), diesel::result::Error> {
+        use crate::schema::emails;
         use diesel::prelude::*;
-        use schema::emails;
 
         users::dsl::users
             .inner_join(emails::dsl::emails.on(emails::dsl::user_id.eq(users::dsl::id)))
@@ -308,8 +327,8 @@ impl UnauthenticatedUser {
         email: &str,
         conn: &PgConnection,
     ) -> Result<(Self, Email, LocalAuth), diesel::result::Error> {
+        use crate::schema::{emails, local_auth};
         use diesel::prelude::*;
-        use schema::{emails, local_auth};
 
         users::dsl::users
             .inner_join(emails::dsl::emails.on(emails::dsl::user_id.eq(users::dsl::id)))
@@ -326,6 +345,10 @@ impl UserLike for UnauthenticatedUser {
 
     fn primary_email(&self) -> Option<i32> {
         self.primary_email
+    }
+
+    fn primary_persona(&self) -> Option<i32> {
+        self.primary_persona
     }
 
     fn created_at(&self) -> DateTime<Utc> {
@@ -370,7 +393,7 @@ impl Default for NewUser {
 #[cfg(test)]
 mod tests {
     use super::UnauthenticatedUser;
-    use test_helper::*;
+    use crate::test_helper::*;
 
     #[test]
     fn create_user() {

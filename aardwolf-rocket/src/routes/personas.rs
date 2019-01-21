@@ -1,7 +1,9 @@
-use rocket::request::Form;
-
+use aardwolf_models::sql_types::{FollowPolicy, PostVisibility};
 use aardwolf_types::{
-    forms::personas::{PersonaCreationFail, PersonaCreationForm, ValidatePersonaCreationForm},
+    forms::personas::{
+        PersonaCreationFail, PersonaCreationForm, ValidatePersonaCreationFail,
+        ValidatePersonaCreationForm,
+    },
     operations::{
         check_create_persona_permission::{
             CheckCreatePersonaPermission, CheckCreatePersonaPermissionFail,
@@ -14,13 +16,35 @@ use aardwolf_types::{
         fetch_persona::{FetchPersona, FetchPersonaFail},
     },
 };
-use types::user::SignedInUser;
-use DbConn;
+use failure::Fail;
+use rocket::{
+    http::{Cookie, Cookies, Status},
+    request::Form,
+    response::Redirect,
+    Response, State,
+};
+use rocket_i18n::I18n;
 
-#[get("/new")]
-pub fn new(_user: SignedInUser) -> String {
+use crate::{render_template, types::user::SignedInUser, DbConn, ResponseOrRedirect, UrlGenerator};
+
+#[get("/create")]
+pub fn new(_user: SignedInUser, i18n: I18n) -> Response<'static> {
+    let res = render_template(&aardwolf_templates::FirstLogin::new(
+        &i18n.catalog,
+        "csrf",
+        "",
+        "",
+        FollowPolicy::AutoAccept,
+        PostVisibility::Public,
+        false,
+        None,
+        false,
+    ));
+
     drop(_user);
-    "placeholder".to_string()
+    drop(i18n);
+
+    res
 }
 
 #[derive(Clone, Debug, Fail)]
@@ -30,15 +54,24 @@ pub enum PersonaCreateError {
     #[fail(display = "User does not have permission to create a persona")]
     Permission,
     #[fail(display = "Submitted form is invalid")]
-    Form,
+    Form(#[cause] ValidatePersonaCreationFail),
+    #[fail(display = "Could not generate keys")]
+    Keygen,
+}
+
+impl From<ValidatePersonaCreationFail> for PersonaCreateError {
+    fn from(e: ValidatePersonaCreationFail) -> Self {
+        PersonaCreateError::Form(e)
+    }
 }
 
 impl From<PersonaCreationFail> for PersonaCreateError {
     fn from(e: PersonaCreationFail) -> Self {
         match e {
-            PersonaCreationFail::Validation => PersonaCreateError::Form,
+            PersonaCreationFail::Validation(e) => PersonaCreateError::Form(e),
             PersonaCreationFail::Permission => PersonaCreateError::Permission,
             PersonaCreationFail::Database => PersonaCreateError::Database,
+            PersonaCreationFail::Keygen => PersonaCreateError::Keygen,
         }
     }
 }
@@ -54,17 +87,54 @@ impl From<CheckCreatePersonaPermissionFail> for PersonaCreateError {
 
 #[post("/create", data = "<form>")]
 pub fn create(
+    generator: State<UrlGenerator>,
     user: SignedInUser,
     form: Form<PersonaCreationForm>,
+    i18n: I18n,
+    mut cookies: Cookies,
     db: DbConn,
-) -> Result<String, PersonaCreateError> {
-    let _ = perform!(&db, PersonaCreateError, [
-        (form = ValidatePersonaCreationForm(form.into_inner())),
-        (creator = CheckCreatePersonaPermission(user.0)),
-        (_ = CreatePersona(creator, form)),
-    ])?;
+) -> ResponseOrRedirect {
+    let form = form.into_inner();
+    let form_state = form.as_state();
 
-    Ok("Created!".to_string())
+    let res = perform!(&db, PersonaCreateError, [
+        (form = ValidatePersonaCreationForm(form)),
+        (creator = CheckCreatePersonaPermission(user.0)),
+        (_ = CreatePersona(creator, form, generator.inner().clone())),
+    ]);
+
+    let res = match res {
+        Ok((_actor, persona)) => {
+            let mut cookie = Cookie::new("persona_id", format!("{}", persona.id()));
+            cookie.set_http_only(true);
+            cookies.add_private(cookie);
+            Redirect::to("/").into()
+        }
+        Err(e) => {
+            let (status, validation, system) = match e {
+                PersonaCreateError::Form(ref e) => (Status::BadRequest, Some(e), false),
+                _ => (Status::InternalServerError, None, true),
+            };
+
+            let mut response = render_template(&aardwolf_templates::FirstLogin::new(
+                &i18n.catalog,
+                "csrf",
+                &form_state.display_name,
+                &form_state.shortname,
+                form_state.follow_policy,
+                form_state.default_visibility,
+                form_state.is_searchable,
+                validation,
+                system,
+            ));
+            response.set_status(status);
+            response.into()
+        }
+    };
+
+    drop(i18n);
+
+    res
 }
 
 #[derive(Clone, Debug, Fail)]
@@ -73,7 +143,7 @@ pub enum PersonaDeleteError {
     Mailbox,
     #[fail(display = "Error talking db")]
     Database,
-    #[fail(display = "Error confirming account: {}", _0)]
+    #[fail(display = "Error deleting persona: {}", _0)]
     Delete(#[cause] DeletePersonaFail),
 }
 

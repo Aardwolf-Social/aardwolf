@@ -2,8 +2,7 @@
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
 
-use base_actor::BaseActor;
-use schema::follow_requests;
+use crate::{base_actor::BaseActor, schema::follow_requests};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
 #[table_name = "follow_requests"]
@@ -55,7 +54,7 @@ impl NewFollowRequest {
 
 #[cfg(test)]
 mod tests {
-    use test_helper::*;
+    use crate::test_helper::*;
 
     #[test]
     fn create_follow_request() {

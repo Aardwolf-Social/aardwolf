@@ -2,8 +2,7 @@
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
 
-use base_post::BasePost;
-use schema::posts;
+use crate::{base_post::BasePost, schema::posts};
 
 pub mod comment;
 pub mod media_post;
@@ -65,7 +64,7 @@ impl NewPost {
 
 #[cfg(test)]
 mod tests {
-    use test_helper::*;
+    use crate::test_helper::*;
 
     #[test]
     fn create_post() {
