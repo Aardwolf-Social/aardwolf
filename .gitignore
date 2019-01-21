@@ -24,6 +24,7 @@ node_modules
 
 # Translations
 **/*.po~
+translations/
 
 # Compiled templates
 src/templates.rs
