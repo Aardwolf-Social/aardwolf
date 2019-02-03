@@ -48,59 +48,31 @@ msgstr ""
 msgid "Follow Policy"
 msgstr ""
 
-# aardwolf-templates/src/first_login.rs:84
-msgid "Automatically accept new followers"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:88
-msgid "Automatically reject new followers"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:92
-msgid "Manually review new followers"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:99
+# aardwolf-templates/src/first_login.rs:86
 msgid "Post Visibility"
 msgstr ""
 
-# aardwolf-templates/src/first_login.rs:104
-msgid "Visible to everyone"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:108
-msgid "Visible to followers"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:112
-msgid "Visible to mutuals"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:116
-msgid "Only visible to mentioned users"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:124
+# aardwolf-templates/src/first_login.rs:94
 msgid "Allow people to search for this profile"
 msgstr ""
 
-# aardwolf-templates/src/home.rs:42
+# aardwolf-templates/src/home.rs:40
 msgid "There was an error creating your post"
 msgstr ""
 
-# aardwolf-templates/src/home.rs:51
+# aardwolf-templates/src/home.rs:49
 msgid "What's on your mind?"
 msgstr ""
 
-# aardwolf-templates/src/home.rs:55
+# aardwolf-templates/src/home.rs:53
 msgid "Post cannot be empty"
 msgstr ""
 
-# aardwolf-templates/src/home.rs:86
+# aardwolf-templates/src/home.rs:67
 msgid "Content Warning"
 msgstr ""
 
-# aardwolf-templates/src/home.rs:88
+# aardwolf-templates/src/home.rs:69
 msgid "mh, nsfw, etc."
 msgstr ""
 
@@ -146,6 +118,34 @@ msgstr ""
 
 # aardwolf-templates/src/sign_up.rs:77
 msgid "Password confirmation must match password"
+msgstr ""
+
+# aardwolf-templates/src/ui/select_input.rs:18
+msgid "Automatically accept new followers"
+msgstr ""
+
+# aardwolf-templates/src/ui/select_input.rs:22
+msgid "Automatically reject new followers"
+msgstr ""
+
+# aardwolf-templates/src/ui/select_input.rs:26
+msgid "Manually review new followers"
+msgstr ""
+
+# aardwolf-templates/src/ui/select_input.rs:35
+msgid "Visible to everyone"
+msgstr ""
+
+# aardwolf-templates/src/ui/select_input.rs:39
+msgid "Visible to followers"
+msgstr ""
+
+# aardwolf-templates/src/ui/select_input.rs:43
+msgid "Visible to mutuals"
+msgstr ""
+
+# aardwolf-templates/src/ui/select_input.rs:47
+msgid "Only visible to mentioned users"
 msgstr ""
 
 # aardwolf-templates/src/../compiled_templates/templates/template_sign_up.rs:40

@@ -26,8 +26,8 @@ pub use self::{
 use self::{
     shortcuts::Shortcuts,
     ui::{
-        Alert, AlertKind, CheckboxInput, EmailInput, Input, PasswordInput, SelectInput,
-        SelectOption, TextInput, TextareaInput,
+        Alert, AlertKind, CheckboxInput, EmailInput, Input, PasswordInput, SelectInput, TextInput,
+        TextareaInput,
     },
 };
 

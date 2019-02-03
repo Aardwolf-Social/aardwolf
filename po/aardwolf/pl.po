@@ -49,36 +49,8 @@ msgstr ""
 msgid "Follow Policy"
 msgstr ""
 
-# aardwolf-templates/src/first_login.rs:84
-msgid "Automatically accept new followers"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:88
-msgid "Automatically reject new followers"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:92
-msgid "Manually review new followers"
-msgstr ""
-
 # aardwolf-templates/src/first_login.rs:99
 msgid "Post Visibility"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:104
-msgid "Visible to everyone"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:108
-msgid "Visible to followers"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:112
-msgid "Visible to mutuals"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:116
-msgid "Only visible to mentioned users"
 msgstr ""
 
 # aardwolf-templates/src/first_login.rs:124
@@ -147,4 +119,32 @@ msgstr ""
 
 # aardwolf-templates/src/sign_up.rs:77
 msgid "Password confirmation must match password"
+msgstr ""
+
+# aardwolf-templates/src/first_login.rs:84
+msgid "Automatically accept new followers"
+msgstr ""
+
+# aardwolf-templates/src/first_login.rs:88
+msgid "Automatically reject new followers"
+msgstr ""
+
+# aardwolf-templates/src/first_login.rs:92
+msgid "Manually review new followers"
+msgstr ""
+
+# aardwolf-templates/src/first_login.rs:104
+msgid "Visible to everyone"
+msgstr ""
+
+# aardwolf-templates/src/first_login.rs:108
+msgid "Visible to followers"
+msgstr ""
+
+# aardwolf-templates/src/first_login.rs:112
+msgid "Visible to mutuals"
+msgstr ""
+
+# aardwolf-templates/src/first_login.rs:116
+msgid "Only visible to mentioned users"
 msgstr ""

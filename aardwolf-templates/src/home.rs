@@ -4,9 +4,7 @@ use aardwolf_types::forms::posts::{
 use gettext::Catalog;
 use gettext_macros::i18n;
 
-use crate::{
-    Alert, AlertKind, Renderable, SelectInput, SelectOption, Shortcuts, TextInput, TextareaInput,
-};
+use crate::{Alert, AlertKind, Renderable, SelectInput, Shortcuts, TextInput, TextareaInput};
 
 pub struct NewPost<'a> {
     pub(crate) csrf: &'a str,
@@ -60,24 +58,7 @@ impl<'a> Home<'a> {
                     name: "visibility",
                     label: i18n!(catalog, "Post Visibility"),
                     selected: state.visibility.to_string(),
-                    options: vec![
-                        SelectOption {
-                            value: "PUB",
-                            display: i18n!(catalog, "Visible to everyone"),
-                        },
-                        SelectOption {
-                            value: "FL",
-                            display: i18n!(catalog, "Visible to followers"),
-                        },
-                        SelectOption {
-                            value: "MUT",
-                            display: i18n!(catalog, "Visible to mutuals"),
-                        },
-                        SelectOption {
-                            value: "LIST",
-                            display: i18n!(catalog, "Only visible to mentioned users"),
-                        },
-                    ],
+                    options: SelectInput::visibility_options(catalog),
                     error: validation_error
                         .and_then(|e| e.visibility.as_ref().map(|e| match *e {})),
                 },

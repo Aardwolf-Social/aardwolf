@@ -48,37 +48,9 @@ msgstr "Username is too long"
 msgid "Follow Policy"
 msgstr "Follow Policy"
 
-# aardwolf-templates/src/first_login.rs:84
-msgid "Automatically accept new followers"
-msgstr "Automatically accept new followers"
-
-# aardwolf-templates/src/first_login.rs:88
-msgid "Automatically reject new followers"
-msgstr "Automatically reject new followers"
-
-# aardwolf-templates/src/first_login.rs:92
-msgid "Manually review new followers"
-msgstr "Manually review new followers"
-
 # aardwolf-templates/src/first_login.rs:99
 msgid "Post Visibility"
 msgstr "Post Visibility"
-
-# aardwolf-templates/src/first_login.rs:104
-msgid "Visible to everyone"
-msgstr "Visible to everyone"
-
-# aardwolf-templates/src/first_login.rs:108
-msgid "Visible to followers"
-msgstr "Visible to followers"
-
-# aardwolf-templates/src/first_login.rs:112
-msgid "Visible to mutuals"
-msgstr "Visible to mutuals"
-
-# aardwolf-templates/src/first_login.rs:116
-msgid "Only visible to mentioned users"
-msgstr "Only visible to mentioned users"
 
 # aardwolf-templates/src/first_login.rs:124
 msgid "Allow people to search for this profile"
@@ -149,3 +121,31 @@ msgstr "Password confirmation cannot be empty"
 # aardwolf-templates/src/sign_up.rs:77
 msgid "Password confirmation must match password"
 msgstr "Password confirmation must match password"
+
+# aardwolf-templates/src/first_login.rs:84
+msgid "Automatically accept new followers"
+msgstr "Automatically accept new followers"
+
+# aardwolf-templates/src/first_login.rs:88
+msgid "Automatically reject new followers"
+msgstr "Automatically reject new followers"
+
+# aardwolf-templates/src/first_login.rs:92
+msgid "Manually review new followers"
+msgstr "Manually review new followers"
+
+# aardwolf-templates/src/first_login.rs:104
+msgid "Visible to everyone"
+msgstr "Visible to everyone"
+
+# aardwolf-templates/src/first_login.rs:108
+msgid "Visible to followers"
+msgstr "Visible to followers"
+
+# aardwolf-templates/src/first_login.rs:112
+msgid "Visible to mutuals"
+msgstr "Visible to mutuals"
+
+# aardwolf-templates/src/first_login.rs:116
+msgid "Only visible to mentioned users"
+msgstr "Only visible to mentioned users"

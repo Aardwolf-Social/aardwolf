@@ -14,13 +14,19 @@ pub enum FollowPolicy {
     ManualReview,
 }
 
+impl FollowPolicy {
+    pub fn as_str(&self) -> &str {
+        match *self {
+            FollowPolicy::AutoAccept => "ACCEPT",
+            FollowPolicy::AutoReject => "REJECT",
+            FollowPolicy::ManualReview => "MANUAL",
+        }
+    }
+}
+
 impl fmt::Display for FollowPolicy {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            FollowPolicy::AutoAccept => write!(f, "ACCEPT"),
-            FollowPolicy::AutoReject => write!(f, "REJECT"),
-            FollowPolicy::ManualReview => write!(f, "MANUAL"),
-        }
+        write!(f, "{}", self.as_str())
     }
 }
 
