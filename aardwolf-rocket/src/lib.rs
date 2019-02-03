@@ -5,7 +5,7 @@
 extern crate rocket;
 use std::{error::Error, ops::Deref};
 
-use aardwolf_models::{base_actor::GenerateUrls, sql_types::Url};
+use aardwolf_models::{base_actor::BaseActor, generate_urls::GenerateUrls, sql_types::Url};
 use aardwolf_templates::Renderable;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
@@ -74,6 +74,19 @@ impl GenerateUrls for UrlGenerator {
         .parse()
         .unwrap()
     }
+
+    fn post_id(&self, _: &BaseActor, uuid: &Uuid) -> String {
+        format!(
+            "{}://{}/posts/{}",
+            if self.https { "https" } else { "http" },
+            self.domain,
+            uuid
+        )
+    }
+
+    fn post_url(&self, base_actor: &BaseActor, uuid: &Uuid) -> Url {
+        self.post_id(base_actor, uuid).parse().unwrap()
+    }
 }
 
 pub fn render_template<R>(r: &R) -> Response<'static>
@@ -137,7 +150,11 @@ fn app(config: &config::Config, db_url: &str) -> Result<Rocket, Box<dyn Error>> 
         https: config.get_bool("Instance.https")?,
     };
 
-    let mut routes = routes![routes::app::home, routes::app::home_redirect,];
+    let mut routes = routes![
+        routes::app::home,
+        routes::app::first_login_redirect,
+        routes::app::home_redirect,
+    ];
 
     #[cfg(debug_assertions)]
     routes.extend(routes![
@@ -168,9 +185,12 @@ fn app(config: &config::Config, db_url: &str) -> Result<Rocket, Box<dyn Error>> 
         routes::personas::switch,
     ];
 
+    let posts = routes![routes::posts::create,];
+
     let r = rocket::custom(c)
         .mount("/auth", auth)
         .mount("/personas", personas)
+        .mount("/posts", posts)
         .mount(
             "/api/v1",
             routes![routes::applications::register_application],

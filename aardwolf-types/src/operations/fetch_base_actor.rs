@@ -1,4 +1,4 @@
-use aardwolf_models::base_actor::persona::Persona;
+use aardwolf_models::base_actor::BaseActor;
 use diesel::{pg::PgConnection, result::Error as DieselError};
 
 use crate::{
@@ -7,39 +7,39 @@ use crate::{
     wrapper::{DbActionWrapper, Wrapped},
 };
 
-pub struct FetchPersona(pub i32);
+pub struct FetchBaseActor(pub i32);
 
-impl Wrapped for FetchPersona {
+impl Wrapped for FetchBaseActor {
     type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
 }
 
-impl DbAction for FetchPersona {
-    type Item = Persona;
-    type Error = FetchPersonaFail;
+impl DbAction for FetchBaseActor {
+    type Item = BaseActor;
+    type Error = FetchBaseActorFail;
 
-    fn db_action(self, conn: &PgConnection) -> Result<Persona, FetchPersonaFail> {
-        Persona::by_id(self.0, conn).map_err(From::from)
+    fn db_action(self, conn: &PgConnection) -> Result<BaseActor, FetchBaseActorFail> {
+        BaseActor::by_persona_id(self.0, conn).map_err(From::from)
     }
 }
 
 #[derive(Clone, Debug, Fail, Serialize)]
-pub enum FetchPersonaFail {
+pub enum FetchBaseActorFail {
     #[fail(display = "Error in database")]
     Database,
-    #[fail(display = "Persona not found")]
+    #[fail(display = "BaseActor not found")]
     NotFound,
 }
 
-impl From<DieselError> for FetchPersonaFail {
+impl From<DieselError> for FetchBaseActorFail {
     fn from(e: DieselError) -> Self {
         match e {
-            DieselError::NotFound => FetchPersonaFail::NotFound,
-            _ => FetchPersonaFail::Database,
+            DieselError::NotFound => FetchBaseActorFail::NotFound,
+            _ => FetchBaseActorFail::Database,
         }
     }
 }
 
-impl AardwolfFail for FetchPersonaFail {}
+impl AardwolfFail for FetchBaseActorFail {}
 
 #[cfg(test)]
 mod tests {
@@ -48,7 +48,7 @@ mod tests {
     use diesel::pg::PgConnection;
     use failure::Error;
 
-    use crate::{operations::fetch_persona::FetchPersona, traits::DbAction};
+    use crate::{operations::fetch_base_actor::FetchBaseActor, traits::DbAction};
 
     fn setup<F>(f: F)
     where
@@ -62,9 +62,9 @@ mod tests {
     }
 
     #[test]
-    fn fetches_persona() {
+    fn fetches_base_actor() {
         setup(|conn, persona| {
-            let operation = FetchPersona(persona.id());
+            let operation = FetchBaseActor(persona.id());
 
             assert!(operation.db_action(conn).is_ok());
             Ok(())
@@ -72,9 +72,9 @@ mod tests {
     }
 
     #[test]
-    fn doesnt_fetch_invalid_persona() {
+    fn doesnt_fetch_invalid_base_actor() {
         setup(|conn, persona| {
-            let operation = FetchPersona(persona.id() + 1);
+            let operation = FetchBaseActor(persona.id() + 1);
 
             assert!(operation.db_action(conn).is_err());
             Ok(())

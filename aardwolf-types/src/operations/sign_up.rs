@@ -105,16 +105,15 @@ impl From<CreationError> for SignUpFail {
 
 #[cfg(test)]
 mod tests {
-    use aardwolf_test_helpers::models::{
-        create_plaintext_password, gen_string, with_connection, GenericError,
-    };
+    use aardwolf_test_helpers::models::{create_plaintext_password, gen_string, with_connection};
     use diesel::pg::PgConnection;
+    use failure::Error;
 
     use crate::{forms::auth::ValidatedSignUpForm, operations::sign_up::SignUp, traits::DbAction};
 
     fn setup<F>(f: F)
     where
-        F: FnOnce(&PgConnection, ValidatedSignUpForm) -> Result<(), GenericError>,
+        F: FnOnce(&PgConnection, ValidatedSignUpForm) -> Result<(), Error>,
     {
         with_connection(|conn| {
             let email = format!("{}@{}.{}", gen_string()?, gen_string()?, gen_string()?);

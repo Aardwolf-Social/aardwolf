@@ -120,6 +120,7 @@ dependencies = [
  "failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "futures 0.1.25 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "mime 0.3.13 (registry+https://github.com/rust-lang/crates.io-index)",
  "openssl 0.10.16 (registry+https://github.com/rust-lang/crates.io-index)",
  "r2d2 0.8.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "r2d2-diesel 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",

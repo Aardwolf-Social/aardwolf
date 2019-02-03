@@ -12,7 +12,7 @@ nav(out, home.catalog)?;
 out.write_all(b"\n    <section class=\"section\">\n        ")?;
 shortcuts(out, &home.shortcuts)?;
 out.write_all(b"\n    </section>\n    <section class=\"section\">\n        <div class=\"container\">\n            ")?;
-new_post(out, home.catalog)?;
+new_post(out, home.catalog, &home.shortcuts.username, &home.new_post)?;
 out.write_all(b"\n            ")?;
 feed(out, home.catalog)?;
 out.write_all(b"\n        </div>\n    </section>\n")?;

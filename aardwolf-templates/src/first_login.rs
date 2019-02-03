@@ -5,7 +5,7 @@ use aardwolf_types::forms::personas::{
 use gettext::Catalog;
 use gettext_macros::i18n;
 
-use crate::{Alert, AlertKind, CheckboxInput, Renderable, SelectInput, SelectOption, TextInput};
+use crate::{Alert, AlertKind, CheckboxInput, Renderable, SelectInput, TextInput};
 
 pub struct FirstLogin<'a> {
     pub(crate) catalog: &'a Catalog,
@@ -78,44 +78,14 @@ impl<'a> FirstLogin<'a> {
                 name: "follow_policy",
                 label: i18n!(catalog, "Follow Policy"),
                 selected: follow_policy.to_string(),
-                options: vec![
-                    SelectOption {
-                        value: "ACCEPT",
-                        display: i18n!(catalog, "Automatically accept new followers"),
-                    },
-                    SelectOption {
-                        value: "REJECT",
-                        display: i18n!(catalog, "Automatically reject new followers"),
-                    },
-                    SelectOption {
-                        value: "MANUAL",
-                        display: i18n!(catalog, "Manually review new followers"),
-                    },
-                ],
+                options: SelectInput::follow_policy_options(catalog),
                 error: validation_error.and_then(|e| e.follow_policy.as_ref().map(|e| match *e {})),
             },
             default_visibility: SelectInput {
                 name: "default_visibility",
                 label: i18n!(catalog, "Post Visibility"),
                 selected: default_visibility.to_string(),
-                options: vec![
-                    SelectOption {
-                        value: "PUB",
-                        display: i18n!(catalog, "Visible to everyone"),
-                    },
-                    SelectOption {
-                        value: "FL",
-                        display: i18n!(catalog, "Visible to followers"),
-                    },
-                    SelectOption {
-                        value: "MUT",
-                        display: i18n!(catalog, "Visible to mutuals"),
-                    },
-                    SelectOption {
-                        value: "LIST",
-                        display: i18n!(catalog, "Only visible to mentioned users"),
-                    },
-                ],
+                options: SelectInput::visibility_options(catalog),
                 error: validation_error
                     .and_then(|e| e.default_visibility.as_ref().map(|e| match *e {})),
             },
