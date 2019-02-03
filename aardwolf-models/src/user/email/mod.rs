@@ -1,4 +1,3 @@
-#![allow(proc_macro_derive_resolution_fallback)]
 mod token;
 
 use chrono::{offset::Utc, DateTime};
