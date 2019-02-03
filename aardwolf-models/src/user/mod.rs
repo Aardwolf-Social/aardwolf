@@ -1,4 +1,3 @@
-#![allow(proc_macro_derive_resolution_fallback)]
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, connection::Connection, pg::PgConnection};
 use failure::Fail;
