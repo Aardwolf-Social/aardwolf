@@ -30,7 +30,7 @@ version = "0.13"
 optional = true
 
 [dependencies.diesel]
-version = "1.2"
+version = "1.4"
 features = ["chrono", "postgres", "serde_json", "uuid"]
 
 [dependencies.rocket]

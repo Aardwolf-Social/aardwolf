@@ -1,4 +1,3 @@
-#![allow(proc_macro_derive_resolution_fallback)]
 use std::path::Path;
 
 use chrono::{offset::Utc, DateTime};
