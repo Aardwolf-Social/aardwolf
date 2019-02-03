@@ -1,14 +1,13 @@
 use chrono::offset::Utc;
 use diesel::{self, pg::PgConnection};
 use failure::Fail;
-use mime::Mime as OrigMime;
 
 use crate::{
     base_actor::{
         follow_request::{FollowRequest, NewFollowRequest},
         follower::{Follower, NewFollower},
         persona::{NewPersona, Persona},
-        BaseActor, GenerateUrls, NewBaseActor,
+        BaseActor, NewBaseActor,
     },
     base_post::{
         post::{
@@ -19,7 +18,8 @@ use crate::{
         {BasePost, NewBasePost},
     },
     file::{image::Image, File},
-    sql_types::{FollowPolicy, Permission, PostVisibility, Role},
+    generate_urls::GenerateUrls,
+    sql_types::{FollowPolicy, Mime, Permission, PostVisibility, Role},
     user::UserLike,
 };
 
@@ -48,44 +48,44 @@ pub type PermissionResult<T> = Result<T, PermissionError>;
 /// This way, permission checking would be enforced by the compiler, since "making a post" or
 /// "configuring the instance" would not be possible without calling these methods.
 pub trait PermissionedUser: UserLike + Sized {
-    fn can_post<'a>(
+    fn can_post(
         &self,
-        base_actor: &'a BaseActor,
+        base_actor: BaseActor,
         conn: &PgConnection,
-    ) -> PermissionResult<PostMaker<'a>> {
+    ) -> PermissionResult<LocalPostCreator> {
         self.with_actor(base_actor).and_then(|actor| {
             self.has_permission(Permission::MakePost, conn)
-                .map(|_| PostMaker(actor))
+                .map(|_| LocalPostCreator(actor))
         })
     }
 
-    fn can_post_media<'a>(
+    fn can_post_media(
         &self,
-        base_actor: &'a BaseActor,
+        base_actor: BaseActor,
         conn: &PgConnection,
-    ) -> PermissionResult<MediaPostMaker<'a>> {
+    ) -> PermissionResult<LocalMediaPostCreator> {
         self.with_actor(base_actor).and_then(|actor| {
             self.has_permission(Permission::MakeMediaPost, conn)
-                .map(|_| MediaPostMaker(actor))
+                .map(|_| LocalMediaPostCreator(actor))
         })
     }
 
-    fn can_post_comment<'a>(
+    fn can_post_comment(
         &self,
-        base_actor: &'a BaseActor,
+        base_actor: BaseActor,
         conn: &PgConnection,
-    ) -> PermissionResult<CommentMaker<'a>> {
+    ) -> PermissionResult<LocalCommentCreator> {
         self.with_actor(base_actor).and_then(|actor| {
             self.has_permission(Permission::MakeComment, conn)
-                .map(|_| CommentMaker(actor))
+                .map(|_| LocalCommentCreator(actor))
         })
     }
 
-    fn can_follow<'a>(
+    fn can_follow(
         &self,
-        base_actor: &'a BaseActor,
+        base_actor: BaseActor,
         conn: &PgConnection,
-    ) -> PermissionResult<ActorFollower<'a>> {
+    ) -> PermissionResult<ActorFollower> {
         self.with_actor(base_actor).and_then(|actor| {
             self.has_permission(Permission::FollowUser, conn)
                 .map(|_| ActorFollower(actor))
@@ -122,11 +122,11 @@ pub trait PermissionedUser: UserLike + Sized {
         })
     }
 
-    fn can_manage_follow_requests<'a>(
+    fn can_manage_follow_requests(
         &self,
-        base_actor: &'a BaseActor,
+        base_actor: BaseActor,
         conn: &PgConnection,
-    ) -> PermissionResult<FollowRequestManager<'a>> {
+    ) -> PermissionResult<FollowRequestManager> {
         self.with_actor(base_actor).and_then(|actor| {
             self.has_permission(Permission::ManageFollowRequest, conn)
                 .map(|_| FollowRequestManager(actor))
@@ -155,7 +155,7 @@ pub trait PermissionedUser: UserLike + Sized {
             .map(|_| RoleRevoker::new())
     }
 
-    fn with_actor<'a>(&self, base_actor: &'a BaseActor) -> PermissionResult<&'a BaseActor> {
+    fn with_actor(&self, base_actor: BaseActor) -> PermissionResult<BaseActor> {
         base_actor
             .local_user()
             .and_then(|id| {
@@ -279,19 +279,19 @@ impl RoleRevoker {
     }
 }
 
-pub struct PostMaker<'a>(&'a BaseActor);
+pub struct LocalPostCreator(BaseActor);
 
-impl<'a> PostMaker<'a> {
+impl LocalPostCreator {
     #[cfg_attr(feature = "cargo-clippy", allow(clippy::too_many_arguments))]
-    pub fn make_post(
+    pub fn create_post(
         &self,
         name: Option<String>,
-        media_type: OrigMime,
+        media_type: Mime,
         icon: Option<&Image>,
         visibility: PostVisibility,
         content: String,
         source: String,
-        generate_id: impl Fn(&uuid::Uuid) -> String,
+        generate_id: impl GenerateUrls,
         conn: &PgConnection,
     ) -> Result<(BasePost, Post), diesel::result::Error> {
         use crate::schema::{base_posts, posts};
@@ -302,7 +302,7 @@ impl<'a> PostMaker<'a> {
                 .values(&NewBasePost::local(
                     name,
                     media_type,
-                    self.0,
+                    &self.0,
                     icon,
                     visibility,
                     generate_id,
@@ -318,28 +318,28 @@ impl<'a> PostMaker<'a> {
     }
 }
 
-pub struct MediaPostMaker<'a>(&'a BaseActor);
+pub struct LocalMediaPostCreator(BaseActor);
 
-impl<'a> MediaPostMaker<'a> {
+impl LocalMediaPostCreator {
     #[cfg_attr(feature = "cargo-clippy", allow(clippy::too_many_arguments))]
     pub fn make_media_post(
         &self,
         name: Option<String>,
-        media_type: OrigMime,
+        media_type: Mime,
         icon: Option<&Image>,
         visibility: PostVisibility,
         content: String,
         source: String,
         media: &File,
-        generate_id: impl Fn(&uuid::Uuid) -> String,
+        generate_id: impl GenerateUrls,
         conn: &PgConnection,
     ) -> Result<(BasePost, Post, MediaPost), diesel::result::Error> {
         use crate::schema::media_posts;
         use diesel::prelude::*;
 
         conn.transaction(|| {
-            PostMaker(self.0)
-                .make_post(
+            LocalPostCreator(self.0.clone())
+                .create_post(
                     name,
                     media_type,
                     icon,
@@ -359,21 +359,21 @@ impl<'a> MediaPostMaker<'a> {
     }
 }
 
-pub struct CommentMaker<'a>(&'a BaseActor);
+pub struct LocalCommentCreator(BaseActor);
 
-impl<'a> CommentMaker<'a> {
+impl LocalCommentCreator {
     #[cfg_attr(feature = "cargo-clippy", allow(clippy::too_many_arguments))]
     pub fn make_comment(
         &self,
         name: Option<String>,
-        media_type: OrigMime,
+        media_type: Mime,
         icon: Option<&Image>,
         visibility: PostVisibility,
         content: String,
         source: String,
         conversation: &Post,
         parent: &Post,
-        generate_id: impl Fn(&uuid::Uuid) -> String,
+        generate_id: impl GenerateUrls,
         conn: &PgConnection,
     ) -> Result<(BasePost, Post, Comment), CommentError> {
         use crate::schema::{base_posts, comments};
@@ -383,7 +383,7 @@ impl<'a> CommentMaker<'a> {
             .filter(base_posts::dsl::id.eq(conversation.base_post()))
             .get_result(conn)?;
 
-        if !conversation_base.is_visible_by(self.0, conn)? {
+        if !conversation_base.is_visible_by(&self.0, conn)? {
             return Err(CommentError::Permission);
         }
 
@@ -392,14 +392,14 @@ impl<'a> CommentMaker<'a> {
                 .filter(base_posts::dsl::id.eq(parent.base_post()))
                 .get_result(conn)?;
 
-            if !parent_base.is_visible_by(self.0, conn)? {
+            if !parent_base.is_visible_by(&self.0, conn)? {
                 return Err(CommentError::Permission);
             }
         }
 
         conn.transaction(|| {
-            PostMaker(self.0)
-                .make_post(
+            LocalPostCreator(self.0.clone())
+                .create_post(
                     name,
                     media_type,
                     icon,
@@ -434,9 +434,9 @@ impl From<diesel::result::Error> for CommentError {
     }
 }
 
-pub struct ActorFollower<'a>(&'a BaseActor);
+pub struct ActorFollower(BaseActor);
 
-impl<'a> ActorFollower<'a> {
+impl ActorFollower {
     pub fn follow_actor(
         &self,
         target_actor: &BaseActor,
@@ -448,7 +448,7 @@ impl<'a> ActorFollower<'a> {
         match target_actor.follow_policy() {
             FollowPolicy::AutoAccept | FollowPolicy::ManualReview => {
                 diesel::insert_into(follow_requests::table)
-                    .values(&NewFollowRequest::new(self.0, target_actor))
+                    .values(&NewFollowRequest::new(&self.0, target_actor))
                     .get_result(conn)
                     .map_err(From::from)
             }
@@ -471,9 +471,9 @@ impl From<diesel::result::Error> for FollowError {
     }
 }
 
-pub struct FollowRequestManager<'a>(&'a BaseActor);
+pub struct FollowRequestManager(BaseActor);
 
-impl<'a> FollowRequestManager<'a> {
+impl FollowRequestManager {
     pub fn accept_follow_request(
         &self,
         follow_request: FollowRequest,

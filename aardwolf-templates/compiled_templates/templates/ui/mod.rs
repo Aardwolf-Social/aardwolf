@@ -2,6 +2,9 @@
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
 use super::{Html,ToHtml};
+mod template_textarea_input;
+pub use self::template_textarea_input::textarea_input;
+
 mod template_text_input;
 pub use self::template_text_input::text_input;
 
