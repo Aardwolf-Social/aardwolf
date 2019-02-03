@@ -4,7 +4,7 @@ use std::io::{self, Write};
 #[allow(unused)]
 use super::{Html,ToHtml};
 use gettext::Catalog;
-use rocket_i18n::i18n;
+use gettext_macros::i18n;
 
 pub fn settings(out: &mut Write, catalog: &Catalog) -> io::Result<()> {
 out.write_all(b"<aside class=\"menu\">\n  <p class=\"menu-label\">\n    <a class=\"fa fa-chevron-left\">")?;

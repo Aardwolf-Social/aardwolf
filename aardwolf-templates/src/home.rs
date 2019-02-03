@@ -1,5 +1,8 @@
-use aardwolf_types::forms::posts::{PostCreationFormState, ValidatePostCreationFail};
+use aardwolf_types::forms::posts::{
+    PostCreationFormState, ValidatePostCreationFail, ValidateSourceError,
+};
 use gettext::Catalog;
+use gettext_macros::i18n;
 
 use crate::{
     Alert, AlertKind, Renderable, SelectInput, SelectOption, Shortcuts, TextInput, TextareaInput,
@@ -7,7 +10,7 @@ use crate::{
 
 pub struct NewPost<'a> {
     pub(crate) csrf: &'a str,
-    pub(crate) alert: Option<Alert<'a>>,
+    pub(crate) alert: Option<Alert>,
     pub(crate) source: TextareaInput<'a>,
     pub(crate) visibility: SelectInput<'a>,
     pub(crate) name: TextInput<'a>,
@@ -35,55 +38,56 @@ impl<'a> Home<'a> {
                 csrf,
                 alert: if server_error {
                     Some(Alert {
-                        catalog,
                         kind: AlertKind::Error,
-                        message: "There was an error creating your post",
+                        message: i18n!(catalog, "There was an error creating your post"),
                     })
                 } else {
                     None
                 },
                 source: TextareaInput {
-                    catalog,
                     name: "source",
                     label: None,
                     icon: None,
-                    placeholder: Some("What's on your mind?"),
+                    placeholder: Some(i18n!(catalog, "What's on your mind?")),
                     value: &state.source,
-                    error: validation_error.and_then(|e| e.source.as_ref()),
+                    error: validation_error.and_then(|e| {
+                        e.source.as_ref().map(|e| match *e {
+                            ValidateSourceError::Empty => i18n!(catalog, "Post cannot be empty"),
+                        })
+                    }),
                 },
                 visibility: SelectInput {
-                    catalog,
                     name: "visibility",
-                    label: "Post Visibility",
+                    label: i18n!(catalog, "Post Visibility"),
                     selected: state.visibility.to_string(),
                     options: vec![
                         SelectOption {
                             value: "PUB",
-                            display: "Visible to everyone",
+                            display: i18n!(catalog, "Visible to everyone"),
                         },
                         SelectOption {
                             value: "FL",
-                            display: "Visible to followers",
+                            display: i18n!(catalog, "Visible to followers"),
                         },
                         SelectOption {
                             value: "MUT",
-                            display: "Visible to mutuals",
+                            display: i18n!(catalog, "Visible to mutuals"),
                         },
                         SelectOption {
                             value: "LIST",
-                            display: "Only visible to mentioned users",
+                            display: i18n!(catalog, "Only visible to mentioned users"),
                         },
                     ],
-                    error: validation_error.and_then(|e| e.visibility.as_ref()),
+                    error: validation_error
+                        .and_then(|e| e.visibility.as_ref().map(|e| match *e {})),
                 },
                 name: TextInput {
-                    catalog,
                     name: "name",
-                    label: "Content Warning",
+                    label: i18n!(catalog, "Content Warning"),
                     icon: None,
-                    placeholder: Some("mh, nsfw, etc."),
+                    placeholder: Some(i18n!(catalog, "mh, nsfw, etc.")),
                     value: state.name.as_ref().map(|s| (*s).as_ref()).unwrap_or(""),
-                    error: validation_error.and_then(|e| e.name.as_ref()),
+                    error: validation_error.and_then(|e| e.name.as_ref().map(|e| match *e {})),
                 },
             },
             shortcuts: Shortcuts {

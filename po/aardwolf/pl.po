@@ -85,6 +85,26 @@ msgstr ""
 msgid "Allow people to search for this profile"
 msgstr ""
 
+# aardwolf-templates/src/home.rs:40
+msgid "There was an error creating your post"
+msgstr ""
+
+# aardwolf-templates/src/home.rs:50
+msgid "What's on your mind?"
+msgstr ""
+
+# aardwolf-templates/src/home.rs:55
+msgid "Post cannot be empty"
+msgstr ""
+
+# aardwolf-templates/src/home.rs:80
+msgid "Content Warning"
+msgstr ""
+
+# aardwolf-templates/src/home.rs:82
+msgid "mh, nsfw, etc."
+msgstr ""
+
 # aardwolf-templates/src/sign_in.rs:31
 msgid "There was an error logging in"
 msgstr ""

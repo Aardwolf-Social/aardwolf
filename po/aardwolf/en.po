@@ -84,6 +84,28 @@ msgstr "Only visible to mentioned users"
 msgid "Allow people to search for this profile"
 msgstr "Allow people to search for this profile"
 
+# aardwolf-templates/src/first_login.rs:40
+#, fuzzy
+msgid "There was an error creating your post"
+msgstr "There was an error creating your persona"
+
+# aardwolf-templates/src/home.rs:50
+msgid "What's on your mind?"
+msgstr ""
+
+# aardwolf-templates/src/sign_in.rs:54
+#, fuzzy
+msgid "Post cannot be empty"
+msgstr "Password cannot be empty"
+
+# aardwolf-templates/src/home.rs:80
+msgid "Content Warning"
+msgstr ""
+
+# aardwolf-templates/src/home.rs:82
+msgid "mh, nsfw, etc."
+msgstr ""
+
 # aardwolf-templates/src/sign_in.rs:31
 msgid "There was an error logging in"
 msgstr "There was an error logging in"

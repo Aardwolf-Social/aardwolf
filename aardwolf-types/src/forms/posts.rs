@@ -37,10 +37,21 @@ pub struct PostCreationFormState {
 #[derive(Clone, Debug, Fail, Serialize)]
 #[fail(display = "Error validating post creation form")]
 pub struct ValidatePostCreationFail {
-    pub visibility: Option<String>,
-    pub source: Option<String>,
-    pub name: Option<String>,
+    pub visibility: Option<ValidateVisibilityError>,
+    pub source: Option<ValidateSourceError>,
+    pub name: Option<ValidateNameError>,
 }
+
+#[derive(Clone, Debug, Serialize)]
+pub enum ValidateVisibilityError {}
+
+#[derive(Clone, Debug, Serialize)]
+pub enum ValidateSourceError {
+    Empty,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub enum ValidateNameError {}
 
 impl ValidatePostCreationFail {
     pub fn is_empty(&self) -> bool {
@@ -83,7 +94,7 @@ impl Validate for ValidatePostCreationForm {
         };
 
         if source.is_empty() {
-            err.source = Some("Post cannot be empty".to_owned());
+            err.source = Some(ValidateSourceError::Empty);
         }
 
         if !err.is_empty() {

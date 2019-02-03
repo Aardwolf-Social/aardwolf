@@ -4,7 +4,7 @@ use std::io::{self, Write};
 #[allow(unused)]
 use super::{Html,ToHtml};
 use gettext::Catalog;
-use rocket_i18n::i18n;
+use gettext_macros::i18n;
 use crate::{NewPost, templates::ui::{alert, select_input, text_input, textarea_input}};
 
 pub fn new_post(out: &mut Write, catalog: &Catalog, username: &str, new_post: &NewPost) -> io::Result<()> {

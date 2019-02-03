@@ -1,5 +1,3 @@
-@use rocket_i18n::i18n;
-
 @use crate::{TextareaInput, templates::ui::icon};
 
 @(input: &TextareaInput)
@@ -9,20 +7,20 @@
         @if let Some(i) = input.icon {
             @:icon(i)
         }
-        @if let Some(label) = input.label {
-            @i18n!(input.catalog, label)
+        @if let Some(ref label) = input.label {
+            @label
         }
     </label>
     <div class="aardwolf-input aardwolf-textarea-input">
-        @if let Some(placeholder) = input.placeholder {
-            <textarea name="@input.name" placeholder="@i18n!(input.catalog, placeholder)" value="@input.value"></textarea>
+        @if let Some(ref placeholder) = input.placeholder {
+            <textarea name="@input.name" placeholder="@placeholder" value="@input.value"></textarea>
         } else {
             <textarea name="@input.name" value="@input.value"></textarea>
         }
     </div>
     <div class="aardwolf-input-meta">
-        @if let Some(error) = input.error {
-            <span class="aardwolf-input-error">@i18n!(input.catalog, error)</span>
+        @if let Some(ref error) = input.error {
+            <span class="aardwolf-input-error">@error</span>
         }
     </div>
 </div>

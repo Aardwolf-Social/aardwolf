@@ -84,6 +84,26 @@ msgstr ""
 msgid "Allow people to search for this profile"
 msgstr ""
 
+# aardwolf-templates/src/home.rs:42
+msgid "There was an error creating your post"
+msgstr ""
+
+# aardwolf-templates/src/home.rs:51
+msgid "What's on your mind?"
+msgstr ""
+
+# aardwolf-templates/src/home.rs:55
+msgid "Post cannot be empty"
+msgstr ""
+
+# aardwolf-templates/src/home.rs:86
+msgid "Content Warning"
+msgstr ""
+
+# aardwolf-templates/src/home.rs:88
+msgid "mh, nsfw, etc."
+msgstr ""
+
 # aardwolf-templates/src/sign_in.rs:31
 msgid "There was an error logging in"
 msgstr ""
@@ -300,16 +320,8 @@ msgstr ""
 msgid "Get posting!"
 msgstr ""
 
-# aardwolf-templates/src/../compiled_templates/templates/template_new_post.rs:17
-msgid "Press enter to awoo"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/template_new_post.rs:15
-msgid "Awoo"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/template_new_post.rs:13
-msgid "Add a comment..."
+# aardwolf-templates/src/../compiled_templates/templates/template_new_post.rs:28
+msgid "Awoo!"
 msgstr ""
 
 # aardwolf-templates/src/../compiled_templates/templates/template_footer.rs:20
