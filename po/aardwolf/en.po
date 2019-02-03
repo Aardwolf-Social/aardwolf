@@ -2,137 +2,128 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aardwolf\n"
 "Report-Msgid-Bugs-To: \n"
-<<<<<<< HEAD
-"POT-Creation-Date: 2018-06-21 19:03-0500\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: Aardwolf Translators <translations@aardwolf.social>\n"
-"Language: \n"
-=======
 "POT-Creation-Date: 2018-06-15 16:33-0700\n"
 "PO-Revision-Date: 2018-06-15 16:33-0700\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
-"Language: pl\n"
->>>>>>> master
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 # aardwolf-templates/src/first_login.rs:40
 msgid "There was an error creating your persona"
-msgstr ""
+msgstr "There was an error creating your persona"
 
 # aardwolf-templates/src/first_login.rs:47
 msgid "Display Name"
-msgstr ""
+msgstr "Display Name"
 
 # aardwolf-templates/src/first_login.rs:49
 msgid "Display name"
-msgstr ""
+msgstr "Display name"
 
 # aardwolf-templates/src/first_login.rs:54
 msgid "Display name must not be empty"
-msgstr ""
+msgstr "Display name must not be empty"
 
 # aardwolf-templates/src/first_login.rs:61
 msgid "Username"
-msgstr ""
+msgstr "Username"
 
 # aardwolf-templates/src/first_login.rs:68
 msgid "Username must not be empty"
-msgstr ""
+msgstr "Username must not be empty"
 
 # aardwolf-templates/src/first_login.rs:71
 msgid "Username must not contain special characters"
-msgstr ""
+msgstr "Username must not contain special characters"
 
 # aardwolf-templates/src/first_login.rs:73
 msgid "Username is too long"
-msgstr ""
+msgstr "Username is too long"
 
 # aardwolf-templates/src/first_login.rs:79
 msgid "Follow Policy"
-msgstr ""
+msgstr "Follow Policy"
 
 # aardwolf-templates/src/first_login.rs:84
 msgid "Automatically accept new followers"
-msgstr ""
+msgstr "Automatically accept new followers"
 
 # aardwolf-templates/src/first_login.rs:88
 msgid "Automatically reject new followers"
-msgstr ""
+msgstr "Automatically reject new followers"
 
 # aardwolf-templates/src/first_login.rs:92
 msgid "Manually review new followers"
-msgstr ""
+msgstr "Manually review new followers"
 
 # aardwolf-templates/src/first_login.rs:99
 msgid "Post Visibility"
-msgstr ""
+msgstr "Post Visibility"
 
 # aardwolf-templates/src/first_login.rs:104
 msgid "Visible to everyone"
-msgstr ""
+msgstr "Visible to everyone"
 
 # aardwolf-templates/src/first_login.rs:108
 msgid "Visible to followers"
-msgstr ""
+msgstr "Visible to followers"
 
 # aardwolf-templates/src/first_login.rs:112
 msgid "Visible to mutuals"
-msgstr ""
+msgstr "Visible to mutuals"
 
 # aardwolf-templates/src/first_login.rs:116
 msgid "Only visible to mentioned users"
-msgstr ""
+msgstr "Only visible to mentioned users"
 
 # aardwolf-templates/src/first_login.rs:124
 msgid "Allow people to search for this profile"
-msgstr ""
+msgstr "Allow people to search for this profile"
 
 # aardwolf-templates/src/sign_in.rs:31
 msgid "There was an error logging in"
-msgstr ""
+msgstr "There was an error logging in"
 
 # aardwolf-templates/src/sign_in.rs:38
 msgid "E-Mail Address"
-msgstr ""
+msgstr "E-Mail Address"
 
 # aardwolf-templates/src/sign_in.rs:43
 msgid "Email cannot be empty"
-msgstr ""
+msgstr "Email cannot be empty"
 
 # aardwolf-templates/src/sign_in.rs:49
 msgid "Password"
-msgstr ""
+msgstr "Password"
 
 # aardwolf-templates/src/sign_in.rs:54
 msgid "Password cannot be empty"
-msgstr ""
+msgstr "Password cannot be empty"
 
 # aardwolf-templates/src/sign_up.rs:33
 msgid "There was an error creating your account"
-msgstr ""
+msgstr "There was an error creating your account"
 
 # aardwolf-templates/src/sign_up.rs:47
 msgid "Invalid email address"
-msgstr ""
+msgstr "Invalid email address"
 
 # aardwolf-templates/src/sign_up.rs:62
 msgid "Password is too short"
-msgstr ""
+msgstr "Password is too short"
 
 # aardwolf-templates/src/sign_up.rs:69
 msgid "Password Confirmation"
-msgstr ""
+msgstr "Password Confirmation"
 
 # aardwolf-templates/src/sign_up.rs:74
 msgid "Password confirmation cannot be empty"
-msgstr ""
+msgstr "Password confirmation cannot be empty"
 
 # aardwolf-templates/src/sign_up.rs:77
 msgid "Password confirmation must match password"
-msgstr ""
+msgstr "Password confirmation must match password"

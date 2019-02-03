@@ -1,5 +1,3 @@
-@use rocket_i18n::i18n;
-
 @use crate::{CheckboxInput, templates::ui::icon};
 
 @(input: &CheckboxInput)
@@ -9,7 +7,7 @@
         @if let Some(ref i) = input.icon {
             @:icon(i)
         }
-        @i18n!(input.catalog, input.label)
+        @input.label
     </label>
     <div class="aardwolf-input aardwolf-checkbox-input">
         @if input.checked {
@@ -19,8 +17,8 @@
         }
     </div>
     <div class="aardwolf-input-meta">
-        @if let Some(error) = input.error {
-            <span class="aardwolf-input-error">@i18n!(input.catalog, error)</span>
+        @if let Some(ref error) = input.error {
+            <span class="aardwolf-input-error">@error</span>
         }
     </div>
 </div>

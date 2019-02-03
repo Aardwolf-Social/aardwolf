@@ -1,193 +1,136 @@
-# 
-# These are the string values for the (American) English translation
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: aardwolf\n"
 "Report-Msgid-Bugs-To: \n"
+<<<<<<< HEAD
 "POT-Creation-Date: 2018-06-21 19:03-0500\n"
 "PO-Revision-Date: 2018-11-21 08:02-500\n"
 "Last-Translator: asonix <asonix@asonix.dog>\n"
 "Language-Team: Aardwolf Translators asonix, I guess we could use <translations@aardwolf.social>\n"
+=======
+"POT-Creation-Date: 2018-06-15 16:33-0700\n"
+"PO-Revision-Date: 2018-06-15 16:33-0700\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+>>>>>>> master
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#
-# multipurpose
-# These strings are used in multiple places
-# Replace this with the name of your instance ;D
-msgid "Aardwolf Instance"
-msgstr ""
+# aardwolf-templates/src/first_login.rs:40
+msgid "There was an error creating your persona"
+msgstr "There was an error creating your persona"
 
-msgid "Go back"
-msgstr ""
-
-msgid "Submit"
-msgstr ""
-
-msgid "Home"
-msgstr ""
-
-msgid "Profile"
-msgstr ""
-
-msgid "Messages"
-msgstr ""
-
-msgid "Login"
-msgstr ""
-
-msgid "Logout"
-msgstr ""
-
-msgid "Error Message"
-msgstr ""
-
-#
-# asides/aside_settings
-#
-msgid "Settings"
-msgstr ""
-
-msgid "Edit Profile"
-msgstr ""
-
-msgid "Preferences"
-msgstr ""
-
-msgid "Muted Keywords"
-msgstr ""
-
-msgid "Muted Users"
-msgstr ""
-
-msgid "Notifications"
-msgstr ""
-
-msgid "Security"
-msgstr ""
-
-msgid "Data Import"
-msgstr ""
-
-msgid "Data Export"
-msgstr ""
-
-msgid "Authorized Apps"
-msgstr ""
-
-msgid "Authorized Followers"
-msgstr ""
-
-msgid "Invite People"
-msgstr ""
-
-#
-# asides/aside_shortcuts
-#
-msgid "News Feed"
-msgstr ""
-
-msgid "Shortcuts"
-msgstr ""
-
-msgid "Calendar"
-msgstr ""
-
-msgid "Groups"
-msgstr ""
-
-msgid "Lists"
-msgstr ""
-
-msgid "Photos"
-msgstr ""
-
-msgid "Favorites"
-msgstr ""
-
-msgid "Weather"
-msgstr ""
-
-msgid "Create"
-msgstr ""
-
-msgid "New Event"
-msgstr ""
-
-msgid "New Group"
-msgstr ""
-
-#
-# containers/containter_preferences
-#
-msgid "Language"
-msgstr ""
-
-#
-# containers/containter_preferences
-#
-msgid "profile_bio"
-msgstr ""
-
-#
-# containers/containter_preferences (Profile Edit)
-#
-msgid "Subtitle"
-msgstr ""
-
+# aardwolf-templates/src/first_login.rs:47
 msgid "Display Name"
-msgstr ""
+msgstr "Display Name"
 
-msgid "characters remaining"
-msgid_plural "One character remaining"
-msgstr[0] ""
-msgstr[1] ""
+# aardwolf-templates/src/first_login.rs:49
+msgid "Display name"
+msgstr "Display name"
 
-msgid "About you"
-msgstr ""
+# aardwolf-templates/src/first_login.rs:54
+msgid "Display name must not be empty"
+msgstr "Display name must not be empty"
 
-msgid "Upload Avatar"
-msgstr ""
+# aardwolf-templates/src/first_login.rs:61
+msgid "Username"
+msgstr "Username"
 
-msgid "Choose a file…"
-msgstr ""
+# aardwolf-templates/src/first_login.rs:68
+msgid "Username must not be empty"
+msgstr "Username must not be empty"
 
-msgid "No file chosen"
-msgstr ""
+# aardwolf-templates/src/first_login.rs:71
+msgid "Username must not contain special characters"
+msgstr "Username must not contain special characters"
 
-msgid "PNG, GIF or JPG. At most 2MB. Will be downscaled to 120x120px"
-msgstr ""
+# aardwolf-templates/src/first_login.rs:73
+msgid "Username is too long"
+msgstr "Username is too long"
 
-msgid "PNG, GIF or JPG. At most 2MB. Will be downscaled to 700x335px"
-msgstr ""
+# aardwolf-templates/src/first_login.rs:79
+msgid "Follow Policy"
+msgstr "Follow Policy"
 
-#
-# new_post
-#
-msgid "Press enter to awoo"
-msgstr ""
+# aardwolf-templates/src/first_login.rs:84
+msgid "Automatically accept new followers"
+msgstr "Automatically accept new followers"
 
-msgid "Awoo"
-msgstr ""
+# aardwolf-templates/src/first_login.rs:88
+msgid "Automatically reject new followers"
+msgstr "Automatically reject new followers"
 
-msgid "Reply"
-msgstr ""
+# aardwolf-templates/src/first_login.rs:92
+msgid "Manually review new followers"
+msgstr "Manually review new followers"
 
-#
-# includes/home_footer
-#
-msgid "Terms of Service"
-msgstr ""
+# aardwolf-templates/src/first_login.rs:99
+msgid "Post Visibility"
+msgstr "Post Visibility"
 
-msgid "Copyright 2018"
-msgstr ""
+# aardwolf-templates/src/first_login.rs:104
+msgid "Visible to everyone"
+msgstr "Visible to everyone"
 
-msgid "Check us out on GitHub"
-msgstr ""
+# aardwolf-templates/src/first_login.rs:108
+msgid "Visible to followers"
+msgstr "Visible to followers"
 
-msgid "Buy the team a coffee"
-msgstr ""
+# aardwolf-templates/src/first_login.rs:112
+msgid "Visible to mutuals"
+msgstr "Visible to mutuals"
+
+# aardwolf-templates/src/first_login.rs:116
+msgid "Only visible to mentioned users"
+msgstr "Only visible to mentioned users"
+
+# aardwolf-templates/src/first_login.rs:124
+msgid "Allow people to search for this profile"
+msgstr "Allow people to search for this profile"
+
+# aardwolf-templates/src/sign_in.rs:31
+msgid "There was an error logging in"
+msgstr "There was an error logging in"
+
+# aardwolf-templates/src/sign_in.rs:38
+msgid "E-Mail Address"
+msgstr "E-Mail Address"
+
+# aardwolf-templates/src/sign_in.rs:43
+msgid "Email cannot be empty"
+msgstr "Email cannot be empty"
+
+# aardwolf-templates/src/sign_in.rs:49
+msgid "Password"
+msgstr "Password"
+
+# aardwolf-templates/src/sign_in.rs:54
+msgid "Password cannot be empty"
+msgstr "Password cannot be empty"
+
+# aardwolf-templates/src/sign_up.rs:33
+msgid "There was an error creating your account"
+msgstr "There was an error creating your account"
+
+# aardwolf-templates/src/sign_up.rs:47
+msgid "Invalid email address"
+msgstr "Invalid email address"
+
+# aardwolf-templates/src/sign_up.rs:62
+msgid "Password is too short"
+msgstr "Password is too short"
+
+# aardwolf-templates/src/sign_up.rs:69
+msgid "Password Confirmation"
+msgstr "Password Confirmation"
+
+# aardwolf-templates/src/sign_up.rs:74
+msgid "Password confirmation cannot be empty"
+msgstr "Password confirmation cannot be empty"
+
+# aardwolf-templates/src/sign_up.rs:77
+msgid "Password confirmation must match password"
+msgstr "Password confirmation must match password"

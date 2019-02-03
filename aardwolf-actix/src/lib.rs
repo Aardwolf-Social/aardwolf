@@ -200,8 +200,7 @@ pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
     HttpServer::new(move || {
         let state = AppConfig {
             db: db.clone(),
-            // TODO: domain and languages should be config'd
-            translations: rocket_i18n::i18n("aardwolf", vec!["en", "pl"]),
+            translations: aardwolf_templates::managed_state(),
             generator: url_generator.clone(),
         };
 

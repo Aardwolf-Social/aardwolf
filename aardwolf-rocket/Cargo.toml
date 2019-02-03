@@ -53,6 +53,4 @@ version = "0.4.0"
 features = ["json"]
 
 [dependencies.rocket_i18n]
-version = "0.3"
-git = "https://github.com/Aardwolf-Social/rocket_i18n.git"
-branch = "asonix/rocket-stable"
+version = "0.4"

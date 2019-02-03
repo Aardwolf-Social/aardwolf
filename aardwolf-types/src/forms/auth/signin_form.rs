@@ -9,8 +9,8 @@ use crate::{
 #[derive(Clone, Debug, Fail, Serialize)]
 #[fail(display = "Missing required field")]
 pub struct ValidateSignInFormFail {
-    pub email: Option<String>,
-    pub password: Option<String>,
+    pub email: Option<SignInEmailValidationFail>,
+    pub password: Option<SignInPasswordValidationFail>,
 }
 
 impl ValidateSignInFormFail {
@@ -20,6 +20,16 @@ impl ValidateSignInFormFail {
 }
 
 impl AardwolfFail for ValidateSignInFormFail {}
+
+#[derive(Clone, Debug, Serialize)]
+pub enum SignInEmailValidationFail {
+    Empty,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub enum SignInPasswordValidationFail {
+    Empty,
+}
 
 pub struct SignInFormState {
     pub email: String,
@@ -58,21 +68,21 @@ impl Validate for ValidateSignInForm {
         };
 
         if self.0.email.is_empty() {
-            validation_error.email = Some("Email must be present".to_owned());
+            validation_error.email = Some(SignInEmailValidationFail::Empty);
         }
 
         if self.0.password.is_empty() {
-            validation_error.password = Some("Password must be present".to_owned());
+            validation_error.password = Some(SignInPasswordValidationFail::Empty);
         }
 
-        if validation_error.is_empty() {
-            Ok(ValidatedSignInForm {
-                email: self.0.email,
-                password: self.0.password,
-            })
-        } else {
-            Err(validation_error)
+        if !validation_error.is_empty() {
+            return Err(validation_error);
         }
+
+        Ok(ValidatedSignInForm {
+            email: self.0.email,
+            password: self.0.password,
+        })
     }
 }
 

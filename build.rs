@@ -1,5 +1,3 @@
-extern crate rocket_i18n;
-
 use std::env;
 
 fn main() {
@@ -9,14 +7,6 @@ fn main() {
         write_config();
     }
     validate_features();
-    build_translations();
-}
-
-/* Compile the translations
- */
-fn build_translations() {
-    rocket_i18n::compile_po("aardwolf", &["en", "pl"]);
-    rocket_i18n::update_po("aardwolf", &["en", "pl"]);
 }
 
 /* Looks for a .config file. If found, reads it's values into the

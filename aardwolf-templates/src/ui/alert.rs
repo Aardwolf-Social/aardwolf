@@ -1,5 +1,3 @@
-use gettext::Catalog;
-
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub enum AlertKind {
     Error,
@@ -21,8 +19,7 @@ impl std::fmt::Display for AlertKind {
     }
 }
 
-pub struct Alert<'a> {
-    pub(crate) catalog: &'a Catalog,
+pub struct Alert {
     pub(crate) kind: AlertKind,
-    pub(crate) message: &'a str,
+    pub(crate) message: String,
 }
