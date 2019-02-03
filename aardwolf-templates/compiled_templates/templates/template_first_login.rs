@@ -3,7 +3,7 @@ use std::io::{self, Write};
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
 use super::{Html,ToHtml};
-use rocket_i18n::i18n;
+use gettext_macros::i18n;
 use crate::{FirstLogin, templates::{base, ui::{alert, text_input, select_input, checkbox_input}}};
 
 pub fn first_login(out: &mut Write, first_login: &FirstLogin) -> io::Result<()> {

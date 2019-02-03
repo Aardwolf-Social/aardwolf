@@ -3,7 +3,6 @@ use std::io::{self, Write};
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
 use super::{Html,ToHtml};
-use rocket_i18n::i18n;
 use crate::{CheckboxInput, templates::ui::icon};
 
 pub fn checkbox_input(out: &mut Write, input: &CheckboxInput) -> io::Result<()> {
@@ -16,7 +15,7 @@ icon(out, i)?;
 out.write_all(b"\n        ")?;
 }
 out.write_all(b"\n        ")?;
-i18n!(input.catalog, input.label).to_html(out)?;
+input.label.to_html(out)?;
 out.write_all(b"\n    </label>\n    <div class=\"aardwolf-input aardwolf-checkbox-input\">\n        ")?;
 if input.checked {
 out.write_all(b"\n            <input type=\"checkbox\" name=\"")?;
@@ -28,9 +27,9 @@ input.name.to_html(out)?;
 out.write_all(b"\" value=\"true\" />\n        ")?;
 }
 out.write_all(b"\n    </div>\n    <div class=\"aardwolf-input-meta\">\n        ")?;
-if let Some(error) = input.error {
+if let Some(ref error) = input.error {
 out.write_all(b"\n            <span class=\"aardwolf-input-error\">")?;
-i18n!(input.catalog, error).to_html(out)?;
+error.to_html(out)?;
 out.write_all(b"</span>\n        ")?;
 }
 out.write_all(b"\n    </div>\n</div>\n")?;
