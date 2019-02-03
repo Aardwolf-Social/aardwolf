@@ -41,11 +41,11 @@ impl PersonaCreationForm {
 #[derive(Clone, Debug, Fail, Serialize)]
 #[fail(display = "Failed to validate persona creation form")]
 pub struct ValidatePersonaCreationFail {
-    pub display_name: Option<String>,
-    pub follow_policy: Option<String>,
-    pub default_visibility: Option<String>,
-    pub shortname: Option<String>,
-    pub is_searchable: Option<String>,
+    pub display_name: Option<ValidateDisplayNameFail>,
+    pub follow_policy: Option<ValidateFollowPolicyFail>,
+    pub default_visibility: Option<ValidateDefaultVisibilityFail>,
+    pub shortname: Option<ValidateShortnameFail>,
+    pub is_searchable: Option<ValidateIsSearchableFail>,
 }
 
 impl ValidatePersonaCreationFail {
@@ -59,6 +59,27 @@ impl ValidatePersonaCreationFail {
 }
 
 impl AardwolfFail for ValidatePersonaCreationFail {}
+
+#[derive(Clone, Debug, Serialize)]
+pub enum ValidateDisplayNameFail {
+    Empty,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub enum ValidateFollowPolicyFail {}
+
+#[derive(Clone, Debug, Serialize)]
+pub enum ValidateDefaultVisibilityFail {}
+
+#[derive(Clone, Debug, Serialize)]
+pub enum ValidateShortnameFail {
+    Empty,
+    SpecialCharacters,
+    TooLong,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub enum ValidateIsSearchableFail {}
 
 pub struct ValidatePersonaCreationForm(pub PersonaCreationForm);
 
@@ -80,19 +101,19 @@ impl Validate for ValidatePersonaCreationForm {
         };
 
         if self.0.display_name.is_empty() {
-            err.display_name = Some("Display Name cannot be empty".to_owned());
+            err.display_name = Some(ValidateDisplayNameFail::Empty);
         }
 
         if self.0.shortname.is_empty() {
-            err.shortname = Some("Username cannot be empty".to_owned());
+            err.shortname = Some(ValidateShortnameFail::Empty);
         }
 
         if self.0.shortname.chars().any(|c| !c.is_alphanumeric()) {
-            err.shortname = Some("Username cannot contain special characters".to_owned());
+            err.shortname = Some(ValidateShortnameFail::SpecialCharacters);
         }
 
         if self.0.shortname.len() > 30 {
-            err.shortname = Some("Username is too long".to_owned());
+            err.shortname = Some(ValidateShortnameFail::TooLong);
         }
 
         if !err.is_empty() {

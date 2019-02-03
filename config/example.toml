@@ -1,43 +1,70 @@
-# Assets - This is where static files are stored for running in development mode
 [Assets]
+##
+# Assets - This is where static files are stored for running in development mode
+
 web = "dist"
 themes = "web/themes"
 emoji = "web/emoji"
 
-# Templates - the directories where Tera templates are stored
 [Templates]
+# Templates - the directories where UI templates are stored
+
 dir = "./templates/**/*"
 
-# Log - This section describes how logging should be handled in the application
 [Log]
+# Log - This section describes how logging should be handled in the application
 # Specifies the file that the logs should be stored in
+
 file = "aardwolf.log"
+
+[Web.Listen]
+
 # Web.Listen - This section describes where to listen for incoming HTTP(S) requests
 # for the web interface.
-[Web.Listen]
 # Web.Listen.address - The network address the server should listen on. Set this to your
 # instance's public IP address.
+
 address = "127.0.0.1"
+
 # Listen.port - What port to listen on for requests. This can be any valid port number,
 # HTTP defaults to port 80, and https defaults to port 443.
 # NOTE: If you want to use port 80 or 443, you will have to run the service as root (sudo cargo run...)
 # Ports above 1024 do not require root/sudo priviledges (ex: 8080)
+
 #port = 80
 port = 8080
 
-# Database - This section describes how and where to connect to the database.
+
+[Instance]
+# Instance - This section describes particular details about the Aardwolf server instance
+#   yourdomain.tld
+domain = "yourdomain.tld"
+
+# Do you want to enable HTTPS?
+#   true |false
+https = false
+
+
 [Database]
+# Database - This section describes how and where to connect to the database.
+
 # Database.type - Specifies what kind of database we're connecting to. Valid values are:
 #   postgres | postgresql - Aardwolf will connect to a PostgreSQL server
 #   mysql                 - Aardwolf will connect to a MySQL server (WIP)
+
 type = "postgresql"
+
 # Database.host - The ip address of the machine hosting the database.
 host = "127.0.0.1"
+
 # Database.port - What port the database server is listening on. PostgreSQL's default is 5432.
 port = 5432
+
 # Database.username - Username to log into the database server with.
 username = "aardwolf"
+
 # Database.password - Password Database.username.
 password = "p4ssw0rd"
+
 # Database.database - Which database on the server holds Aardwolf's information.
 database = "aardwolf"

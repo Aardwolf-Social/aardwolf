@@ -3,11 +3,12 @@ mod signup_form;
 
 pub use self::{
     signin_form::{
-        SignInForm, SignInFormState, ValidateSignInForm, ValidateSignInFormFail,
-        ValidatedSignInForm,
+        SignInEmailValidationFail, SignInForm, SignInFormState, SignInPasswordValidationFail,
+        ValidateSignInForm, ValidateSignInFormFail, ValidatedSignInForm,
     },
     signup_form::{
-        SignUpForm, SignUpFormState, ValidateSignUpForm, ValidateSignUpFormFail,
-        ValidatedSignUpForm,
+        SignUpEmailValidationFail, SignUpForm, SignUpFormState,
+        SignUpPasswordConfirmationValidationFail, SignUpPasswordValidationFail, ValidateSignUpForm,
+        ValidateSignUpFormFail, ValidatedSignUpForm,
     },
 };

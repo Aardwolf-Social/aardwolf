@@ -1,12 +1,15 @@
-use aardwolf_types::forms::auth::ValidateSignInFormFail;
+use aardwolf_types::forms::auth::{
+    SignInEmailValidationFail, SignInPasswordValidationFail, ValidateSignInFormFail,
+};
 use gettext::Catalog;
+use gettext_macros::i18n;
 
 use crate::{Alert, AlertKind, EmailInput, PasswordInput, Renderable};
 
 pub struct SignIn<'a> {
     pub(crate) catalog: &'a Catalog,
     pub(crate) csrf: &'a str,
-    pub(crate) alert: Option<Alert<'a>>,
+    pub(crate) alert: Option<Alert>,
     pub(crate) email: EmailInput<'a>,
     pub(crate) password: PasswordInput<'a>,
 }
@@ -24,27 +27,34 @@ impl<'a> SignIn<'a> {
             csrf,
             alert: if server_error {
                 Some(Alert {
-                    catalog,
                     kind: AlertKind::Error,
-                    message: "There was an error logging in",
+                    message: i18n!(catalog, "There was an error logging in"),
                 })
             } else {
                 None
             },
             email: EmailInput {
-                catalog,
                 name: "email",
-                label: "E-Mail Address",
-                placeholder: Some("E-Mail Address"),
+                label: i18n!(catalog, "E-Mail Address"),
+                placeholder: Some(i18n!(catalog, "E-Mail Address")),
                 value: email,
-                error: validation_error.and_then(|e| e.email.as_ref()),
+                error: validation_error.and_then(|e| {
+                    e.email.as_ref().map(|e| match *e {
+                        SignInEmailValidationFail::Empty => i18n!(catalog, "Email cannot be empty"),
+                    })
+                }),
             },
             password: PasswordInput {
-                catalog,
                 name: "password",
-                label: "Password",
-                placeholder: Some("Password"),
-                error: validation_error.and_then(|e| e.password.as_ref()),
+                label: i18n!(catalog, "Password"),
+                placeholder: Some(i18n!(catalog, "Password")),
+                error: validation_error.and_then(|e| {
+                    e.password.as_ref().map(|e| match *e {
+                        SignInPasswordValidationFail::Empty => {
+                            i18n!(catalog, "Password cannot be empty")
+                        }
+                    })
+                }),
             },
         }
     }
