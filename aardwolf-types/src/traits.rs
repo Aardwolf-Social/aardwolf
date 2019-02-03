@@ -14,3 +14,9 @@ pub trait DbAction {
 
     fn db_action(self, conn: &PgConnection) -> Result<Self::Item, Self::Error>;
 }
+
+pub trait Export {
+    type Item;
+
+    fn export(self) -> Self::Item;
+}

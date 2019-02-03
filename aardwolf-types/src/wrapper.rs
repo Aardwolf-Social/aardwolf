@@ -1,5 +1,10 @@
-use crate::traits::{DbAction, Validate};
+use crate::{
+    error::AardwolfFail,
+    traits::{DbAction, Export, Validate},
+};
+
 use failure::Fail;
+use serde_derive::Serialize;
 
 pub trait Wrapped: Sized {
     type Wrapper: From<Self>;
@@ -58,3 +63,45 @@ where
         ValidateWrapper::new(v)
     }
 }
+
+pub struct ExportWrapper<E, T>(pub E)
+where
+    E: Export<Item = T>;
+
+impl<E, T> ExportWrapper<E, T>
+where
+    E: Export<Item = T>,
+{
+    pub fn new(export: E) -> Self {
+        ExportWrapper(export)
+    }
+}
+
+impl<E, T> From<E> for ExportWrapper<E, T>
+where
+    E: Export<Item = T>,
+{
+    fn from(e: E) -> Self {
+        ExportWrapper::new(e)
+    }
+}
+
+pub struct ExportKind<T>(pub T);
+
+impl<T> Export for ExportKind<T> {
+    type Item = T;
+
+    fn export(self) -> Self::Item {
+        self.0
+    }
+}
+
+impl<T> Wrapped for ExportKind<T> {
+    type Wrapper = ExportWrapper<ExportKind<T>, T>;
+}
+
+#[derive(Clone, Debug, Fail, Serialize)]
+#[fail(display = "Failed to export")]
+pub struct ExportFail;
+
+impl AardwolfFail for ExportFail {}
