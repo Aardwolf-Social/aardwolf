@@ -1,7 +1,5 @@
-#![allow(proc_macro_derive_resolution_fallback)]
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
-use mime::Mime as OrigMime;
 use uuid::Uuid;
 
 pub mod direct_post;
@@ -11,6 +9,7 @@ use crate::{
     base_actor::BaseActor,
     base_post::direct_post::DirectPost,
     file::image::Image,
+    generate_urls::GenerateUrls,
     schema::base_posts,
     sql_types::{Mime, PostVisibility},
 };
@@ -92,28 +91,28 @@ impl NewBasePost {
 
     pub fn local(
         name: Option<String>,
-        media_type: OrigMime,
+        media_type: Mime,
         posted_by: &BaseActor,
         icon: Option<&Image>,
         visibility: PostVisibility,
-        generate_id: impl Fn(&Uuid) -> String,
+        generate_id: impl GenerateUrls,
     ) -> Self {
         let uuid = Uuid::new_v4();
 
         NewBasePost {
             name,
-            media_type: media_type.into(),
+            media_type,
             posted_by: posted_by.id(),
             icon: icon.map(|i| i.id()),
             visibility,
-            activitypub_id: generate_id(&uuid),
+            activitypub_id: generate_id.post_id(&posted_by, &uuid),
             local_uuid: Some(uuid),
         }
     }
 
     pub fn new(
         name: Option<String>,
-        media_type: OrigMime,
+        media_type: Mime,
         posted_by: &BaseActor,
         icon: Option<&Image>,
         visibility: PostVisibility,
@@ -121,7 +120,7 @@ impl NewBasePost {
     ) -> Self {
         NewBasePost {
             name,
-            media_type: media_type.into(),
+            media_type,
             posted_by: posted_by.id(),
             icon: icon.map(|i| i.id()),
             visibility,

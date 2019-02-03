@@ -1,9 +1,9 @@
-#![allow(proc_macro_derive_resolution_fallback)]
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
 use uuid::Uuid;
 
 use crate::{
+    generate_urls::GenerateUrls,
     schema::base_actors,
     sql_types::{FollowPolicy, Url},
     user::UserLike,
@@ -59,7 +59,7 @@ impl ModifiedBaseActor {
     }
 }
 
-#[derive(Debug, Queryable, QueryableByName)]
+#[derive(Clone, Debug, Queryable, QueryableByName)]
 #[table_name = "base_actors"]
 pub struct BaseActor {
     id: i32,
@@ -93,6 +93,34 @@ impl BaseActor {
             private_key_der: self.private_key_der,
             public_key_der: self.public_key_der,
         }
+    }
+
+    pub fn by_persona_id(
+        persona_id: i32,
+        conn: &PgConnection,
+    ) -> Result<Self, diesel::result::Error> {
+        use crate::schema::personas;
+        use diesel::prelude::*;
+
+        base_actors::table
+            .inner_join(personas::table.on(base_actors::dsl::id.eq(personas::dsl::base_actor)))
+            .filter(personas::dsl::id.eq(persona_id))
+            .select((
+                base_actors::dsl::id,
+                base_actors::dsl::display_name,
+                base_actors::dsl::profile_url,
+                base_actors::dsl::inbox_url,
+                base_actors::dsl::outbox_url,
+                base_actors::dsl::local_user,
+                base_actors::dsl::follow_policy,
+                base_actors::dsl::created_at,
+                base_actors::dsl::updated_at,
+                base_actors::dsl::private_key_der,
+                base_actors::dsl::public_key_der,
+                base_actors::dsl::local_uuid,
+                base_actors::dsl::activitypub_id,
+            ))
+            .get_result(conn)
     }
 
     pub fn is_following(
@@ -217,13 +245,6 @@ impl NewBaseActor {
             activitypub_id,
         }
     }
-}
-
-pub trait GenerateUrls {
-    fn activitypub_id(&self, uuid: &Uuid) -> String;
-    fn profile_url(&self, uuid: &Uuid) -> Url;
-    fn inbox_url(&self, uuid: &Uuid) -> Url;
-    fn outbox_url(&self, uuid: &Uuid) -> Url;
 }
 
 #[cfg(test)]

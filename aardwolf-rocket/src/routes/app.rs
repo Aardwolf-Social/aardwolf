@@ -1,40 +1,45 @@
 use std::path::{Path, PathBuf};
 
-use aardwolf_models::user::UserLike;
+use aardwolf_types::forms::posts::PostCreationFormState;
 use rocket::{
-    http::Cookies,
     response::{status::NotFound, NamedFile, Redirect},
+    Response,
 };
 use rocket_i18n::I18n;
 
-use crate::{render_template, types::user::SignedInUser, DbConn, ResponseOrRedirect};
+use crate::{
+    render_template,
+    types::{actor::CurrentActor, user::SignedInUser},
+};
 
 #[get("/")]
-pub fn home(
-    user: SignedInUser,
-    mut cookies: Cookies,
-    i18n: I18n,
-    _db: DbConn,
-) -> ResponseOrRedirect {
-    let res = if cookies.get_private("persona_id").is_some() || user.0.primary_persona().is_some() {
-        render_template(&aardwolf_templates::Home::new(
-            &i18n.catalog,
-            user.0.id().to_string().as_ref(),
-            user.0.id().to_string().as_ref(),
-        ))
-        .into()
-    } else {
-        Redirect::to("/personas/create").into()
-    };
+pub fn home(actor: CurrentActor, i18n: I18n) -> Response<'static> {
+    let res = render_template(&aardwolf_templates::Home::new(
+        &i18n.catalog,
+        &actor.1.profile_url().0.to_string(),
+        &actor.2.shortname(),
+        "csrf token",
+        &PostCreationFormState {
+            source: "".to_owned(),
+            name: None,
+            visibility: actor.2.default_visibility(),
+        },
+        None,
+        false,
+    ));
 
-    drop(user);
     drop(i18n);
-    drop(_db);
 
     res
 }
 
 #[get("/", rank = 2)]
+pub fn first_login_redirect(user: SignedInUser) -> Redirect {
+    drop(user);
+    Redirect::to("/personas/create")
+}
+
+#[get("/", rank = 3)]
 pub fn home_redirect() -> Redirect {
     Redirect::to("/auth/sign_in")
 }

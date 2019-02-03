@@ -9,7 +9,7 @@
     </section>
     <section class="section">
         <div class="container">
-            @:new_post(home.catalog)
+            @:new_post(home.catalog, &home.shortcuts.username, &home.new_post)
             @:feed(home.catalog)
         </div>
     </section>

@@ -44,16 +44,15 @@ impl AardwolfFail for FetchPersonaFail {}
 #[cfg(test)]
 mod tests {
     use aardwolf_models::base_actor::persona::Persona;
-    use aardwolf_test_helpers::models::{
-        with_base_actor, with_connection, with_persona, GenericError,
-    };
+    use aardwolf_test_helpers::models::{with_base_actor, with_connection, with_persona};
     use diesel::pg::PgConnection;
+    use failure::Error;
 
     use crate::{operations::fetch_persona::FetchPersona, traits::DbAction};
 
     fn setup<F>(f: F)
     where
-        F: FnOnce(&PgConnection, Persona) -> Result<(), GenericError>,
+        F: FnOnce(&PgConnection, Persona) -> Result<(), Error>,
     {
         with_connection(|conn| {
             with_base_actor(conn, |base_actor| {

@@ -25,6 +25,10 @@ node_modules
 # Translations
 **/*.po~
 translations/
+aardwolf-templates/po
 
 # Compiled templates
 src/templates.rs
+
+# misc
+aardwolf-templates/target

@@ -1,4 +1,3 @@
-#![allow(proc_macro_derive_resolution_fallback)]
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, connection::Connection, pg::PgConnection};
 use failure::Fail;
@@ -20,7 +19,8 @@ use crate::{
 pub use self::{
     local_auth::{PlaintextPassword, VerificationError},
     permissions::{
-        LocalPersonaCreator, PermissionError, PermissionResult, PermissionedUser, PersonaDeleter,
+        LocalPersonaCreator, LocalPostCreator, PermissionError, PermissionResult, PermissionedUser,
+        PersonaDeleter,
     },
 };
 

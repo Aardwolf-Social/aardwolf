@@ -38,7 +38,7 @@ version = "0.4"
 features = ["serde"]
 
 [dependencies.diesel]
-version = "1.1"
+version = "1.4"
 default-features = false
 features = ["postgres", "uuid", "chrono"]
 

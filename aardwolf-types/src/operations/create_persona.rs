@@ -1,5 +1,6 @@
 use aardwolf_models::{
-    base_actor::{persona::Persona, BaseActor, GenerateUrls},
+    base_actor::{persona::Persona, BaseActor},
+    generate_urls::GenerateUrls,
     user::{LocalPersonaCreator, PermissionedUser},
 };
 use diesel::pg::PgConnection;
