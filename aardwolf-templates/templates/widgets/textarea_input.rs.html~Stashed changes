@@ -1,4 +1,4 @@
-@use crate::{TextareaInput, templates::widgets::icon};
+@use crate::{TextareaInput, templates::ui::icon};
 
 @(input: &TextareaInput)
 

@@ -9,7 +9,10 @@ use crate::{SignIn, templates::{base, widgets::{alert, icon, password_input}, em
 =======
 use gettext_macros::i18n;
 use crate::{SignIn, templates::{base, widgets::{alert, email_input, password_input}}};
+<<<<<<< Updated upstream
 >>>>>>> 4171ff0286ed26c81a011663cd6f23b09128cf9f
+=======
+>>>>>>> Stashed changes
 
 pub fn sign_in(out: &mut Write, sign_in: &SignIn) -> io::Result<()> {
 base(out, sign_in.catalog, "Aardwolf | Sign In", |out| {

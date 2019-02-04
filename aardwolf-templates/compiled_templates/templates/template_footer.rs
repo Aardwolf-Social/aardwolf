@@ -11,7 +11,10 @@ use gettext::Catalog;
 use rocket_i18n::i18n;
 =======
 use gettext_macros::i18n;
+<<<<<<< Updated upstream
 >>>>>>> 4171ff0286ed26c81a011663cd6f23b09128cf9f
+=======
+>>>>>>> Stashed changes
 use crate::templates::widgets::icon;
 
 pub fn footer(out: &mut Write, catalog: &Catalog) -> io::Result<()> {
