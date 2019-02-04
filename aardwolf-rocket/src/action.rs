@@ -1,7 +1,7 @@
 use aardwolf_types::{
     error::AardwolfFail,
-    traits::{DbAction, Validate},
-    wrapper::{DbActionWrapper, ValidateWrapper},
+    traits::{DbAction, Export, Validate},
+    wrapper::{DbActionWrapper, ExportFail, ExportWrapper, ValidateWrapper},
 };
 use diesel::pg::PgConnection;
 
@@ -12,6 +12,16 @@ where
     E: AardwolfFail,
 {
     fn action(self, db: &PgConnection) -> Result<T, E>;
+}
+
+impl<E, T> Action<T, ExportFail> for ExportWrapper<E, T>
+where
+    E: Export<Item = T>,
+    T: Send + 'static,
+{
+    fn action(self, _: &PgConnection) -> Result<T, ExportFail> {
+        Ok(self.0.export())
+    }
 }
 
 impl<V, T, E> Action<T, E> for ValidateWrapper<V, T, E>

@@ -52,17 +52,18 @@ mod tests {
     use aardwolf_models::{base_actor::persona::Persona, user::AuthenticatedUser};
     use aardwolf_test_helpers::models::{
         gen_string, make_unverified_authenticated_user, make_verified_authenticated_user,
-        user_with_base_actor, with_connection, with_persona, GenericError,
+        user_with_base_actor, with_connection, with_persona,
     };
     use diesel::pg::PgConnection;
+    use failure::Error;
 
     use crate::{
         operations::check_delete_persona_permission::CheckDeletePersonaPermission, traits::DbAction,
     };
 
-    fn setup_with_connection<F>(conn: &PgConnection, f: F) -> Result<(), GenericError>
+    fn setup_with_connection<F>(conn: &PgConnection, f: F) -> Result<(), Error>
     where
-        F: FnOnce(AuthenticatedUser, Persona) -> Result<(), GenericError>,
+        F: FnOnce(AuthenticatedUser, Persona) -> Result<(), Error>,
     {
         make_verified_authenticated_user(conn, &gen_string()?, |user, _email| {
             user_with_base_actor(conn, &user, |base_actor| {

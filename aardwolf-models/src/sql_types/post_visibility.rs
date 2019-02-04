@@ -15,14 +15,20 @@ pub enum PostVisibility {
     ListedPeopleOnly,
 }
 
+impl PostVisibility {
+    pub fn as_str(&self) -> &str {
+        match *self {
+            PostVisibility::Public => "PUB",
+            PostVisibility::FollowersOnly => "FL",
+            PostVisibility::FriendsOnly => "MUT",
+            PostVisibility::ListedPeopleOnly => "LIST",
+        }
+    }
+}
+
 impl fmt::Display for PostVisibility {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            PostVisibility::Public => write!(f, "PUB"),
-            PostVisibility::FollowersOnly => write!(f, "FL"),
-            PostVisibility::FriendsOnly => write!(f, "MUT"),
-            PostVisibility::ListedPeopleOnly => write!(f, "LIST"),
-        }
+        write!(f, "{}", self.as_str())
     }
 }
 
