@@ -25,14 +25,10 @@ pub use self::{
 
 use self::{
     shortcuts::Shortcuts,
-<<<<<<< HEAD
-    widgets::{Alert, AlertKind, EmailInput, Icon, Input, PasswordInput, TextInput},
-=======
-    ui::{
+    widgets::{
         Alert, AlertKind, CheckboxInput, EmailInput, Input, PasswordInput, SelectInput, TextInput,
         TextareaInput,
     },
->>>>>>> master
 };
 
 pub trait Renderable {

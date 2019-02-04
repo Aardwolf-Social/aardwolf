@@ -1,7 +1,7 @@
 @use gettext::Catalog;
 @use gettext_macros::i18n;
 
-@use crate::{NewPost, templates::ui::{alert, select_input, text_input, textarea_input}};
+@use crate::{NewPost, templates::widgets::{alert, select_input, text_input, textarea_input}};
 
 @(catalog: &Catalog, username: &str, new_post: &NewPost)
 

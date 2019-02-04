@@ -3,7 +3,7 @@ use std::io::{self, Write};
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
 use super::{Html,ToHtml};
-use crate::{Alert, templates::ui::icon};
+use crate::{Alert, templates::widgets::icon};
 
 pub fn alert(out: &mut Write, alert: &Alert) -> io::Result<()> {
 out.write_all(b"<div class=\"aardwolf-alert aardwolf-alert-")?;

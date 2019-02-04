@@ -3,10 +3,10 @@ use std::io::{self, Write};
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
 use super::{Html,ToHtml};
-use crate::{TextInput, templates::ui::input};
+use crate::{EmailInput, templates::widgets::input};
 
-pub fn text_input(out: &mut Write, text_input: &TextInput) -> io::Result<()> {
-input(out, &text_input.into())?;
+pub fn email_input(out: &mut Write, email_input: &EmailInput) -> io::Result<()> {
+input(out, &email_input.into())?;
 out.write_all(b"\n")?;
 Ok(())
 }

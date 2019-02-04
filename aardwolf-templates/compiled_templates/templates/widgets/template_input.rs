@@ -3,9 +3,9 @@ use std::io::{self, Write};
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
 use super::{Html,ToHtml};
-use crate::{TextareaInput, templates::ui::icon};
+use crate::{Input, templates::widgets::icon};
 
-pub fn textarea_input(out: &mut Write, input: &TextareaInput) -> io::Result<()> {
+pub fn input(out: &mut Write, input: &Input) -> io::Result<()> {
 out.write_all(b"<div class=\"aardwolf-input-wrapper\">\n    <label for=\"")?;
 input.name.to_html(out)?;
 out.write_all(b"\">\n        ")?;
@@ -20,21 +20,27 @@ out.write_all(b"\n            ")?;
 label.to_html(out)?;
 out.write_all(b"\n        ")?;
 }
-out.write_all(b"\n    </label>\n    <div class=\"aardwolf-input aardwolf-textarea-input\">\n        ")?;
+out.write_all(b"\n    </label>\n    <div class=\"aardwolf-input aardwolf-")?;
+input.kind.to_html(out)?;
+out.write_all(b"-input\">\n        ")?;
 if let Some(ref placeholder) = input.placeholder {
-out.write_all(b"\n            <textarea name=\"")?;
+out.write_all(b"\n            <input type=\"")?;
+input.kind.to_html(out)?;
+out.write_all(b"\" name=\"")?;
 input.name.to_html(out)?;
 out.write_all(b"\" placeholder=\"")?;
 placeholder.to_html(out)?;
 out.write_all(b"\" value=\"")?;
 input.value.to_html(out)?;
-out.write_all(b"\"></textarea>\n        ")?;
+out.write_all(b"\" />\n        ")?;
 } else {
-out.write_all(b"\n            <textarea name=\"")?;
+out.write_all(b"\n            <input type=\"")?;
+input.kind.to_html(out)?;
+out.write_all(b"\" name=\"")?;
 input.name.to_html(out)?;
 out.write_all(b"\" value=\"")?;
 input.value.to_html(out)?;
-out.write_all(b"\"></textarea>\n        ")?;
+out.write_all(b"\" />\n        ")?;
 }
 out.write_all(b"\n    </div>\n    <div class=\"aardwolf-input-meta\">\n        ")?;
 if let Some(ref error) = input.error {

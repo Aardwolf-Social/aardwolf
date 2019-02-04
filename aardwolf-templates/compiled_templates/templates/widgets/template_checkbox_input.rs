@@ -3,7 +3,7 @@ use std::io::{self, Write};
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
 use super::{Html,ToHtml};
-use crate::{CheckboxInput, templates::ui::icon};
+use crate::{CheckboxInput, templates::widgets::icon};
 
 pub fn checkbox_input(out: &mut Write, input: &CheckboxInput) -> io::Result<()> {
 out.write_all(b"<div class=\"aardwolf-input-wrapper\">\n    <label for=\"")?;
