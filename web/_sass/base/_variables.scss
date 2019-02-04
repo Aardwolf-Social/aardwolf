@@ -1,0 +1,29 @@
+// Typography
+$font-family: Helvetica, Arial, sans-serif;
+$font-size: 1.25em;
+$header-font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;;
+
+// Padding
+$padding-large: 20%;
+$padding-small: 5%;
+$padding-x-small: 3%;
+
+// Brand colours
+$dark-color: #3f1906;
+$secondary-color: #008b82;
+$background-color: #f0ebe2;
+$border-color: #333333;
+
+// Typography colours
+$text-color: #222222;
+$link-color: #8b3307;
+$link-visited-color: $secondary-color;
+$link-active-color: #063f3b;
+
+$selection-color: #D4D4D4; // visible when highlighting text
+
+// Header colours
+$header-link-color: #383838;
+
+// Media query sizes
+$media-phone-narrow: 320px;

@@ -3,8 +3,13 @@ use std::io::{self, Write};
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
 use super::{Html,ToHtml};
+<<<<<<< HEAD
+use rocket_i18n::i18n;
+use crate::{SignIn, templates::{base, widgets::{alert, icon, password_input}, email::{email_input}}};
+=======
 use gettext_macros::i18n;
 use crate::{SignIn, templates::{base, widgets::{alert, email_input, password_input}}};
+>>>>>>> 4171ff0286ed26c81a011663cd6f23b09128cf9f
 
 pub fn sign_in(out: &mut Write, sign_in: &SignIn) -> io::Result<()> {
 base(out, sign_in.catalog, "Aardwolf | Sign In", |out| {

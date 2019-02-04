@@ -4,7 +4,11 @@ use std::io::{self, Write};
 #[allow(unused)]
 use super::{Html,ToHtml};
 use gettext::Catalog;
+<<<<<<< HEAD
+use rocket_i18n::i18n;
+=======
 use gettext_macros::i18n;
+>>>>>>> 4171ff0286ed26c81a011663cd6f23b09128cf9f
 use crate::templates::widgets::icon;
 
 pub fn footer(out: &mut Write, catalog: &Catalog) -> io::Result<()> {

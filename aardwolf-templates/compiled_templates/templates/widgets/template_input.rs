@@ -3,6 +3,10 @@ use std::io::{self, Write};
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
 use super::{Html,ToHtml};
+<<<<<<< HEAD
+use rocket_i18n::i18n;
+=======
+>>>>>>> 4171ff0286ed26c81a011663cd6f23b09128cf9f
 use crate::{Input, templates::widgets::icon};
 
 pub fn input(out: &mut Write, input: &Input) -> io::Result<()> {

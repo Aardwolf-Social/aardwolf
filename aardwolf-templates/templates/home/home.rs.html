@@ -1,9 +1,9 @@
-@use crate::{Home, templates::{base, home::{feed, nav}, new_post, shortcuts}};
+@use crate::{Home, templates::{base, home::{feed, top_nav}, posts::{new_post}, asides::{shortcuts}, widgets::{icon}}};
 
 @(home: &Home)
 
 @:base(home.catalog, "Aardwolf | Home", {
-    @:nav(home.catalog)
+    @:top_nav(home.catalog)
     <section class="section">
         @:shortcuts(&home.shortcuts)
     </section>

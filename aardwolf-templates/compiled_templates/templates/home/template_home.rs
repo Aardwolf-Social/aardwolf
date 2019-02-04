@@ -3,12 +3,12 @@ use std::io::{self, Write};
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
 use super::{Html,ToHtml};
-use crate::{Home, templates::{base, home::{feed, nav}, new_post, shortcuts}};
+use crate::{Home, templates::{base, home::{feed, top_nav}, posts::{new_post}, asides::{shortcuts}, widgets::{icon}}};
 
 pub fn home(out: &mut Write, home: &Home) -> io::Result<()> {
 base(out, home.catalog, "Aardwolf | Home", |out| {
 out.write_all(b"\n    ")?;
-nav(out, home.catalog)?;
+top_nav(out, home.catalog)?;
 out.write_all(b"\n    <section class=\"section\">\n        ")?;
 shortcuts(out, &home.shortcuts)?;
 out.write_all(b"\n    </section>\n    <section class=\"section\">\n        <div class=\"container\">\n            ")?;
