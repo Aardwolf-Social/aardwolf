@@ -2,10 +2,13 @@ use aardwolf_models::{
     base_actor::{persona::Persona, BaseActor},
     user::UserLike,
 };
-use aardwolf_types::operations::{
-    fetch_authenticated_user::{FetchAuthenticatedUser, FetchAuthenticatedUserFail},
-    fetch_base_actor::{FetchBaseActor, FetchBaseActorFail},
-    fetch_persona::{FetchPersona, FetchPersonaFail},
+use aardwolf_types::{
+    operations::{
+        fetch_authenticated_user::{FetchAuthenticatedUser, FetchAuthenticatedUserFail},
+        fetch_base_actor::{FetchBaseActor, FetchBaseActorFail},
+        fetch_persona::{FetchPersona, FetchPersonaFail},
+    },
+    wrapper::{ExportFail, ExportKind},
 };
 use actix_web::{
     error::ResponseError, middleware::session::RequestSession, FromRequest, HttpRequest,
@@ -30,6 +33,8 @@ pub enum CurrentActorError {
     Persona,
     #[fail(display = "No user cookie present")]
     Cookie,
+    #[fail(display = "Error exporting data")]
+    Export,
 }
 
 impl From<DbActionError<FetchAuthenticatedUserFail>> for CurrentActorError {
@@ -68,6 +73,12 @@ impl From<DbActionError<FetchPersonaFail>> for CurrentActorError {
                 FetchPersonaFail::NotFound => CurrentActorError::Persona,
             },
         }
+    }
+}
+
+impl From<ExportFail> for CurrentActorError {
+    fn from(_: ExportFail) -> Self {
+        CurrentActorError::Export
     }
 }
 
@@ -110,15 +121,10 @@ impl FromRequest<AppConfig> for CurrentActor {
         let res = fut
             .and_then(move |id| {
                 perform!(state3, CurrentActorError, [
-                    (_ = FetchPersona(id)),
+                    (persona = FetchPersona(id)),
+                    (base_actor = FetchBaseActor(persona.id())),
+                    (_ = ExportKind(CurrentActor(base_actor, persona))),
                 ])
-            })
-            .and_then(move |persona| {
-                let fut = perform!(state, CurrentActorError, [
-                    (_ = FetchBaseActor(persona.id())),
-                ]);
-
-                fut.map(move |actor| CurrentActor(actor, persona))
             })
             .map_err(From::from);
 
