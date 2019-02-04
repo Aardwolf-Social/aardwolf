@@ -4,7 +4,7 @@ use std::io::{self, Write};
 #[allow(unused)]
 use super::{Html,ToHtml};
 use gettext_macros::i18n;
-use crate::{FirstLogin, templates::{base, widgets::{alert, text_input, select_input, checkbox_input}}};
+use crate::{FirstLogin, templates::{base, ui::{alert, text_input, select_input, checkbox_input}}};
 
 pub fn first_login(out: &mut Write, first_login: &FirstLogin) -> io::Result<()> {
 base(out, first_login.catalog, "Aardwolf | Get Posting", |out| {

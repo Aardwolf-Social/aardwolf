@@ -13,9 +13,9 @@ out.write_all(b"\n                </a>\n                <a class=\"navbar-item\"
 i18n!(catalog, "Profile").to_html(out)?;
 out.write_all(b"\n                </a>\n                <a class=\"navbar-item\">\n                    ")?;
 i18n!(catalog, "Messages").to_html(out)?;
-out.write_all(b"\n                </a>\n                <span class=\"navbar-item\">\n                    <a class=\"button is-primary is-inverted\">\n                        <span class=\"icon\">\n                            <span class=\"fa fa-github\"></span>\n                        </span>\n                        <span>")?;
+out.write_all(b"\n                </a>\n                <span class=\"navbar-item\">\n                    <a class=\"button is-primary is-inverted\">\n                        <span class=\"icon\">\n                            <i class=\"fa fa-github\"></i>\n                        </span>\n                        <span>")?;
 i18n!(catalog, "Download").to_html(out)?;
-out.write_all(b"</span>\n                    </a>\n                </span>\n                <span class=\"navbar-item\">\n                    <a class=\"button is-dark\" href=\"/auth/sign_out\">\n                        <span class=\"icon\">\n                            <span class=\"fas fa-logout\"></span>\n                        </span>\n                        ")?;
+out.write_all(b"</span>\n                    </a>\n                </span>\n                <span class=\"navbar-item\">\n                    <a class=\"button is-dark\" href=\"/auth/sign_out\">\n                        <span class=\"icon\">\n                            <i class=\"fas fa-logout\"></i>\n                        </span>\n                        ")?;
 i18n!(catalog, "Logout").to_html(out)?;
 out.write_all(b"\n                    </a>\n                </span>\n            </div>\n        </div>\n    </div>\n</nav>\n")?;
 Ok(())

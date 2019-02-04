@@ -5,9 +5,6 @@ use super::{Html,ToHtml};
 mod template_feed;
 pub use self::template_feed::feed;
 
-mod template_top_nav;
-pub use self::template_top_nav::top_nav;
-
-mod template_home;
-pub use self::template_home::home;
+mod template_nav;
+pub use self::template_nav::nav;
 

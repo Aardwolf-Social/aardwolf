@@ -5,7 +5,7 @@ use std::io::{self, Write};
 use super::{Html,ToHtml};
 use gettext::Catalog;
 use gettext_macros::i18n;
-use crate::{NewPost, templates::widgets::{alert, select_input, text_input, textarea_input}};
+use crate::{NewPost, templates::ui::{alert, select_input, text_input, textarea_input}};
 
 pub fn new_post(out: &mut Write, catalog: &Catalog, username: &str, new_post: &NewPost) -> io::Result<()> {
 out.write_all(b"<article class=\"media\"><!-- Begin new post -->\n    <figure class=\"media-left\">\n        <p class=\"image is-64x64\">\n        <img src=\"https://bulma.io/images/placeholders/128x128.png\" alt=\"")?;

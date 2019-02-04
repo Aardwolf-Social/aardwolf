@@ -4,7 +4,7 @@ use std::io::{self, Write};
 #[allow(unused)]
 use super::{Html,ToHtml};
 use gettext_macros::i18n;
-use crate::{Shortcuts, templates::widgets::icon};
+use crate::{Shortcuts, templates::ui::icon};
 
 pub fn shortcuts(out: &mut Write, shortcuts: &Shortcuts) -> io::Result<()> {
 out.write_all(b"<aside class=\"menu\">\n    <a href=\"")?;
