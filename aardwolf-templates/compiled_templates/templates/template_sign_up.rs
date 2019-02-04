@@ -4,7 +4,7 @@ use std::io::{self, Write};
 #[allow(unused)]
 use super::{Html,ToHtml};
 use gettext_macros::i18n;
-use crate::{SignUp, templates::{base, ui::{alert, email_input, password_input}}};
+use crate::{SignUp, templates::{base, widgets::{alert, icon, password_input}, email::{email_input}}};
 
 pub fn sign_up(out: &mut Write, sign_up: &SignUp) -> io::Result<()> {
 base(out, sign_up.catalog, "Aardwolf | Sign Up", |out| {

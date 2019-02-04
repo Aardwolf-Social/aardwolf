@@ -13,9 +13,13 @@ out.write_all(b"\n                </a>\n                <a class=\"navbar-item\"
 i18n!(catalog, "Profile").to_html(out)?;
 out.write_all(b"\n                </a>\n                <a class=\"navbar-item\">\n                    ")?;
 i18n!(catalog, "Messages").to_html(out)?;
-out.write_all(b"\n                </a>\n                <span class=\"navbar-item\">\n                    <a class=\"button is-primary is-inverted\">\n                        <span class=\"icon\">\n                            <span class=\"fa fa-github\"></span>\n                        </span>\n                        <span>")?;
+out.write_all(b"\n                </a>\n                <span class=\"navbar-item\">\n                    <a class=\"button is-primary is-inverted\">\n                        <span class=\"icon\">\n<<<<<<< Updated upstream:aardwolf-templates/templates/home/top_nav.rs.html\n                            <span class=\"fa fa-github\"></span>\n=======\n                            ")?;
+icon(out, "github")?;
+out.write_all(b"\n>>>>>>> Stashed changes:aardwolf-templates/templates/home/nav.rs.html\n                        </span>\n                        <span>")?;
 i18n!(catalog, "Download").to_html(out)?;
-out.write_all(b"</span>\n                    </a>\n                </span>\n                <span class=\"navbar-item\">\n                    <a class=\"button is-dark\" href=\"/auth/sign_out\">\n                        <span class=\"icon\">\n                            <span class=\"fa fa-logout\"></span>\n                        </span>\n                        ")?;
+out.write_all(b"</span>\n                    </a>\n                </span>\n                <span class=\"navbar-item\">\n                    <a class=\"button is-dark\" href=\"/auth/sign_out\">\n<<<<<<< Updated upstream:aardwolf-templates/templates/home/top_nav.rs.html\n                        <span class=\"icon\">\n                            <span class=\"fa fa-logout\"></span>\n                        </span>\n=======\n                        ")?;
+icon(out, "github")?;
+out.write_all(b"\n>>>>>>> Stashed changes:aardwolf-templates/templates/home/nav.rs.html\n                        ")?;
 i18n!(catalog, "Logout").to_html(out)?;
 out.write_all(b"\n                    </a>\n                </span>\n            </div>\n        </div>\n    </div>\n</nav>\n")?;
 Ok(())

@@ -3,11 +3,7 @@ use std::io::{self, Write};
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
 use super::{Html,ToHtml};
-<<<<<<< HEAD
-use rocket_i18n::i18n;
-=======
 use gettext_macros::i18n;
->>>>>>> 4171ff0286ed26c81a011663cd6f23b09128cf9f
 use crate::{Shortcuts, templates::widgets::icon};
 
 pub fn shortcuts(out: &mut Write, shortcuts: &Shortcuts) -> io::Result<()> {
@@ -23,43 +19,43 @@ out.write_all(b"</a></li>\n        <li><a aria-hidden=\"true\">")?;
 icon(out, "envelope")?;
 out.write_all(b" ")?;
 i18n!(shortcuts.catalog, "Messages").to_html(out)?;
-out.write_all(b"</a></li>\n    </ul>\n    <p class=\"menu-label\">\n    <span class=\"fa fa-star\" aria-hidden=\"true\">")?;
+out.write_all(b"</a></li>\n    </ul>\n    <p class=\"menu-label\">\n    ")?;
 icon(out, "star")?;
 out.write_all(b" ")?;
 i18n!(shortcuts.catalog, "Shortcuts").to_html(out)?;
-out.write_all(b"</span>\n    </p>\n    <ul class=\"menu-list\">\n        <li><a aria-hidden=\"true\">")?;
+out.write_all(b"\n    </p>\n    <ul class=\"menu-list\">\n        <li><a>")?;
 icon(out, "calendar")?;
 out.write_all(b" ")?;
 i18n!(shortcuts.catalog, "Calendar").to_html(out)?;
-out.write_all(b"</a></li>\n        <li><a aria-hidden=\"true\">")?;
+out.write_all(b"</a></li>\n        <li><a>")?;
 icon(out, "users")?;
 out.write_all(b" ")?;
 i18n!(shortcuts.catalog, "Groups").to_html(out)?;
-out.write_all(b"</a></li>\n        <li><a aria-hidden=\"true\">")?;
+out.write_all(b"</a></li>\n        <li><a>")?;
 icon(out, "list")?;
 out.write_all(b" ")?;
 i18n!(shortcuts.catalog, "Lists").to_html(out)?;
-out.write_all(b"</a></li>\n        <li><a aria-hidden=\"true\">")?;
+out.write_all(b"</a></li>\n        <li><a>")?;
 icon(out, "picture-o")?;
 out.write_all(b" ")?;
 i18n!(shortcuts.catalog, "Photos").to_html(out)?;
-out.write_all(b"</a></li>\n        <li><a aria-hidden=\"true\">")?;
+out.write_all(b"</a></li>\n        <li><a>")?;
 icon(out, "bookmark")?;
 out.write_all(b" ")?;
 i18n!(shortcuts.catalog, "Favorites").to_html(out)?;
-out.write_all(b"</a></li>\n        <li><a aria-hidden=\"true\">")?;
+out.write_all(b"</a></li>\n        <li><a>")?;
 icon(out, "cloud")?;
 out.write_all(b" ")?;
 i18n!(shortcuts.catalog, "Weather").to_html(out)?;
-out.write_all(b"</a></li>     \n    </ul>\n    <p class=\"menu-label\">\n    <span class=\"fa fa-lightbulb-o\" aria-hidden=\"true\">")?;
+out.write_all(b"</a></li>     \n    </ul>\n    <p class=\"menu-label\">\n    ")?;
 icon(out, "lightbulb-o")?;
 out.write_all(b" ")?;
 i18n!(shortcuts.catalog, "Create").to_html(out)?;
-out.write_all(b"</span>\n    </p>\n    <ul class=\"menu-list\">\n        <li><a aria-hidden=\"true\">")?;
+out.write_all(b"</span>\n    </p>\n    <ul class=\"menu-list\">\n        <li><a>")?;
 icon(out, "calendar-plus-o")?;
 out.write_all(b" ")?;
 i18n!(shortcuts.catalog, "New Event").to_html(out)?;
-out.write_all(b"</a></li>\n        <li><a aria-hidden=\"true\">")?;
+out.write_all(b"</a></li>\n        <li><a>")?;
 icon(out, "users")?;
 out.write_all(b" ")?;
 i18n!(shortcuts.catalog, "New Group").to_html(out)?;

@@ -4,9 +4,9 @@ use std::io::{self, Write};
 #[allow(unused)]
 use super::{Html,ToHtml};
 
-pub fn icon(out: &mut Write, icon: &str) -> io::Result<()> {
+pub fn icon_normal(out: &mut Write, icon: &str) -> io::Result<()> {
 out.write_all(b"<span class=\"fa fa-")?;
 icon.to_html(out)?;
-out.write_all(b"\"></span>\n")?;
+out.write_all(b"\" aria-hidden=\"true\"></span>\n")?;
 Ok(())
 }
