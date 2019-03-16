@@ -2,10 +2,13 @@ use aardwolf_models::{
     base_actor::{persona::Persona, BaseActor},
     user::{AuthenticatedUser, UserLike},
 };
-use aardwolf_types::operations::{
-    fetch_authenticated_user::{FetchAuthenticatedUser, FetchAuthenticatedUserFail},
-    fetch_base_actor::{FetchBaseActor, FetchBaseActorFail},
-    fetch_persona::{FetchPersona, FetchPersonaFail},
+use aardwolf_types::{
+    operations::{
+        fetch_authenticated_user::{FetchAuthenticatedUser, FetchAuthenticatedUserFail},
+        fetch_base_actor::{FetchBaseActor, FetchBaseActorFail},
+        fetch_persona::{FetchPersona, FetchPersonaFail},
+    },
+    wrapper::{ExportFail, ExportKind},
 };
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
@@ -34,6 +37,12 @@ impl From<FetchPersonaFail> for CookieError {
 
 impl From<FetchBaseActorFail> for CookieError {
     fn from(_: FetchBaseActorFail) -> Self {
+        CookieError
+    }
+}
+
+impl From<ExportFail> for CookieError {
+    fn from(_: ExportFail) -> Self {
         CookieError
     }
 }
@@ -69,18 +78,11 @@ impl<'l, 'r> FromRequest<'l, 'r> for CurrentActor {
         };
 
         res.and_then(|(user, id)| {
-            let res = perform!(&db, CookieError, [
-                (_ = FetchPersona(id)),
-            ]);
-
-            res.map(|persona| (user, persona))
-        })
-        .and_then(|(user, persona)| {
-            let res = perform!(&db, CookieError, [
-                (_ = FetchBaseActor(persona.id())),
-            ]);
-
-            res.map(move |actor| CurrentActor(user, actor, persona))
+            perform!(&db, CookieError, [
+                (persona = FetchPersona(id)),
+                (actor = FetchBaseActor(persona.id())),
+                (_ = ExportKind(CurrentActor(user, actor, persona))),
+            ])
         })
         .ok()
         .or_forward(())

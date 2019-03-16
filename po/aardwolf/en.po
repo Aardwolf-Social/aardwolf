@@ -61,7 +61,7 @@ msgstr "Allow people to search for this profile"
 msgid "There was an error creating your post"
 msgstr "There was an error creating your persona"
 
-# aardwolf-templates/src/home.rs:50
+# aardwolf-templates/src/home.rs:49
 msgid "What's on your mind?"
 msgstr ""
 
@@ -70,11 +70,11 @@ msgstr ""
 msgid "Post cannot be empty"
 msgstr "Password cannot be empty"
 
-# aardwolf-templates/src/home.rs:80
+# aardwolf-templates/src/home.rs:67
 msgid "Content Warning"
 msgstr ""
 
-# aardwolf-templates/src/home.rs:82
+# aardwolf-templates/src/home.rs:69
 msgid "mh, nsfw, etc."
 msgstr ""
 
