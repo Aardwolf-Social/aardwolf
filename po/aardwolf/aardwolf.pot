@@ -148,52 +148,68 @@ msgstr ""
 msgid "Only visible to mentioned users"
 msgstr ""
 
-# aardwolf-templates/src/../compiled_templates/templates/template_sign_up.rs:40
-msgid "Sign Up"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/template_sign_up.rs:24
-msgid "Feel free to sign up!"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/template_sign_up.rs:22
-msgid "Create an Account"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/template_sign_up.rs:20
-msgid "really-long-platform-description"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/template_sign_up.rs:18
-msgid "This is who we are!"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/template_sign_up.rs:16
-msgid "About Aardwolf"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/template_sign_up.rs:14
-msgid "Have an Account? - Login"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/template_sign_up.rs:12
-msgid "Aardwolf Instance"
-msgstr ""
-
 # aardwolf-templates/src/../compiled_templates/templates/template_new_post.rs:28
 msgid "Awoo!"
 msgstr ""
 
-# aardwolf-templates/src/../compiled_templates/templates/template_first_login.rs:34
-msgid "Create Persona"
+# aardwolf-templates/src/../compiled_templates/templates/template_sign_in.rs:38
+msgid "Log In"
 msgstr ""
 
-# aardwolf-templates/src/../compiled_templates/templates/template_first_login.rs:14
-msgid "Fill out your profile information"
+# aardwolf-templates/src/../compiled_templates/templates/template_sign_in.rs:24
+msgid "Welcome back!"
 msgstr ""
 
-# aardwolf-templates/src/../compiled_templates/templates/template_first_login.rs:12
-msgid "Get posting!"
+# aardwolf-templates/src/../compiled_templates/templates/template_sign_in.rs:22
+msgid "Login"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/template_sign_in.rs:20
+msgid "really-long-platform-description"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/template_sign_in.rs:18
+msgid "This is who we are!"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/template_sign_in.rs:16
+msgid "About Aardwolf"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/template_sign_in.rs:14
+msgid "Need an Account? - Create one!"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/template_sign_in.rs:12
+msgid "Aardwolf Instance"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/template_footer.rs:20
+msgid "Buy the team a coffee"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/template_footer.rs:16
+msgid "Check us out on GitHub!"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/template_footer.rs:14
+msgid "Copyright 2018"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/template_footer.rs:12
+msgid "Terms of Service"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/home/template_feed.rs:33
+msgid "Boost"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/home/template_feed.rs:31
+msgid "Reply"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/home/template_feed.rs:29
+msgid "Like"
 msgstr ""
 
 # aardwolf-templates/src/../compiled_templates/templates/home/template_nav.rs:19
@@ -216,48 +232,20 @@ msgstr ""
 msgid "Home"
 msgstr ""
 
-# aardwolf-templates/src/../compiled_templates/templates/home/template_feed.rs:33
-msgid "Boost"
+# aardwolf-templates/src/../compiled_templates/templates/template_sign_up.rs:40
+msgid "Sign Up"
 msgstr ""
 
-# aardwolf-templates/src/../compiled_templates/templates/home/template_feed.rs:31
-msgid "Reply"
+# aardwolf-templates/src/../compiled_templates/templates/template_sign_up.rs:24
+msgid "Feel free to sign up!"
 msgstr ""
 
-# aardwolf-templates/src/../compiled_templates/templates/home/template_feed.rs:29
-msgid "Like"
+# aardwolf-templates/src/../compiled_templates/templates/template_sign_up.rs:22
+msgid "Create an Account"
 msgstr ""
 
-# aardwolf-templates/src/../compiled_templates/templates/template_sign_in.rs:38
-msgid "Log In"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/template_sign_in.rs:24
-msgid "Welcome back!"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/template_sign_in.rs:22
-msgid "Login"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/template_sign_in.rs:14
-msgid "Need an Account? - Create one!"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/template_footer.rs:20
-msgid "Buy the team a coffee"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/template_footer.rs:16
-msgid "Check us out on GitHub!"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/template_footer.rs:14
-msgid "Copyright 2018"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/template_footer.rs:12
-msgid "Terms of Service"
+# aardwolf-templates/src/../compiled_templates/templates/template_sign_up.rs:14
+msgid "Have an Account? - Login"
 msgstr ""
 
 # aardwolf-templates/src/../compiled_templates/templates/template_shortcuts.rs:61
@@ -354,4 +342,16 @@ msgstr ""
 
 # aardwolf-templates/src/../compiled_templates/templates/template_settings.rs:11
 msgid "Go back"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/template_first_login.rs:34
+msgid "Create Persona"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/template_first_login.rs:14
+msgid "Fill out your profile information"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/template_first_login.rs:12
+msgid "Get posting!"
 msgstr ""

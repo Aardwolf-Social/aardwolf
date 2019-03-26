@@ -1,12 +1,19 @@
 [Instance]
-domain = "localhost:8080"
+# Instance - This section describes particular details about the Aardwolf server instance
+#   yourdomain.tld
+domain = "yourdomain.tld"
+
+# Do you want to enable HTTPS?
+#   true |false
 https = false
 
 # Assets - This is where static files are stored for running in development mode
 [Assets]
 web = "dist"
-themes = "web/themes"
 emoji = "web/emoji"
+images = "web/images"
+stylesheets ="web/stylesheets"
+themes = "web/themes"
 
 [Templates]
 # Templates - the directories where UI templates are stored
@@ -35,16 +42,6 @@ address = "127.0.0.1"
 
 #port = 80
 port = 8080
-
-
-[Instance]
-# Instance - This section describes particular details about the Aardwolf server instance
-#   yourdomain.tld
-domain = "yourdomain.tld"
-
-# Do you want to enable HTTPS?
-#   true |false
-https = false
 
 
 [Database]
