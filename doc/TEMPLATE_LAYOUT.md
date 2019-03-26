@@ -1,3 +1,4 @@
+'''
 aardwolf-templates/
 ├── compiled_templates                      -- This is where the rust-compiled templates end up
 │   └── templates                           -- Follows the same structure as the HTML/Ructe path
@@ -46,4 +47,5 @@ aardwolf-templates/
 │   └── sign_up.rs.html                         -- User sign-up page
 │
 ├── build.rs                                -- Template build instructions
-└── Cargo.toml                              -- Cargo crate whoozits  	
+└── Cargo.toml                              -- Cargo crate whoozits
+'''
