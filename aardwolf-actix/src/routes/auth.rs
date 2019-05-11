@@ -1,6 +1,6 @@
 use aardwolf_models::user::{
     email::{EmailToken, UnverifiedEmail},
-    UserLike,
+    AuthenticatedUser, UserLike,
 };
 use aardwolf_types::{
     forms::auth::{
@@ -21,7 +21,7 @@ use actix_web::{
     HttpResponse,
 };
 use failure::Fail;
-use futures::future::Future;
+use futures::future::{Future, IntoFuture};
 
 use crate::{
     action::{Action, Impossible, Redirect, Wrapped},
@@ -45,6 +45,38 @@ pub(crate) fn sign_up_form(i18n: I18n) -> HttpResponse {
     res
 }
 
+pub(crate) fn sign_up(
+    (state, form, i18n): (Data<AppConfig>, Form<SignUpForm>, I18n),
+) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
+    let form = form.into_inner();
+    let form_state = form.as_state();
+
+    let res = perform!((*state).clone(), SignUpError, [
+        (form = ValidateSignUpForm(form)),
+        ((email, token) = SignUp(form)),
+        (_ = PrintResult(email, token)),
+        (_ = Redirect("/auth/sign_in".to_owned())),
+    ]);
+
+    Box::new(res.or_else(move |e: SignUpError| {
+        let (mut res, valid, system) = match e {
+            SignUpError::SignUp(ref e) => match *e {
+                SignUpFail::ValidationError(ref e) => (HttpResponse::BadRequest(), Some(e), false),
+                _ => (HttpResponse::InternalServerError(), None, true),
+            },
+            _ => (HttpResponse::InternalServerError(), None, true),
+        };
+
+        Ok(res.with_ructe(aardwolf_templates::SignUp::new(
+            &i18n.catalog,
+            "csrf token",
+            &form_state.email,
+            valid,
+            system,
+        )))
+    }))
+}
+
 pub(crate) fn sign_in_form(i18n: I18n) -> HttpResponse {
     let res = HttpResponse::Ok().with_ructe(aardwolf_templates::SignIn::new(
         &i18n.catalog,
@@ -57,6 +89,57 @@ pub(crate) fn sign_in_form(i18n: I18n) -> HttpResponse {
     drop(i18n);
 
     res
+}
+
+pub(crate) fn sign_in(
+    (state, session, form, i18n): (Data<AppConfig>, Session, Form<SignInForm>, I18n),
+) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
+    let form = form.into_inner();
+    let form_state = form.as_state();
+
+    let res = perform!((*state).clone(), SignInError, [
+        (form = ValidateSignInForm(form)),
+        (user = SignIn(form)),
+        (_ = SetUserCookie(session, user)),
+        (_ = Redirect("/".to_owned())),
+    ]);
+
+    Box::new(res.or_else(move |e| {
+        let (mut res, validation, system) = match e {
+            SignInError::SignIn(ref e) => match *e {
+                SignInFail::ValidationError(ref e) => (HttpResponse::BadRequest(), Some(e), false),
+                _ => (HttpResponse::InternalServerError(), None, true),
+            },
+            _ => (HttpResponse::InternalServerError(), None, true),
+        };
+
+        Ok(res.with_ructe(aardwolf_templates::SignIn::new(
+            &i18n.catalog,
+            "csrf token",
+            &form_state.email,
+            validation,
+            system,
+        )))
+    }))
+}
+
+pub(crate) fn confirm(
+    (state, query): (Data<AppConfig>, Query<ConfirmAccountToken>),
+) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
+    let res = perform!((*state).clone(), ConfirmError, [
+        (_ = ConfirmAccount(query.into_inner())),
+        (_ = Redirect("/auth/sign_in".to_owned())),
+    ]);
+
+    Box::new(res.map_err(|e| RedirectError::new("/auth/sign_up", &Some(e.to_string())).into()))
+}
+
+pub(crate) fn sign_out((session, _user): (Session, SignedInUser)) -> HttpResponse {
+    session.remove("user_id");
+
+    HttpResponse::SeeOther()
+        .header(LOCATION, "/auth/sign_in")
+        .finish()
 }
 
 #[derive(Clone, Debug, Fail)]
@@ -91,7 +174,7 @@ impl From<ValidateSignUpFormFail> for SignUpError {
     }
 }
 
-struct PrintResult((UnverifiedEmail, EmailToken));
+struct PrintResult(UnverifiedEmail, EmailToken);
 
 impl Wrapped for PrintResult {
     type Wrapper = PrintResult;
@@ -101,44 +184,12 @@ impl Action<(), Impossible> for PrintResult {
     fn action(self, _: AppConfig) -> Box<dyn Future<Item = (), Error = Impossible>> {
         println!(
             "confirmation token url: /auth/confirmation?id={}&token={}",
-            (self.0).0.id(),
-            (self.0).1,
+            self.0.id(),
+            self.1,
         );
 
         Box::new(futures::future::ok(()))
     }
-}
-
-pub(crate) fn sign_up(
-    (state, form, i18n): (Data<AppConfig>, Form<SignUpForm>, I18n),
-) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
-    let form = form.into_inner();
-    let form_state = form.as_state();
-
-    let res = perform!((*state).clone(), SignUpError, [
-        (form = ValidateSignUpForm(form)),
-        (result = SignUp(form)),
-        (_ = PrintResult(result)),
-        (_ = Redirect("/auth/sign_in".to_owned())),
-    ]);
-
-    Box::new(res.or_else(move |e: SignUpError| {
-        let (mut res, valid, system) = match e {
-            SignUpError::SignUp(ref e) => match *e {
-                SignUpFail::ValidationError(ref e) => (HttpResponse::BadRequest(), Some(e), false),
-                _ => (HttpResponse::InternalServerError(), None, true),
-            },
-            _ => (HttpResponse::InternalServerError(), None, true),
-        };
-
-        Ok(res.with_ructe(aardwolf_templates::SignUp::new(
-            &i18n.catalog,
-            "csrf token",
-            &form_state.email,
-            valid,
-            system,
-        )))
-    }))
 }
 
 #[derive(Clone, Debug, Fail)]
@@ -169,44 +220,27 @@ impl From<ValidateSignInFormFail> for SignInError {
     }
 }
 
-pub(crate) fn sign_in(
-    (state, session, form, i18n): (Data<AppConfig>, Session, Form<SignInForm>, I18n),
-) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
-    let form = form.into_inner();
-    let form_state = form.as_state();
+impl From<Impossible> for SignInError {
+    fn from(_: Impossible) -> Self {
+        SignInError::Mailbox
+    }
+}
 
-    let res = perform!((*state).clone(), SignInError, [
-        (form = ValidateSignInForm(form)),
-        (_ = SignIn(form)),
-    ]);
+struct SetUserCookie(Session, AuthenticatedUser);
 
-    Box::new(
-        res.and_then(move |user| {
-            session
-                .set("user_id", user.id())
+impl Wrapped for SetUserCookie {
+    type Wrapper = SetUserCookie;
+}
+
+impl Action<(), SignInError> for SetUserCookie {
+    fn action(self, _: AppConfig) -> Box<dyn Future<Item = (), Error = SignInError>> {
+        Box::new(
+            self.0
+                .set("user_id", self.1.id())
                 .map_err(|_| SignInError::Cookie)
-        })
-        .map(|_| HttpResponse::SeeOther().header(LOCATION, "/").finish())
-        .or_else(move |e| {
-            let (mut res, validation, system) = match e {
-                SignInError::SignIn(ref e) => match *e {
-                    SignInFail::ValidationError(ref e) => {
-                        (HttpResponse::BadRequest(), Some(e), false)
-                    }
-                    _ => (HttpResponse::InternalServerError(), None, true),
-                },
-                _ => (HttpResponse::InternalServerError(), None, true),
-            };
-
-            Ok(res.with_ructe(aardwolf_templates::SignIn::new(
-                &i18n.catalog,
-                "csrf token",
-                &form_state.email,
-                validation,
-                system,
-            )))
-        }),
-    )
+                .into_future(),
+        )
+    }
 }
 
 #[derive(Clone, Debug, Fail)]
@@ -229,27 +263,8 @@ impl From<DbActionError<ConfirmAccountFail>> for ConfirmError {
     }
 }
 
-pub(crate) fn confirm(
-    (state, query): (Data<AppConfig>, Query<ConfirmAccountToken>),
-) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
-    let res = perform!((*state).clone(), ConfirmError, [
-        (_ = ConfirmAccount(query.into_inner())),
-    ]);
-
-    Box::new(
-        res.map(|_user| {
-            HttpResponse::SeeOther()
-                .header(LOCATION, "/auth/sign_in")
-                .finish()
-        })
-        .map_err(|e| RedirectError::new("/auth/sign_up", &Some(e.to_string())).into()),
-    )
-}
-
-pub(crate) fn sign_out((session, _user): (Session, SignedInUser)) -> HttpResponse {
-    session.remove("user_id");
-
-    HttpResponse::SeeOther()
-        .header(LOCATION, "/auth/sign_in")
-        .finish()
+impl From<Impossible> for ConfirmError {
+    fn from(_: Impossible) -> Self {
+        ConfirmError::Mailbox
+    }
 }

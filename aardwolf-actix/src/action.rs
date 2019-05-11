@@ -7,7 +7,6 @@ use aardwolf_types::{
 use actix_web::{http::header::LOCATION, HttpResponse};
 use failure::Fail;
 use futures::future::{ok, Future};
-use serde_derive::{Deserialize, Serialize};
 
 use crate::{
     db::{DbActionError, PerformDbAction},
@@ -16,7 +15,7 @@ use crate::{
 
 pub use aardwolf_types::wrapper::Wrapped;
 
-#[derive(Clone, Deserialize, Fail, Serialize)]
+#[derive(Clone, Fail)]
 pub enum Impossible {}
 
 impl std::fmt::Display for Impossible {
@@ -30,8 +29,6 @@ impl std::fmt::Debug for Impossible {
         write!(f, "Not possible...")
     }
 }
-
-impl AardwolfFail for Impossible {}
 
 pub enum Respond<R>
 where
@@ -78,7 +75,7 @@ impl Action<HttpResponse, Impossible> for Redirect {
 
 pub trait Action<T, E>
 where
-    E: AardwolfFail,
+    E: Fail,
 {
     fn action(self, state: AppConfig) -> Box<dyn Future<Item = T, Error = E>>;
 }
