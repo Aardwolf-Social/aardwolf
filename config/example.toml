@@ -1,12 +1,10 @@
-[Instance]
-domain = "localhost:8080"
-https = false
-
 # Assets - This is where static files are stored for running in development mode
 [Assets]
 web = "dist"
 themes = "web/themes"
 emoji = "web/emoji"
+images = "web/images"
+stylesheets = "web/stylesheets"
 
 [Templates]
 # Templates - the directories where UI templates are stored
