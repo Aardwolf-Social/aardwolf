@@ -20,7 +20,7 @@ pub trait AardwolfServer {
 mod actix {
     use config::Config;
     use std::error::Error;
-    
+
     use super::AardwolfServer;
 
     pub struct Server;

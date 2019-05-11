@@ -15,12 +15,13 @@ use aardwolf_types::{
         fetch_persona::FetchPersona,
     },
 };
+use actix_i18n::I18n;
+use actix_session::Session;
 use actix_web::{
-    http::header::LOCATION, middleware::session::Session, Form, HttpResponse, Path, State,
+    http::header::LOCATION, web::{Form, Path, Data}, HttpResponse
 };
 use failure::Fail;
 use futures::Future;
-use rocket_i18n::I18n;
 use serde_derive::Serialize;
 
 use crate::{
@@ -110,7 +111,7 @@ impl From<DbActionError<PersonaCreationFail>> for PersonaCreateError {
 pub(crate) fn create(
     (session, state, user, form, i18n): (
         Session,
-        State<AppConfig>,
+        Data<AppConfig>,
         SignedInUser,
         Form<PersonaCreationForm>,
         I18n,
@@ -119,7 +120,7 @@ pub(crate) fn create(
     let form = form.into_inner();
     let form_state = form.as_state();
 
-    let res = perform!(state, PersonaCreateError, [
+    let res = perform!((*state).clone(), PersonaCreateError, [
         (form = ValidatePersonaCreationForm(form)),
         (creater = CheckCreatePersonaPermission(user.0)),
         (_ = CreatePersona(creater, form, state.generator.clone())),
@@ -177,9 +178,9 @@ where
 }
 
 pub(crate) fn delete(
-    (state, user, id): (State<AppConfig>, SignedInUser, Path<i32>),
+    (state, user, id): (Data<AppConfig>, SignedInUser, Path<i32>),
 ) -> Box<dyn Future<Item = String, Error = actix_web::error::Error>> {
-    let res = perform!(state, PersonaDeleteError, [
+    let res = perform!((*state).clone(), PersonaDeleteError, [
         (persona = FetchPersona(id.into_inner())),
         (deleter = CheckDeletePersonaPermission(user.0, persona)),
         (_ = DeletePersona(deleter)),

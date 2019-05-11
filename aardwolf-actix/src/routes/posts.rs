@@ -5,10 +5,10 @@ use aardwolf_types::{
         create_post::{CreatePost, CreatePostFail},
     },
 };
-use actix_web::{http::header::LOCATION, Form, HttpResponse, State};
+use actix_i18n::I18n;
+use actix_web::{http::header::LOCATION, web::{Form, Data}, HttpResponse};
 use failure::Fail;
 use futures::Future;
-use rocket_i18n::I18n;
 
 use crate::{
     db::DbActionError,
@@ -74,7 +74,7 @@ impl From<DbActionError<CreatePostFail>> for PostCreateError {
 }
 pub(crate) fn create(
     (state, user, actor, form, i18n): (
-        State<AppConfig>,
+        Data<AppConfig>,
         SignedInUser,
         CurrentActor,
         Form<PostCreationForm>,
@@ -87,7 +87,7 @@ pub(crate) fn create(
     let CurrentActor(base_actor, persona) = actor;
     let base_actor2 = base_actor.clone();
 
-    let res = perform!(state, PostCreateError, [
+    let res = perform!((*state).clone(), PostCreateError, [
         (form = ValidatePostCreationForm(form)),
         (creater = CheckCreatePostPermission(user.clone(), base_actor2)),
         (_ = CreatePost(creater, form, state.generator.clone())),

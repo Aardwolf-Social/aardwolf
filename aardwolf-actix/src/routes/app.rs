@@ -1,6 +1,6 @@
 use aardwolf_types::forms::posts::PostCreationFormState;
+use actix_i18n::I18n;
 use actix_web::HttpResponse;
-use rocket_i18n::I18n;
 
 use crate::{
     types::{actor::CurrentActor, user::SignedInUser},

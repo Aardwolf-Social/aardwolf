@@ -6,7 +6,7 @@ description = "Database interaction for the Aardwolf project"
 edition = "2018"
 
 [dependencies]
-bcrypt = "0.2"
+bcrypt = "0.4"
 chrono = "0.4"
 chrono-tz = "0.5"
 failure = "0.1"
@@ -26,7 +26,7 @@ default = []
 test = ["dotenv"]
 
 [dependencies.dotenv]
-version = "0.13"
+version = "0.14"
 optional = true
 
 [dependencies.diesel]

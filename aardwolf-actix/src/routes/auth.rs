@@ -10,12 +10,13 @@ use aardwolf_types::{
         sign_up::{SignUp, SignUpFail},
     },
 };
+use actix_i18n::I18n;
+use actix_session::Session;
 use actix_web::{
-    http::header::LOCATION, middleware::session::Session, Form, HttpResponse, Query, State,
+    http::header::LOCATION, web::{Form, Query, Data}, HttpResponse
 };
 use failure::Fail;
 use futures::future::Future;
-use rocket_i18n::I18n;
 
 use crate::{
     db::DbActionError, error::RedirectError, types::user::SignedInUser, AppConfig, WithRucte,
@@ -76,12 +77,12 @@ impl From<ValidateSignUpFormFail> for SignUpError {
 }
 
 pub(crate) fn sign_up(
-    (state, form, i18n): (State<AppConfig>, Form<SignUpForm>, I18n),
+    (state, form, i18n): (Data<AppConfig>, Form<SignUpForm>, I18n),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
     let form = form.into_inner();
     let form_state = form.as_state();
 
-    let res = perform!(state, SignUpError, [
+    let res = perform!((*state).clone(), SignUpError, [
         (form = ValidateSignUpForm(form)),
         (_ = SignUp(form)),
     ]);
@@ -149,12 +150,12 @@ impl From<ValidateSignInFormFail> for SignInError {
 }
 
 pub(crate) fn sign_in(
-    (state, session, form, i18n): (State<AppConfig>, Session, Form<SignInForm>, I18n),
+    (state, session, form, i18n): (Data<AppConfig>, Session, Form<SignInForm>, I18n),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
     let form = form.into_inner();
     let form_state = form.as_state();
 
-    let res = perform!(state, SignInError, [
+    let res = perform!((*state).clone(), SignInError, [
         (form = ValidateSignInForm(form)),
         (_ = SignIn(form)),
     ]);
@@ -209,9 +210,9 @@ impl From<DbActionError<ConfirmAccountFail>> for ConfirmError {
 }
 
 pub(crate) fn confirm(
-    (state, query): (State<AppConfig>, Query<ConfirmAccountToken>),
+    (state, query): (Data<AppConfig>, Query<ConfirmAccountToken>),
 ) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::Error>> {
-    let res = perform!(state, ConfirmError, [
+    let res = perform!((*state).clone(), ConfirmError, [
         (_ = ConfirmAccount(query.into_inner())),
     ]);
 

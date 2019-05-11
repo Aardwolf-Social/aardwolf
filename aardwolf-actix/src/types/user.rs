@@ -2,8 +2,10 @@ use aardwolf_models::user::AuthenticatedUser;
 use aardwolf_types::operations::fetch_authenticated_user::{
     FetchAuthenticatedUser, FetchAuthenticatedUserFail,
 };
+use actix_http::Payload;
+use actix_session::Session;
 use actix_web::{
-    error::ResponseError, middleware::session::RequestSession, FromRequest, HttpRequest,
+    error::ResponseError, FromRequest, HttpRequest,
     HttpResponse,
 };
 use failure::Fail;
@@ -42,16 +44,33 @@ impl ResponseError for SignedInUserError {
     }
 }
 
+#[derive(Clone, Debug, Fail)]
+#[fail(display = "State is missing")]
+pub struct MissingState;
+
+impl ResponseError for MissingState {
+    // Defaults to InternalServerError
+}
+
 pub struct SignedInUser(pub AuthenticatedUser);
 
-impl FromRequest<AppConfig> for SignedInUser {
+impl FromRequest for SignedInUser {
     type Config = ();
-    type Result = Box<dyn Future<Item = Self, Error = actix_web::Error>>;
+    type Error = actix_web::Error;
+    type Future = Box<dyn Future<Item = Self, Error = Self::Error>>;
 
-    fn from_request(req: &HttpRequest<AppConfig>, _: &Self::Config) -> Self::Result {
-        let state = req.state().clone();
+    fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
+        let state = match req.app_data::<AppConfig>().ok_or(MissingState) {
+            Ok(state) => state.clone(),
+            Err(e) => return Box::new(futures::future::err(e.into())),
+        };
 
-        let id_res = from_session(&req.session(), "user_id", SignedInUserError::Cookie);
+        let session = match Session::extract(req) {
+            Ok(session) => session,
+            Err(_) => return Box::new(futures::future::err(SignedInUserError::Cookie.into())),
+        };
+
+        let id_res = from_session(&session, "user_id", SignedInUserError::Cookie);
 
         let res = id_res
             .into_future()
