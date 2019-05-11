@@ -1,5 +1,5 @@
 [Instance]
-domain = "localhost:8080"
+domain = "0.0.0.0:8080"
 https = false
 
 # Assets - This is where static files are stored for running in development mode
@@ -26,7 +26,7 @@ file = "aardwolf.log"
 # Web.Listen.address - The network address the server should listen on. Set this to your
 # instance's public IP address.
 
-address = "127.0.0.1"
+address = "0.0.0.0"
 
 # Listen.port - What port to listen on for requests. This can be any valid port number,
 # HTTP defaults to port 80, and https defaults to port 443.
@@ -37,14 +37,14 @@ address = "127.0.0.1"
 port = 8080
 
 
-[Instance]
+#[Instance]
 # Instance - This section describes particular details about the Aardwolf server instance
 #   yourdomain.tld
-domain = "yourdomain.tld"
+#domain = "yourdomain.tld"
 
 # Do you want to enable HTTPS?
 #   true |false
-https = false
+#https = false
 
 
 [Database]
@@ -57,7 +57,7 @@ https = false
 type = "postgresql"
 
 # Database.host - The ip address of the machine hosting the database.
-host = "127.0.0.1"
+host = "db"
 
 # Database.port - What port the database server is listening on. PostgreSQL's default is 5432.
 port = 5432
