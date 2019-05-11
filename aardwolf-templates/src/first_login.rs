@@ -1,6 +1,6 @@
-use aardwolf_models::sql_types::{FollowPolicy, PostVisibility};
 use aardwolf_types::forms::personas::{
-    ValidateDisplayNameFail, ValidatePersonaCreationFail, ValidateShortnameFail,
+    PersonaCreationFormState, ValidateDisplayNameFail, ValidatePersonaCreationFail,
+    ValidateShortnameFail,
 };
 use gettext::Catalog;
 use gettext_macros::i18n;
@@ -23,11 +23,7 @@ impl<'a> FirstLogin<'a> {
     pub fn new(
         catalog: &'a Catalog,
         csrf: &'a str,
-        display_name: &'a str,
-        shortname: &'a str,
-        follow_policy: FollowPolicy,
-        default_visibility: PostVisibility,
-        is_searchable: bool,
+        state: &'a PersonaCreationFormState,
         validation_error: Option<&'a ValidatePersonaCreationFail>,
         server_error: bool,
     ) -> Self {
@@ -47,7 +43,7 @@ impl<'a> FirstLogin<'a> {
                 label: i18n!(catalog, "Display Name"),
                 icon: None,
                 placeholder: Some(i18n!(catalog, "Display name")),
-                value: display_name,
+                value: &state.display_name,
                 error: validation_error.and_then(|e| {
                     e.display_name.as_ref().map(|e| match *e {
                         ValidateDisplayNameFail::Empty => {
@@ -61,7 +57,7 @@ impl<'a> FirstLogin<'a> {
                 label: i18n!(catalog, "Username"),
                 icon: None,
                 placeholder: Some(i18n!(catalog, "Username")),
-                value: shortname,
+                value: &state.shortname,
                 error: validation_error.and_then(|e| {
                     e.shortname.as_ref().map(|e| match *e {
                         ValidateShortnameFail::Empty => {
@@ -77,14 +73,14 @@ impl<'a> FirstLogin<'a> {
             follow_policy: SelectInput {
                 name: "follow_policy",
                 label: i18n!(catalog, "Follow Policy"),
-                selected: follow_policy.to_string(),
+                selected: state.follow_policy.to_string(),
                 options: SelectInput::follow_policy_options(catalog),
                 error: validation_error.and_then(|e| e.follow_policy.as_ref().map(|e| match *e {})),
             },
             default_visibility: SelectInput {
                 name: "default_visibility",
                 label: i18n!(catalog, "Post Visibility"),
-                selected: default_visibility.to_string(),
+                selected: state.default_visibility.to_string(),
                 options: SelectInput::visibility_options(catalog),
                 error: validation_error
                     .and_then(|e| e.default_visibility.as_ref().map(|e| match *e {})),
@@ -93,7 +89,7 @@ impl<'a> FirstLogin<'a> {
                 name: "is_searchable",
                 label: i18n!(catalog, "Allow people to search for this profile"),
                 icon: None,
-                checked: is_searchable,
+                checked: state.is_searchable,
                 error: validation_error.and_then(|e| e.is_searchable.as_ref().map(|e| match *e {})),
             },
         }

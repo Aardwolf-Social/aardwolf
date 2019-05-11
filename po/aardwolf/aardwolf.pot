@@ -12,47 +12,47 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-# aardwolf-templates/src/first_login.rs:40
+# aardwolf-templates/src/first_login.rs:36
 msgid "There was an error creating your persona"
 msgstr ""
 
-# aardwolf-templates/src/first_login.rs:47
+# aardwolf-templates/src/first_login.rs:43
 msgid "Display Name"
 msgstr ""
 
-# aardwolf-templates/src/first_login.rs:49
+# aardwolf-templates/src/first_login.rs:45
 msgid "Display name"
 msgstr ""
 
-# aardwolf-templates/src/first_login.rs:54
+# aardwolf-templates/src/first_login.rs:50
 msgid "Display name must not be empty"
 msgstr ""
 
-# aardwolf-templates/src/first_login.rs:61
+# aardwolf-templates/src/first_login.rs:57
 msgid "Username"
 msgstr ""
 
-# aardwolf-templates/src/first_login.rs:68
+# aardwolf-templates/src/first_login.rs:64
 msgid "Username must not be empty"
 msgstr ""
 
-# aardwolf-templates/src/first_login.rs:71
+# aardwolf-templates/src/first_login.rs:67
 msgid "Username must not contain special characters"
 msgstr ""
 
-# aardwolf-templates/src/first_login.rs:73
+# aardwolf-templates/src/first_login.rs:69
 msgid "Username is too long"
 msgstr ""
 
-# aardwolf-templates/src/first_login.rs:79
+# aardwolf-templates/src/first_login.rs:75
 msgid "Follow Policy"
 msgstr ""
 
-# aardwolf-templates/src/first_login.rs:86
+# aardwolf-templates/src/first_login.rs:82
 msgid "Post Visibility"
 msgstr ""
 
-# aardwolf-templates/src/first_login.rs:94
+# aardwolf-templates/src/first_login.rs:90
 msgid "Allow people to search for this profile"
 msgstr ""
 
@@ -76,23 +76,23 @@ msgstr ""
 msgid "mh, nsfw, etc."
 msgstr ""
 
-# aardwolf-templates/src/sign_in.rs:31
+# aardwolf-templates/src/sign_in.rs:32
 msgid "There was an error logging in"
 msgstr ""
 
-# aardwolf-templates/src/sign_in.rs:38
+# aardwolf-templates/src/sign_in.rs:39
 msgid "E-Mail Address"
 msgstr ""
 
-# aardwolf-templates/src/sign_in.rs:43
+# aardwolf-templates/src/sign_in.rs:44
 msgid "Email cannot be empty"
 msgstr ""
 
-# aardwolf-templates/src/sign_in.rs:49
+# aardwolf-templates/src/sign_in.rs:50
 msgid "Password"
 msgstr ""
 
-# aardwolf-templates/src/sign_in.rs:54
+# aardwolf-templates/src/sign_in.rs:55
 msgid "Password cannot be empty"
 msgstr ""
 

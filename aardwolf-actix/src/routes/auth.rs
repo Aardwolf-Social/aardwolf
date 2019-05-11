@@ -4,8 +4,8 @@ use aardwolf_models::user::{
 };
 use aardwolf_types::{
     forms::auth::{
-        SignInForm, SignUpForm, ValidateSignInForm, ValidateSignInFormFail, ValidateSignUpForm,
-        ValidateSignUpFormFail,
+        SignInForm, SignInFormState, SignUpForm, SignUpFormState, ValidateSignInForm,
+        ValidateSignInFormFail, ValidateSignUpForm, ValidateSignUpFormFail,
     },
     operations::{
         confirm_account::{ConfirmAccount, ConfirmAccountFail, ConfirmAccountToken},
@@ -35,7 +35,7 @@ pub(crate) fn sign_up_form(i18n: I18n) -> HttpResponse {
     let res = HttpResponse::Ok().with_ructe(aardwolf_templates::SignUp::new(
         &i18n.catalog,
         "csrf token",
-        "",
+        &SignUpFormState::default(),
         None,
         false,
     ));
@@ -70,7 +70,7 @@ pub(crate) fn sign_up(
         Ok(res.with_ructe(aardwolf_templates::SignUp::new(
             &i18n.catalog,
             "csrf token",
-            &form_state.email,
+            &form_state,
             valid,
             system,
         )))
@@ -81,7 +81,7 @@ pub(crate) fn sign_in_form(i18n: I18n) -> HttpResponse {
     let res = HttpResponse::Ok().with_ructe(aardwolf_templates::SignIn::new(
         &i18n.catalog,
         "csrf token",
-        "",
+        &SignInFormState::default(),
         None,
         false,
     ));
@@ -116,7 +116,7 @@ pub(crate) fn sign_in(
         Ok(res.with_ructe(aardwolf_templates::SignIn::new(
             &i18n.catalog,
             "csrf token",
-            &form_state.email,
+            &form_state,
             validation,
             system,
         )))

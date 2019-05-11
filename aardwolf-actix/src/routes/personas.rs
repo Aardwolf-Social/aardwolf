@@ -1,9 +1,11 @@
-use aardwolf_models::{base_actor::persona::Persona, sql_types::{FollowPolicy, PostVisibility}};
+use aardwolf_models::{
+    base_actor::persona::Persona,
+};
 use aardwolf_types::{
     error::AardwolfFail,
     forms::personas::{
         PersonaCreationFail, PersonaCreationForm, ValidatePersonaCreationFail,
-        ValidatePersonaCreationForm,
+        ValidatePersonaCreationForm, PersonaCreationFormState,
     },
     operations::{
         check_create_persona_permission::{
@@ -37,11 +39,7 @@ pub(crate) fn new((_user, i18n): (SignedInUser, I18n)) -> HttpResponse {
     let res = HttpResponse::Ok().with_ructe(aardwolf_templates::FirstLogin::new(
         &i18n.catalog,
         "csrf",
-        "",
-        "",
-        FollowPolicy::AutoAccept,
-        PostVisibility::Public,
-        false,
+        &PersonaCreationFormState::default(),
         None,
         false,
     ));
@@ -80,11 +78,7 @@ pub(crate) fn create(
         Ok(res.with_ructe(aardwolf_templates::FirstLogin::new(
             &i18n.catalog,
             "csrf",
-            &form_state.display_name,
-            &form_state.shortname,
-            form_state.follow_policy,
-            form_state.default_visibility,
-            form_state.is_searchable,
+            &form_state,
             validation,
             system,
         )))
