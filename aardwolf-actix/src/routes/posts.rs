@@ -6,7 +6,11 @@ use aardwolf_types::{
     },
 };
 use actix_i18n::I18n;
-use actix_web::{http::header::LOCATION, web::{Form, Data}, HttpResponse};
+use actix_web::{
+    http::header::LOCATION,
+    web::{Data, Form},
+    HttpResponse,
+};
 use failure::Fail;
 use futures::Future;
 

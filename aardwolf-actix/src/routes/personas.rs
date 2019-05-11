@@ -18,7 +18,9 @@ use aardwolf_types::{
 use actix_i18n::I18n;
 use actix_session::Session;
 use actix_web::{
-    http::header::LOCATION, web::{Form, Path, Data}, HttpResponse
+    http::header::LOCATION,
+    web::{Data, Form, Path},
+    HttpResponse,
 };
 use failure::Fail;
 use futures::Future;

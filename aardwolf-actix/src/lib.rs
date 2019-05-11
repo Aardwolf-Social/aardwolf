@@ -9,9 +9,8 @@ use actix_web::{
     dev::HttpResponseBuilder,
     http::header::CONTENT_TYPE,
     middleware::Logger,
-    HttpServer,
     web::{get, post, resource, scope},
-    App, HttpResponse,
+    App, HttpResponse, HttpServer,
 };
 use config::Config;
 use diesel::pg::PgConnection;
@@ -226,12 +225,8 @@ pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
                             .route(get().to(self::routes::auth::sign_in_form))
                             .route(post().to(self::routes::auth::sign_in)),
                     )
-                    .service(
-                        resource("/confirmation").route(get().to(self::routes::auth::confirm)),
-                    )
-                    .service(
-                        resource("/sign_out").route(get().to(self::routes::auth::sign_out)),
-                    ),
+                    .service(resource("/confirmation").route(get().to(self::routes::auth::confirm)))
+                    .service(resource("/sign_out").route(get().to(self::routes::auth::sign_out))),
             )
             .service(
                 scope("/posts")
@@ -244,9 +239,7 @@ pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
                             .route(get().to(self::routes::personas::new))
                             .route(post().to(self::routes::personas::create)),
                     )
-                    .service(
-                        resource("/delete").route(get().to(self::routes::personas::delete)),
-                    ),
+                    .service(resource("/delete").route(get().to(self::routes::personas::delete))),
             )
             .service(resource("/").route(get().to(self::routes::app::index)))
             .service(Files::new("/web", assets.web()))

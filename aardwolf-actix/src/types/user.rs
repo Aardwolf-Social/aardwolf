@@ -4,10 +4,7 @@ use aardwolf_types::operations::fetch_authenticated_user::{
 };
 use actix_http::Payload;
 use actix_session::Session;
-use actix_web::{
-    error::ResponseError, FromRequest, HttpRequest,
-    HttpResponse,
-};
+use actix_web::{error::ResponseError, FromRequest, HttpRequest, HttpResponse};
 use failure::Fail;
 use futures::future::{Future, IntoFuture};
 
