@@ -6,7 +6,6 @@ edition = "2018"
 
 [features]
 default = []
-use-rocket = ["rocket", "rocket_codegen", "rocket_contrib", "aardwolf-models/rocket"]
 use-actix = ["actix-web", "actix", "futures"]
 
 [dependencies]
@@ -33,19 +32,6 @@ path = "../aardwolf-models"
 version = "1.4"
 default-features = false
 features = ["postgres", "uuid", "chrono"]
-
-[dependencies.rocket]
-version = "0.4.0"
-optional = true
-
-[dependencies.rocket_codegen]
-version = "0.4.0"
-optional = true
-
-[dependencies.rocket_contrib]
-features = ["json"]
-version = "0.4.0"
-optional = true
 
 [dev-dependencies]
 aardwolf-test-helpers = { version = "0.1", path = "../aardwolf-test-helpers" }

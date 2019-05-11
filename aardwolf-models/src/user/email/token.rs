@@ -159,23 +159,6 @@ impl fmt::Display for EmailVerificationToken {
     }
 }
 
-#[cfg(feature = "rocket")]
-mod rocket {
-    use std::str::Utf8Error;
-
-    use rocket::{http::RawStr, request::FromFormValue};
-
-    use super::EmailVerificationToken;
-
-    impl<'v> FromFormValue<'v> for EmailVerificationToken {
-        type Error = Utf8Error;
-
-        fn from_form_value(form_value: &'v RawStr) -> Result<Self, Self::Error> {
-            Ok(EmailVerificationToken(form_value.url_decode()?))
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::{create_token, EmailVerificationToken, VerifyEmail};

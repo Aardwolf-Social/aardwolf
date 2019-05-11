@@ -9,15 +9,13 @@ edition = "2018"
 members = [
     "aardwolf-actix",
     "aardwolf-models",
-    "aardwolf-rocket",
     "aardwolf-templates",
     "aardwolf-test-helpers",
     "aardwolf-types",
 ]
 
 [features]
-default = ["simple-logging"]
-rocket = ["aardwolf-rocket"]
+default = ["simple-logging", "actix"]
 actix = ["aardwolf-actix"]
 
 [dependencies]
@@ -37,11 +35,6 @@ systemd = { version = "0.4", optional = true }
 [dependencies.aardwolf-actix]
 version = "0.1"
 path = "aardwolf-actix"
-optional = true
-
-[dependencies.aardwolf-rocket]
-version = "0.1"
-path = "aardwolf-rocket"
 optional = true
 
 [dependencies.clap]

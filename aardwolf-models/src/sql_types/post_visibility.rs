@@ -106,26 +106,3 @@ impl StdError for VisibilityParseError {
         None
     }
 }
-
-#[cfg(feature = "rocket")]
-mod rocket {
-    use std::str::Utf8Error;
-
-    use rocket::{http::RawStr, request::FromFormValue};
-
-    use super::{PostVisibility, VisibilityParseError};
-
-    impl<'v> FromFormValue<'v> for PostVisibility {
-        type Error = VisibilityParseError;
-
-        fn from_form_value(form_value: &'v RawStr) -> Result<Self, Self::Error> {
-            Ok(form_value.url_decode()?.parse()?)
-        }
-    }
-
-    impl From<Utf8Error> for VisibilityParseError {
-        fn from(_: Utf8Error) -> Self {
-            VisibilityParseError
-        }
-    }
-}
