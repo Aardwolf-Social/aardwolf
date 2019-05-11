@@ -14,6 +14,7 @@ before_script:
   - echo 'TEST_DATABASE_URL=postgres://postgres@localhost/aardwolf_testing' >> .env
   - pushd aardwolf-models
   - diesel migration run
+  - DATABASE_URL=postgres://postgres@localhost/aardwolf_testing diesel migration run
   - popd
 
 script:
