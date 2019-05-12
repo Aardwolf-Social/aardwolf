@@ -143,23 +143,6 @@ impl<'de> Deserialize<'de> for PlaintextPassword {
     }
 }
 
-#[cfg(feature = "rocket")]
-mod rocket {
-    use std::str::Utf8Error;
-
-    use rocket::{http::RawStr, request::FromFormValue};
-
-    use super::PlaintextPassword;
-
-    impl<'v> FromFormValue<'v> for PlaintextPassword {
-        type Error = Utf8Error;
-
-        fn from_form_value(form_value: &'v RawStr) -> Result<Self, Self::Error> {
-            Ok(PlaintextPassword(form_value.url_decode()?))
-        }
-    }
-}
-
 impl fmt::Debug for PlaintextPassword {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "********")

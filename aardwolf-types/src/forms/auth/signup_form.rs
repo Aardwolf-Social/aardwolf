@@ -74,7 +74,6 @@ impl Default for SignUpFormState {
 }
 
 #[derive(Debug, Deserialize)]
-#[cfg_attr(feature = "use-rocket", derive(FromForm))]
 pub struct SignUpForm {
     pub csrf_token: String,
     pub email: String,

@@ -36,7 +36,6 @@ pub struct SignInFormState {
 }
 
 #[derive(Debug, Deserialize)]
-#[cfg_attr(feature = "use-rocket", derive(FromForm))]
 pub struct SignInForm {
     pub csrf_token: String,
     pub email: String,
