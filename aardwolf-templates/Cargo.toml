@@ -7,13 +7,17 @@ build = "build.rs"
 
 [build-dependencies]
 config = "0.9.0"
-ructe = "0.5"
+ructe = "0.6"
 
 [dependencies]
 gettext = "0.3"
-gettext-macros = "0.3"
+gettext-macros = "0.4"
 gettext-utils = "0.1"
-rocket_i18n = { version = "0.4", default-features = false }
+
+[dependencies.actix_i18n]
+version = "0.5"
+git = "https://github.com/aardwolf-social/rocket_i18n"
+branch = "asonix/upgrade-actix"
 
 [dependencies.aardwolf-types]
 version = "0.1"

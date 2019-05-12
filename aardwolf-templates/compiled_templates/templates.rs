@@ -44,14 +44,13 @@ pub use self::template_sign_up::sign_up;
 /// formats the value using Display and then html-encodes the result.
 pub trait ToHtml {
     /// Write self to `out`, which is in html representation.
-    #[inline]
     fn to_html(&self, out: &mut Write) -> io::Result<()>;
 }
 
 /// Wrapper object for data that should be outputted as raw html
 /// (objects that may contain markup).
 #[allow(dead_code)]
-pub struct Html<T> (pub T);
+pub struct Html<T>(pub T);
 
 impl<T: Display> ToHtml for Html<T> {
     #[inline]
@@ -76,7 +75,12 @@ impl<'a> Write for ToHtmlEscapingWriter<'a> {
     // (it is a part of `write_all`'s loop or similar.)
     fn write(&mut self, data: &[u8]) -> io::Result<usize> {
         // quickly skip over data that doesn't need escaping
-        let n = data.into_iter().take_while(|&&c| c != b'"' && c != b'&' && c != b'\'' && c != b'<' && c != b'>').count();
+        let n = data
+            .iter()
+            .take_while(|&&c| {
+                c != b'"' && c != b'&' && c != b'\'' && c != b'<' && c != b'>'
+            })
+            .count();
         if n > 0 {
             self.0.write(&data[0..n])
         } else {
@@ -92,7 +96,10 @@ impl<'a> Write for ToHtmlEscapingWriter<'a> {
 
 impl<'a> ToHtmlEscapingWriter<'a> {
     #[inline(never)]
-    fn write_one_byte_escaped(out: &mut Write, data: &[u8]) -> io::Result<usize> {
+    fn write_one_byte_escaped(
+        out: &mut Write,
+        data: &[u8],
+    ) -> io::Result<usize> {
         let next = data.get(0);
         out.write_all(match next {
             Some(b'"') => b"&quot;",

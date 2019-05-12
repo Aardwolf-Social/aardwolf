@@ -35,6 +35,14 @@ pub struct SignInFormState {
     pub email: String,
 }
 
+impl Default for SignInFormState {
+    fn default() -> Self {
+        SignInFormState {
+            email: "".to_owned(),
+        }
+    }
+}
+
 #[derive(Debug, Deserialize)]
 pub struct SignInForm {
     pub csrf_token: String,

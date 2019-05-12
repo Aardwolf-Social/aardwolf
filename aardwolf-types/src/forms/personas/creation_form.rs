@@ -25,6 +25,18 @@ pub struct PersonaCreationFormState {
     pub is_searchable: bool,
 }
 
+impl Default for PersonaCreationFormState {
+    fn default() -> Self {
+        PersonaCreationFormState {
+            display_name: "".to_owned(),
+            follow_policy: FollowPolicy::AutoAccept,
+            default_visibility: PostVisibility::Public,
+            shortname: "".to_owned(),
+            is_searchable: false,
+        }
+    }
+}
+
 impl PersonaCreationForm {
     pub fn as_state(&self) -> PersonaCreationFormState {
         PersonaCreationFormState {

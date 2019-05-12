@@ -129,7 +129,6 @@ impl VerifyEmail {
         self,
         conn: &PgConnection,
     ) -> Result<VerifiedEmail, diesel::result::Error> {
-        use crate::schema::emails;
         use diesel::prelude::*;
 
         diesel::update(emails::table)

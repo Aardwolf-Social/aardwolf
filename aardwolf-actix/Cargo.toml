@@ -5,8 +5,11 @@ authors = ["asonix <asonix@asonix.dog>"]
 edition = "2018"
 
 [dependencies]
-actix = "0.7"
-actix-web = "0.7"
+actix = "0.8.1"
+actix-files = "0.1.0-betsa.1"
+actix-http = "0.1.5"
+actix-session = "0.1.0-beta.2"
+actix-web = "1.0.0-beta.3"
 config = "0.9.0"
 failure = "0.1"
 futures = "0.1"
@@ -36,7 +39,7 @@ version = "1.4"
 default-features = false
 features = ["postgres", "uuid", "chrono"]
 
-[dependencies.rocket_i18n]
-version = "0.4"
-default-features = false
-features = ["actix-web"]
+[dependencies.actix_i18n]
+version = "0.5"
+git = "https://github.com/aardwolf-social/rocket_i18n"
+branch = "asonix/upgrade-actix"

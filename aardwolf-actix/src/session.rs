@@ -1,4 +1,4 @@
-use actix_web::middleware::session::Session;
+use actix_session::Session;
 
 pub fn from_session<I, E>(session: &Session, key: &str, err: E) -> Result<I, E>
 where

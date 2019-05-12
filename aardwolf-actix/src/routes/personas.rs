@@ -1,9 +1,11 @@
-use aardwolf_models::sql_types::{FollowPolicy, PostVisibility};
+use aardwolf_models::{
+    base_actor::persona::Persona,
+};
 use aardwolf_types::{
     error::AardwolfFail,
     forms::personas::{
         PersonaCreationFail, PersonaCreationForm, ValidatePersonaCreationFail,
-        ValidatePersonaCreationForm,
+        ValidatePersonaCreationForm, PersonaCreationFormState,
     },
     operations::{
         check_create_persona_permission::{
@@ -15,27 +17,29 @@ use aardwolf_types::{
         fetch_persona::FetchPersona,
     },
 };
+use actix_i18n::I18n;
+use actix_session::Session;
 use actix_web::{
-    http::header::LOCATION, middleware::session::Session, Form, HttpResponse, Path, State,
+    web::{Data, Form, Path},
+    HttpResponse,
 };
 use failure::Fail;
-use futures::Future;
-use rocket_i18n::I18n;
+use futures::{future::IntoFuture, Future};
 use serde_derive::Serialize;
 
 use crate::{
-    db::DbActionError, error::RedirectError, types::user::SignedInUser, AppConfig, WithRucte,
+    action::{Action, Impossible, Redirect, Wrapped},
+    db::DbActionError,
+    error::RedirectError,
+    types::user::SignedInUser,
+    AppConfig, WithRucte,
 };
 
 pub(crate) fn new((_user, i18n): (SignedInUser, I18n)) -> HttpResponse {
     let res = HttpResponse::Ok().with_ructe(aardwolf_templates::FirstLogin::new(
         &i18n.catalog,
         "csrf",
-        "",
-        "",
-        FollowPolicy::AutoAccept,
-        PostVisibility::Public,
-        false,
+        &PersonaCreationFormState::default(),
         None,
         false,
     ));
@@ -43,6 +47,57 @@ pub(crate) fn new((_user, i18n): (SignedInUser, I18n)) -> HttpResponse {
     drop(i18n);
 
     res
+}
+
+pub(crate) fn create(
+    (session, state, user, form, i18n): (
+        Session,
+        Data<AppConfig>,
+        SignedInUser,
+        Form<PersonaCreationForm>,
+        I18n,
+    ),
+) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::error::Error>> {
+    let form = form.into_inner();
+    let form_state = form.as_state();
+
+    let res = perform!((*state).clone(), PersonaCreateError, [
+        (form = ValidatePersonaCreationForm(form)),
+        (creater = CheckCreatePersonaPermission(user.0)),
+        ((_, persona) = CreatePersona(creater, form, state.generator.clone())),
+        (_ = SetPersonaCookie(session, persona)),
+        (_ = Redirect("/".to_owned())),
+    ]);
+
+    Box::new(res.or_else(move |e| {
+        let (mut res, validation, system) = match e {
+            PersonaCreateError::Form(ref e) => (HttpResponse::BadRequest(), Some(e), false),
+            _ => (HttpResponse::InternalServerError(), None, true),
+        };
+
+        Ok(res.with_ructe(aardwolf_templates::FirstLogin::new(
+            &i18n.catalog,
+            "csrf",
+            &form_state,
+            validation,
+            system,
+        )))
+    }))
+}
+
+pub(crate) fn delete(
+    (state, user, id): (Data<AppConfig>, SignedInUser, Path<i32>),
+) -> Box<dyn Future<Item = String, Error = actix_web::error::Error>> {
+    let res = perform!((*state).clone(), PersonaDeleteError, [
+        (persona = FetchPersona(id.into_inner())),
+        (deleter = CheckDeletePersonaPermission(user.0, persona)),
+        (_ = DeletePersona(deleter)),
+    ]);
+
+    Box::new(
+        res.map(|_| "Deleted!".to_string())
+            .map_err(|_| RedirectError::new("/personas", &None).into()),
+    )
 }
 
 #[derive(Clone, Debug, Fail)]
@@ -59,6 +114,12 @@ pub enum PersonaCreateError {
     Form(#[cause] ValidatePersonaCreationFail),
     #[fail(display = "Could not generate keys")]
     Keygen,
+}
+
+impl From<Impossible> for PersonaCreateError {
+    fn from(_: Impossible) -> Self {
+        PersonaCreateError::Mailbox
+    }
 }
 
 impl From<ValidatePersonaCreationFail> for PersonaCreateError {
@@ -107,50 +168,21 @@ impl From<DbActionError<PersonaCreationFail>> for PersonaCreateError {
     }
 }
 
-pub(crate) fn create(
-    (session, state, user, form, i18n): (
-        Session,
-        State<AppConfig>,
-        SignedInUser,
-        Form<PersonaCreationForm>,
-        I18n,
-    ),
-) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::error::Error>> {
-    let form = form.into_inner();
-    let form_state = form.as_state();
+struct SetPersonaCookie(Session, Persona);
 
-    let res = perform!(state, PersonaCreateError, [
-        (form = ValidatePersonaCreationForm(form)),
-        (creater = CheckCreatePersonaPermission(user.0)),
-        (_ = CreatePersona(creater, form, state.generator.clone())),
-    ]);
+impl Wrapped for SetPersonaCookie {
+    type Wrapper = SetPersonaCookie;
+}
 
-    Box::new(
-        res.and_then(move |(_actor, persona)| {
-            session
-                .set("persona_id", persona.id())
+impl Action<(), PersonaCreateError> for SetPersonaCookie {
+    fn action(self, _: AppConfig) -> Box<dyn Future<Item = (), Error = PersonaCreateError>> {
+        Box::new(
+            self.0
+                .set("persona_id", self.1.id())
                 .map_err(|_| PersonaCreateError::Cookie)
-        })
-        .map(|_| HttpResponse::SeeOther().header(LOCATION, "/").finish())
-        .or_else(move |e| {
-            let (mut res, validation, system) = match e {
-                PersonaCreateError::Form(ref e) => (HttpResponse::BadRequest(), Some(e), false),
-                _ => (HttpResponse::InternalServerError(), None, true),
-            };
-
-            Ok(res.with_ructe(aardwolf_templates::FirstLogin::new(
-                &i18n.catalog,
-                "csrf",
-                &form_state.display_name,
-                &form_state.shortname,
-                form_state.follow_policy,
-                form_state.default_visibility,
-                form_state.is_searchable,
-                validation,
-                system,
-            )))
-        }),
-    )
+                .into_future(),
+        )
+    }
 }
 
 #[derive(Clone, Debug, Fail, Serialize)]
@@ -174,19 +206,4 @@ where
             DbActionError::Action(e) => PersonaDeleteError::Delete(e.into()),
         }
     }
-}
-
-pub(crate) fn delete(
-    (state, user, id): (State<AppConfig>, SignedInUser, Path<i32>),
-) -> Box<dyn Future<Item = String, Error = actix_web::error::Error>> {
-    let res = perform!(state, PersonaDeleteError, [
-        (persona = FetchPersona(id.into_inner())),
-        (deleter = CheckDeletePersonaPermission(user.0, persona)),
-        (_ = DeletePersona(deleter)),
-    ]);
-
-    Box::new(
-        res.map(|_| "Deleted!".to_string())
-            .map_err(|_| RedirectError::new("/personas", &None).into()),
-    )
 }

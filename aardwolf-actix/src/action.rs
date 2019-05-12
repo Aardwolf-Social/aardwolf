@@ -1,22 +1,83 @@
+use aardwolf_templates::Renderable;
 use aardwolf_types::{
     error::AardwolfFail,
     traits::{DbAction, Export, Validate},
     wrapper::{DbActionWrapper, ExportFail, ExportWrapper, ValidateWrapper},
 };
-use futures::future::Future;
+use actix_web::{http::header::LOCATION, HttpResponse};
+use failure::Fail;
+use futures::future::{ok, Future};
 
 use crate::{
     db::{DbActionError, PerformDbAction},
-    AppConfig,
+    AppConfig, WithRucte,
 };
 
 pub use aardwolf_types::wrapper::Wrapped;
 
+#[derive(Clone, Fail)]
+pub enum Impossible {}
+
+impl std::fmt::Display for Impossible {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "Not possible...")
+    }
+}
+
+impl std::fmt::Debug for Impossible {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "Not possible...")
+    }
+}
+
+pub enum Respond<R>
+where
+    R: Renderable,
+{
+    Ok(R),
+    Created(R),
+    NotFound(R),
+}
+
+impl<R> Wrapped for Respond<R>
+where
+    R: Renderable,
+{
+    type Wrapper = Respond<R>;
+}
+
+impl<R> Action<HttpResponse, Impossible> for Respond<R>
+where
+    R: Renderable,
+{
+    fn action(self, _: AppConfig) -> Box<dyn Future<Item = HttpResponse, Error = Impossible>> {
+        Box::new(ok(match self {
+            Respond::Ok(r) => HttpResponse::Ok().with_ructe(r),
+            Respond::Created(r) => HttpResponse::Created().with_ructe(r),
+            Respond::NotFound(r) => HttpResponse::NotFound().with_ructe(r),
+        }))
+    }
+}
+
+pub struct Redirect(pub String);
+
+impl Wrapped for Redirect {
+    type Wrapper = Redirect;
+}
+
+impl Action<HttpResponse, Impossible> for Redirect {
+    fn action(self, _: AppConfig) -> Box<dyn Future<Item = HttpResponse, Error = Impossible>> {
+        Box::new(ok(HttpResponse::SeeOther()
+            .header(LOCATION, self.0)
+            .finish()))
+    }
+}
+
 pub trait Action<T, E>
 where
-    E: AardwolfFail,
+    E: Fail,
 {
-    fn action(self, state: AppConfig) -> Box<dyn Future<Item = T, Error = E> + Send>;
+    fn action(self, state: AppConfig) -> Box<dyn Future<Item = T, Error = E>>;
 }
 
 impl<E, T> Action<T, ExportFail> for ExportWrapper<E, T>
@@ -24,7 +85,7 @@ where
     E: Export<Item = T>,
     T: Send + 'static,
 {
-    fn action(self, _: AppConfig) -> Box<dyn Future<Item = T, Error = ExportFail> + Send> {
+    fn action(self, _: AppConfig) -> Box<dyn Future<Item = T, Error = ExportFail>> {
         use futures::future::IntoFuture;
 
         Box::new(Ok(self.0.export()).into_future())
@@ -37,7 +98,7 @@ where
     T: Send + 'static,
     E: AardwolfFail,
 {
-    fn action(self, _: AppConfig) -> Box<dyn Future<Item = T, Error = E> + Send> {
+    fn action(self, _: AppConfig) -> Box<dyn Future<Item = T, Error = E>> {
         use futures::future::IntoFuture;
 
         Box::new(self.0.validate().into_future())
@@ -50,10 +111,7 @@ where
     T: Send + 'static,
     E: AardwolfFail,
 {
-    fn action(
-        self,
-        state: AppConfig,
-    ) -> Box<dyn Future<Item = T, Error = DbActionError<E>> + Send> {
+    fn action(self, state: AppConfig) -> Box<dyn Future<Item = T, Error = DbActionError<E>>> {
         let fut = state
             .db
             .send(PerformDbAction::new(self.0))

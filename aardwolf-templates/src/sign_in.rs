@@ -1,5 +1,6 @@
 use aardwolf_types::forms::auth::{
-    SignInEmailValidationFail, SignInPasswordValidationFail, ValidateSignInFormFail,
+    SignInEmailValidationFail, SignInFormState, SignInPasswordValidationFail,
+    ValidateSignInFormFail,
 };
 use gettext::Catalog;
 use gettext_macros::i18n;
@@ -18,7 +19,7 @@ impl<'a> SignIn<'a> {
     pub fn new(
         catalog: &'a Catalog,
         csrf: &'a str,
-        email: &'a str,
+        state: &'a SignInFormState,
         validation_error: Option<&'a ValidateSignInFormFail>,
         server_error: bool,
     ) -> Self {
@@ -37,7 +38,7 @@ impl<'a> SignIn<'a> {
                 name: "email",
                 label: i18n!(catalog, "E-Mail Address"),
                 placeholder: Some(i18n!(catalog, "E-Mail Address")),
-                value: email,
+                value: &state.email,
                 error: validation_error.and_then(|e| {
                     e.email.as_ref().map(|e| match *e {
                         SignInEmailValidationFail::Empty => i18n!(catalog, "Email cannot be empty"),

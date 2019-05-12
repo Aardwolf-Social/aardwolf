@@ -1,11 +1,18 @@
-fn main() {
-    build_ructe();
+use ructe::{Ructe, RucteError};
+
+fn main() -> Result<(), RucteError> {
+    build_ructe()?;
+
+    Ok(())
 }
 
 /* Compile Ructe templates to rust code
  */
-fn build_ructe() {
+fn build_ructe() -> Result<(), RucteError> {
     let out_dir = "./compiled_templates/";
     let in_dir = "./templates";
-    ructe::compile_templates(in_dir.as_ref(), out_dir.as_ref()).unwrap();
+
+    Ructe::new(out_dir.into())?.compile_templates(in_dir)?;
+
+    Ok(())
 }
