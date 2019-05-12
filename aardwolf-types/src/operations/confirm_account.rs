@@ -11,7 +11,6 @@ use crate::{
 };
 
 #[derive(Debug, Deserialize)]
-#[cfg_attr(feature = "use-rocket", derive(FromForm))]
 /// The token type required to confirm an account
 ///
 /// It contains the email's ID and an email verification token

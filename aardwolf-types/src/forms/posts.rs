@@ -9,7 +9,6 @@ use crate::{
 };
 
 #[derive(Clone, Debug, Deserialize)]
-#[cfg_attr(feature = "use-rocket", derive(FromForm))]
 pub struct PostCreationForm {
     csrf_token: String,
     visibility: PostVisibility,
