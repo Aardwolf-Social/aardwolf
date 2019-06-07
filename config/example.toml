@@ -1,21 +1,11 @@
-# Assets - This is where static files are stored for running in development mode
-[Assets]
-web = "dist"
-themes = "web/themes"
-emoji = "web/emoji"
-images = "web/images"
-stylesheets = "web/stylesheets"
+[Instance]
+# Instance - This section describes particular details about the Aardwolf server instance
+#   yourdomain.tld
+domain = "yourdomain.tld"
 
-[Templates]
-# Templates - the directories where UI templates are stored
-
-dir = "./templates/**/*"
-
-[Log]
-# Log - This section describes how logging should be handled in the application
-# Specifies the file that the logs should be stored in
-
-file = "aardwolf.log"
+# Do you want to enable HTTPS?
+#   true |false
+https = false
 
 [Web.Listen]
 
@@ -34,17 +24,6 @@ address = "127.0.0.1"
 #port = 80
 port = 8080
 
-
-[Instance]
-# Instance - This section describes particular details about the Aardwolf server instance
-#   yourdomain.tld
-domain = "yourdomain.tld"
-
-# Do you want to enable HTTPS?
-#   true |false
-https = false
-
-
 [Database]
 # Database - This section describes how and where to connect to the database.
 
@@ -53,18 +32,36 @@ https = false
 #   mysql                 - Aardwolf will connect to a MySQL server (WIP)
 
 type = "postgresql"
-
+#
 # Database.host - The ip address of the machine hosting the database.
 host = "127.0.0.1"
-
+#
 # Database.port - What port the database server is listening on. PostgreSQL's default is 5432.
 port = 5432
-
+#
 # Database.username - Username to log into the database server with.
 username = "aardwolf"
-
+#
 # Database.password - Password Database.username.
 password = "p4ssw0rd"
-
+#
 # Database.database - Which database on the server holds Aardwolf's information.
 database = "aardwolf"
+
+# Assets - This is where static files are stored for running in development mode
+[Assets]
+web = "dist"
+themes = "web/themes"
+emoji = "web/emoji"
+images = "web/images"
+stylesheets = "web/stylesheets"
+
+[Templates]
+# Templates - the directories where UI templates are stored
+
+dir = "./templates/**/*"
+
+[Log]
+# Log - This section describes how logging should be handled in the application
+# Specifies the file that the logs should be stored in
+file = "aardwolf.log"
