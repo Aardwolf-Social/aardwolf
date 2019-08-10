@@ -5,8 +5,8 @@ use std::io::{self, Write};
 use super::{Html,ToHtml};
 use crate::{TextInput, templates::ui::input};
 
-pub fn text_input(out: &mut Write, text_input: &TextInput) -> io::Result<()> {
-input(out, &text_input.into())?;
+pub fn text_input<W: Write>(mut out: W, text_input: &TextInput) -> io::Result<()> {
+input(&mut out, &text_input.into())?;
 out.write_all(b"\n")?;
 Ok(())
 }

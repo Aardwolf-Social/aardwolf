@@ -32,7 +32,7 @@ use self::{
 };
 
 pub trait Renderable {
-    fn render(&self, _: &mut std::io::Write) -> std::io::Result<()>;
+    fn render(&self, _: &mut dyn std::io::Write) -> std::io::Result<()>;
 }
 
 pub fn managed_state() -> Translations {

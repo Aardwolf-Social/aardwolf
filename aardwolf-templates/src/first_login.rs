@@ -97,7 +97,7 @@ impl<'a> FirstLogin<'a> {
 }
 
 impl<'a> Renderable for FirstLogin<'a> {
-    fn render(&self, write: &mut std::io::Write) -> std::io::Result<()> {
+    fn render(&self, write: &mut dyn std::io::Write) -> std::io::Result<()> {
         crate::templates::first_login(write, self)
     }
 }

@@ -5,8 +5,8 @@ use std::io::{self, Write};
 use super::{Html,ToHtml};
 use crate::{EmailInput, templates::ui::input};
 
-pub fn email_input(out: &mut Write, email_input: &EmailInput) -> io::Result<()> {
-input(out, &email_input.into())?;
+pub fn email_input<W: Write>(mut out: W, email_input: &EmailInput) -> io::Result<()> {
+input(&mut out, &email_input.into())?;
 out.write_all(b"\n")?;
 Ok(())
 }

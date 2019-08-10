@@ -80,7 +80,7 @@ where
         deserialize::FromSql::<Text, DB>::from_sql(bytes).and_then(|string: String| {
             string
                 .parse::<Permission>()
-                .map_err(|e| Box::new(e) as Box<StdError + Send + Sync>)
+                .map_err(|e| Box::new(e) as Box<dyn StdError + Send + Sync>)
         })
     }
 }
@@ -99,7 +99,7 @@ impl StdError for PermissionParseError {
         "Failed to parse Permission"
     }
 
-    fn cause(&self) -> Option<&StdError> {
+    fn cause(&self) -> Option<&dyn StdError> {
         None
     }
 }

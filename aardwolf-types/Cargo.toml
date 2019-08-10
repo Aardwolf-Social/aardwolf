@@ -6,14 +6,10 @@ edition = "2018"
 
 [features]
 default = []
-use-actix = ["actix-web", "actix", "futures"]
 
 [dependencies]
-actix = { version = "0.8", optional = true }
-actix-web = { version = "1.0.0-beta.3", optional = true }
 derive_builder = "0.7.0"
 failure = "0.1"
-futures = { version = "0.1", optional = true }
 log = "0.4"
 openssl = "0.10"
 mime = "0.3"
@@ -21,7 +17,7 @@ r2d2 = "0.8"
 r2d2-diesel = "1.0"
 serde = "1.0"
 serde_derive = "1.0"
-url = "1.7"
+url = "2.1"
 url_serde = "0.2"
 
 [dependencies.aardwolf-models]

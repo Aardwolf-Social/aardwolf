@@ -1,6 +1,6 @@
 use aardwolf_models::{
     base_actor::{persona::Persona, BaseActor},
-    user::UserLike,
+    user::{AuthenticatedUser, UserLike},
 };
 use aardwolf_types::{
     operations::{
@@ -14,7 +14,9 @@ use actix_http::Payload;
 use actix_session::Session;
 use actix_web::{error::ResponseError, FromRequest, HttpRequest, HttpResponse};
 use failure::Fail;
-use futures::future::{Future, IntoFuture};
+use futures::{
+    future::{FutureExt, TryFutureExt},
+};
 
 use crate::{db::DbActionError, error::RedirectError, from_session, AppConfig};
 
@@ -97,53 +99,61 @@ impl ResponseError for MissingState {
 
 pub struct CurrentActor(pub BaseActor, pub Persona);
 
+async fn fetch_user(state: AppConfig, id: i32) -> Result<AuthenticatedUser, CurrentActorError> {
+    Ok(perform!(state, [(_ = FetchAuthenticatedUser(id)),]))
+}
+
+async fn fetch_actor(state: AppConfig, id: i32) -> Result<CurrentActor, CurrentActorError> {
+    Ok(perform!(state, [
+        (persona = FetchPersona(id)),
+        (base_actor = FetchBaseActor(persona.id())),
+        (_ = ExportKind(CurrentActor(base_actor, persona))),
+    ]))
+}
+
+fn extract(req: &HttpRequest) -> Result<(AppConfig, Session), actix_web::Error> {
+    let state = req
+        .app_data::<AppConfig>()
+        .ok_or(MissingState)
+        .map(|s| s.clone())?;
+
+    let session = Session::extract(req).map_err(|_| CurrentActorError::Cookie)?;
+
+    Ok((state, session))
+}
+
+async fn from_request_inner(
+    state: AppConfig,
+    session: Session,
+) -> Result<CurrentActor, actix_web::Error> {
+    let id: i32 = match from_session(&session, "persona_id", CurrentActorError::Cookie) {
+        Ok(id) => id,
+        Err(_) => {
+            let user_id = from_session(&session, "user_id", CurrentActorError::Cookie)?;
+
+            fetch_user(state.clone(), user_id)
+                .await?
+                .primary_persona()
+                .ok_or(CurrentActorError::Persona)?
+        }
+    };
+
+    let actor = fetch_actor(state, id).await?;
+
+    Ok(actor)
+}
+
 impl FromRequest for CurrentActor {
     type Config = ();
     type Error = actix_web::Error;
-    type Future = Box<dyn Future<Item = Self, Error = Self::Error>>;
+    type Future = Box<dyn futures_old::Future<Item = Self, Error = Self::Error>>;
 
     fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
-        let state = match req.app_data::<AppConfig>().ok_or(MissingState) {
-            Ok(state) => state.clone(),
-            Err(e) => return Box::new(futures::future::err(e.into())),
-        };
-        let state2 = state.clone();
-        let state3 = state.clone();
-
-        let session = match Session::extract(req) {
-            Ok(session) => session,
-            Err(_) => return Box::new(futures::future::err(CurrentActorError::Cookie.into())),
-        };
-
-        let user_id_res = from_session(&session, "user_id", CurrentActorError::Cookie);
-        let persona_id_res = from_session(&session, "persona_id", CurrentActorError::Cookie);
-
-        let fut: Box<dyn Future<Item = i32, Error = CurrentActorError>> = match persona_id_res {
-            Ok(id) => Box::new(Ok(id).into_future()),
-            Err(_) => {
-                let fut = user_id_res
-                    .into_future()
-                    .and_then(move |id| {
-                        perform!(state2.clone(), CurrentActorError, [
-                            (_ = FetchAuthenticatedUser(id)),
-                        ])
-                    })
-                    .and_then(move |user| user.primary_persona().ok_or(CurrentActorError::Persona));
-
-                Box::new(fut)
-            }
-        };
-
-        let res = fut
-            .and_then(move |id| {
-                perform!(state3, CurrentActorError, [
-                    (persona = FetchPersona(id)),
-                    (base_actor = FetchBaseActor(persona.id())),
-                    (_ = ExportKind(CurrentActor(base_actor, persona))),
-                ])
-            })
-            .map_err(From::from);
-
-        Box::new(res)
+        use futures_old::future::{Future, IntoFuture};
+        Box::new(
+            extract(req)
+                .into_future()
+                .and_then(|(state, session)| from_request_inner(state, session).boxed_local().compat()),
+        )
     }
 }

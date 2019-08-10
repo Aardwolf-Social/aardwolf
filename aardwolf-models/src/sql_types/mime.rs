@@ -27,7 +27,7 @@ where
     fn from_sql(bytes: Option<&DB::RawValue>) -> deserialize::Result<Self> {
         deserialize::FromSql::<Text, DB>::from_sql(bytes).and_then(|s: String| {
             s.parse()
-                .map_err(|e| Box::new(e) as Box<StdError + Send + Sync>)
+                .map_err(|e| Box::new(e) as Box<dyn StdError + Send + Sync>)
         })
     }
 }

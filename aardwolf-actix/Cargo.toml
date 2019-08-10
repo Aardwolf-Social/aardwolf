@@ -6,13 +6,15 @@ edition = "2018"
 
 [dependencies]
 actix = "0.8.1"
-actix-files = "0.1.0-betsa.1"
-actix-http = "0.1.5"
-actix-session = "0.1.0-beta.2"
-actix-web = "1.0.0-beta.3"
+actix-files = "0.1"
+actix-http = "0.2"
+actix-session = "0.2"
+actix-web = "1.0"
+actix-web-async-compat = "0.1.0"
 config = "0.9.0"
 failure = "0.1"
-futures = "0.1"
+futures-old = { version = "0.1", package = "futures" }
+futures-preview = { version = "0.3.0-alpha.18", features = ["compat", "nightly", "async-await"] }
 log = "0.4"
 r2d2 = "0.8"
 r2d2-diesel = "1.0"
@@ -32,7 +34,6 @@ path = "../aardwolf-templates"
 [dependencies.aardwolf-types]
 version = "0.1"
 path = "../aardwolf-types"
-features = ["use-actix"]
 
 [dependencies.diesel]
 version = "1.4"
