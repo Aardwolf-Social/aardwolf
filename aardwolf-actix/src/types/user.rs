@@ -6,7 +6,9 @@ use actix_http::Payload;
 use actix_session::Session;
 use actix_web::{error::ResponseError, FromRequest, HttpRequest, HttpResponse};
 use failure::Fail;
-use futures::future::{Future, IntoFuture};
+use futures::{
+    future::{FutureExt, TryFutureExt},
+};
 
 use crate::{db::DbActionError, error::RedirectError, from_session, AppConfig};
 
@@ -51,34 +53,43 @@ impl ResponseError for MissingState {
 
 pub struct SignedInUser(pub AuthenticatedUser);
 
+async fn fetch_user(state: AppConfig, id: i32) -> Result<AuthenticatedUser, SignedInUserError> {
+    Ok(perform!(state, [ (_ = FetchAuthenticatedUser(id)), ]))
+}
+
+fn extract(req: &HttpRequest) -> Result<(AppConfig, Session), actix_web::Error> {
+    let state = req
+        .app_data::<AppConfig>()
+        .ok_or(MissingState)
+        .map(|s| s.clone())?;
+
+    let session = Session::extract(req).map_err(|_| SignedInUserError::Cookie)?;
+
+    Ok((state, session))
+}
+
+async fn from_request_inner(
+    state: AppConfig,
+    session: Session,
+) -> Result<SignedInUser, actix_web::Error> {
+    let id = from_session(&session, "user_id", SignedInUserError::Cookie)?;
+
+    let authed_user = fetch_user(state, id).await?;
+
+    Ok(SignedInUser(authed_user))
+}
+
 impl FromRequest for SignedInUser {
     type Config = ();
     type Error = actix_web::Error;
-    type Future = Box<dyn Future<Item = Self, Error = Self::Error>>;
+    type Future = Box<dyn futures_old::Future<Item = Self, Error = Self::Error>>;
 
     fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
-        let state = match req.app_data::<AppConfig>().ok_or(MissingState) {
-            Ok(state) => state.clone(),
-            Err(e) => return Box::new(futures::future::err(e.into())),
-        };
-
-        let session = match Session::extract(req) {
-            Ok(session) => session,
-            Err(_) => return Box::new(futures::future::err(SignedInUserError::Cookie.into())),
-        };
-
-        let id_res = from_session(&session, "user_id", SignedInUserError::Cookie);
-
-        let res = id_res
-            .into_future()
-            .and_then(move |id| {
-                perform!(state, SignedInUserError, [
-                     (_ = FetchAuthenticatedUser(id)),
-                ])
-            })
-            .map(SignedInUser)
-            .map_err(From::from);
-
-        Box::new(res)
+        use futures_old::future::{Future, IntoFuture};
+        Box::new(
+            extract(req).into_future().and_then(|(state, session)| {
+                from_request_inner(state, session).boxed_local().compat()
+            }),
+        )
     }
 }

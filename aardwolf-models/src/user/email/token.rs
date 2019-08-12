@@ -40,9 +40,7 @@ pub enum VerificationError {
 /// Email tokens should only be able to be created in certain situations, so this function must not
 /// be in scope unless it should be possible to verify an email
 pub fn create_token() -> Result<(EmailToken, HashedEmailToken), CreationError> {
-    let mut rng = OsRng::new().map_err(|_| CreationError::Rng)?;
-
-    let token = rng
+    let token = OsRng
         .sample_iter(&Alphanumeric)
         .take(32)
         .map(|c| c.to_string())

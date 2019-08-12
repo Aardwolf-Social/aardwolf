@@ -1,3 +1,5 @@
+#![feature(async_await)]
+
 use std::{error::Error, fmt};
 
 use aardwolf_models::{base_actor::BaseActor, generate_urls::GenerateUrls, sql_types::Url};
@@ -12,6 +14,7 @@ use actix_web::{
     web::{get, post, resource, scope},
     App, HttpResponse, HttpServer,
 };
+use actix_web_async_compat::async_compat;
 use config::Config;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
@@ -217,31 +220,41 @@ pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
                 scope("/auth")
                     .service(
                         resource("/sign_up")
-                            .route(get().to(self::routes::auth::sign_up_form))
-                            .route(post().to(self::routes::auth::sign_up)),
+                            .route(get().to_async(self::routes::auth::sign_up_form))
+                            .route(post().to_async(async_compat(self::routes::auth::sign_up))),
                     )
                     .service(
                         resource("/sign_in")
-                            .route(get().to(self::routes::auth::sign_in_form))
-                            .route(post().to(self::routes::auth::sign_in)),
+                            .route(get().to_async(self::routes::auth::sign_in_form))
+                            .route(post().to_async(async_compat(self::routes::auth::sign_in))),
                     )
-                    .service(resource("/confirmation").route(get().to(self::routes::auth::confirm)))
-                    .service(resource("/sign_out").route(get().to(self::routes::auth::sign_out))),
+                    .service(
+                        resource("/confirmation")
+                            .route(get().to_async(async_compat(self::routes::auth::confirm))),
+                    )
+                    .service(
+                        resource("/sign_out").route(get().to_async(self::routes::auth::sign_out)),
+                    ),
             )
             .service(
-                scope("/posts")
-                    .service(resource("/create").route(post().to(self::routes::posts::create))),
+                scope("/posts").service(
+                    resource("/create")
+                        .route(post().to_async(async_compat(self::routes::posts::create))),
+                ),
             )
             .service(
                 scope("/personas")
                     .service(
                         resource("/create")
-                            .route(get().to(self::routes::personas::new))
-                            .route(post().to(self::routes::personas::create)),
+                            .route(get().to_async(self::routes::personas::new))
+                            .route(post().to_async(async_compat(self::routes::personas::create))),
                     )
-                    .service(resource("/delete").route(get().to(self::routes::personas::delete))),
+                    .service(
+                        resource("/delete")
+                            .route(get().to_async(async_compat(self::routes::personas::delete))),
+                    ),
             )
-            .service(resource("/").route(get().to(self::routes::app::index)))
+            .service(resource("/").route(get().to_async(self::routes::app::index)))
             .service(Files::new("/web", assets.web()))
             .service(Files::new("/images", assets.images()))
             .service(Files::new("/themes", assets.themes()))

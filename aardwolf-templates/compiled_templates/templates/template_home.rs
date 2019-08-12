@@ -5,16 +5,16 @@ use std::io::{self, Write};
 use super::{Html,ToHtml};
 use crate::{Home, templates::{base, home::{feed, nav}, new_post, shortcuts}};
 
-pub fn home(out: &mut Write, home: &Home) -> io::Result<()> {
-base(out, home.catalog, "Aardwolf | Home", |out| {
+pub fn home<W: Write>(mut out: W, home: &Home) -> io::Result<()> {
+base(&mut out, home.catalog, "Aardwolf | Home", |mut out| {
 out.write_all(b"\n    ")?;
-nav(out, home.catalog)?;
+nav(&mut out, home.catalog)?;
 out.write_all(b"\n    <section class=\"section\">\n        ")?;
-shortcuts(out, &home.shortcuts)?;
+shortcuts(&mut out, &home.shortcuts)?;
 out.write_all(b"\n    </section>\n    <section class=\"section\">\n        <div class=\"container\">\n            ")?;
-new_post(out, home.catalog, &home.shortcuts.username, &home.new_post)?;
+new_post(&mut out, home.catalog, &home.shortcuts.username, &home.new_post)?;
 out.write_all(b"\n            ")?;
-feed(out, home.catalog)?;
+feed(&mut out, home.catalog)?;
 out.write_all(b"\n        </div>\n    </section>\n")?;
 
 Ok(())

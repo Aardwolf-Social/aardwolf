@@ -1,3 +1,4 @@
+use aardwolf_models::{base_actor::BaseActor, user::AuthenticatedUser};
 use aardwolf_types::{
     forms::posts::{PostCreationForm, ValidatePostCreationFail, ValidatePostCreationForm},
     operations::{
@@ -7,14 +8,13 @@ use aardwolf_types::{
 };
 use actix_i18n::I18n;
 use actix_web::{
-    http::header::LOCATION,
     web::{Data, Form},
     HttpResponse,
 };
 use failure::Fail;
-use futures::Future;
 
 use crate::{
+    action::{Impossible, Redirect},
     db::DbActionError,
     types::{actor::CurrentActor, user::SignedInUser},
     AppConfig, WithRucte,
@@ -76,7 +76,28 @@ impl From<DbActionError<CreatePostFail>> for PostCreateError {
         }
     }
 }
-pub(crate) fn create(
+
+impl From<Impossible> for PostCreateError {
+    fn from(e: Impossible) -> Self {
+        match e {}
+    }
+}
+
+async fn create_inner(
+    state: AppConfig,
+    form: PostCreationForm,
+    user: AuthenticatedUser,
+    base_actor: BaseActor,
+) -> Result<HttpResponse, PostCreateError> {
+    Ok(perform!(state, [
+        (form = ValidatePostCreationForm(form)),
+        (creator = CheckCreatePostPermission(user, base_actor)),
+        (_ = CreatePost(creator, form, state.generator.clone())),
+        (_ = Redirect("/".to_owned())),
+    ]))
+}
+
+pub(crate) async fn create(
     (state, user, actor, form, i18n): (
         Data<AppConfig>,
         SignedInUser,
@@ -84,36 +105,28 @@ pub(crate) fn create(
         Form<PostCreationForm>,
         I18n,
     ),
-) -> Box<dyn Future<Item = HttpResponse, Error = actix_web::error::Error>> {
+) -> Result<HttpResponse, actix_web::Error> {
     let form = form.into_inner();
     let form_state = form.as_state();
-    let user = user.0;
     let CurrentActor(base_actor, persona) = actor;
-    let base_actor2 = base_actor.clone();
 
-    let res = perform!((*state).clone(), PostCreateError, [
-        (form = ValidatePostCreationForm(form)),
-        (creater = CheckCreatePostPermission(user.clone(), base_actor2)),
-        (_ = CreatePost(creater, form, state.generator.clone())),
-    ]);
+    let error = match create_inner((*state).clone(), form, user.0, base_actor.clone()).await {
+        Ok(res) => return Ok(res),
+        Err(e) => e,
+    };
 
-    Box::new(
-        res.map(move |_| HttpResponse::SeeOther().header(LOCATION, "/").finish())
-            .or_else(move |e| {
-                let (mut res, validation, system) = match e {
-                    PostCreateError::Form(ref e) => (HttpResponse::BadRequest(), Some(e), false),
-                    _ => (HttpResponse::InternalServerError(), None, true),
-                };
+    let (mut res, validation, system) = match error {
+        PostCreateError::Form(ref e) => (HttpResponse::BadRequest(), Some(e), false),
+        _ => (HttpResponse::InternalServerError(), None, true),
+    };
 
-                Ok(res.with_ructe(aardwolf_templates::Home::new(
-                    &i18n.catalog,
-                    "csrf",
-                    persona.shortname(),
-                    &base_actor.profile_url().0.to_string(),
-                    &form_state,
-                    validation,
-                    system,
-                )))
-            }),
-    )
+    Ok(res.with_ructe(aardwolf_templates::Home::new(
+        &i18n.catalog,
+        "csrf",
+        persona.shortname(),
+        &base_actor.profile_url().0.to_string(),
+        &form_state,
+        validation,
+        system,
+    )))
 }
