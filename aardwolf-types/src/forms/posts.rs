@@ -2,11 +2,7 @@ use aardwolf_models::sql_types::{Mime, PostVisibility};
 use mime::TEXT_HTML;
 use serde_derive::{Deserialize, Serialize};
 
-use crate::{
-    error::AardwolfFail,
-    traits::Validate,
-    wrapper::{ValidateWrapper, Wrapped},
-};
+use crate::{error::AardwolfFail, traits::Validate};
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct PostCreationForm {
@@ -61,10 +57,6 @@ impl ValidatePostCreationFail {
 impl AardwolfFail for ValidatePostCreationFail {}
 
 pub struct ValidatePostCreationForm(pub PostCreationForm);
-
-impl Wrapped for ValidatePostCreationForm {
-    type Wrapper = ValidateWrapper<Self, <Self as Validate>::Item, <Self as Validate>::Error>;
-}
 
 impl Validate for ValidatePostCreationForm {
     type Item = ValidatedPostCreationForm;

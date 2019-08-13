@@ -1,3 +1,5 @@
+#![feature(async_await)]
+
 #[macro_use]
 extern crate derive_builder;
 #[macro_use]
@@ -13,4 +15,3 @@ pub mod forms;
 pub mod operations;
 pub mod scope;
 pub mod traits;
-pub mod wrapper;

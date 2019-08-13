@@ -1,7 +1,7 @@
 use aardwolf_models::user::AuthenticatedUser;
-use aardwolf_types::operations::fetch_authenticated_user::{
+use aardwolf_types::{operations::fetch_authenticated_user::{
     FetchAuthenticatedUser, FetchAuthenticatedUserFail,
-};
+}, traits::{DbActionError, DbAction}};
 use actix_http::Payload;
 use actix_session::Session;
 use actix_web::{error::ResponseError, FromRequest, HttpRequest, HttpResponse};
@@ -10,12 +10,12 @@ use futures::{
     future::{FutureExt, TryFutureExt},
 };
 
-use crate::{db::DbActionError, error::RedirectError, from_session, AppConfig};
+use crate::{error::redirect_error, from_session, AppConfig};
 
 #[derive(Clone, Debug, Fail)]
 pub enum SignedInUserError {
     #[fail(display = "Error talking to db actor")]
-    Mailbox,
+    Canceled,
     #[fail(display = "Error in database")]
     Database,
     #[fail(display = "No user cookie present")]
@@ -27,9 +27,9 @@ pub enum SignedInUserError {
 impl From<DbActionError<FetchAuthenticatedUserFail>> for SignedInUserError {
     fn from(e: DbActionError<FetchAuthenticatedUserFail>) -> Self {
         match e {
-            DbActionError::Connection => SignedInUserError::Database,
-            DbActionError::Mailbox => SignedInUserError::Mailbox,
-            DbActionError::Action(e) => match e {
+            DbActionError::Pool(_) => SignedInUserError::Database,
+            DbActionError::Canceled => SignedInUserError::Canceled,
+            DbActionError::Error(e) => match e {
                 FetchAuthenticatedUserFail::Database => SignedInUserError::Database,
                 FetchAuthenticatedUserFail::NotFound => SignedInUserError::User,
             },
@@ -39,7 +39,7 @@ impl From<DbActionError<FetchAuthenticatedUserFail>> for SignedInUserError {
 
 impl ResponseError for SignedInUserError {
     fn error_response(&self) -> HttpResponse {
-        RedirectError::new("/auth/sign_in", &Some(self.to_string())).error_response()
+        redirect_error("/auth/sign_in", Some(self.to_string()))
     }
 }
 
@@ -54,7 +54,7 @@ impl ResponseError for MissingState {
 pub struct SignedInUser(pub AuthenticatedUser);
 
 async fn fetch_user(state: AppConfig, id: i32) -> Result<AuthenticatedUser, SignedInUserError> {
-    Ok(perform!(state, [ (_ = FetchAuthenticatedUser(id)), ]))
+    Ok(FetchAuthenticatedUser(id).run(state.pool.clone()).await?)
 }
 
 fn extract(req: &HttpRequest) -> Result<(AppConfig, Session), actix_web::Error> {

@@ -1,4 +1,5 @@
 use aardwolf_models::{base_actor::persona::Persona, user::AuthenticatedUser};
+use aardwolf_templates::FirstLogin;
 use aardwolf_types::{
     error::AardwolfFail,
     forms::personas::{
@@ -14,33 +15,32 @@ use aardwolf_types::{
         delete_persona::{DeletePersona, DeletePersonaFail},
         fetch_persona::FetchPersona,
     },
+    traits::{DbAction, DbActionError, Validate},
 };
 use actix_i18n::I18n;
 use actix_session::Session;
 use actix_web::{
     web::{Data, Form, Path},
-    HttpResponse, ResponseError,
+    HttpResponse
 };
 use failure::Fail;
-use futures::future::{ready, Ready};
 use serde_derive::Serialize;
 
 use crate::{
-    action::{Action, Impossible, Redirect, Wrapped},
-    db::DbActionError,
-    error::RedirectError,
+    action::{RenderableExt, redirect},
+    error::redirect_error,
     types::user::SignedInUser,
     AppConfig, WithRucte,
 };
 
 pub(crate) fn new((_user, i18n): (SignedInUser, I18n)) -> HttpResponse {
-    let res = HttpResponse::Ok().with_ructe(aardwolf_templates::FirstLogin::new(
+    let res = FirstLogin::new(
         &i18n.catalog,
         "csrf",
         &PersonaCreationFormState::default(),
         None,
         false,
-    ));
+    ).ok();
 
     drop(i18n);
 
@@ -53,13 +53,11 @@ async fn create_inner(
     user: AuthenticatedUser,
     session: Session,
 ) -> Result<HttpResponse, PersonaCreateError> {
-    Ok(perform!(state, [
-        (form = ValidatePersonaCreationForm(form)),
-        (creater = CheckCreatePersonaPermission(user)),
-        ((_, persona) = CreatePersona(creater, form, state.generator.clone())),
-        (_ = SetPersonaCookie(session, persona)),
-        (_ = Redirect("/".to_owned())),
-    ]))
+    let form = ValidatePersonaCreationForm(form).validate()?;
+    let creator = CheckCreatePersonaPermission(user).run(state.pool.clone()).await?;
+    let (_, persona) = CreatePersona(creator, form, state.generator.clone()).run(state.pool.clone()).await?;
+    SetPersonaCookie(session, persona).run()?;
+    Ok(redirect("/"))
 }
 
 pub(crate) async fn create(
@@ -84,7 +82,7 @@ pub(crate) async fn create(
         _ => (HttpResponse::InternalServerError(), None, true),
     };
 
-    Ok(res.with_ructe(aardwolf_templates::FirstLogin::new(
+    Ok(res.ructe(FirstLogin::new(
         &i18n.catalog,
         "csrf",
         &form_state,
@@ -98,12 +96,10 @@ async fn delete_inner(
     user: AuthenticatedUser,
     id: i32,
 ) -> Result<HttpResponse, PersonaDeleteError> {
-    Ok(perform!(state, [
-        (persona = FetchPersona(id)),
-        (deleter = CheckDeletePersonaPermission(user, persona)),
-        (_ = DeletePersona(deleter)),
-        (_ = Redirect("/".to_owned())),
-    ]))
+    let persona = FetchPersona(id).run(state.pool.clone()).await?;
+    let deleter = CheckDeletePersonaPermission(user, persona).run(state.pool.clone()).await?;
+    DeletePersona(deleter).run(state.pool).await?;
+    Ok(redirect("/"))
 }
 
 pub(crate) async fn delete(
@@ -114,13 +110,13 @@ pub(crate) async fn delete(
         Err(e) => e,
     };
 
-    Ok(RedirectError::new("/personas", &None).error_response())
+    Ok(redirect_error("/personas", None))
 }
 
 #[derive(Clone, Debug, Fail)]
 pub enum PersonaCreateError {
     #[fail(display = "Error talking to db actor")]
-    Mailbox,
+    Canceled,
     #[fail(display = "Error talking db")]
     Database,
     #[fail(display = "User does not have permission to create a persona")]
@@ -131,12 +127,6 @@ pub enum PersonaCreateError {
     Form(#[cause] ValidatePersonaCreationFail),
     #[fail(display = "Could not generate keys")]
     Keygen,
-}
-
-impl From<Impossible> for PersonaCreateError {
-    fn from(_: Impossible) -> Self {
-        PersonaCreateError::Mailbox
-    }
 }
 
 impl From<ValidatePersonaCreationFail> for PersonaCreateError {
@@ -168,9 +158,9 @@ impl From<CheckCreatePersonaPermissionFail> for PersonaCreateError {
 impl From<DbActionError<CheckCreatePersonaPermissionFail>> for PersonaCreateError {
     fn from(e: DbActionError<CheckCreatePersonaPermissionFail>) -> Self {
         match e {
-            DbActionError::Connection => PersonaCreateError::Database,
-            DbActionError::Mailbox => PersonaCreateError::Mailbox,
-            DbActionError::Action(e) => e.into(),
+            DbActionError::Pool(_) => PersonaCreateError::Database,
+            DbActionError::Canceled => PersonaCreateError::Canceled,
+            DbActionError::Error(e) => e.into(),
         }
     }
 }
@@ -178,46 +168,32 @@ impl From<DbActionError<CheckCreatePersonaPermissionFail>> for PersonaCreateErro
 impl From<DbActionError<PersonaCreationFail>> for PersonaCreateError {
     fn from(e: DbActionError<PersonaCreationFail>) -> Self {
         match e {
-            DbActionError::Connection => PersonaCreateError::Database,
-            DbActionError::Mailbox => PersonaCreateError::Mailbox,
-            DbActionError::Action(e) => e.into(),
+            DbActionError::Pool(_) => PersonaCreateError::Database,
+            DbActionError::Canceled => PersonaCreateError::Canceled,
+            DbActionError::Error(e) => e.into(),
         }
     }
 }
 
 struct SetPersonaCookie(Session, Persona);
 
-impl Wrapped for SetPersonaCookie {
-    type Wrapper = SetPersonaCookie;
-}
-
-impl Action<(), PersonaCreateError> for SetPersonaCookie {
-    type Future = Ready<Result<(), PersonaCreateError>>;
-
-    fn action(self, _: AppConfig) -> Self::Future {
-        let res = self
+impl SetPersonaCookie {
+    fn run(self) -> Result<(), PersonaCreateError> {
+        self
             .0
             .set("persona_id", self.1.id())
-            .map_err(|_| PersonaCreateError::Cookie);
-
-        ready(res)
+            .map_err(|_| PersonaCreateError::Cookie)
     }
 }
 
 #[derive(Clone, Debug, Fail, Serialize)]
 pub enum PersonaDeleteError {
     #[fail(display = "Error talking to db actor")]
-    Mailbox,
+    Canceled,
     #[fail(display = "Error talking db")]
     Database,
     #[fail(display = "Error deleting persona: {}", _0)]
     Delete(#[cause] DeletePersonaFail),
-}
-
-impl From<Impossible> for PersonaDeleteError {
-    fn from(e: Impossible) -> Self {
-        match e {}
-    }
 }
 
 impl<E> From<DbActionError<E>> for PersonaDeleteError
@@ -226,9 +202,9 @@ where
 {
     fn from(e: DbActionError<E>) -> Self {
         match e {
-            DbActionError::Connection => PersonaDeleteError::Database,
-            DbActionError::Mailbox => PersonaDeleteError::Mailbox,
-            DbActionError::Action(e) => PersonaDeleteError::Delete(e.into()),
+            DbActionError::Pool(_) => PersonaDeleteError::Database,
+            DbActionError::Canceled => PersonaDeleteError::Canceled,
+            DbActionError::Error(e) => PersonaDeleteError::Delete(e.into()),
         }
     }
 }

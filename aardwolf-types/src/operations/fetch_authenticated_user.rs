@@ -1,11 +1,7 @@
 use aardwolf_models::user::AuthenticatedUser;
 use diesel::pg::PgConnection;
 
-use crate::{
-    error::AardwolfFail,
-    traits::DbAction,
-    wrapper::{DbActionWrapper, Wrapped},
-};
+use crate::{error::AardwolfFail, traits::DbAction};
 
 #[derive(Clone, Debug, Fail, Serialize)]
 pub enum FetchAuthenticatedUserFail {
@@ -27,10 +23,6 @@ impl From<diesel::result::Error> for FetchAuthenticatedUserFail {
 impl AardwolfFail for FetchAuthenticatedUserFail {}
 
 pub struct FetchAuthenticatedUser(pub i32);
-
-impl Wrapped for FetchAuthenticatedUser {
-    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
-}
 
 impl DbAction for FetchAuthenticatedUser {
     type Item = AuthenticatedUser;

@@ -1,10 +1,6 @@
 use aardwolf_models::user::local_auth::{PlaintextPassword, ValidationError};
 
-use crate::{
-    error::AardwolfFail,
-    traits::Validate,
-    wrapper::{ValidateWrapper, Wrapped},
-};
+use crate::{error::AardwolfFail, traits::Validate};
 
 #[derive(Clone, Fail, Debug, Serialize)]
 #[fail(display = "There was an error validating the form")]
@@ -90,10 +86,6 @@ impl SignUpForm {
 }
 
 pub struct ValidateSignUpForm(pub SignUpForm);
-
-impl Wrapped for ValidateSignUpForm {
-    type Wrapper = ValidateWrapper<Self, <Self as Validate>::Item, <Self as Validate>::Error>;
-}
 
 impl Validate for ValidateSignUpForm {
     type Item = ValidatedSignUpForm;

@@ -1,10 +1,6 @@
 use aardwolf_models::sql_types::{FollowPolicy, PostVisibility};
 
-use crate::{
-    error::AardwolfFail,
-    traits::Validate,
-    wrapper::{ValidateWrapper, Wrapped},
-};
+use crate::{error::AardwolfFail, traits::Validate};
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct PersonaCreationForm {
@@ -93,10 +89,6 @@ pub enum ValidateShortnameFail {
 pub enum ValidateIsSearchableFail {}
 
 pub struct ValidatePersonaCreationForm(pub PersonaCreationForm);
-
-impl Wrapped for ValidatePersonaCreationForm {
-    type Wrapper = ValidateWrapper<Self, <Self as Validate>::Item, <Self as Validate>::Error>;
-}
 
 impl Validate for ValidatePersonaCreationForm {
     type Item = ValidatedPersonaCreationForm;

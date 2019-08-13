@@ -4,17 +4,9 @@ use aardwolf_models::{
 };
 use diesel::pg::PgConnection;
 
-use crate::{
-    error::AardwolfFail,
-    traits::DbAction,
-    wrapper::{DbActionWrapper, Wrapped},
-};
+use crate::{error::AardwolfFail, traits::DbAction};
 
 pub struct CheckDeletePersonaPermission(pub AuthenticatedUser, pub Persona);
-
-impl Wrapped for CheckDeletePersonaPermission {
-    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
-}
 
 impl DbAction for CheckDeletePersonaPermission {
     type Item = PersonaDeleter;

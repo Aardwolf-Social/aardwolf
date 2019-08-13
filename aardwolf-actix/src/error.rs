@@ -17,31 +17,13 @@ impl ResponseError for RenderError {
     }
 }
 
-#[derive(Debug, Fail)]
-#[fail(display = "Redirect to {}", _0)]
-pub struct RedirectError(String, Option<String>);
+pub fn redirect_error(to: &str, msg: Option<String>) -> HttpResponse {
+    let msg = msg.map(|m| format!("?msg={}", m)).unwrap_or("".to_owned());
+    let location = format!("{}{}", to, msg);
 
-impl RedirectError {
-    pub fn new(s: &str, msg: &Option<String>) -> Self {
-        RedirectError(s.to_owned(), msg.to_owned())
-    }
-}
-
-impl ResponseError for RedirectError {
-    fn error_response(&self) -> HttpResponse {
-        let msg = self
-            .1
-            .as_ref()
-            .map(|m| format!("?msg={}", m))
-            .unwrap_or_else(|| "".to_owned());
-        let location = format!("{}{}", self.0, msg);
-
-        println!("Redirecting to {}", location);
-
-        HttpResponse::SeeOther()
-            .header(LOCATION, location.as_str())
-            .finish()
-    }
+    HttpResponse::SeeOther()
+        .header(LOCATION, location.as_str())
+        .finish()
 }
 
 #[derive(Clone, Debug, Fail)]

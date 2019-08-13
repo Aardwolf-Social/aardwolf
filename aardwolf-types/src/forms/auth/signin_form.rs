@@ -1,10 +1,6 @@
 use aardwolf_models::user::local_auth::PlaintextPassword;
 
-use crate::{
-    error::AardwolfFail,
-    traits::Validate,
-    wrapper::{ValidateWrapper, Wrapped},
-};
+use crate::{error::AardwolfFail, traits::Validate};
 
 #[derive(Clone, Debug, Fail, Serialize)]
 #[fail(display = "Missing required field")]
@@ -59,10 +55,6 @@ impl SignInForm {
 }
 
 pub struct ValidateSignInForm(pub SignInForm);
-
-impl Wrapped for ValidateSignInForm {
-    type Wrapper = ValidateWrapper<Self, <Self as Validate>::Item, <Self as Validate>::Error>;
-}
 
 impl Validate for ValidateSignInForm {
     type Item = ValidatedSignInForm;

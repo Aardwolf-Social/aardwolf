@@ -1,10 +1,12 @@
 use aardwolf_models::{base_actor::BaseActor, user::AuthenticatedUser};
+use aardwolf_templates::Home;
 use aardwolf_types::{
     forms::posts::{PostCreationForm, ValidatePostCreationFail, ValidatePostCreationForm},
     operations::{
         check_create_post_permission::{CheckCreatePostPermission, CheckCreatePostPermissionFail},
         create_post::{CreatePost, CreatePostFail},
     },
+    traits::{Validate, DbActionError, DbAction},
 };
 use actix_i18n::I18n;
 use actix_web::{
@@ -14,8 +16,7 @@ use actix_web::{
 use failure::Fail;
 
 use crate::{
-    action::{Impossible, Redirect},
-    db::DbActionError,
+    action::redirect,
     types::{actor::CurrentActor, user::SignedInUser},
     AppConfig, WithRucte,
 };
@@ -23,7 +24,7 @@ use crate::{
 #[derive(Clone, Debug, Fail)]
 pub enum PostCreateError {
     #[fail(display = "Error talking to db actor")]
-    Mailbox,
+    Canceled,
     #[fail(display = "Error talking db")]
     Database,
     #[fail(display = "User does not have permission to create a persona")]
@@ -60,9 +61,9 @@ impl From<CheckCreatePostPermissionFail> for PostCreateError {
 impl From<DbActionError<CheckCreatePostPermissionFail>> for PostCreateError {
     fn from(e: DbActionError<CheckCreatePostPermissionFail>) -> Self {
         match e {
-            DbActionError::Connection => PostCreateError::Database,
-            DbActionError::Mailbox => PostCreateError::Mailbox,
-            DbActionError::Action(e) => e.into(),
+            DbActionError::Pool(_) => PostCreateError::Database,
+            DbActionError::Canceled => PostCreateError::Canceled,
+            DbActionError::Error(e) => e.into(),
         }
     }
 }
@@ -70,16 +71,10 @@ impl From<DbActionError<CheckCreatePostPermissionFail>> for PostCreateError {
 impl From<DbActionError<CreatePostFail>> for PostCreateError {
     fn from(e: DbActionError<CreatePostFail>) -> Self {
         match e {
-            DbActionError::Connection => PostCreateError::Database,
-            DbActionError::Mailbox => PostCreateError::Mailbox,
-            DbActionError::Action(e) => e.into(),
+            DbActionError::Pool(_) => PostCreateError::Database,
+            DbActionError::Canceled => PostCreateError::Canceled,
+            DbActionError::Error(e) => e.into(),
         }
-    }
-}
-
-impl From<Impossible> for PostCreateError {
-    fn from(e: Impossible) -> Self {
-        match e {}
     }
 }
 
@@ -89,12 +84,10 @@ async fn create_inner(
     user: AuthenticatedUser,
     base_actor: BaseActor,
 ) -> Result<HttpResponse, PostCreateError> {
-    Ok(perform!(state, [
-        (form = ValidatePostCreationForm(form)),
-        (creator = CheckCreatePostPermission(user, base_actor)),
-        (_ = CreatePost(creator, form, state.generator.clone())),
-        (_ = Redirect("/".to_owned())),
-    ]))
+    let form = ValidatePostCreationForm(form).validate()?;
+    let creator = CheckCreatePostPermission(user, base_actor).run(state.pool.clone()).await?;
+    CreatePost(creator, form, state.generator.clone()).run(state.pool.clone()).await?;
+    Ok(redirect("/"))
 }
 
 pub(crate) async fn create(
@@ -120,7 +113,7 @@ pub(crate) async fn create(
         _ => (HttpResponse::InternalServerError(), None, true),
     };
 
-    Ok(res.with_ructe(aardwolf_templates::Home::new(
+    Ok(res.ructe(Home::new(
         &i18n.catalog,
         "csrf",
         persona.shortname(),

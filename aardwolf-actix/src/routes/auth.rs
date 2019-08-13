@@ -2,6 +2,7 @@ use aardwolf_models::user::{
     email::{EmailToken, UnverifiedEmail},
     AuthenticatedUser, UserLike,
 };
+use aardwolf_templates::{SignIn as TSignIn, SignUp as TSignUp};
 use aardwolf_types::{
     forms::auth::{
         SignInForm, SignInFormState, SignUpForm, SignUpFormState, ValidateSignInForm,
@@ -12,33 +13,32 @@ use aardwolf_types::{
         sign_in::{SignIn, SignInFail},
         sign_up::{SignUp, SignUpFail},
     },
+    traits::{DbAction, DbActionError, Validate},
 };
 use actix_i18n::I18n;
 use actix_session::Session;
 use actix_web::{
     http::header::LOCATION,
     web::{Data, Form, Query},
-    HttpResponse, ResponseError,
+    HttpResponse
 };
 use failure::Fail;
-use futures::future::{ready, Ready};
 
 use crate::{
-    action::{Action, Impossible, Redirect, Wrapped},
-    db::DbActionError,
-    error::RedirectError,
+    action::{redirect, RenderableExt},
+    error::redirect_error,
     types::user::SignedInUser,
     AppConfig, WithRucte,
 };
 
 pub(crate) fn sign_up_form(i18n: I18n) -> HttpResponse {
-    let res = HttpResponse::Ok().with_ructe(aardwolf_templates::SignUp::new(
+    let res = TSignUp::new(
         &i18n.catalog,
         "csrf token",
         &SignUpFormState::default(),
         None,
         false,
-    ));
+    ).ok();
 
     drop(i18n);
 
@@ -46,12 +46,10 @@ pub(crate) fn sign_up_form(i18n: I18n) -> HttpResponse {
 }
 
 async fn sign_up_inner(state: AppConfig, form: SignUpForm) -> Result<HttpResponse, SignUpError> {
-    Ok(perform!(state, [
-        (form = ValidateSignUpForm(form)),
-        ((email, token) = SignUp(form)),
-        (_ = PrintResult(email, token)),
-        (_ = Redirect("/auth/sign_in".to_owned())),
-    ]))
+    let form = ValidateSignUpForm(form).validate()?;
+    let (email, token) = SignUp(form).run(state.pool.clone()).await?;
+    PrintResult(email, token).run();
+    Ok(redirect("/auth/sign_in"))
 }
 
 pub(crate) async fn sign_up(
@@ -73,7 +71,7 @@ pub(crate) async fn sign_up(
         _ => (HttpResponse::InternalServerError(), None, true),
     };
 
-    Ok(res.with_ructe(aardwolf_templates::SignUp::new(
+    Ok(res.ructe(TSignUp::new(
         &i18n.catalog,
         "csrf token",
         &form_state,
@@ -83,13 +81,13 @@ pub(crate) async fn sign_up(
 }
 
 pub(crate) fn sign_in_form(i18n: I18n) -> HttpResponse {
-    let res = HttpResponse::Ok().with_ructe(aardwolf_templates::SignIn::new(
+    let res = TSignIn::new(
         &i18n.catalog,
         "csrf token",
         &SignInFormState::default(),
         None,
         false,
-    ));
+    ).ok();
 
     drop(i18n);
 
@@ -101,12 +99,10 @@ async fn sign_in_inner(
     form: SignInForm,
     session: Session,
 ) -> Result<HttpResponse, SignInError> {
-    Ok(perform!(state, [
-        (form = ValidateSignInForm(form)),
-        (user = SignIn(form)),
-        (_ = SetUserCookie(session, user)),
-        (_ = Redirect("/".to_owned())),
-    ]))
+    let form = ValidateSignInForm(form).validate()?;
+    let user = SignIn(form).run(state.pool.clone()).await?;
+    SetUserCookie(session, user).run()?;
+    Ok(redirect("/"))
 }
 
 pub(crate) async fn sign_in(
@@ -128,7 +124,7 @@ pub(crate) async fn sign_in(
         _ => (HttpResponse::InternalServerError(), None, true),
     };
 
-    Ok(res.with_ructe(aardwolf_templates::SignIn::new(
+    Ok(res.ructe(TSignIn::new(
         &i18n.catalog,
         "csrf token",
         &form_state,
@@ -141,10 +137,8 @@ async fn confirm_inner(
     state: AppConfig,
     query: ConfirmAccountToken,
 ) -> Result<HttpResponse, ConfirmError> {
-    Ok(perform!(state, [
-        (_ = ConfirmAccount(query)),
-        (_ = Redirect("/auth/sign_in".to_owned())),
-    ]))
+    ConfirmAccount(query).run(state.pool.clone()).await?;
+    Ok(redirect("/auth/sign_in"))
 }
 
 pub(crate) async fn confirm(
@@ -155,7 +149,7 @@ pub(crate) async fn confirm(
         Err(e) => e,
     };
 
-    Ok(RedirectError::new("/auth/sign_up", &Some(error.to_string())).error_response())
+    Ok(redirect_error("/auth/sign_up", Some(error.to_string())))
 }
 
 pub(crate) fn sign_out((session, _user): (Session, SignedInUser)) -> HttpResponse {
@@ -169,25 +163,19 @@ pub(crate) fn sign_out((session, _user): (Session, SignedInUser)) -> HttpRespons
 #[derive(Clone, Debug, Fail)]
 pub enum SignUpError {
     #[fail(display = "Error talking to db actor")]
-    Mailbox,
+    Canceled,
     #[fail(display = "Error talking db")]
     Database,
     #[fail(display = "Error signing up: {}", _0)]
     SignUp(#[cause] SignUpFail),
 }
 
-impl From<Impossible> for SignUpError {
-    fn from(_: Impossible) -> Self {
-        SignUpError::Mailbox
-    }
-}
-
 impl From<DbActionError<SignUpFail>> for SignUpError {
     fn from(e: DbActionError<SignUpFail>) -> Self {
         match e {
-            DbActionError::Connection => SignUpError::Database,
-            DbActionError::Mailbox => SignUpError::Mailbox,
-            DbActionError::Action(e) => SignUpError::SignUp(e),
+            DbActionError::Pool(_) => SignUpError::Database,
+            DbActionError::Canceled => SignUpError::Canceled,
+            DbActionError::Error(e) => SignUpError::SignUp(e),
         }
     }
 }
@@ -200,28 +188,20 @@ impl From<ValidateSignUpFormFail> for SignUpError {
 
 struct PrintResult(UnverifiedEmail, EmailToken);
 
-impl Wrapped for PrintResult {
-    type Wrapper = PrintResult;
-}
-
-impl Action<(), Impossible> for PrintResult {
-    type Future = Ready<Result<(), Impossible>>;
-
-    fn action(self, _: AppConfig) -> Self::Future {
+impl PrintResult {
+    fn run(self) {
         println!(
             "confirmation token url: /auth/confirmation?id={}&token={}",
             self.0.id(),
             self.1,
         );
-
-        ready(Ok(()))
     }
 }
 
 #[derive(Clone, Debug, Fail)]
 pub enum SignInError {
     #[fail(display = "Error talking to db actor")]
-    Mailbox,
+    Canceled,
     #[fail(display = "Error talking db")]
     Database,
     #[fail(display = "Error setting the cookie")]
@@ -233,9 +213,9 @@ pub enum SignInError {
 impl From<DbActionError<SignInFail>> for SignInError {
     fn from(e: DbActionError<SignInFail>) -> Self {
         match e {
-            DbActionError::Connection => SignInError::Database,
-            DbActionError::Mailbox => SignInError::Mailbox,
-            DbActionError::Action(e) => SignInError::SignIn(e),
+            DbActionError::Pool(_) => SignInError::Database,
+            DbActionError::Canceled => SignInError::Canceled,
+            DbActionError::Error(e) => SignInError::SignIn(e),
         }
     }
 }
@@ -246,35 +226,21 @@ impl From<ValidateSignInFormFail> for SignInError {
     }
 }
 
-impl From<Impossible> for SignInError {
-    fn from(_: Impossible) -> Self {
-        SignInError::Mailbox
-    }
-}
-
 struct SetUserCookie(Session, AuthenticatedUser);
 
-impl Wrapped for SetUserCookie {
-    type Wrapper = SetUserCookie;
-}
-
-impl Action<(), SignInError> for SetUserCookie {
-    type Future = Ready<Result<(), SignInError>>;
-
-    fn action(self, _: AppConfig) -> Self::Future {
-        let res = self
+impl SetUserCookie {
+    fn run(self) -> Result<(), SignInError> {
+        self
             .0
             .set("user_id", self.1.id())
-            .map_err(|_| SignInError::Cookie);
-
-        ready(res)
+            .map_err(|_| SignInError::Cookie)
     }
 }
 
 #[derive(Clone, Debug, Fail)]
 pub enum ConfirmError {
     #[fail(display = "Error talking to db actor")]
-    Mailbox,
+    Canceled,
     #[fail(display = "Error talking db")]
     Database,
     #[fail(display = "Error confirming account: {}", _0)]
@@ -284,15 +250,9 @@ pub enum ConfirmError {
 impl From<DbActionError<ConfirmAccountFail>> for ConfirmError {
     fn from(e: DbActionError<ConfirmAccountFail>) -> Self {
         match e {
-            DbActionError::Connection => ConfirmError::Database,
-            DbActionError::Mailbox => ConfirmError::Mailbox,
-            DbActionError::Action(e) => ConfirmError::Confirm(e),
+            DbActionError::Pool(_) => ConfirmError::Database,
+            DbActionError::Canceled => ConfirmError::Canceled,
+            DbActionError::Error(e) => ConfirmError::Confirm(e),
         }
-    }
-}
-
-impl From<Impossible> for ConfirmError {
-    fn from(_: Impossible) -> Self {
-        ConfirmError::Mailbox
     }
 }

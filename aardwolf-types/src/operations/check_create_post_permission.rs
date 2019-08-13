@@ -4,22 +4,11 @@ use aardwolf_models::{
 };
 use diesel::pg::PgConnection;
 
-use crate::{
-    error::AardwolfFail,
-    traits::DbAction,
-    wrapper::{DbActionWrapper, Wrapped},
-};
+use crate::{error::AardwolfFail, traits::DbAction};
 
 pub struct CheckCreatePostPermission<U>(pub U, pub BaseActor)
 where
     U: PermissionedUser + Clone;
-
-impl<U> Wrapped for CheckCreatePostPermission<U>
-where
-    U: PermissionedUser + Clone,
-{
-    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
-}
 
 impl<U> DbAction for CheckCreatePostPermission<U>
 where

@@ -4,7 +4,7 @@ use std::{error::Error, fmt};
 
 use aardwolf_models::{base_actor::BaseActor, generate_urls::GenerateUrls, sql_types::Url};
 use aardwolf_templates::Renderable;
-use actix::{self, Addr, SyncArbiter};
+use actix::System;
 use actix_files::Files;
 use actix_session::CookieSession;
 use actix_web::{
@@ -16,21 +16,19 @@ use actix_web::{
 };
 use actix_web_async_compat::async_compat;
 use config::Config;
-use diesel::pg::PgConnection;
+use diesel::PgConnection;
+use r2d2::Pool;
 use r2d2_diesel::ConnectionManager;
 use uuid::Uuid;
 
 #[macro_use]
 pub mod action;
-pub mod db;
 pub mod error;
 pub mod routes;
 mod session;
 pub mod types;
 
 pub use crate::session::from_session;
-
-use self::db::{Db, Pool};
 
 #[derive(Clone)]
 pub struct UrlGenerator {
@@ -97,8 +95,8 @@ impl GenerateUrls for UrlGenerator {
 
 #[derive(Clone)]
 pub struct AppConfig {
-    db: Addr<Db>,
     generator: UrlGenerator,
+    pool: Pool<ConnectionManager<PgConnection>>,
 }
 
 impl fmt::Debug for AppConfig {
@@ -108,13 +106,13 @@ impl fmt::Debug for AppConfig {
 }
 
 pub trait WithRucte {
-    fn with_ructe<R>(&mut self, r: R) -> HttpResponse
+    fn ructe<R>(&mut self, r: R) -> HttpResponse
     where
         R: Renderable;
 }
 
 impl WithRucte for HttpResponseBuilder {
-    fn with_ructe<R>(&mut self, r: R) -> HttpResponse
+    fn ructe<R>(&mut self, r: R) -> HttpResponse
     where
         R: Renderable,
     {
@@ -129,9 +127,10 @@ impl WithRucte for HttpResponseBuilder {
     }
 }
 
-fn db_pool(database_url: &str) -> Result<Pool, Box<dyn Error>> {
-    let manager = ConnectionManager::<PgConnection>::new(database_url);
-    Ok(r2d2::Pool::builder().build(manager)?)
+fn db_pool(database_url: &str) -> Result<Pool<ConnectionManager<PgConnection>>, Box<dyn Error>> {
+    let manager = ConnectionManager::new(database_url);
+    let pool = Pool::builder().build(manager)?;
+    Ok(pool)
 }
 
 #[cfg(debug_assertions)]
@@ -183,11 +182,9 @@ mod assets {
 }
 
 pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
-    let sys = actix::System::new("aardwolf-actix");
+    let sys = System::new("aardwolf-actix");
 
     let pool = db_pool(database_url)?;
-
-    let db = SyncArbiter::start(3, move || Db::new(pool.clone()));
 
     let listen_address = format!(
         "{}:{}",
@@ -205,8 +202,8 @@ pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
 
     HttpServer::new(move || {
         let state = AppConfig {
-            db: db.clone(),
             generator: url_generator.clone(),
+            pool: pool.clone(),
         };
 
         let translations = aardwolf_templates::managed_state();

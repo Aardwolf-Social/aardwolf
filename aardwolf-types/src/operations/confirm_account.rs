@@ -4,11 +4,7 @@ use aardwolf_models::user::{
 };
 use diesel::pg::PgConnection;
 
-use crate::{
-    error::AardwolfFail,
-    traits::DbAction,
-    wrapper::{DbActionWrapper, Wrapped},
-};
+use crate::{error::AardwolfFail, traits::DbAction};
 
 #[derive(Debug, Deserialize)]
 /// The token type required to confirm an account
@@ -23,10 +19,6 @@ pub struct ConfirmAccountToken {
 ///
 /// It will fail if an account is already confirmed.
 pub struct ConfirmAccount(pub ConfirmAccountToken);
-
-impl Wrapped for ConfirmAccount {
-    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
-}
 
 impl DbAction for ConfirmAccount {
     type Item = AuthenticatedUser;
