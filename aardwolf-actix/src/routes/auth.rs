@@ -20,15 +20,17 @@ use actix_session::Session;
 use actix_web::{
     http::header::LOCATION,
     web::{Data, Form, Query},
-    HttpResponse
+    HttpResponse, ResponseError,
 };
 use failure::Fail;
+use std::fmt;
 
 use crate::{
-    action::{redirect, RenderableExt},
+    action::{redirect},
+    traits::{WithRucte, RenderableExt},
     error::redirect_error,
     types::user::SignedInUser,
-    AppConfig, WithRucte,
+    AppConfig,
 };
 
 pub(crate) fn sign_up_form(i18n: I18n) -> HttpResponse {
@@ -38,7 +40,8 @@ pub(crate) fn sign_up_form(i18n: I18n) -> HttpResponse {
         &SignUpFormState::default(),
         None,
         false,
-    ).ok();
+    )
+    .ok();
 
     drop(i18n);
 
@@ -48,36 +51,24 @@ pub(crate) fn sign_up_form(i18n: I18n) -> HttpResponse {
 async fn sign_up_inner(state: AppConfig, form: SignUpForm) -> Result<HttpResponse, SignUpError> {
     let form = ValidateSignUpForm(form).validate()?;
     let (email, token) = SignUp(form).run(state.pool.clone()).await?;
-    PrintResult(email, token).run();
+    print_result(email, token);
     Ok(redirect("/auth/sign_in"))
 }
 
 pub(crate) async fn sign_up(
     (state, form, i18n): (Data<AppConfig>, Form<SignUpForm>, I18n),
-) -> Result<HttpResponse, actix_web::Error> {
+) -> Result<HttpResponse, SignUpResponseError> {
     let form = form.into_inner();
     let form_state = form.as_state();
 
-    let error = match sign_up_inner((*state).clone(), form).await {
-        Ok(res) => return Ok(res),
-        Err(e) => e,
-    };
-
-    let (mut res, valid, system) = match error {
-        SignUpError::SignUp(ref e) => match *e {
-            SignUpFail::ValidationError(ref e) => (HttpResponse::BadRequest(), Some(e), false),
-            _ => (HttpResponse::InternalServerError(), None, true),
-        },
-        _ => (HttpResponse::InternalServerError(), None, true),
-    };
-
-    Ok(res.ructe(TSignUp::new(
-        &i18n.catalog,
-        "csrf token",
-        &form_state,
-        valid,
-        system,
-    )))
+    sign_up_inner((*state).clone(), form)
+        .await
+        .map_err(|error| SignUpResponseError {
+            i18n,
+            csrf_token: "csrf token".to_owned(),
+            form_state,
+            error,
+        })
 }
 
 pub(crate) fn sign_in_form(i18n: I18n) -> HttpResponse {
@@ -87,7 +78,8 @@ pub(crate) fn sign_in_form(i18n: I18n) -> HttpResponse {
         &SignInFormState::default(),
         None,
         false,
-    ).ok();
+    )
+    .ok();
 
     drop(i18n);
 
@@ -107,49 +99,27 @@ async fn sign_in_inner(
 
 pub(crate) async fn sign_in(
     (state, session, form, i18n): (Data<AppConfig>, Session, Form<SignInForm>, I18n),
-) -> Result<HttpResponse, actix_web::Error> {
+) -> Result<HttpResponse, SignInResponseError> {
     let form = form.into_inner();
     let form_state = form.as_state();
 
-    let error = match sign_in_inner((*state).clone(), form, session).await {
-        Ok(res) => return Ok(res),
-        Err(e) => e,
-    };
-
-    let (mut res, validation, system) = match error {
-        SignInError::SignIn(ref e) => match *e {
-            SignInFail::ValidationError(ref e) => (HttpResponse::BadRequest(), Some(e), false),
-            _ => (HttpResponse::InternalServerError(), None, true),
-        },
-        _ => (HttpResponse::InternalServerError(), None, true),
-    };
-
-    Ok(res.ructe(TSignIn::new(
-        &i18n.catalog,
-        "csrf token",
-        &form_state,
-        validation,
-        system,
-    )))
-}
-
-async fn confirm_inner(
-    state: AppConfig,
-    query: ConfirmAccountToken,
-) -> Result<HttpResponse, ConfirmError> {
-    ConfirmAccount(query).run(state.pool.clone()).await?;
-    Ok(redirect("/auth/sign_in"))
+    sign_in_inner((*state).clone(), form, session)
+        .await
+        .map_err(|error| SignInResponseError {
+            i18n,
+            csrf_token: "csrf token".to_owned(),
+            form_state,
+            error,
+        })
 }
 
 pub(crate) async fn confirm(
     (state, query): (Data<AppConfig>, Query<ConfirmAccountToken>),
-) -> Result<HttpResponse, actix_web::Error> {
-    let error = match confirm_inner((*state).clone(), query.into_inner()).await {
-        Ok(res) => return Ok(res),
-        Err(e) => e,
-    };
-
-    Ok(redirect_error("/auth/sign_up", Some(error.to_string())))
+) -> Result<HttpResponse, ConfirmError> {
+    ConfirmAccount(query.into_inner())
+        .run(state.pool.clone())
+        .await?;
+    Ok(redirect("/auth/sign_in"))
 }
 
 pub(crate) fn sign_out((session, _user): (Session, SignedInUser)) -> HttpResponse {
@@ -158,6 +128,76 @@ pub(crate) fn sign_out((session, _user): (Session, SignedInUser)) -> HttpRespons
     HttpResponse::SeeOther()
         .header(LOCATION, "/auth/sign_in")
         .finish()
+}
+
+#[derive(Fail)]
+#[fail(display = "Error")]
+pub struct SignUpResponseError {
+    i18n: I18n,
+    csrf_token: String,
+    form_state: SignUpFormState,
+    error: SignUpError,
+}
+
+impl fmt::Debug for SignUpResponseError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "...")
+    }
+}
+
+impl ResponseError for SignUpResponseError {
+    fn error_response(&self) -> HttpResponse {
+        let (mut res, valid, system) = match self.error {
+            SignUpError::SignUp(ref e) => match *e {
+                SignUpFail::ValidationError(ref e) => (HttpResponse::BadRequest(), Some(e), false),
+                _ => (HttpResponse::InternalServerError(), None, true),
+            },
+            _ => (HttpResponse::InternalServerError(), None, true),
+        };
+
+        res.ructe(TSignUp::new(
+            &self.i18n.catalog,
+            &self.csrf_token,
+            &self.form_state,
+            valid,
+            system,
+        ))
+    }
+}
+
+#[derive(Fail)]
+#[fail(display = "Error")]
+pub struct SignInResponseError {
+    i18n: I18n,
+    csrf_token: String,
+    form_state: SignInFormState,
+    error: SignInError,
+}
+
+impl fmt::Debug for SignInResponseError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "...")
+    }
+}
+
+impl ResponseError for SignInResponseError {
+    fn error_response(&self) -> HttpResponse {
+        let (mut res, validation, system) = match self.error {
+            SignInError::SignIn(ref e) => match *e {
+                SignInFail::ValidationError(ref e) => (HttpResponse::BadRequest(), Some(e), false),
+                _ => (HttpResponse::InternalServerError(), None, true),
+            },
+            _ => (HttpResponse::InternalServerError(), None, true),
+        };
+
+        res.ructe(TSignIn::new(
+            &self.i18n.catalog,
+            &self.csrf_token,
+            &self.form_state,
+            validation,
+            system,
+        ))
+    }
 }
 
 #[derive(Clone, Debug, Fail)]
@@ -186,16 +226,12 @@ impl From<ValidateSignUpFormFail> for SignUpError {
     }
 }
 
-struct PrintResult(UnverifiedEmail, EmailToken);
-
-impl PrintResult {
-    fn run(self) {
-        println!(
-            "confirmation token url: /auth/confirmation?id={}&token={}",
-            self.0.id(),
-            self.1,
-        );
-    }
+fn print_result(email: UnverifiedEmail, token: EmailToken) {
+    println!(
+        "confirmation token url: /auth/confirmation?id={}&token={}",
+        email.id(),
+        token,
+    );
 }
 
 #[derive(Clone, Debug, Fail)]
@@ -230,8 +266,7 @@ struct SetUserCookie(Session, AuthenticatedUser);
 
 impl SetUserCookie {
     fn run(self) -> Result<(), SignInError> {
-        self
-            .0
+        self.0
             .set("user_id", self.1.id())
             .map_err(|_| SignInError::Cookie)
     }
@@ -254,5 +289,11 @@ impl From<DbActionError<ConfirmAccountFail>> for ConfirmError {
             DbActionError::Canceled => ConfirmError::Canceled,
             DbActionError::Error(e) => ConfirmError::Confirm(e),
         }
+    }
+}
+
+impl ResponseError for ConfirmError {
+    fn error_response(&self) -> HttpResponse {
+        redirect_error("/auth/sign_up", Some(self.to_string()))
     }
 }

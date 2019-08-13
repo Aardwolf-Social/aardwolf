@@ -3,16 +3,13 @@
 use std::{error::Error, fmt};
 
 use aardwolf_models::{base_actor::BaseActor, generate_urls::GenerateUrls, sql_types::Url};
-use aardwolf_templates::Renderable;
 use actix::System;
 use actix_files::Files;
 use actix_session::CookieSession;
 use actix_web::{
-    dev::HttpResponseBuilder,
-    http::header::CONTENT_TYPE,
     middleware::Logger,
     web::{get, post, resource, scope},
-    App, HttpResponse, HttpServer,
+    App, HttpServer,
 };
 use actix_web_async_compat::async_compat;
 use config::Config;
@@ -21,12 +18,12 @@ use r2d2::Pool;
 use r2d2_diesel::ConnectionManager;
 use uuid::Uuid;
 
-#[macro_use]
-pub mod action;
-pub mod error;
-pub mod routes;
+mod action;
+mod error;
+mod routes;
 mod session;
-pub mod types;
+mod traits;
+mod types;
 
 pub use crate::session::from_session;
 
@@ -102,28 +99,6 @@ pub struct AppConfig {
 impl fmt::Debug for AppConfig {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "AppConfig")
-    }
-}
-
-pub trait WithRucte {
-    fn ructe<R>(&mut self, r: R) -> HttpResponse
-    where
-        R: Renderable;
-}
-
-impl WithRucte for HttpResponseBuilder {
-    fn ructe<R>(&mut self, r: R) -> HttpResponse
-    where
-        R: Renderable,
-    {
-        let mut buf = Vec::new();
-
-        match r.render(&mut buf) {
-            Ok(_) => self.header(CONTENT_TYPE, "text/html").body(buf),
-            Err(e) => self
-                .header(CONTENT_TYPE, "text/plain")
-                .body(format!("{}", e)),
-        }
     }
 }
 

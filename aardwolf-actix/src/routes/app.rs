@@ -4,7 +4,7 @@ use actix_i18n::I18n;
 use actix_web::HttpResponse;
 
 use crate::{
-    action::RenderableExt,
+    traits::RenderableExt,
     types::{actor::CurrentActor, user::SignedInUser},
 };
 

@@ -14,11 +14,68 @@ use actix_http::Payload;
 use actix_session::Session;
 use actix_web::{error::ResponseError, FromRequest, HttpRequest, HttpResponse};
 use failure::Fail;
-use futures::{
-    future::{FutureExt, TryFutureExt},
-};
+use futures::future::{FutureExt, TryFutureExt};
 
 use crate::{error::redirect_error, from_session, AppConfig};
+
+pub struct CurrentActor(pub BaseActor, pub Persona);
+
+impl FromRequest for CurrentActor {
+    type Config = ();
+    type Error = actix_web::Error;
+    type Future = Box<dyn futures_old::Future<Item = Self, Error = Self::Error>>;
+
+    fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
+        use futures_old::future::{Future, IntoFuture};
+        Box::new(
+            extract(req).into_future().and_then(|(state, session)| {
+                from_request_inner(state, session).boxed_local().compat()
+            }),
+        )
+    }
+}
+
+fn extract(req: &HttpRequest) -> Result<(AppConfig, Session), actix_web::Error> {
+    let state = req
+        .app_data::<AppConfig>()
+        .ok_or(MissingState)
+        .map(|s| s.clone())?;
+
+    let session = Session::extract(req).map_err(|_| CurrentActorError::Cookie)?;
+
+    Ok((state, session))
+}
+
+async fn from_request_inner(
+    state: AppConfig,
+    session: Session,
+) -> Result<CurrentActor, actix_web::Error> {
+    let id: i32 = match from_session(&session, "persona_id", CurrentActorError::Cookie) {
+        Ok(id) => id,
+        Err(_) => {
+            let user_id = from_session(&session, "user_id", CurrentActorError::Cookie)?;
+
+            fetch_user(state.clone(), user_id)
+                .await?
+                .primary_persona()
+                .ok_or(CurrentActorError::Persona)?
+        }
+    };
+
+    let actor = fetch_actor(state, id).await?;
+
+    Ok(actor)
+}
+
+async fn fetch_user(state: AppConfig, id: i32) -> Result<AuthenticatedUser, CurrentActorError> {
+    Ok(FetchAuthenticatedUser(id).run(state.pool.clone()).await?)
+}
+
+async fn fetch_actor(state: AppConfig, id: i32) -> Result<CurrentActor, CurrentActorError> {
+    let persona = FetchPersona(id).run(state.pool.clone()).await?;
+    let base_actor = FetchBaseActor(persona.id()).run(state.pool.clone()).await?;
+    Ok(CurrentActor(base_actor, persona))
+}
 
 #[derive(Clone, Debug, Fail)]
 pub enum CurrentActorError {
@@ -34,8 +91,6 @@ pub enum CurrentActorError {
     Persona,
     #[fail(display = "No user cookie present")]
     Cookie,
-    #[fail(display = "Error exporting data")]
-    Export,
 }
 
 impl From<DbActionError<FetchAuthenticatedUserFail>> for CurrentActorError {
@@ -89,63 +144,4 @@ pub struct MissingState;
 
 impl ResponseError for MissingState {
     // Defaults to InternalServerError
-}
-
-pub struct CurrentActor(pub BaseActor, pub Persona);
-
-async fn fetch_user(state: AppConfig, id: i32) -> Result<AuthenticatedUser, CurrentActorError> {
-    Ok(FetchAuthenticatedUser(id).run(state.pool.clone()).await?)
-}
-
-async fn fetch_actor(state: AppConfig, id: i32) -> Result<CurrentActor, CurrentActorError> {
-    let persona = FetchPersona(id).run(state.pool.clone()).await?;
-    let base_actor = FetchBaseActor(persona.id()).run(state.pool.clone()).await?;
-    Ok(CurrentActor(base_actor, persona))
-}
-
-fn extract(req: &HttpRequest) -> Result<(AppConfig, Session), actix_web::Error> {
-    let state = req
-        .app_data::<AppConfig>()
-        .ok_or(MissingState)
-        .map(|s| s.clone())?;
-
-    let session = Session::extract(req).map_err(|_| CurrentActorError::Cookie)?;
-
-    Ok((state, session))
-}
-
-async fn from_request_inner(
-    state: AppConfig,
-    session: Session,
-) -> Result<CurrentActor, actix_web::Error> {
-    let id: i32 = match from_session(&session, "persona_id", CurrentActorError::Cookie) {
-        Ok(id) => id,
-        Err(_) => {
-            let user_id = from_session(&session, "user_id", CurrentActorError::Cookie)?;
-
-            fetch_user(state.clone(), user_id)
-                .await?
-                .primary_persona()
-                .ok_or(CurrentActorError::Persona)?
-        }
-    };
-
-    let actor = fetch_actor(state, id).await?;
-
-    Ok(actor)
-}
-
-impl FromRequest for CurrentActor {
-    type Config = ();
-    type Error = actix_web::Error;
-    type Future = Box<dyn futures_old::Future<Item = Self, Error = Self::Error>>;
-
-    fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
-        use futures_old::future::{Future, IntoFuture};
-        Box::new(
-            extract(req)
-                .into_future()
-                .and_then(|(state, session)| from_request_inner(state, session).boxed_local().compat()),
-        )
-    }
 }
