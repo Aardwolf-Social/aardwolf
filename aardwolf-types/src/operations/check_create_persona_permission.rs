@@ -1,11 +1,7 @@
 use aardwolf_models::user::{LocalPersonaCreator, PermissionError, PermissionedUser};
 use diesel::pg::PgConnection;
 
-use crate::{
-    error::AardwolfFail,
-    traits::DbAction,
-    wrapper::{DbActionWrapper, Wrapped},
-};
+use crate::{error::AardwolfFail, traits::DbAction};
 
 /// This operation checks whether a user has permissiont to create a persona
 ///
@@ -14,16 +10,9 @@ pub struct CheckCreatePersonaPermission<U>(pub U)
 where
     U: PermissionedUser + Clone;
 
-impl<U> Wrapped for CheckCreatePersonaPermission<U>
-where
-    U: PermissionedUser + Clone,
-{
-    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
-}
-
 impl<U> DbAction for CheckCreatePersonaPermission<U>
 where
-    U: PermissionedUser + Clone,
+    U: PermissionedUser + Clone + Send + 'static,
 {
     type Item = LocalPersonaCreator<U>;
     type Error = CheckCreatePersonaPermissionFail;

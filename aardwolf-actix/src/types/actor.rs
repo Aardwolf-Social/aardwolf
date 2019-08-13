@@ -8,107 +8,31 @@ use aardwolf_types::{
         fetch_base_actor::{FetchBaseActor, FetchBaseActorFail},
         fetch_persona::{FetchPersona, FetchPersonaFail},
     },
-    wrapper::{ExportFail, ExportKind},
+    traits::{DbAction, DbActionError},
 };
 use actix_http::Payload;
 use actix_session::Session;
 use actix_web::{error::ResponseError, FromRequest, HttpRequest, HttpResponse};
 use failure::Fail;
-use futures::{
-    future::{FutureExt, TryFutureExt},
-};
+use futures::future::{FutureExt, TryFutureExt};
 
-use crate::{db::DbActionError, error::RedirectError, from_session, AppConfig};
-
-#[derive(Clone, Debug, Fail)]
-pub enum CurrentActorError {
-    #[fail(display = "Error talking to db actor")]
-    Mailbox,
-    #[fail(display = "Error in database")]
-    Database,
-    #[fail(display = "User doesn't exist")]
-    User,
-    #[fail(display = "Base Actor doesn't exist")]
-    Actor,
-    #[fail(display = "Persona doesn't exist")]
-    Persona,
-    #[fail(display = "No user cookie present")]
-    Cookie,
-    #[fail(display = "Error exporting data")]
-    Export,
-}
-
-impl From<DbActionError<FetchAuthenticatedUserFail>> for CurrentActorError {
-    fn from(e: DbActionError<FetchAuthenticatedUserFail>) -> Self {
-        match e {
-            DbActionError::Connection => CurrentActorError::Database,
-            DbActionError::Mailbox => CurrentActorError::Mailbox,
-            DbActionError::Action(e) => match e {
-                FetchAuthenticatedUserFail::Database => CurrentActorError::Database,
-                FetchAuthenticatedUserFail::NotFound => CurrentActorError::User,
-            },
-        }
-    }
-}
-
-impl From<DbActionError<FetchBaseActorFail>> for CurrentActorError {
-    fn from(e: DbActionError<FetchBaseActorFail>) -> Self {
-        match e {
-            DbActionError::Connection => CurrentActorError::Database,
-            DbActionError::Mailbox => CurrentActorError::Mailbox,
-            DbActionError::Action(e) => match e {
-                FetchBaseActorFail::Database => CurrentActorError::Database,
-                FetchBaseActorFail::NotFound => CurrentActorError::Actor,
-            },
-        }
-    }
-}
-
-impl From<DbActionError<FetchPersonaFail>> for CurrentActorError {
-    fn from(e: DbActionError<FetchPersonaFail>) -> Self {
-        match e {
-            DbActionError::Connection => CurrentActorError::Database,
-            DbActionError::Mailbox => CurrentActorError::Mailbox,
-            DbActionError::Action(e) => match e {
-                FetchPersonaFail::Database => CurrentActorError::Database,
-                FetchPersonaFail::NotFound => CurrentActorError::Persona,
-            },
-        }
-    }
-}
-
-impl From<ExportFail> for CurrentActorError {
-    fn from(_: ExportFail) -> Self {
-        CurrentActorError::Export
-    }
-}
-
-impl ResponseError for CurrentActorError {
-    fn error_response(&self) -> HttpResponse {
-        RedirectError::new("/personas/create", &Some(self.to_string())).error_response()
-    }
-}
-
-#[derive(Clone, Debug, Fail)]
-#[fail(display = "State is missing")]
-pub struct MissingState;
-
-impl ResponseError for MissingState {
-    // Defaults to InternalServerError
-}
+use crate::{error::redirect_error, from_session, AppConfig};
 
 pub struct CurrentActor(pub BaseActor, pub Persona);
 
-async fn fetch_user(state: AppConfig, id: i32) -> Result<AuthenticatedUser, CurrentActorError> {
-    Ok(perform!(state, [(_ = FetchAuthenticatedUser(id)),]))
-}
+impl FromRequest for CurrentActor {
+    type Config = ();
+    type Error = actix_web::Error;
+    type Future = Box<dyn futures_old::Future<Item = Self, Error = Self::Error>>;
 
-async fn fetch_actor(state: AppConfig, id: i32) -> Result<CurrentActor, CurrentActorError> {
-    Ok(perform!(state, [
-        (persona = FetchPersona(id)),
-        (base_actor = FetchBaseActor(persona.id())),
-        (_ = ExportKind(CurrentActor(base_actor, persona))),
-    ]))
+    fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
+        use futures_old::future::{Future, IntoFuture};
+        Box::new(
+            extract(req).into_future().and_then(|(state, session)| {
+                from_request_inner(state, session).boxed_local().compat()
+            }),
+        )
+    }
 }
 
 fn extract(req: &HttpRequest) -> Result<(AppConfig, Session), actix_web::Error> {
@@ -143,17 +67,81 @@ async fn from_request_inner(
     Ok(actor)
 }
 
-impl FromRequest for CurrentActor {
-    type Config = ();
-    type Error = actix_web::Error;
-    type Future = Box<dyn futures_old::Future<Item = Self, Error = Self::Error>>;
+async fn fetch_user(state: AppConfig, id: i32) -> Result<AuthenticatedUser, CurrentActorError> {
+    Ok(FetchAuthenticatedUser(id).run(state.pool.clone()).await?)
+}
 
-    fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
-        use futures_old::future::{Future, IntoFuture};
-        Box::new(
-            extract(req)
-                .into_future()
-                .and_then(|(state, session)| from_request_inner(state, session).boxed_local().compat()),
-        )
+async fn fetch_actor(state: AppConfig, id: i32) -> Result<CurrentActor, CurrentActorError> {
+    let persona = FetchPersona(id).run(state.pool.clone()).await?;
+    let base_actor = FetchBaseActor(persona.id()).run(state.pool.clone()).await?;
+    Ok(CurrentActor(base_actor, persona))
+}
+
+#[derive(Clone, Debug, Fail)]
+pub enum CurrentActorError {
+    #[fail(display = "Error talking to db actor")]
+    Canceled,
+    #[fail(display = "Error in database")]
+    Database,
+    #[fail(display = "User doesn't exist")]
+    User,
+    #[fail(display = "Base Actor doesn't exist")]
+    Actor,
+    #[fail(display = "Persona doesn't exist")]
+    Persona,
+    #[fail(display = "No user cookie present")]
+    Cookie,
+}
+
+impl From<DbActionError<FetchAuthenticatedUserFail>> for CurrentActorError {
+    fn from(e: DbActionError<FetchAuthenticatedUserFail>) -> Self {
+        match e {
+            DbActionError::Pool(_) => CurrentActorError::Database,
+            DbActionError::Canceled => CurrentActorError::Canceled,
+            DbActionError::Error(e) => match e {
+                FetchAuthenticatedUserFail::Database => CurrentActorError::Database,
+                FetchAuthenticatedUserFail::NotFound => CurrentActorError::User,
+            },
+        }
     }
+}
+
+impl From<DbActionError<FetchBaseActorFail>> for CurrentActorError {
+    fn from(e: DbActionError<FetchBaseActorFail>) -> Self {
+        match e {
+            DbActionError::Pool(_) => CurrentActorError::Database,
+            DbActionError::Canceled => CurrentActorError::Canceled,
+            DbActionError::Error(e) => match e {
+                FetchBaseActorFail::Database => CurrentActorError::Database,
+                FetchBaseActorFail::NotFound => CurrentActorError::Actor,
+            },
+        }
+    }
+}
+
+impl From<DbActionError<FetchPersonaFail>> for CurrentActorError {
+    fn from(e: DbActionError<FetchPersonaFail>) -> Self {
+        match e {
+            DbActionError::Pool(_) => CurrentActorError::Database,
+            DbActionError::Canceled => CurrentActorError::Canceled,
+            DbActionError::Error(e) => match e {
+                FetchPersonaFail::Database => CurrentActorError::Database,
+                FetchPersonaFail::NotFound => CurrentActorError::Persona,
+            },
+        }
+    }
+}
+
+impl ResponseError for CurrentActorError {
+    fn error_response(&self) -> HttpResponse {
+        redirect_error("/personas/create", Some(self.to_string()))
+    }
+}
+
+#[derive(Clone, Debug, Fail)]
+#[fail(display = "State is missing")]
+pub struct MissingState;
+
+impl ResponseError for MissingState {
+    // Defaults to InternalServerError
 }

@@ -9,7 +9,6 @@ use openssl::rsa::Rsa;
 use crate::{
     forms::personas::{PersonaCreationFail, ValidatedPersonaCreationForm},
     traits::DbAction,
-    wrapper::{DbActionWrapper, Wrapped},
 };
 
 /// This operation creates a persona
@@ -21,14 +20,6 @@ pub struct CreatePersona<U, G>(
 where
     U: PermissionedUser,
     G: GenerateUrls;
-
-impl<U, G> Wrapped for CreatePersona<U, G>
-where
-    U: PermissionedUser,
-    G: GenerateUrls,
-{
-    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
-}
 
 impl<U, G> DbAction for CreatePersona<U, G>
 where

@@ -5,15 +5,10 @@ use crate::{
     error::AardwolfFail,
     forms::auth::{ValidateSignInFormFail, ValidatedSignInForm},
     traits::DbAction,
-    wrapper::{DbActionWrapper, Wrapped},
 };
 
 /// This operation authenticates a user
 pub struct SignIn(pub ValidatedSignInForm);
-
-impl Wrapped for SignIn {
-    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
-}
 
 impl DbAction for SignIn {
     type Item = AuthenticatedUser;

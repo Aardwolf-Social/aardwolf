@@ -5,7 +5,8 @@ authors = ["asonix <asonix@asonix.dog>"]
 edition = "2018"
 
 [features]
-default = []
+default = ["with-actix"]
+with-actix = ["actix-web", "futures-preview", "futures-preview/compat", "futures-preview/nightly", "futures-preview/async-await", "r2d2", "r2d2-diesel"]
 
 [dependencies]
 derive_builder = "0.7.0"
@@ -13,8 +14,6 @@ failure = "0.1"
 log = "0.4"
 openssl = "0.10"
 mime = "0.3"
-r2d2 = "0.8"
-r2d2-diesel = "1.0"
 serde = "1.0"
 serde_derive = "1.0"
 url = "2.1"
@@ -24,10 +23,26 @@ url_serde = "0.2"
 version = "0.1"
 path = "../aardwolf-models"
 
+[dependencies.actix-web]
+version = "1.0"
+optional = true
+
 [dependencies.diesel]
 version = "1.4"
 default-features = false
 features = ["postgres", "uuid", "chrono"]
+
+[dependencies.r2d2]
+version = "0.8"
+optional = true
+
+[dependencies.r2d2-diesel]
+version = "1.0"
+optional = true
+
+[dependencies.futures-preview]
+version = "0.3.0-alpha.18"
+optional = true
 
 [dev-dependencies]
 aardwolf-test-helpers = { version = "0.1", path = "../aardwolf-test-helpers" }

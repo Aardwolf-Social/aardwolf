@@ -6,24 +6,12 @@ use aardwolf_models::{
 use diesel::pg::PgConnection;
 use serde_derive::Serialize;
 
-use crate::{
-    error::AardwolfFail,
-    forms::posts::ValidatedPostCreationForm,
-    traits::DbAction,
-    wrapper::{DbActionWrapper, Wrapped},
-};
+use crate::{error::AardwolfFail, forms::posts::ValidatedPostCreationForm, traits::DbAction};
 
 /// This operation creates a post
 pub struct CreatePost<G>(pub LocalPostCreator, pub ValidatedPostCreationForm, pub G)
 where
     G: GenerateUrls;
-
-impl<G> Wrapped for CreatePost<G>
-where
-    G: GenerateUrls,
-{
-    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
-}
 
 impl<G> DbAction for CreatePost<G>
 where

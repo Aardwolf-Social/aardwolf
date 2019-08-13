@@ -9,14 +9,9 @@ use crate::{
     error::AardwolfFail,
     forms::auth::{ValidateSignUpFormFail, ValidatedSignUpForm},
     traits::DbAction,
-    wrapper::{DbActionWrapper, Wrapped},
 };
 
 pub struct SignUp(pub ValidatedSignUpForm);
-
-impl Wrapped for SignUp {
-    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
-}
 
 impl DbAction for SignUp {
     type Item = (UnverifiedEmail, EmailToken);

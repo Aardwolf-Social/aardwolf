@@ -8,14 +8,9 @@ use crate::{
         fetch_persona::FetchPersonaFail,
     },
     traits::DbAction,
-    wrapper::{DbActionWrapper, Wrapped},
 };
 
 pub struct DeletePersona(pub PersonaDeleter);
-
-impl Wrapped for DeletePersona {
-    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
-}
 
 impl DbAction for DeletePersona {
     type Item = ();

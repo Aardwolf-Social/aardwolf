@@ -1,10 +1,4 @@
-use crate::{
-    apps::App,
-    error::AardwolfFail,
-    scope::Scope,
-    traits::Validate,
-    wrapper::{ValidateWrapper, Wrapped},
-};
+use crate::{apps::App, error::AardwolfFail, scope::Scope, traits::Validate};
 
 #[derive(Clone, Debug, Fail, Serialize)]
 pub enum CreateAppError {
@@ -21,10 +15,6 @@ pub struct CreateApp {
     redirect_uris: String,
     scopes: Scope,
     website: Option<String>,
-}
-
-impl Wrapped for CreateApp {
-    type Wrapper = ValidateWrapper<Self, <Self as Validate>::Item, <Self as Validate>::Error>;
 }
 
 impl Validate for CreateApp {

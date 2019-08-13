@@ -1,17 +1,9 @@
 use aardwolf_models::base_actor::BaseActor;
 use diesel::{pg::PgConnection, result::Error as DieselError};
 
-use crate::{
-    error::AardwolfFail,
-    traits::DbAction,
-    wrapper::{DbActionWrapper, Wrapped},
-};
+use crate::{error::AardwolfFail, traits::DbAction};
 
 pub struct FetchBaseActor(pub i32);
-
-impl Wrapped for FetchBaseActor {
-    type Wrapper = DbActionWrapper<Self, <Self as DbAction>::Item, <Self as DbAction>::Error>;
-}
 
 impl DbAction for FetchBaseActor {
     type Item = BaseActor;
