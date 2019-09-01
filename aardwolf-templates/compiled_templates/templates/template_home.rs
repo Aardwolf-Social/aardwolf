@@ -5,7 +5,7 @@ use std::io::{self, Write};
 use super::{Html,ToHtml};
 use crate::{Home, templates::{base, home::{feed, nav}, new_post, shortcuts}};
 
-pub fn home<W: Write>(mut out: W, home: &Home) -> io::Result<()> {
+pub fn home<W>(mut out: &mut W, home: &Home) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
 base(&mut out, home.catalog, "Aardwolf | Home", |mut out| {
 out.write_all(b"\n    ")?;
 nav(&mut out, home.catalog)?;

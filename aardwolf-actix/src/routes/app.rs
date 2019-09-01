@@ -1,6 +1,6 @@
 use aardwolf_templates::Home;
 use aardwolf_types::forms::posts::PostCreationFormState;
-use actix_i18n::I18n;
+use rocket_i18n::I18n;
 use actix_web::HttpResponse;
 
 use crate::{

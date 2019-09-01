@@ -6,7 +6,7 @@ use super::{Html,ToHtml};
 use gettext_macros::i18n;
 use crate::{Shortcuts, templates::ui::icon};
 
-pub fn shortcuts<W: Write>(mut out: W, shortcuts: &Shortcuts) -> io::Result<()> {
+pub fn shortcuts<W>(mut out: &mut W, shortcuts: &Shortcuts) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
 out.write_all(b"<aside class=\"menu\">\n    <a href=\"")?;
 shortcuts.profile_link.to_html(&mut out)?;
 out.write_all(b"\">")?;

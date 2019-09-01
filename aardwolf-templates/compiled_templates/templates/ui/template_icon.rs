@@ -4,7 +4,7 @@ use std::io::{self, Write};
 #[allow(unused)]
 use super::{Html,ToHtml};
 
-pub fn icon<W: Write>(mut out: W, icon: &str) -> io::Result<()> {
+pub fn icon<W>(mut out: &mut W, icon: &str) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
 out.write_all(b"<i class=\"fa fa-")?;
 icon.to_html(&mut out)?;
 out.write_all(b"\"></i>\n")?;

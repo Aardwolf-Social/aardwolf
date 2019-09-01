@@ -10,14 +10,14 @@ config = "0.9.0"
 ructe = "0.7"
 
 [dependencies]
-gettext = { git = "https://github.com/Plume-org/gettext/", rev = "294c54d74c699fbc66502b480a37cc66c1daa7f3" }
+gettext = "0.4"
 gettext-macros = { git = "https://github.com/Plume-org/gettext-macros/", rev = "a7c605f7edd6bfbfbfe7778026bfefd88d82db10" }
 gettext-utils = { git = "https://github.com/Plume-org/gettext-macros/", rev = "a7c605f7edd6bfbfbfe7778026bfefd88d82db10" }
 
-[dependencies.actix_i18n]
-version = "0.5"
+[dependencies.rocket_i18n]
+version = "0.4"
 git = "https://github.com/aardwolf-social/rocket_i18n"
-branch = "asonix/upgrade-actix"
+branch = "asonix/rev-actix"
 
 [dependencies.aardwolf-types]
 version = "0.1"

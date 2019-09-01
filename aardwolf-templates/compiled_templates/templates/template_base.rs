@@ -6,7 +6,7 @@ use super::{Html,ToHtml};
 use gettext::Catalog;
 use crate::templates::{footer, head};
 
-pub fn base<W: Write>(mut out: W, catalog: &Catalog, title: &str, content: impl FnOnce(&mut W) -> io::Result<()>) -> io::Result<()> {
+pub fn base<W>(mut out: &mut W, catalog: &Catalog, title: &str, content: impl FnOnce(&mut W) -> io::Result<()>) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
 out.write_all(b"<!DOCTYPE html>\n<html lang=\"en\">\n    ")?;
 head(&mut out, title)?;
 out.write_all(b"\n    <body>\n        ")?;

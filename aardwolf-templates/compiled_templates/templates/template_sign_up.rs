@@ -6,7 +6,7 @@ use super::{Html,ToHtml};
 use gettext_macros::i18n;
 use crate::{SignUp, templates::{base, ui::{alert, email_input, password_input}}};
 
-pub fn sign_up<W: Write>(mut out: W, sign_up: &SignUp) -> io::Result<()> {
+pub fn sign_up<W>(mut out: &mut W, sign_up: &SignUp) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
 base(&mut out, sign_up.catalog, "Aardwolf | Sign Up", |mut out| {
 out.write_all(b"\n<header>\n    <h2 class=\"title\">")?;
 i18n!(sign_up.catalog, "Aardwolf Instance").to_html(&mut out)?;

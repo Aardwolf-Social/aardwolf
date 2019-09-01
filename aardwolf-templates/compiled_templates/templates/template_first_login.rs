@@ -6,7 +6,7 @@ use super::{Html,ToHtml};
 use gettext_macros::i18n;
 use crate::{FirstLogin, templates::{base, ui::{alert, text_input, select_input, checkbox_input}}};
 
-pub fn first_login<W: Write>(mut out: W, first_login: &FirstLogin) -> io::Result<()> {
+pub fn first_login<W>(mut out: &mut W, first_login: &FirstLogin) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
 base(&mut out, first_login.catalog, "Aardwolf | Get Posting", |mut out| {
 out.write_all(b"\n<header>\n    <h2 class=\"title\">")?;
 i18n!(first_login.catalog, "Get posting!").to_html(&mut out)?;
