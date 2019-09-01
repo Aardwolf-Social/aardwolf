@@ -16,8 +16,8 @@ gettext-utils = { git = "https://github.com/Plume-org/gettext-macros/", rev = "a
 
 [dependencies.rocket_i18n]
 version = "0.4"
-git = "https://github.com/aardwolf-social/rocket_i18n"
-branch = "asonix/rev-actix"
+git = "https://github.com/Plume-org/rocket_i18n"
+rev = "3eca920593b41d3232aec702733f5c91da8ec808"
 
 [dependencies.aardwolf-types]
 version = "0.1"
