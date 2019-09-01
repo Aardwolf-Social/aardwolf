@@ -40,7 +40,7 @@ version = "1.4"
 default-features = false
 features = ["postgres", "uuid", "chrono"]
 
-[dependencies.actix_i18n]
-version = "0.5"
-git = "https://github.com/aardwolf-social/rocket_i18n"
-branch = "asonix/upgrade-actix"
+[dependencies.rocket_i18n]
+version = "0.4"
+git = "https://github.com/Plume-org/rocket_i18n"
+rev = "3eca920593b41d3232aec702733f5c91da8ec808"

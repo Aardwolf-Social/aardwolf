@@ -5,7 +5,7 @@ use std::io::{self, Write};
 use super::{Html,ToHtml};
 use crate::SelectInput;
 
-pub fn select_input<W: Write>(mut out: W, input: &SelectInput) -> io::Result<()> {
+pub fn select_input<W>(mut out: &mut W, input: &SelectInput) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
 out.write_all(b"<div class=\"aardwolf-input-wrapper\">\n    <label for=\"")?;
 input.name.to_html(&mut out)?;
 out.write_all(b"\">\n        ")?;

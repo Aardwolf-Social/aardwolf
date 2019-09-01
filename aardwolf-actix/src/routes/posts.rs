@@ -13,7 +13,7 @@ use aardwolf_types::{
     },
     traits::{DbAction, DbActionError, Validate},
 };
-use actix_i18n::I18n;
+use rocket_i18n::I18n;
 use actix_web::{
     web::{Data, Form},
     HttpResponse, ResponseError,

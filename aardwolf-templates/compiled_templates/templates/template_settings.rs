@@ -6,7 +6,7 @@ use super::{Html,ToHtml};
 use gettext::Catalog;
 use gettext_macros::i18n;
 
-pub fn settings<W: Write>(mut out: W, catalog: &Catalog) -> io::Result<()> {
+pub fn settings<W>(mut out: &mut W, catalog: &Catalog) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
 out.write_all(b"<aside class=\"menu\">\n  <p class=\"menu-label\">\n    <a class=\"fa fa-chevron-left\">")?;
 i18n!(catalog, "Go back").to_html(&mut out)?;
 out.write_all(b"</a>\n  </p>\n  <p class=\"menu-label\">\n    <span class=\"fa fa-gears\">")?;

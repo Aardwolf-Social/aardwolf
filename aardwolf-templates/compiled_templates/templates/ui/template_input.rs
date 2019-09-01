@@ -5,7 +5,7 @@ use std::io::{self, Write};
 use super::{Html,ToHtml};
 use crate::{Input, templates::ui::icon};
 
-pub fn input<W: Write>(mut out: W, input: &Input) -> io::Result<()> {
+pub fn input<W>(mut out: &mut W, input: &Input) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
 out.write_all(b"<div class=\"aardwolf-input-wrapper\">\n    <label for=\"")?;
 input.name.to_html(&mut out)?;
 out.write_all(b"\">\n        ")?;

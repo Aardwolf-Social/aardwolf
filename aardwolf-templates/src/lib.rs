@@ -2,7 +2,7 @@
 #![allow(clippy::inline_fn_without_body)]
 #![allow(clippy::into_iter_on_ref)]
 
-use actix_i18n::Translations;
+use rocket_i18n::Translations;
 use gettext_macros::{compile_i18n, include_i18n, init_i18n};
 
 init_i18n!("aardwolf", en, pl);

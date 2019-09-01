@@ -5,7 +5,7 @@ use std::io::{self, Write};
 use super::{Html,ToHtml};
 use crate::{PasswordInput, templates::ui::input};
 
-pub fn password_input<W: Write>(mut out: W, password_input: &PasswordInput) -> io::Result<()> {
+pub fn password_input<W>(mut out: &mut W, password_input: &PasswordInput) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
 input(&mut out, &password_input.into())?;
 out.write_all(b"\n")?;
 Ok(())

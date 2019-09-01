@@ -236,20 +236,16 @@ msgstr ""
 msgid "Go back"
 msgstr ""
 
-# aardwolf-templates/src/../compiled_templates/templates/template_footer.rs:20
-msgid "Buy the team a coffee"
+# aardwolf-templates/src/../compiled_templates/templates/home/template_feed.rs:33
+msgid "Boost"
 msgstr ""
 
-# aardwolf-templates/src/../compiled_templates/templates/template_footer.rs:16
-msgid "Check us out on GitHub!"
+# aardwolf-templates/src/../compiled_templates/templates/home/template_feed.rs:31
+msgid "Reply"
 msgstr ""
 
-# aardwolf-templates/src/../compiled_templates/templates/template_footer.rs:14
-msgid "Copyright 2018"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/template_footer.rs:12
-msgid "Terms of Service"
+# aardwolf-templates/src/../compiled_templates/templates/home/template_feed.rs:29
+msgid "Like"
 msgstr ""
 
 # aardwolf-templates/src/../compiled_templates/templates/home/template_nav.rs:17
@@ -266,18 +262,6 @@ msgstr ""
 
 # aardwolf-templates/src/../compiled_templates/templates/home/template_nav.rs:11
 msgid "Home"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/home/template_feed.rs:33
-msgid "Boost"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/home/template_feed.rs:31
-msgid "Reply"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/home/template_feed.rs:29
-msgid "Like"
 msgstr ""
 
 # aardwolf-templates/src/../compiled_templates/templates/template_shortcuts.rs:61
@@ -336,6 +320,26 @@ msgstr ""
 msgid "Get posting!"
 msgstr ""
 
+# aardwolf-templates/src/../compiled_templates/templates/template_new_post.rs:28
+msgid "Awoo!"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/template_footer.rs:20
+msgid "Buy the team a coffee"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/template_footer.rs:16
+msgid "Check us out on GitHub!"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/template_footer.rs:14
+msgid "Copyright 2018"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/template_footer.rs:12
+msgid "Terms of Service"
+msgstr ""
+
 # aardwolf-templates/src/../compiled_templates/templates/template_sign_in.rs:38
 msgid "Log In"
 msgstr ""
@@ -350,8 +354,4 @@ msgstr ""
 
 # aardwolf-templates/src/../compiled_templates/templates/template_sign_in.rs:14
 msgid "Need an Account? - Create one!"
-msgstr ""
-
-# aardwolf-templates/src/../compiled_templates/templates/template_new_post.rs:28
-msgid "Awoo!"
 msgstr ""

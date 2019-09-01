@@ -7,7 +7,7 @@ use gettext::Catalog;
 use gettext_macros::i18n;
 use crate::{NewPost, templates::ui::{alert, select_input, text_input, textarea_input}};
 
-pub fn new_post<W: Write>(mut out: W, catalog: &Catalog, username: &str, new_post: &NewPost) -> io::Result<()> {
+pub fn new_post<W>(mut out: &mut W, catalog: &Catalog, username: &str, new_post: &NewPost) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
 out.write_all(b"<article class=\"media\"><!-- Begin new post -->\n    <figure class=\"media-left\">\n        <p class=\"image is-64x64\">\n        <img src=\"https://bulma.io/images/placeholders/128x128.png\" alt=\"")?;
 username.to_html(&mut out)?;
 out.write_all(b"\">\n        </p>\n    </figure>\n    <div class=\"media-content\">\n        <form method=\"POST\" action=\"/posts/create\">\n            ")?;
