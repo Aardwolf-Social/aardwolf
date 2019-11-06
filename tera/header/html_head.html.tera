@@ -1,9 +1,0 @@
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ "Aardwolf Instance" | _  }} - {{ "Create Account" | _ }}</title>
-  <link rel="stylesheet" type="text/css" href="/stylesheets/bulma.min.0.6.2.css">
-  <link rel="stylesheet" type="text/css" href="/stylesheets/bulma.min.0.6.2.css.map">
-  <link rel="stylesheet" type="text/css" href="/stylesheets/scratchpad.css">
-  <link rel="stylesheet" type="text/css" href="/stylesheets/forkawesome.css">
-</head>
