@@ -3,46 +3,65 @@
 
 @(catalog: &Catalog)
 
-<nav class="navbar">
-    <div class="container">
-        <div class="navbar-brand">
-            <a class="navbar-item">
-                <img src="/images/aardwolf-logo.png" alt="Aardwolf">
-            </a>
-            <span class="navbar-burger burger" data-target="navbar_menu_hero_a">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-        </div>
-        <div id="navbar_menu_hero_a" class="navbar-menu">
-            <div class="navbar-end">
-                <a class="navbar-item is-active">
-                    @i18n!(catalog, "Home")
-                </a>
-                <a class="navbar-item">
-                    @i18n!(catalog, "Profile")
-                </a>
-                <a class="navbar-item">
-                    @i18n!(catalog, "Messages")
-                </a>
-                <span class="navbar-item">
-                    <a class="button is-primary is-inverted">
-                        <span class="icon">
-                            <i class="fa fa-github"></i>
-                        </span>
-                        <span>@i18n!(catalog, "Download")</span>
-                    </a>
-                </span>
-                <span class="navbar-item">
-                    <a class="button is-dark" href="/auth/sign_out">
-                        <span class="icon">
-                            <i class="fas fa-logout"></i>
-                        </span>
-                        @i18n!(catalog, "Logout")
-                    </a>
-                </span>
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a class="navbar-item">
+            <strong>INSTANCE TITLE</strong>
+      </a>  
+      <a class="navbar-item" href="https://aardwolf.social">
+             <img src="/web/images/aardwolf-logo.png" height="100" alt="Aardwolf">
+      </a>
+      <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+      <a class="navbar-item">
+            <strong>USERNAME</strong>
+      </a>  	
+    </div><!-- /navbar-brand -->
+  
+    <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-end">
+          <!-- Nav Right-hand Menu -->	
+          <a class="navbar-item">
+            @i18n!(catalog, "Home")
+          </a>
+          <a @click="toggleNotifCompView" class="navbar-item" href="#">
+            @i18n!(catalog, "Notifications")
+          </a>
+          <notification-box v-if="showNotificationBox"></notification-box>
+        <!-- Nav Right-hand Dropdown -->
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            More
+          </a>
+            <div class="navbar-dropdown">
+              <a class="navbar-item">
+                About
+              </a>
+              <a class="navbar-item" href="/templates/asides/aside_settings.html">
+                Settings
+              </a>
+              <a class="navbar-item">
+                Contact
+              </a>
+              <hr class="navbar-divider">
+              <a class="navbar-item">
+                Report an issue
+              </a>
             </div>
         </div>
-    </div>
-</nav>
+        <!-- /Nav Dropdown -->
+        <!-- Nav Login/Logout Buttons -->
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light">
+              @i18n!(catalog, "Logout")
+            </a>
+          </div>
+        </div>
+        <!-- /Nav Login/Logout Buttons -->	  
+      </div><!-- /navbar-end -->
+    </div><!-- /navbarBasicExample -->
+  </nav>
