@@ -1,6 +1,6 @@
 @use gettext_macros::i18n;
 
-@use crate::{FirstLogin, templates::{base, ui::{alert, text_input, select_input, checkbox_input}}};
+@use crate::{FirstLogin, templates::{base, elements::{alert, input_text, input_select, input_checkbox}}};
 
 @(first_login: &FirstLogin)
 
@@ -19,11 +19,11 @@
                     @:alert(a)
                 }
                 <input type="hidden" name="csrf_token" value="@first_login.csrf">
-                @:text_input(&first_login.display_name)
-                @:text_input(&first_login.shortname)
-                @:select_input(&first_login.follow_policy)
-                @:select_input(&first_login.default_visibility)
-                @:checkbox_input(&first_login.is_searchable)
+                @:input_text(&first_login.display_name)
+                @:input_text(&first_login.shortname)
+                @:input_select(&first_login.follow_policy)
+                @:input_select(&first_login.default_visibility)
+                @:input_checkbox(&first_login.is_searchable)
                 <button>@i18n!(first_login.catalog, "Create Persona")</button>
             </form>
         </div>

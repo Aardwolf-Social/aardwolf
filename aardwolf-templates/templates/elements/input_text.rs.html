@@ -1,5 +1,5 @@
-@use crate::{TextInput, templates::ui::input};
+@use crate::{TextInput, templates::elements::input};
 
-@(text_input: &TextInput)
+@(input_text: &TextInput)
 
-@:input(&text_input.into())
+@:input(&input_text.into())

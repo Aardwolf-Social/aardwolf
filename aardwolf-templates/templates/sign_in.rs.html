@@ -1,6 +1,6 @@
 @use gettext_macros::i18n;
 
-@use crate::{SignIn, templates::{base, ui::{alert, email_input, password_input}}};
+@use crate::{SignIn, templates::{base, elements::{alert, input_email, input_password}}};
 
 @(sign_in: &SignIn)
 
@@ -42,8 +42,8 @@
                 }
                 <form method="POST" action="/auth/sign_in">
                     <input type="hidden" name="csrf_token" value="@sign_in.csrf">
-                    @:email_input(&sign_in.email)
-                    @:password_input(&sign_in.password)
+                    @:input_email(&sign_in.email)
+                    @:input_password(&sign_in.password)
                     <button>@i18n!(sign_in.catalog, "Log In")</button>
 				</form>
 			</div>

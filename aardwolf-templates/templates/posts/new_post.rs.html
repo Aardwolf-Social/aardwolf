@@ -1,7 +1,7 @@
 @use gettext::Catalog;
 @use gettext_macros::i18n;
 
-@use crate::{NewPost, templates::ui::{alert, select_input, text_input, textarea_input}};
+@use crate::{NewPost, templates::elements::{alert, input_select, input_text, input_textarea}};
 
 @(catalog: &Catalog, username: &str, new_post: &NewPost)
 
@@ -17,9 +17,9 @@
                 @:alert(a)
             }
             <input type="hidden" name="csrf_token" value="@new_post.csrf">
-            @:textarea_input(&new_post.source)
-            @:select_input(&new_post.visibility)
-            @:text_input(&new_post.name)
+            @:input_textarea(&new_post.source)
+            @:input_select(&new_post.visibility)
+            @:input_text(&new_post.name)
             <button>@i18n!(catalog, "Awoo!")</button>
         </form>
     </div>
