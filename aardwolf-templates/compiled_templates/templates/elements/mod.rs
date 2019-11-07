@@ -8,6 +8,9 @@ pub use self::template_icon::icon;
 mod template_input_select;
 pub use self::template_input_select::input_select;
 
+mod template_input_password;
+pub use self::template_input_password::input_password;
+
 mod template_input_email;
 pub use self::template_input_email::input_email;
 
