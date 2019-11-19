@@ -9,12 +9,20 @@ init_i18n!("aardwolf", en, pl);
 
 include!("../compiled_templates/templates.rs");
 
+// Directories
+mod asides;
+mod containers;
+mod elements;
+mod error;
+mod home;
+mod posts;
+
+// Root-level files
 mod first_login;
 mod home;
-mod shortcuts;
 mod sign_in;
 mod sign_up;
-mod ui;
+
 
 pub use self::{
     first_login::FirstLogin,
