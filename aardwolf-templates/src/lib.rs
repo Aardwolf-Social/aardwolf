@@ -33,7 +33,7 @@ pub use self::{
 
 use self::{
     shortcuts::Shortcuts,
-    ui::{
+    elements::{
         Alert, AlertKind, InputCheckbox, InputEmail, Input, InputPassword, InputSelect, InputText,
         InputTextarea,
     },
