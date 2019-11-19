@@ -4,14 +4,14 @@ use aardwolf_types::forms::posts::{
 use gettext::Catalog;
 use gettext_macros::i18n;
 
-use crate::{Alert, AlertKind, Renderable, SelectInput, Shortcuts, TextInput, TextareaInput};
+use crate::{Alert, AlertKind, Renderable, InputSelect, Shortcuts, InputText, InputTextarea};
 
 pub struct NewPost<'a> {
     pub(crate) csrf: &'a str,
     pub(crate) alert: Option<Alert>,
-    pub(crate) source: TextareaInput<'a>,
-    pub(crate) visibility: SelectInput<'a>,
-    pub(crate) name: TextInput<'a>,
+    pub(crate) source: InputTextarea<'a>,
+    pub(crate) visibility: InputSelect<'a>,
+    pub(crate) name: InputText<'a>,
 }
 
 pub struct Home<'a> {
@@ -42,7 +42,7 @@ impl<'a> Home<'a> {
                 } else {
                     None
                 },
-                source: TextareaInput {
+                source: InputTextarea {
                     name: "source",
                     label: None,
                     icon: None,
@@ -54,15 +54,15 @@ impl<'a> Home<'a> {
                         })
                     }),
                 },
-                visibility: SelectInput {
+                visibility: InputSelect {
                     name: "visibility",
                     label: i18n!(catalog, "Post Visibility"),
                     selected: state.visibility.to_string(),
-                    options: SelectInput::visibility_options(catalog),
+                    options: InputSelect::visibility_options(catalog),
                     error: validation_error
                         .and_then(|e| e.visibility.as_ref().map(|e| match *e {})),
                 },
-                name: TextInput {
+                name: InputText {
                     name: "name",
                     label: i18n!(catalog, "Content Warning"),
                     icon: None,

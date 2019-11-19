@@ -39,6 +39,7 @@ use self::{
     },
 };
 
+
 pub trait Renderable {
     fn render(&self, _: &mut dyn std::io::Write) -> std::io::Result<()>;
 }
