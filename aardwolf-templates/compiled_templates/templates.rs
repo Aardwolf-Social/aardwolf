@@ -19,6 +19,9 @@ pub mod home;
 mod template_base;
 pub use self::template_base::base;
 
+mod template_head;
+pub use self::template_head::head;
+
 mod template_footer;
 pub use self::template_footer::footer;
 
