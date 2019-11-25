@@ -2,35 +2,37 @@ pub mod templates {
 use std::io::{self, Write};
 use std::fmt::Display;
 
-mod template_first_login;
-pub use self::template_first_login::first_login;
+pub mod asides;
 
 pub mod error;
 
-pub mod elements;
-
-mod template_sign_up;
-pub use self::template_sign_up::sign_up;
-
-pub mod asides;
-
-pub mod home;
-
-mod template_base;
-pub use self::template_base::base;
-
-mod template_head;
-pub use self::template_head::head;
-
 mod template_footer;
 pub use self::template_footer::footer;
+
+pub mod elements;
 
 pub mod containers;
 
 mod template_sign_in;
 pub use self::template_sign_in::sign_in;
 
+mod template_html_head;
+pub use self::template_html_head::html_head;
+
+pub mod reply;
+
+pub mod home;
+
 pub mod posts;
+
+mod template_first_login;
+pub use self::template_first_login::first_login;
+
+mod template_sign_up;
+pub use self::template_sign_up::sign_up;
+
+mod template_base;
+pub use self::template_base::base;
 
 /// This trait should be implemented for any value that can be the
 /// result of an expression in a template.
