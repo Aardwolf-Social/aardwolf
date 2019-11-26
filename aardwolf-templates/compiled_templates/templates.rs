@@ -2,37 +2,35 @@ pub mod templates {
 use std::io::{self, Write};
 use std::fmt::Display;
 
-pub mod asides;
+mod first_login;
+pub use self::first_login::first_login;
 
 pub mod error;
 
-mod template_footer;
-pub use self::template_footer::footer;
-
 pub mod elements;
 
-pub mod containers;
+mod sign_up;
+pub use self::sign_up::sign_up;
 
-mod template_sign_in;
-pub use self::template_sign_in::sign_in;
-
-mod template_html_head;
-pub use self::template_html_head::html_head;
-
-pub mod reply;
+pub mod asides;
 
 pub mod home;
 
+mod home_base;
+pub use self::home_base::home_base;
+
+mod head;
+pub use self::head::head;
+
+mod footer;
+pub use self::footer::footer;
+
+pub mod containers;
+
+mod sign_in;
+pub use self::sign_in::sign_in;
+
 pub mod posts;
-
-mod template_first_login;
-pub use self::template_first_login::first_login;
-
-mod template_sign_up;
-pub use self::template_sign_up::sign_up;
-
-mod template_base;
-pub use self::template_base::base;
 
 /// This trait should be implemented for any value that can be the
 /// result of an expression in a template.
@@ -114,3 +112,4 @@ impl<'a> ToHtmlEscapingWriter<'a> {
 }
 
 }
+

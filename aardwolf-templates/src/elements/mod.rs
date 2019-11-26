@@ -1,11 +1,11 @@
 mod alert;
 mod input;
-mod select_input;
-mod textarea_input;
+mod input_select;
+mod input_textarea;
 
 pub use self::{
     alert::{Alert, AlertKind},
-    input::{CheckboxInput, EmailInput, Input, PasswordInput, TextInput},
-    select_input::{SelectInput, SelectOption},
-    textarea_input::TextareaInput,
+    input::{InputCheckbox, InputEmail, Input, InputPassword, InputText},
+    input_select::{InputSelect, SelectOption},
+    input_textarea::InputTextarea,
 };

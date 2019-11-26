@@ -19,14 +19,12 @@ mod posts;
 
 // Root-level files
 mod first_login;
-mod home;
 mod sign_in;
 mod sign_up;
 
 
 pub use self::{
     first_login::FirstLogin,
-    home::{Home, NewPost},
     sign_in::SignIn,
     sign_up::SignUp,
 };

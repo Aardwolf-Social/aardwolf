@@ -13,6 +13,58 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
 
+# aardwolf-templates/src/first_login.rs:84
+msgid "Automatically accept new followers"
+msgstr ""
+
+# aardwolf-templates/src/first_login.rs:88
+msgid "Automatically reject new followers"
+msgstr ""
+
+# aardwolf-templates/src/first_login.rs:92
+msgid "Manually review new followers"
+msgstr ""
+
+# aardwolf-templates/src/first_login.rs:104
+msgid "Visible to everyone"
+msgstr ""
+
+# aardwolf-templates/src/first_login.rs:108
+msgid "Visible to followers"
+msgstr ""
+
+# aardwolf-templates/src/first_login.rs:112
+msgid "Visible to mutuals"
+msgstr ""
+
+# aardwolf-templates/src/first_login.rs:116
+msgid "Only visible to mentioned users"
+msgstr ""
+
+# aardwolf-templates/src/home.rs:40
+msgid "There was an error creating your post"
+msgstr ""
+
+# aardwolf-templates/src/home.rs:50
+msgid "What's on your mind?"
+msgstr ""
+
+# aardwolf-templates/src/home.rs:55
+msgid "Post cannot be empty"
+msgstr ""
+
+# aardwolf-templates/src/first_login.rs:99
+msgid "Post Visibility"
+msgstr ""
+
+# aardwolf-templates/src/home.rs:80
+msgid "Content Warning"
+msgstr ""
+
+# aardwolf-templates/src/home.rs:82
+msgid "mh, nsfw, etc."
+msgstr ""
+
 # aardwolf-templates/src/first_login.rs:40
 msgid "There was an error creating your persona"
 msgstr ""
@@ -49,32 +101,8 @@ msgstr ""
 msgid "Follow Policy"
 msgstr ""
 
-# aardwolf-templates/src/first_login.rs:99
-msgid "Post Visibility"
-msgstr ""
-
 # aardwolf-templates/src/first_login.rs:124
 msgid "Allow people to search for this profile"
-msgstr ""
-
-# aardwolf-templates/src/home.rs:40
-msgid "There was an error creating your post"
-msgstr ""
-
-# aardwolf-templates/src/home.rs:50
-msgid "What's on your mind?"
-msgstr ""
-
-# aardwolf-templates/src/home.rs:55
-msgid "Post cannot be empty"
-msgstr ""
-
-# aardwolf-templates/src/home.rs:80
-msgid "Content Warning"
-msgstr ""
-
-# aardwolf-templates/src/home.rs:82
-msgid "mh, nsfw, etc."
 msgstr ""
 
 # aardwolf-templates/src/sign_in.rs:31
@@ -119,32 +147,4 @@ msgstr ""
 
 # aardwolf-templates/src/sign_up.rs:77
 msgid "Password confirmation must match password"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:84
-msgid "Automatically accept new followers"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:88
-msgid "Automatically reject new followers"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:92
-msgid "Manually review new followers"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:104
-msgid "Visible to everyone"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:108
-msgid "Visible to followers"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:112
-msgid "Visible to mutuals"
-msgstr ""
-
-# aardwolf-templates/src/first_login.rs:116
-msgid "Only visible to mentioned users"
 msgstr ""
