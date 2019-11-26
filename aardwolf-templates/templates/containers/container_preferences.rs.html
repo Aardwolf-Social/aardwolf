@@ -1,16 +1,7 @@
-<!-- ########################## /DEMO PURPOSES ONLY ########################## -->
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Aardwolf Social | Homepage Demo</title>
-  <link rel="stylesheet" href="../../web/css/fork-awesome-1.1.7/css/fork-awesome.min.css">
-  <link rel="stylesheet" href="../../web/css/bulma-0.7.5/css/bulma.min.css">
-  <link rel="stylesheet" href="../../web/css/base.css">
-  <link rel="stylesheet" href="../../web/css/scratchpad.css">
-  <!-- Component styles -->
-  <link rel="stylesheet" href="../../web/css/components/notificationBox.css">
-</head>
-<!-- ########################## /DEMO PURPOSES ONLY ########################## -->
+@use gettext::Catalog;
+@use gettext_macros::i18n;
+
+@(catalog: &Catalog)
 
 <section class="section">
     <div class="container">
@@ -18,7 +9,7 @@
         <!-- Begin Profile Section -->
         <div class="container">
 
-            <h2 class="title is-2">{{ "Preferences" | _ }}</h2>
+            <h2 class="title is-2">@i18n!(catalog, "Preferences")</h2>
 
             <hr />
 
@@ -28,19 +19,19 @@
 
             <nav class="level">
                 <p class="level-item has-text-centered">
-                    <strong>{{ "Jump To:" | _ }}</strong>
+                    <strong>@i18n!(catalog, "Jump To:")</strong>
                 </p>
                 <p class="level-item has-text-centered">
-                    <a class="link is-info">{{ "LANGUAGE" | _ }}</a>
+                    <a class="link is-info">@i18n!(catalog, "LANGUAGE")</a>
                 </p>
                 <p class="level-item has-text-centered">
-                    <a class="link is-info">{{ "POST PRIVACY" | _}}</a>
+                    <a class="link is-info">@i18n!(catalog, "POST PRIVACY")</a>
                 </p>
                 <p class="level-item has-text-centered">
-                    <a class="link is-info">{{ "SEARCH PRIVACY" | _}}</a>
+                    <a class="link is-info">@i18n!(catalog, "SEARCH PRIVACY")</a>
                 </p>
                 <p class="level-item has-text-centered">
-                    <a class="link is-info">{{ "INTERFACE" | _}}</a>
+                    <a class="link is-info">@i18n!(catalog, "INTERFACE")</a>
                 </p>
             </nav>
         </div>
@@ -57,7 +48,7 @@
 
             <nav class="level">
                 <p class="level-item has-text-left">
-                    <strong>{{ "LANGUAGE" | _ }}</strong>
+                    <strong>@i18n!(catalog, "LANGUAGE")</strong>
                 </p>
                 <p class="level-item has-text-right">
                     <a class="is-right" href="#">Top</a>
@@ -75,7 +66,7 @@
                         <div class="dropdown">
                             <div class="dropdown-trigger">
                                 <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
-                                    <span>{{ "Language" | _ }}</span>
+                                    <span>@i18n!(catalog, "Language")</span>
                                     <span class="icon is-small">
                                         <i class="fa fa-angle-down" aria-hidden="true"></i>
                                     </span>
@@ -120,7 +111,7 @@
                     <div class="dropdown">
                         <div class="dropdown-trigger">
                             <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
-                                <span>{{ "Language" | _ }}</span>
+                                <span>@i18n!(catalog, "Language")</span>
                                 <span class="icon is-small">
                                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                                 </span>
@@ -280,7 +271,7 @@
         <div class="container">
             <nav class="level">
                 <p class="level-item has-text-left">
-                    <strong>{{ "POST PRIVACY" | _ }}</strong>
+                    <strong>@i18n!(catalog, "POST PRIVACY")</strong>
                 </p>
                 <p class="level-item has-text-right">
                     <a class="is-right" href="#">Top</a>
@@ -353,7 +344,7 @@
             <!-- Search Privacy Container -->
             <nav class="level">
                 <p class="level-item has-text-left">
-                    <strong>{{ "SEARCH PRIVACY" | _ }}</strong>
+                    <strong>@i18n!(catalog, "SEARCH PRIVACY")</strong>
                 </p>
                 <p class="level-item has-text-right">
                     <a class="is-right" href="#">Top</a>
@@ -499,7 +490,7 @@
             <!--  Interface Preferences -->
             <nav class="level">
                 <p class="level-item has-text-left">
-                    <strong>{{ "INTERFACE" | _ }}</strong>
+                    <strong>@i18n!(catalog, "INTERFACE")</strong>
                 </p>
                 <p class="level-item has-text-right">
                     <a class="is-right" href="#">Top</a>
@@ -515,7 +506,7 @@
                         <div class="dropdown">
                             <div class="dropdown-trigger">
                                 <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
-                                    <span>{{ "Language" | _ }}</span>
+                                    <span>@i18n!(catalog, "Language")</span>
                                     <span class="icon is-small">
                                         <i class="fa fa-angle-down" aria-hidden="true"></i>
                                     </span>
@@ -559,8 +550,8 @@
                         <div class="dropdown">
                             <div class="dropdown-trigger">
                                 <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
-                                    <span>{{ "Language" | _ }}</span>
-                                    <span class="icon is-small">
+                                    <span>@i18n!(catalog, "Language")</span>
+      )                             <span class="icon is-small">
                                         <i class="fa fa-angle-down" aria-hidden="true"></i>
                                     </span>
                                 </button>
