@@ -5,6 +5,9 @@ use config::{Config, ConfigError};
 use failure::{Backtrace, Context, Error, Fail, ResultExt};
 
 pub fn configure(app: App) -> Result<Config, Error> {
+    // Order of how configuration values are set:
+    // cli arguments > envrionment variables > config file > default values
+
     // Set defaults
     let mut config = Config::default();
     config
@@ -56,6 +59,68 @@ pub fn configure(app: App) -> Result<Config, Error> {
             .set("log_file", l)
             .context(ErrorKind::ConfigImmutable)?;
     }
+
+    // Apply envrionment variable overrides
+    // TODO: Is there a better way to handle this?
+    if let Ok(v) = env::var("AARDWOLD_HOST") {
+        config
+            .set("Web.Listen.address", v)
+            .context(ErrorKind::ConfigImmutable)?;
+    }
+
+    if let Ok(v) = env::var("ARRDWOLD_PORT") {
+        config
+            .set("Web.Listen.port", v)
+            .context(ErrorKind::ConfigImmutable)?;
+    }
+
+    if let Ok(v) = env::var("AARDWOLD_DB_HOST") {
+        config
+            .set("Database.host", v)
+            .context(ErrorKind::ConfigImmutable)?;
+    }
+
+    if let Ok(v) = env::var("AARDWOLD_DB_PORT") {
+        config
+            .set("Database.port", v)
+            .context(ErrorKind::ConfigImmutable)?;
+    }
+
+    if let Ok(v) = env::var("AARDWOLD_DB_USER") {
+        config
+            .set("Database.username", v)
+            .context(ErrorKind::ConfigImmutable)?;
+    }
+
+    if let Ok(v) = env::var("AARDWOLD_DB_PASS") {
+        config
+            .set("Database.password", v)
+            .context(ErrorKind::ConfigImmutable)?;
+    }
+
+    // Remove the need for a .env file to avoid defining env vars twice.
+    // TODO: This is really ugly, please improve.
+    env::set_var(
+        "DATABASE_URL",
+        format!(
+            "postgres://{}:{}&{}:{}/aardwolf_models",
+            config.get_str("Database.username").unwrap_or(String::new()),
+            config.get_str("Database.password").unwrap_or(String::new()),
+            config.get_str("Database.host").unwrap_or(String::new()),
+            config.get_str("Database.port").unwrap_or(String::new()),
+        ),
+    );
+
+    env::set_var(
+        "DATABASE_URL_TEST",
+        format!(
+            "postgres://{}:{}&{}:{}/aardwolf_models_test",
+            config.get_str("Database.username").unwrap_or(String::new()),
+            config.get_str("Database.password").unwrap_or(String::new()),
+            config.get_str("Database.host").unwrap_or(String::new()),
+            config.get_str("Database.port").unwrap_or(String::new()),
+        ),
+    );
 
     Ok(config)
 }
