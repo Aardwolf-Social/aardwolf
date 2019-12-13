@@ -62,7 +62,7 @@ pub fn configure(app: App) -> Result<Config, Error> {
 
     // Apply environment variable overrides
     // TODO: Is there a better way to handle this?
-    if let Ok(v) = env::var("AARDWOLD_HOST") {
+    if let Ok(v) = env::var("AARDWOLF_HOST") {
         config
             .set("Web.Listen.address", v)
             .context(ErrorKind::ConfigImmutable)?;
@@ -74,25 +74,25 @@ pub fn configure(app: App) -> Result<Config, Error> {
             .context(ErrorKind::ConfigImmutable)?;
     }
 
-    if let Ok(v) = env::var("AARDWOLD_DB_HOST") {
+    if let Ok(v) = env::var("AARDWOLF_DB_HOST") {
         config
             .set("Database.host", v)
             .context(ErrorKind::ConfigImmutable)?;
     }
 
-    if let Ok(v) = env::var("AARDWOLD_DB_PORT") {
+    if let Ok(v) = env::var("AARDWOLF_DB_PORT") {
         config
             .set("Database.port", v)
             .context(ErrorKind::ConfigImmutable)?;
     }
 
-    if let Ok(v) = env::var("AARDWOLD_DB_USER") {
+    if let Ok(v) = env::var("AARDWOLF_DB_USER") {
         config
             .set("Database.username", v)
             .context(ErrorKind::ConfigImmutable)?;
     }
 
-    if let Ok(v) = env::var("AARDWOLD_DB_PASS") {
+    if let Ok(v) = env::var("AARDWOLF_DB_PASS") {
         config
             .set("Database.password", v)
             .context(ErrorKind::ConfigImmutable)?;
