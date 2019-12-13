@@ -6,7 +6,7 @@ use failure::{Backtrace, Context, Error, Fail, ResultExt};
 
 pub fn configure(app: App) -> Result<Config, Error> {
     // Order of how configuration values are set:
-    // cli arguments > envrionment variables > config file > default values
+    // cli arguments > environment variables > config file > default values
 
     // Set defaults
     let mut config = Config::default();
@@ -60,7 +60,7 @@ pub fn configure(app: App) -> Result<Config, Error> {
             .context(ErrorKind::ConfigImmutable)?;
     }
 
-    // Apply envrionment variable overrides
+    // Apply environment variable overrides
     // TODO: Is there a better way to handle this?
     if let Ok(v) = env::var("AARDWOLD_HOST") {
         config
