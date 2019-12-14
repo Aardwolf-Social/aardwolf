@@ -1,7 +1,7 @@
 use std::{env, fmt};
 
 use clap::App;
-use config::{Config, ConfigError};
+use config::{Config, ConfigError, Environment};
 use failure::{Backtrace, Context, Error, Fail, ResultExt};
 
 pub fn configure(app: App) -> Result<Config, Error> {
@@ -61,42 +61,9 @@ pub fn configure(app: App) -> Result<Config, Error> {
     }
 
     // Apply environment variable overrides
-    // TODO: Is there a better way to handle this?
-    if let Ok(v) = env::var("AARDWOLF_HOST") {
-        config
-            .set("Web.Listen.address", v)
-            .context(ErrorKind::ConfigImmutable)?;
-    }
+    let env_vars = Environment::with_prefix("AARDWOLF").separator("_").ignore_empty(true);
+    config.merge(env_vars).context(ErrorKind::ConfigImmutable)?;
 
-    if let Ok(v) = env::var("ARRDWOLD_PORT") {
-        config
-            .set("Web.Listen.port", v)
-            .context(ErrorKind::ConfigImmutable)?;
-    }
-
-    if let Ok(v) = env::var("AARDWOLF_DB_HOST") {
-        config
-            .set("Database.host", v)
-            .context(ErrorKind::ConfigImmutable)?;
-    }
-
-    if let Ok(v) = env::var("AARDWOLF_DB_PORT") {
-        config
-            .set("Database.port", v)
-            .context(ErrorKind::ConfigImmutable)?;
-    }
-
-    if let Ok(v) = env::var("AARDWOLF_DB_USER") {
-        config
-            .set("Database.username", v)
-            .context(ErrorKind::ConfigImmutable)?;
-    }
-
-    if let Ok(v) = env::var("AARDWOLF_DB_PASS") {
-        config
-            .set("Database.password", v)
-            .context(ErrorKind::ConfigImmutable)?;
-    }
 
     // Remove the need for a .env file to avoid defining env vars twice.
     // TODO: This is really ugly, please improve.
