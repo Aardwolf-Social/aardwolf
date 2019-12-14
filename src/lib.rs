@@ -61,23 +61,15 @@ pub fn configure(app: App) -> Result<Config, Error> {
     }
 
     // Apply environment variable overrides
-    let env_vars = Environment::with_prefix("AARDWOLF").separator("_").ignore_empty(true);
+    let env_vars = Environment::with_prefix("AARDWOLF")
+        .separator("_")
+        .ignore_empty(true);
     config.merge(env_vars).context(ErrorKind::ConfigImmutable)?;
 
-
     // Remove the need for a .env file to avoid defining env vars twice.
-    // TODO: This is really ugly, please improve.
-    env::set_var(
-        "DATABASE_URL",
-        format!(
-            "postgres://{}:{}&{}:{}/aardwolf_models",
-            config.get_str("Database.username").unwrap_or(String::new()),
-            config.get_str("Database.password").unwrap_or(String::new()),
-            config.get_str("Database.host").unwrap_or(String::new()),
-            config.get_str("Database.port").unwrap_or(String::new()),
-        ),
-    );
+    env::set_var("DATABASE_URL", db_conn_string(&config)?);
 
+    // TODO: This is really ugly, please improve.
     env::set_var(
         "DATABASE_URL_TEST",
         format!(
