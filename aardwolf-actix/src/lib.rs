@@ -163,8 +163,8 @@ pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
 
     let listen_address = format!(
         "{}:{}",
-        config.get_str("Web.Listen.address")?,
-        config.get_str("Web.Listen.port")?
+        config.get_str("Web.address")?,
+        config.get_str("Web.port")?
     );
 
     let url_generator = UrlGenerator {

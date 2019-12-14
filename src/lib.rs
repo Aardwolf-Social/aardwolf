@@ -17,10 +17,10 @@ pub fn configure(app: App) -> Result<Config, Error> {
         .set_default::<&str>("log_file", "_CONSOLE_")
         .context(ErrorKind::ConfigImmutable)?;
     config
-        .set_default::<&str>("Web.Listen.address", "127.0.0.1")
+        .set_default::<&str>("Web.address", "127.0.0.1")
         .context(ErrorKind::ConfigImmutable)?;
     config
-        .set_default("Web.Listen.port", 7878)
+        .set_default("Web.port", 7878)
         .context(ErrorKind::ConfigImmutable)?;
 
     // Parse arguments
