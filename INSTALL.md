@@ -54,8 +54,8 @@ toolchain version.
 
 __NOTE: Version pinning as of Nov/13/2018__
 
-The master branch has been tested with `rustc 1.31.0-nightly (e7f5d4805 2018-10-18)`. 
-This version is pinned the nightly version is pinned to `nightly-2018-10-12` (see [`rust_toolchain`](rust_toolchain)). 
+The master branch has been tested with `rustc 1.31.0-nightly (e7f5d4805 2018-10-18)`.
+This version is pinned the nightly version is pinned to `nightly-2018-10-12` (see [`rust_toolchain`](rust_toolchain)).
 To Install this specific version of nightly, run
 
     $ rustup install nightly-2018-10-12
@@ -73,7 +73,19 @@ To verify that the version in the project directory is what we just set, in the 
 Currently, Aardwolf expects `aardwolf.toml` to be in the root of the project
 directory. To get started, copy
 [`config/example.toml`](config/example.toml) to
-`./aardwolf.toml` and adjust the values accordingly. 
+`./aardwolf.toml` and adjust the values accordingly.
+
+You may also override this configuration file using the following environment variables (useful for some deployments such as containers):
+
+| Environment Variable       | Example Value    | Description |
+| :------------------------- | :--------------- | :---------- |
+| AARDWOLF_INSTANCE_DOMAIN   | `yourdomain.tld` | Defines the domain name which the Aardwolf instance is hosted at. This is used for url writing. |
+| AARDWOLF_WEB_HOST          | `127.0.0.1`      | The network address the server should listen on. The Docker image defaults to `0.0.0.0`.
+| AARDWOLF_WEB_PORT          | `8080`           | Defines the port for Aardwolf to listen on. |
+| AARDWOLF_DATABASE_HOST     | `127.0.0.1`      | The ip address or hostname of the PostgreSQL database to use. |
+| AARDWOLF_DATABASE_USERNAME | `aardwolf`       | The username for the database. |
+| AARDWOLF_DATABASE_PASSWORD | `p4ssw0rd`       | The password for the database. |
+
 
 ## Setting up the database
 
@@ -88,14 +100,14 @@ following command to set up the aardwolf database:
 
 ## Running the server
 
-Finally, we get to actually run the darn thing! 
+Finally, we get to actually run the darn thing!
 To run the server with Actix.rs as the backend:
-    
+
     $ cargo run --bin aardwolf-server
 
 The console output should show you `Updating [lang]` where `[lang]` is the two character string for each i18n language file in the /po directory. There will also be one `....done` for each.  At this time you will also want to watch the /aardwolf.log because this is where the status updates will show.
 
-Wait until you see *“Rocket has launched from http://localhost:[port]“* in the `aardwolf.log`. 
+Wait until you see *“Rocket has launched from http://localhost:[port]“* in the `aardwolf.log`.
 Now you’re ready to go!
 
 __NOTE: Build notes__
