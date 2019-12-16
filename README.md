@@ -56,7 +56,7 @@ If you think you can help in any of the areas listed above (and we bet you can) 
 Please note that it's very important to us that we maintain a positive and supportive environment for everyone who wants to participate. When you join us we ask that you follow our [code of conduct](/CODE_OF_CONDUCT.md) in all interactions both on and offline.
 
 ### Contact Us
-* Chat Room: [#aardwolf-discussion:matrix.org](https://riot.im/app/#/room/#aardwolf-discussion:matrix.org)
+* Chat Room: Follow the link to choose your connection method :) [#aardwolf-discussion:matrix.org](https://matrix.to/#/#aardwolf-discussion:matrix.org)
 * Mastodon: [@aardwolf@glitch.social](https://glitch.social/@aardwolf).
 * Discussion Forum: [WeAreSocial.tech](http://wearesocial.tech/) (you can login with your GitHub account)
 * Mailing List: [mailing list](https://lists.riseup.net/www/info/aardwolf-development)
