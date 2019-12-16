@@ -69,18 +69,6 @@ pub fn configure(app: App) -> Result<Config, Error> {
     // Remove the need for a .env file to avoid defining env vars twice.
     env::set_var("DATABASE_URL", db_conn_string(&config)?);
 
-    // TODO: This is really ugly, please improve.
-    env::set_var(
-        "DATABASE_URL_TEST",
-        format!(
-            "postgres://{}:{}&{}:{}/aardwolf_models_test",
-            config.get_str("Database.username").unwrap_or(String::new()),
-            config.get_str("Database.password").unwrap_or(String::new()),
-            config.get_str("Database.host").unwrap_or(String::new()),
-            config.get_str("Database.port").unwrap_or(String::new()),
-        ),
-    );
-
     Ok(config)
 }
 
