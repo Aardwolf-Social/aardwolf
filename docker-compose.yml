@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: aardwolf
+      POSTGRES_PASSWORD: password
+
+  app:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - 8080:8080
+    environment:
+      AARDWOLF_DATABASE_HOST: db
+      AARDWOLF_DATABASE_USERNAME: aardwolf
+      AARDWOLF_DATABASE_PASSWORD: password
