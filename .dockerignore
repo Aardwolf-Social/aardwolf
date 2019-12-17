@@ -1,0 +1,14 @@
+# Ignore tests
+tests
+
+# Ignore git
+.git
+.gitignore
+
+# Ignore prebuilt
+node_modules
+target
+
+# Ignore docs
+*.md
+!README.md
