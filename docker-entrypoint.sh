@@ -20,6 +20,9 @@ if [[ -z $AARDWOLF_DATABASE_HOST ]]; then
   return 1
 fi
 
+# Hack to wait for postgres to start
+sleep 10
+
 # Run migrations
 aardwolf-setup
 
