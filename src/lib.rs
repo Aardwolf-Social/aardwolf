@@ -14,7 +14,7 @@ pub fn configure(app: App) -> Result<Config, Error> {
         .set_default::<&str>("cfg_file", concat!(env!("CARGO_PKG_NAME"), ".toml"))
         .context(ErrorKind::ConfigImmutable)?;
     config
-        .set_default::<&str>("log_file", "_CONSOLE_")
+        .set_default::<&str>("Log.file", "_CONSOLE_")
         .context(ErrorKind::ConfigImmutable)?;
     config
         .set_default::<&str>("Web.address", "127.0.0.1")
@@ -22,9 +22,6 @@ pub fn configure(app: App) -> Result<Config, Error> {
     config
         .set_default("Web.port", 7878)
         .context(ErrorKind::ConfigImmutable)?;
-
-    // Parse arguments
-    let args = app.get_matches();
 
     // Determine config file
     // TODO: Is there a better way to handle this?
@@ -34,10 +31,13 @@ pub fn configure(app: App) -> Result<Config, Error> {
             .context(ErrorKind::ConfigImmutable)?;
     }
 
+    // Parse arguments
+    let args = app.get_matches();
+
     if let Some(c) = args.value_of("config") {
         config
-            .set("cfg_file", c)
-            .context(ErrorKind::ConfigImmutable)?;
+        .set("cfg_file", c)
+        .context(ErrorKind::ConfigImmutable)?;
     }
 
     // Merge config file and apply over-rides
@@ -47,19 +47,6 @@ pub fn configure(app: App) -> Result<Config, Error> {
     let cfg_file = config::File::with_name(&cfg_file_string);
     config.merge(cfg_file).context(ErrorKind::ConfigImmutable)?;
 
-    //  TODO: Is there a better way to handle this?
-    if let Ok(l) = env::var("AARDWOLF_LOG") {
-        config
-            .set("log_file", l)
-            .context(ErrorKind::ConfigImmutable)?;
-    }
-
-    if let Some(l) = args.value_of("log") {
-        config
-            .set("log_file", l)
-            .context(ErrorKind::ConfigImmutable)?;
-    }
-
     // Apply environment variable overrides
     let env_vars = Environment::with_prefix("AARDWOLF")
         .separator("_")
@@ -68,6 +55,12 @@ pub fn configure(app: App) -> Result<Config, Error> {
 
     // Remove the need for a .env file to avoid defining env vars twice.
     env::set_var("DATABASE_URL", db_conn_string(&config)?);
+
+    if let Some(l) = args.value_of("log") {
+        config
+        .set("Log.file", l)
+        .context(ErrorKind::ConfigImmutable)?;
+    }
 
     Ok(config)
 }
