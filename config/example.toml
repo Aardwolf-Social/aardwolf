@@ -59,7 +59,7 @@ stylesheets = "web/stylesheets"
 [Templates]
 # Templates - the directories where UI templates are stored
 
-dir = "./templates/**/*"
+dir = "./aardwolf-templates/templates/**/*"
 
 [Log]
 # Log - This section describes how logging should be handled in the application
