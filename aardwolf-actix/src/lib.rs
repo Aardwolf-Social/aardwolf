@@ -108,7 +108,6 @@ fn db_pool(database_url: &str) -> Result<Pool<ConnectionManager<PgConnection>>, 
     Ok(pool)
 }
 
-#[cfg(debug_assertions)]
 mod assets {
     use std::error::Error;
 
@@ -172,7 +171,6 @@ pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
         https: config.get_bool("Instance.https")?,
     };
 
-    #[cfg(debug_assertions)]
     let assets = assets::Assets::from_config(&config)?;
 
     HttpServer::new(move || {
