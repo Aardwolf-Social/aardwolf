@@ -47,6 +47,9 @@ password = "p4ssw0rd"
 #
 # Database.database - Which database on the server holds Aardwolf's information.
 database = "aardwolf"
+#
+# Database.migrations - Path to where migrations can be found
+migrations = "aardwolf-models/migrations"
 
 # Assets - This is where static files are stored for running in development mode
 [Assets]

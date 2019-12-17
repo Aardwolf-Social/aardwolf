@@ -43,7 +43,11 @@ fn main() {
     let output = Command::new("diesel")
         .arg("setup")
         .arg("--migration-dir")
-        .arg("aardwolf-models/migrations")
+        .arg(
+            config
+                .get_str("Database.migrations")
+                .unwrap_or("aarwolf_models/migrations".to_string()),
+        )
         .env("DATABASE_URL", &db_url)
         .output();
     check_out(&output);
