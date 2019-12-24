@@ -1,15 +1,37 @@
 # Installation instructions
 
-Theoretically, Aardwolf should run anywhere that Rust and PostgreSQL
+Theoretically, Aardwolf should run anywhere that Rust and PostgreSQL (or Docker)
 run. At the moment it has only been tested on linux, OSX, and Windows 10.
 
 > NOTE: These instructions may help in installing a production version, but are
 intended for developers to be able to build and test their changes. If in doubt,
 seek out documentation from your distribution package or from the [`doc`](doc) folder.
 
-## Installing Requirements
+## Docker Deployment
 
-### Installing PostgreSQL
+Deploying with Docker is the easiest way to get Aardwolf running.
+Assuming that you already have docker and docker-compose installed,
+(if not then you can them [here](https://docs.docker.com/) and
+[here](https://docs.docker.com/compose/install/))
+all you need to do is clone the repo:
+
+    $ git clone https://github.com/aardwolf-social/aardwolf
+    $ cd aardwolf
+
+Configure the included `docker-compose.yml` to your liking.
+(see the environment variable table in [Configuring the server](#Configuring-the-server) for
+more information)
+
+Then deploy:
+
+    $ docker-compose up
+
+
+## Manual Deployment
+
+### Installing Requirements
+
+#### Installing PostgreSQL
 In order to run the Aardwolf backend, you will need to have access to a
 [PostgreSQL](https://www.postgresql.org/) database. There are a few options for doing this, but for
 this guide we’re going to assume you are running the database on your
@@ -20,7 +42,7 @@ Full details can be found here:
 - [INSTALL-POSTGRES.md](/doc/INSTALL-POSTGRES.md)
 - [SETUP-POSTGRES.md](/doc/SETUP-POSTGRES.md)
 
-### Installing Rust Environment
+#### Installing Rust Environment
 
 Next, you’ll need to have the [Rust](https://rust-lang.org/) toolchain
 installed. The best way to do this is to install
@@ -30,7 +52,7 @@ Full details can be found here:
 
 - [INSTALL-RUST.md](/doc/INSTALL-RUST.md)
 
-## Getting the source
+### Getting the source
 
 To get the source, use `git` to checkout this repo:
 
@@ -40,7 +62,7 @@ Then, `cd` into the source directory
 
     $ cd aardwolf
 
-## Setting the Rust toolchain version
+### Setting the Rust toolchain version
 
 We could continue to use the `+nightly` feature whenever we run a
 `cargo` command, but why do the extra typing? Let’s set up a `rustup`
@@ -68,7 +90,7 @@ To verify that the version in the project directory is what we just set, in the 
 
     $ rustup show
 
-## Configuring the server
+### Configuring the server
 
 Currently, Aardwolf expects `aardwolf.toml` to be in the root of the project
 directory. To get started, copy
@@ -87,7 +109,7 @@ You may also override this configuration file using the following environment va
 | AARDWOLF_DATABASE_PASSWORD | `p4ssw0rd`       | The password for the database. |
 
 
-## Setting up the database
+### Setting up the database
 
 Change to the aardwolf-server directory
 
@@ -98,7 +120,7 @@ following command to set up the aardwolf database:
 
     $ cargo run --bin setup
 
-## Running the server
+### Running the server
 
 Finally, we get to actually run the darn thing!
 To run the server with Actix.rs as the backend:

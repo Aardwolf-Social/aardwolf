@@ -14,6 +14,7 @@ services:
     ports:
       - 8080:8080
     environment:
+      AARDWOLF_INSTANCE_DOMAIN: localhost
       AARDWOLF_DATABASE_HOST: db
       AARDWOLF_DATABASE_USERNAME: aardwolf
       AARDWOLF_DATABASE_PASSWORD: password
