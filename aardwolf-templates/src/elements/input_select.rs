@@ -2,7 +2,7 @@ use aardwolf_models::sql_types::{FollowPolicy, PostVisibility};
 use gettext::Catalog;
 use gettext_macros::i18n;
 
-pub struct SelectInput<'a> {
+pub struct InputSelect<'a> {
     pub(crate) name: &'a str,
     pub(crate) label: String,
     pub(crate) selected: String,
@@ -10,7 +10,7 @@ pub struct SelectInput<'a> {
     pub(crate) error: Option<String>,
 }
 
-impl<'a> SelectInput<'a> {
+impl<'a> InputSelect<'a> {
     pub(crate) fn follow_policy_options(catalog: &Catalog) -> Vec<SelectOption> {
         vec![
             SelectOption {
