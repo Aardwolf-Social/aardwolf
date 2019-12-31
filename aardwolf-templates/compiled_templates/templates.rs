@@ -2,33 +2,33 @@ pub mod templates {
 use std::io::{self, Write};
 use std::fmt::Display;
 
-mod first_login;
-pub use self::first_login::first_login;
+mod template_first_login;
+pub use self::template_first_login::first_login;
 
 pub mod error;
 
 pub mod elements;
 
-mod sign_up;
-pub use self::sign_up::sign_up;
+mod template_sign_up;
+pub use self::template_sign_up::sign_up;
 
 pub mod asides;
 
 pub mod home;
 
-mod home_base;
-pub use self::home_base::home_base;
+mod template_base;
+pub use self::template_base::base;
 
-mod head;
-pub use self::head::head;
+mod template_footer;
+pub use self::template_footer::footer;
 
-mod footer;
-pub use self::footer::footer;
+mod template_html_head;
+pub use self::template_html_head::html_head;
 
 pub mod containers;
 
-mod sign_in;
-pub use self::sign_in::sign_in;
+mod template_sign_in;
+pub use self::template_sign_in::sign_in;
 
 pub mod posts;
 
@@ -112,4 +112,3 @@ impl<'a> ToHtmlEscapingWriter<'a> {
 }
 
 }
-

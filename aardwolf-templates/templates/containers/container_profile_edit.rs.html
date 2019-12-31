@@ -1,5 +1,5 @@
 @use gettext::Catalog;
-@use gettext macros::i18n;
+@use gettext_macros::i18n;
 
 @(catalog: &Catalog)
 
@@ -8,11 +8,11 @@
     <div class="container">
 
         <title>@i18n!(catalog, "profile title")</title>
-        
+
         <!-- section title -->
         <h1 class="title">@i18n!(catalog, "profile title")</h1>
         <h2 class="subtitle">@i18n!(catalog, "profile sub title")</h2>
-        
+
         <!-- Profile display name -->
 		<div class="field box">
 		  <label class="label">@i18n!(catalog, "profile display name")</label>
@@ -30,7 +30,7 @@
 		  </div>
 		  <p>500 @i18n!(catalog, "profile char remaining")</p><!-- temporary placeholder -->
 		</div>
-             
+
         <!-- Profile Avatar -->
 		<div class="box">
 		  <label class="label">@i18n!(catalog, "profile avatar upload")</label>
@@ -38,7 +38,7 @@
 		  <img src="https://bulma.io/images/placeholders/128x128.png">
 		</figure>
 		<br />
-		
+
 		<!-- Avatar upload controls -->
 		<div class="file has-name">
 		  <label class="file-label">
@@ -58,7 +58,7 @@
 		</div>
 		<p>@i18n!(catalog, "profile avatar sub text")</p>
 		</div>
-			
+
         <!-- Profile Header -->
 		<div class="box">
 		  <label class="label">@i18n!(catalog, "profile header upload")</label>
@@ -66,7 +66,7 @@
 		  <img src="https://bulma.io/images/placeholders/128x128.png">
 		</figure>
 		<br />
-		
+
 		<!-- Header upload controls -->
 		<div class="file has-name">
 		  <label class="file-label">
@@ -86,7 +86,7 @@
 		</div>
 		<p>@i18n!(catalog, "profile header sub text")</p><!-- temporary placeholder -->
 		</div>
-                
+
     </div>
 </section>
 <!-- End Profile Section -->

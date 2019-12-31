@@ -1,0 +1,466 @@
+
+quixote@willow ~/gits/aardwolf $ cargo build --bin aardwolf-server > build-output.log
+   Compiling aardwolf v0.1.0 (/home/quixote/gits/aardwolf)
+   Compiling aardwolf-templates v0.1.0 (/home/quixote/gits/aardwolf/aardwolf-templates)
+........ done.
+....... done.
+error[E0255]: the name `notification_content` is defined multiple times
+ --> aardwolf-templates/src/../compiled_templates/templates/elements/template_notification_content.rs:9:1
+  |
+7 | use crate::{NotificationContent, templates::{base, elements::{alert, notification_content}}};
+  |                                                                      -------------------- previous import of the value `notification_content` here
+8 | 
+9 | pub fn notification_content<W>(mut out: &mut W, notification_content: &NotificationContent) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `notification_content` redefined here
+  |
+  = note: `notification_content` must be defined only once in the value namespace of this module
+help: you can use `as` to change the binding name of the import
+  |
+7 | use crate::{NotificationContent, templates::{base, elements::{alert, notification_content as other_notification_content}}};
+  |                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0432]: unresolved imports `self::input::InputCheckbox`, `self::input::InputEmail`, `self::input::InputPassword`, `self::input::InputText`, `self::input_textarea::InputTextarea`, `self::input_select::InputSelect`
+  --> aardwolf-templates/src/elements/mod.rs:8:13
+   |
+8  |     input::{InputCheckbox, InputEmail, Input, InputPassword, InputText},
+   |             ^^^^^^^^^^^^^  ^^^^^^^^^^         ^^^^^^^^^^^^^  ^^^^^^^^^ no `InputText` in `elements::input`
+   |             |              |                  |
+   |             |              |                  no `InputPassword` in `elements::input`
+   |             |              no `InputEmail` in `elements::input`
+   |             no `InputCheckbox` in `elements::input`
+9  |     input_select::{InputSelect, SelectOption},
+   |                    ^^^^^^^^^^^ no `InputSelect` in `elements::input_select`
+10 |     input_textarea::InputTextarea,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ no `InputTextarea` in `elements::input_textarea`
+
+error[E0432]: unresolved import `crate::InputSelect`
+ --> aardwolf-templates/src/home/home.rs:7:43
+  |
+7 | use crate::{Alert, AlertKind, Renderable, InputSelect, Shortcuts, InputText, InputTextarea};
+  |                                           ^^^^^^^^^^^ no `InputSelect` in the root
+
+error[E0432]: unresolved import `crate::InputSelect`
+ --> aardwolf-templates/src/home/home_feed.rs:7:43
+  |
+7 | use crate::{Alert, AlertKind, Renderable, InputSelect, Shortcuts, InputText, InputTextarea};
+  |                                           ^^^^^^^^^^^ no `InputSelect` in the root
+
+error[E0432]: unresolved import `crate::InputSelect`
+ --> aardwolf-templates/src/home/home_base.rs:7:43
+  |
+7 | use crate::{Alert, AlertKind, Renderable, InputSelect, Shortcuts, InputText, InputTextarea};
+  |                                           ^^^^^^^^^^^ no `InputSelect` in the root
+
+error[E0432]: unresolved import `crate::InputSelect`
+ --> aardwolf-templates/src/home/home_nav_top.rs:7:43
+  |
+7 | use crate::{Alert, AlertKind, Renderable, InputSelect, Shortcuts, InputText, InputTextarea};
+  |                                           ^^^^^^^^^^^ no `InputSelect` in the root
+
+error[E0432]: unresolved imports `crate::CheckboxInput`, `crate::SelectInput`, `crate::TextInput`
+ --> aardwolf-templates/src/first_login.rs:8:31
+  |
+8 | use crate::{Alert, AlertKind, CheckboxInput, Renderable, SelectInput, TextInput};
+  |                               ^^^^^^^^^^^^^              ^^^^^^^^^^^  ^^^^^^^^^ no `TextInput` in the root
+  |                               |                          |
+  |                               |                          no `SelectInput` in the root
+  |                               no `CheckboxInput` in the root
+
+error[E0432]: unresolved imports `crate::EmailInput`, `crate::PasswordInput`
+ --> aardwolf-templates/src/sign_in.rs:8:31
+  |
+8 | use crate::{Alert, AlertKind, EmailInput, PasswordInput, Renderable};
+  |                               ^^^^^^^^^^  ^^^^^^^^^^^^^ no `PasswordInput` in the root
+  |                               |
+  |                               no `EmailInput` in the root
+
+error[E0432]: unresolved imports `crate::EmailInput`, `crate::PasswordInput`
+ --> aardwolf-templates/src/sign_up.rs:8:31
+  |
+8 | use crate::{Alert, AlertKind, EmailInput, PasswordInput, Renderable};
+  |                               ^^^^^^^^^^  ^^^^^^^^^^^^^ no `PasswordInput` in the root
+  |                               |
+  |                               no `EmailInput` in the root
+
+error[E0432]: unresolved import `self::shortcuts`
+  --> aardwolf-templates/src/lib.rs:33:5
+   |
+33 |     shortcuts::Shortcuts,
+   |     ^^^^^^^^^ maybe a missing `extern crate shortcuts;`?
+
+error[E0432]: unresolved import `crate::SearchBar`
+ --> aardwolf-templates/src/../compiled_templates/templates/elements/template_search_bar.rs:6:13
+  |
+6 | use crate::{SearchBar, templates::{base}};
+  |             ^^^^^^^^^ no `SearchBar` in the root
+
+error[E0432]: unresolved import `crate::InputPasswordConfirm`
+ --> aardwolf-templates/src/../compiled_templates/templates/elements/template_input_password_confirm.rs:6:13
+  |
+6 | use crate::{InputPasswordConfirm, templates::elements::input};
+  |             ^^^^^^^^^^^^^^^^^^^^ no `InputPasswordConfirm` in the root
+
+error[E0432]: unresolved import `crate::NotificationContent`
+ --> aardwolf-templates/src/../compiled_templates/templates/elements/template_notification_content.rs:7:13
+  |
+7 | use crate::{NotificationContent, templates::{base, elements::{alert, notification_content}}};
+  |             ^^^^^^^^^^^^^^^^^^^ no `NotificationContent` in the root
+
+error[E0432]: unresolved import `crate::NotificationContent`
+ --> aardwolf-templates/src/../compiled_templates/templates/elements/template_notification_dropdown.rs:7:13
+  |
+7 | use crate::{NotificationContent, templates::{base, elements::{alert, notification_content}}};
+  |             ^^^^^^^^^^^^^^^^^^^ no `NotificationContent` in the root
+
+error[E0432]: unresolved import `crate::LangDropdown`
+ --> aardwolf-templates/src/../compiled_templates/templates/elements/template_lang_dropdown.rs:7:13
+  |
+7 | use crate::{LangDropdown, templates::{base, elements::{alert}}};
+  |             ^^^^^^^^^^^^ no `LangDropdown` in the root
+
+error[E0432]: unresolved imports `crate::Home`, `crate::templates::new_post`, `crate::templates::aside_shortcuts`
+ --> aardwolf-templates/src/../compiled_templates/templates/home/template_home.rs:6:13
+  |
+6 | use crate::{Home, templates::{base, home::{feed, home_nav_top}, new_post, aside_shortcuts}};
+  |             ^^^^                                                ^^^^^^^^  ^^^^^^^^^^^^^^^ no `aside_shortcuts` in `templates`
+  |             |                                                   |
+  |             |                                                   no `new_post` in `templates`
+  |             no `Home` in the root
+  |             help: a similar name exists in the module: `home`
+
+error[E0432]: unresolved import `crate::PostNew`
+ --> aardwolf-templates/src/../compiled_templates/templates/posts/template_post_new.rs:8:13
+  |
+8 | use crate::{PostNew, templates::elements::{alert, input_select, input_text, input_textarea}};
+  |             ^^^^^^^ no `PostNew` in the root
+
+error: cannot find macro `i18n!` in this scope
+  --> aardwolf-templates/src/../compiled_templates/templates/elements/template_input_password_confirm.rs:11:1
+   |
+11 | i18n!(catalog, "Confirm Password").to_html(&mut out)?;
+   | ^^^^
+
+error: cannot find macro `i18n!` in this scope
+  --> aardwolf-templates/src/../compiled_templates/templates/elements/template_input_password.rs:11:1
+   |
+11 | i18n!(catalog, "Password").to_html(&mut out)?;
+   | ^^^^
+
+error[E0425]: cannot find value `aardwolf` in this scope
+  --> aardwolf-templates/src/../compiled_templates/templates/elements/template_notification_content.rs:11:1
+   |
+11 | aardwolf.social.to_html(&mut out)?;
+   | ^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find value `catalog` in this scope
+  --> aardwolf-templates/src/../compiled_templates/templates/elements/template_notification_content.rs:13:7
+   |
+13 | i18n!(catalog, "Favorited your post").to_html(&mut out)?;
+   |       ^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `NotificationDropdown` in this scope
+ --> aardwolf-templates/src/../compiled_templates/templates/elements/template_notification_dropdown.rs:9:74
+  |
+9 | pub fn notification_dropdown<W>(mut out: &mut W, notification_dropdown: &NotificationDropdown) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
+  |                                                                          ^^^^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find value `catalog` in this scope
+  --> aardwolf-templates/src/../compiled_templates/templates/elements/template_notification_dropdown.rs:11:7
+   |
+11 | i18n!(catalog, "Notifications").to_html(&mut out)?;
+   |       ^^^^^^^ not found in this scope
+
+error[E0425]: cannot find value `the_don` in this scope
+  --> aardwolf-templates/src/../compiled_templates/templates/elements/template_notification_dropdown.rs:13:1
+   |
+13 | the_don.to_html(&mut out)?;
+   | ^^^^^^^ not found in this scope
+
+error[E0425]: cannot find value `catalog` in this scope
+  --> aardwolf-templates/src/../compiled_templates/templates/elements/template_notification_dropdown.rs:15:7
+   |
+15 | i18n!(catalog, "Accepted your Friend Request").to_html(&mut out)?;
+   |       ^^^^^^^ not found in this scope
+
+error[E0425]: cannot find value `mrsmith` in this scope
+  --> aardwolf-templates/src/../compiled_templates/templates/elements/template_notification_dropdown.rs:17:1
+   |
+17 | mrsmith.to_html(&mut out)?;
+   | ^^^^^^^ not found in this scope
+
+error[E0425]: cannot find value `amarquis` in this scope
+  --> aardwolf-templates/src/../compiled_templates/templates/elements/template_notification_dropdown.rs:19:1
+   |
+19 | amarquis.to_html(&mut out)?;
+   | ^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find value `bobsyouruncle` in this scope
+  --> aardwolf-templates/src/../compiled_templates/templates/elements/template_notification_dropdown.rs:21:1
+   |
+21 | bobsyouruncle.to_html(&mut out)?;
+   | ^^^^^^^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `Shortcuts` in this scope
+ --> aardwolf-templates/src/../compiled_templates/templates/asides/template_aside_shortcuts.rs:9:56
+  |
+9 | pub fn aside_shortcuts<W>(mut out: &mut W, shortcuts: &Shortcuts) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
+  |                                                        ^^^^^^^^^ not found in this scope
+help: possible candidate is found in another module, you can import it into scope
+  |
+1 | use crate::asides::aside_shortcuts::Shortcuts;
+  |
+
+error[E0425]: cannot find function `nav` in this scope
+  --> aardwolf-templates/src/../compiled_templates/templates/home/template_home.rs:11:1
+   |
+11 | nav(&mut out, home.catalog)?;
+   | ^^^ not found in this scope
+
+error[E0425]: cannot find function `shortcuts` in this scope
+  --> aardwolf-templates/src/../compiled_templates/templates/home/template_home.rs:13:1
+   |
+13 | shortcuts(&mut out, &home.shortcuts)?;
+   | ^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find value `click` in this scope
+  --> aardwolf-templates/src/../compiled_templates/templates/home/template_home_nav_top.rs:13:1
+   |
+13 | click.to_html(&mut out)?;
+   | ^^^^^ not found in this scope
+
+error[E0425]: cannot find function `head` in this scope
+  --> aardwolf-templates/src/../compiled_templates/templates/template_base.rs:11:1
+   |
+11 | head(&mut out, title)?;
+   | ^^^^ not found in this scope
+
+error[E0425]: cannot find value `new_post` in this scope
+  --> aardwolf-templates/src/../compiled_templates/templates/posts/template_post_new.rs:20:1
+   |
+20 | new_post.csrf.to_html(&mut out)?;
+   | ^^^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `Shortcuts` in this scope
+  --> aardwolf-templates/src/home/home.rs:20:27
+   |
+20 |     pub(crate) shortcuts: Shortcuts<'a>,
+   |                           ^^^^^^^^^ not found in this scope
+help: possible candidate is found in another module, you can import it into scope
+   |
+1  | use crate::asides::aside_shortcuts::Shortcuts;
+   |
+
+error[E0422]: cannot find struct, variant or union type `Shortcuts` in this scope
+  --> aardwolf-templates/src/home/home.rs:74:24
+   |
+74 |             shortcuts: Shortcuts {
+   |                        ^^^^^^^^^ not found in this scope
+help: possible candidate is found in another module, you can import it into scope
+   |
+1  | use crate::asides::aside_shortcuts::Shortcuts;
+   |
+
+error[E0423]: expected function, found module `crate::templates::home`
+  --> aardwolf-templates/src/home/home.rs:85:9
+   |
+85 |         crate::templates::home(write, self)
+   |         ^^^^^^^^^^^^^^^^^^^^^^ not a function
+help: possible better candidate is found in another module, you can import it into scope
+   |
+1  | use crate::templates::home::template_home::home;
+   |
+
+error[E0412]: cannot find type `Shortcuts` in this scope
+  --> aardwolf-templates/src/home/home_feed.rs:20:27
+   |
+20 |     pub(crate) shortcuts: Shortcuts<'a>,
+   |                           ^^^^^^^^^ not found in this scope
+help: possible candidate is found in another module, you can import it into scope
+   |
+1  | use crate::asides::aside_shortcuts::Shortcuts;
+   |
+
+error[E0422]: cannot find struct, variant or union type `Shortcuts` in this scope
+  --> aardwolf-templates/src/home/home_feed.rs:74:24
+   |
+74 |             shortcuts: Shortcuts {
+   |                        ^^^^^^^^^ not found in this scope
+help: possible candidate is found in another module, you can import it into scope
+   |
+1  | use crate::asides::aside_shortcuts::Shortcuts;
+   |
+
+error[E0423]: expected function, found module `crate::templates::home`
+  --> aardwolf-templates/src/home/home_feed.rs:85:9
+   |
+85 |         crate::templates::home(write, self)
+   |         ^^^^^^^^^^^^^^^^^^^^^^ not a function
+help: possible better candidate is found in another module, you can import it into scope
+   |
+1  | use crate::templates::home::template_home::home;
+   |
+
+error[E0412]: cannot find type `Shortcuts` in this scope
+  --> aardwolf-templates/src/home/home_base.rs:20:27
+   |
+20 |     pub(crate) shortcuts: Shortcuts<'a>,
+   |                           ^^^^^^^^^ not found in this scope
+help: possible candidate is found in another module, you can import it into scope
+   |
+1  | use crate::asides::aside_shortcuts::Shortcuts;
+   |
+
+error[E0422]: cannot find struct, variant or union type `Shortcuts` in this scope
+  --> aardwolf-templates/src/home/home_base.rs:74:24
+   |
+74 |             shortcuts: Shortcuts {
+   |                        ^^^^^^^^^ not found in this scope
+help: possible candidate is found in another module, you can import it into scope
+   |
+1  | use crate::asides::aside_shortcuts::Shortcuts;
+   |
+
+error[E0423]: expected function, found module `crate::templates::home`
+  --> aardwolf-templates/src/home/home_base.rs:85:9
+   |
+85 |         crate::templates::home(write, self)
+   |         ^^^^^^^^^^^^^^^^^^^^^^ not a function
+help: possible better candidate is found in another module, you can import it into scope
+   |
+1  | use crate::templates::home::template_home::home;
+   |
+
+error[E0412]: cannot find type `Shortcuts` in this scope
+  --> aardwolf-templates/src/home/home_nav_top.rs:20:27
+   |
+20 |     pub(crate) shortcuts: Shortcuts<'a>,
+   |                           ^^^^^^^^^ not found in this scope
+help: possible candidate is found in another module, you can import it into scope
+   |
+1  | use crate::asides::aside_shortcuts::Shortcuts;
+   |
+
+error[E0422]: cannot find struct, variant or union type `Shortcuts` in this scope
+  --> aardwolf-templates/src/home/home_nav_top.rs:74:24
+   |
+74 |             shortcuts: Shortcuts {
+   |                        ^^^^^^^^^ not found in this scope
+help: possible candidate is found in another module, you can import it into scope
+   |
+1  | use crate::asides::aside_shortcuts::Shortcuts;
+   |
+
+error[E0423]: expected function, found module `crate::templates::home`
+  --> aardwolf-templates/src/home/home_nav_top.rs:85:9
+   |
+85 |         crate::templates::home(write, self)
+   |         ^^^^^^^^^^^^^^^^^^^^^^ not a function
+help: possible better candidate is found in another module, you can import it into scope
+   |
+1  | use crate::templates::home::template_home::home;
+   |
+
+warning: unused import: `base`
+ --> aardwolf-templates/src/../compiled_templates/templates/elements/template_search_bar.rs:6:36
+  |
+6 | use crate::{SearchBar, templates::{base}};
+  |                                    ^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unused imports: `alert`, `base`, `notification_content`
+ --> aardwolf-templates/src/../compiled_templates/templates/elements/template_notification_content.rs:7:46
+  |
+7 | use crate::{NotificationContent, templates::{base, elements::{alert, notification_content}}};
+  |                                              ^^^^             ^^^^^  ^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `alert`, `base`, `notification_content`
+ --> aardwolf-templates/src/../compiled_templates/templates/elements/template_notification_dropdown.rs:7:46
+  |
+7 | use crate::{NotificationContent, templates::{base, elements::{alert, notification_content}}};
+  |                                              ^^^^             ^^^^^  ^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `gettext_macros::i18n`
+ --> aardwolf-templates/src/../compiled_templates/templates/elements/template_lang_dropdown.rs:6:5
+  |
+6 | use gettext_macros::i18n;
+  |     ^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `alert`, `base`
+ --> aardwolf-templates/src/../compiled_templates/templates/elements/template_lang_dropdown.rs:7:39
+  |
+7 | use crate::{LangDropdown, templates::{base, elements::{alert}}};
+  |                                       ^^^^             ^^^^^
+
+warning: unused import: `Shortcuts`
+ --> aardwolf-templates/src/../compiled_templates/templates/asides/template_aside_shortcuts.rs:7:13
+  |
+7 | use crate::{Shortcuts, templates::elements::icon};
+  |             ^^^^^^^^^
+
+warning: unused import: `home_nav_top`
+ --> aardwolf-templates/src/../compiled_templates/templates/home/template_home.rs:6:50
+  |
+6 | use crate::{Home, templates::{base, home::{feed, home_nav_top}, new_post, aside_shortcuts}};
+  |                                                  ^^^^^^^^^^^^
+
+warning: unused imports: `footer`, `home_nav_top`, `home`, `html_head`
+ --> aardwolf-templates/src/../compiled_templates/templates/home/template_home_base.rs:7:24
+  |
+7 | use crate::templates::{html_head, footer, home::{home_nav_top, home}};
+  |                        ^^^^^^^^^  ^^^^^^         ^^^^^^^^^^^^  ^^^^
+
+warning: unused import: `html_head`
+ --> aardwolf-templates/src/../compiled_templates/templates/template_base.rs:7:32
+  |
+7 | use crate::templates::{footer, html_head};
+  |                                ^^^^^^^^^
+
+warning: unused import: `gettext_macros::i18n`
+ --> aardwolf-templates/src/../compiled_templates/templates/containers/template_container_calendar.rs:7:5
+  |
+7 | use gettext_macros::i18n;
+  |     ^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `Shortcuts`
+ --> aardwolf-templates/src/home/home.rs:7:56
+  |
+7 | use crate::{Alert, AlertKind, Renderable, InputSelect, Shortcuts, InputText, InputTextarea};
+  |                                                        ^^^^^^^^^
+
+warning: unused import: `Shortcuts`
+ --> aardwolf-templates/src/home/home_feed.rs:7:56
+  |
+7 | use crate::{Alert, AlertKind, Renderable, InputSelect, Shortcuts, InputText, InputTextarea};
+  |                                                        ^^^^^^^^^
+
+warning: unused import: `Shortcuts`
+ --> aardwolf-templates/src/home/home_base.rs:7:56
+  |
+7 | use crate::{Alert, AlertKind, Renderable, InputSelect, Shortcuts, InputText, InputTextarea};
+  |                                                        ^^^^^^^^^
+
+warning: unused import: `Shortcuts`
+ --> aardwolf-templates/src/home/home_nav_top.rs:7:56
+  |
+7 | use crate::{Alert, AlertKind, Renderable, InputSelect, Shortcuts, InputText, InputTextarea};
+  |                                                        ^^^^^^^^^
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+  --> aardwolf-templates/src/../compiled_templates/templates/elements/template_input_checkbox.rs:12:8
+   |
+12 | if let Some(ref i) = input.icon {
+   |        ^^^^^^^^^^^ doesn't have a size known at compile-time
+   |
+   = help: the trait `std::marker::Sized` is not implemented for `str`
+   = note: to learn more, visit <https://doc.rust-lang.org/book/ch19-04-advanced-types.html#dynamically-sized-types-and-the-sized-trait>
+   = note: required by `std::prelude::v1::Some`
+
+error: aborting due to 47 previous errors
+
+Some errors have detailed explanations: E0255, E0277, E0412, E0422, E0423, E0425, E0432.
+For more information about an error, try `rustc --explain E0255`.
+error: Could not compile `aardwolf-templates`.
+
+To learn more, run the command again with --verbose.
+quixote@willow ~/gits/aardwolf $ 

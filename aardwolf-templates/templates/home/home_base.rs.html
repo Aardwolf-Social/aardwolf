@@ -1,3 +1,8 @@
+@use gettext::Catalog;
+@use crate::templates::{html_head, footer, home::{home_nav_top, home}};
+
+@(catalog: &Catalog, title: &str, content: Content)
+
 <!DOCTYPE html>
 <html>
 
@@ -25,7 +30,7 @@
 	<!-- *********************** -->
 	<!-- Right-hand Body Content -->
 	<!-- *********************** -->
-  
+
     </section><!-- /Right-column Section -->
   </div><!-- /Right-column -->
 </div><!-- /Column Content Container -->

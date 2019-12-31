@@ -1,3 +1,9 @@
+@use gettext_macros::i18n;
+
+@use crate::{NotificationContent, templates::{base, elements::{alert, notification_content}}};
+
+@(notification_content: &NotificationContent)
+
 <div class="box">
   <article class="media">
 	<div class="media-left">
@@ -12,8 +18,8 @@
 		  <br />
 		  @i18n!(catalog, "Favorited your post")
 		   <br />
-		   <small><time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time></small>	
-		   <!-- End Sample Contents -->	  
+		   <small><time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time></small>
+		   <!-- End Sample Contents -->
 	  </div>
 	</div>
   </article>

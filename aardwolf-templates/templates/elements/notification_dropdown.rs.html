@@ -1,3 +1,9 @@
+@use gettext_macros::i18n;
+
+@use crate::{NotificationContent, templates::{base, elements::{alert, notification_content}}};
+
+@(notification_dropdown: &NotificationDropdown)
+
 <!-- Top Nav Notifications Dropdown -->
 <div class="navbar-item has-dropdown is-hoverable">
 	<a class="navbar-link">@i18n!(catalog, "Notifications")</a>
@@ -12,7 +18,7 @@
 			No recent activity
 		</div>
 		-->
-		
+
 		<!-- Begin Sample notifications -->
 		<div class="box">
 			<article class="media">
@@ -49,7 +55,7 @@
 				</div>
 			</article>
 		</div>
-		
+
 		<div class="box">
 			<article class="media">
 				<div class="media-left">
@@ -67,7 +73,7 @@
 				</div>
 			</article>
 		</div>
-		
+
 		<div class="box">
 			<article class="media">
 				<div class="media-left">
