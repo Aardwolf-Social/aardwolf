@@ -7,5 +7,5 @@ pub use self::{
     alert::{Alert, AlertKind},
     input::{InputCheckbox, InputEmail, Input, InputPassword, InputText},
     input_select::{InputSelect, SelectOption},
-    input_textarea::InputTextarea,
+    input_textarea::{InputTextarea},
 };
