@@ -30,7 +30,7 @@ pub use self::{
 };
 
 use self::{
-    shortcuts::Shortcuts,
+    asides::aside_shortcuts,
     elements::{
         Alert, AlertKind, InputCheckbox, InputEmail, Input, InputPassword, InputSelect, InputText,
         InputTextarea,
