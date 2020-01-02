@@ -1,4 +1,4 @@
-pub struct TextareaInput<'a> {
+pub struct InputTextarea<'a> {
     pub(crate) name: &'a str,
     pub(crate) label: Option<String>,
     pub(crate) icon: Option<&'a str>,
