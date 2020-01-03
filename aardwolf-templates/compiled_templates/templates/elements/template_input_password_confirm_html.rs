@@ -3,7 +3,7 @@ use std::io::{self, Write};
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
 use super::{Html,ToHtml};
-use crate::{InputPasswordConfirm, templates::elements::input};
+use crate::{elements::InputPasswordConfirm, templates::elements::input};
 
 pub fn input_password_confirm_html<W>(mut out: &mut W, input_password_confirm: &InputPasswordConfirm) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
 input(&mut out, &input_password_confirm.into())?;

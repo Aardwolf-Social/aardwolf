@@ -4,7 +4,7 @@ use std::io::{self, Write};
 #[allow(unused)]
 use super::{Html,ToHtml};
 use gettext_macros::i18n;
-use crate::{NotificationContent, templates::{base, elements::{alert}}};
+use crate::templates::{base, elements::{alert, notification_content}};
 
 pub fn notification_content_html<W>(mut out: &mut W, notification_content: &NotificationContent) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
 out.write_all(b"<div class=\"box\">\r\n  <article class=\"media\">\r\n\t<div class=\"media-left\">\r\n\t  <figure>\r\n\t\t<img src=\"../web/images/default_avatar.png\" alt=\"Profile Image\" aria-hidden=\"true\">\r\n\t  </figure>\r\n\t</div>\r\n\t<div class=\"media-content\">\r\n\t  <div class=\"content\">\r\n\t\t  <!-- Begin Sample Contents -->\r\n\t\t  <strong>John Smith</strong> <small>")?;

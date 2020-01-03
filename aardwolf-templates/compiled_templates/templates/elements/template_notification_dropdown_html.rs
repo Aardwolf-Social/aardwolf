@@ -4,7 +4,7 @@ use std::io::{self, Write};
 #[allow(unused)]
 use super::{Html,ToHtml};
 use gettext_macros::i18n;
-use crate::{NotificationContent, templates::{base, elements::{alert, notification_content}}};
+use crate::templates::{base, elements::{alert, notification_dropdown}};
 
 pub fn notification_dropdown_html<W>(mut out: &mut W, notification_dropdown: &NotificationDropdown) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
 out.write_all(b"<!-- Top Nav Notifications Dropdown -->\r\n<div class=\"navbar-item has-dropdown is-hoverable\">\r\n\t<a class=\"navbar-link\">")?;

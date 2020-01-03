@@ -3,7 +3,7 @@ use std::io::{self, Write};
 #[cfg_attr(feature="cargo-clippy", allow(useless_attribute))]
 #[allow(unused)]
 use super::{Html,ToHtml};
-use crate::{Home, templates::{base, home::{feed, nav_top}, posts::{new}, asides::{shortcuts}}};
+use crate::templates::{base, home::{home, feed, nav_top}, posts::{new_post}, asides::{shortcuts}};
 
 pub fn home_html<W>(mut out: &mut W, home: &Home) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
 base(&mut out, home.catalog, "Aardwolf | Home", |mut out| {

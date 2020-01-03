@@ -148,8 +148,12 @@ msgstr ""
 msgid "Password confirmation must match password"
 msgstr ""
 
-# aardwolf-templates/src/../compiled_templates/templates/posts/template_new_html.rs:28
+# aardwolf-templates/src/../compiled_templates/templates/posts/template_new_post_html.rs:28
 msgid "Awoo!"
+msgstr ""
+
+# aardwolf-templates/src/../compiled_templates/templates/posts/template_reply_post_html.rs:28
+msgid "Wooa!"
 msgstr ""
 
 # aardwolf-templates/src/../compiled_templates/templates/template_sign_in_html.rs:38

@@ -22,6 +22,20 @@ impl<'a> From<&'a InputPassword<'a>> for Input<'a> {
     }
 }
 
+impl<'a> From<&'a InputPasswordConfirm<'a>> for Input<'a> {
+    fn from(p: &'a InputPasswordConfirm<'a>) -> Self {
+        Input {
+            kind: "password",
+            name: p.name,
+            label: Some(p.label.clone()),
+            placeholder: p.placeholder.clone(),
+            icon: Some("lock"),
+            value: "",
+            error: p.error.clone(),
+        }
+    }
+}
+
 impl<'a> From<&'a InputEmail<'a>> for Input<'a> {
     fn from(e: &'a InputEmail<'a>) -> Self {
         Input {
@@ -51,6 +65,13 @@ impl<'a> From<&'a InputText<'a>> for Input<'a> {
 }
 
 pub struct InputPassword<'a> {
+    pub(crate) name: &'a str,
+    pub(crate) label: String,
+    pub(crate) placeholder: Option<String>,
+    pub(crate) error: Option<String>,
+}
+
+pub struct InputPasswordConfirm<'a> {
     pub(crate) name: &'a str,
     pub(crate) label: String,
     pub(crate) placeholder: Option<String>,

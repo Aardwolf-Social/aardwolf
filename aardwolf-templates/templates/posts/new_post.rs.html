@@ -1,9 +1,9 @@
 @use gettext::Catalog;
 @use gettext_macros::i18n;
 
-@use crate::{PostNew, templates::elements::{alert, input_select, input_text, input_textarea}};
+@use crate::templates::{posts::{new_post}, elements::{alert, input_select, input_text, input_textarea}};
 
-@(catalog: &Catalog, username: &str, post_new: &PostNew)
+@(catalog: &Catalog, username: &str, new_post: &PostNew)
 
 <article class="media"><!-- Begin new post -->
     <figure class="media-left">
@@ -13,13 +13,13 @@
     </figure>
     <div class="media-content">
         <form method="POST" action="/posts/create">
-            @if let Some(ref a) = post_new.alert {
+            @if let Some(ref a) = new_post.alert {
                 @:alert(a)
             }
             <input type="hidden" name="csrf_token" value="@new_post.csrf">
-            @:input_textarea(&post_new.source)
-            @:input_select(&post_new.visibility)
-            @:input_text(&post_new.name)
+            @:input_textarea(&new_post.source)
+            @:input_select(&new_post.visibility)
+            @:input_text(&new_post.name)
             <button>@i18n!(catalog, "Awoo!")</button>
         </form>
     </div>
