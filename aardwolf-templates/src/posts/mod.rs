@@ -1,7 +1,7 @@
-mod post_new;
-mod post_reply;
+mod new_post;
+mod reply_post;
 
 pub use self::{
-	post_new::{},
-	post_reply::{},
+	new_post::{},
+	reply_post::{},
 };

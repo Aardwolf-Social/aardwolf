@@ -4,7 +4,7 @@ use aardwolf_types::forms::posts::{
 use gettext::Catalog;
 use gettext_macros::i18n;
 
-use crate::{Renderable, aside::{Shortcuts}, elements::{Alert, AlertKind, InputSelect, InputText, InputTextarea}};
+use crate::{Renderable, asides::{Shortcuts}, elements::{Alert, AlertKind, InputSelect, InputText, InputTextarea}};
 
 pub struct NewPost<'a> {
     pub(crate) csrf: &'a str,

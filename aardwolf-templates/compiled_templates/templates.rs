@@ -2,33 +2,51 @@ pub mod templates {
 use std::io::{self, Write};
 use std::fmt::Display;
 
-mod template_first_login;
-pub use self::template_first_login::first_login;
+mod template_first_login_html;
+pub use self::template_first_login_html::first_login_html;
+
+#[deprecated(since="0.7.4", note="please use `first_login_html` instead")]
+pub use self::first_login_html as first_login;
 
 pub mod error;
 
 pub mod elements;
 
-mod template_sign_up;
-pub use self::template_sign_up::sign_up;
+mod template_sign_up_html;
+pub use self::template_sign_up_html::sign_up_html;
+
+#[deprecated(since="0.7.4", note="please use `sign_up_html` instead")]
+pub use self::sign_up_html as sign_up;
 
 pub mod asides;
 
 pub mod home;
 
-mod template_base;
-pub use self::template_base::base;
+mod template_base_html;
+pub use self::template_base_html::base_html;
 
-mod template_footer;
-pub use self::template_footer::footer;
+#[deprecated(since="0.7.4", note="please use `base_html` instead")]
+pub use self::base_html as base;
 
-mod template_html_head;
-pub use self::template_html_head::html_head;
+mod template_footer_html;
+pub use self::template_footer_html::footer_html;
+
+#[deprecated(since="0.7.4", note="please use `footer_html` instead")]
+pub use self::footer_html as footer;
+
+mod template_html_head_html;
+pub use self::template_html_head_html::html_head_html;
+
+#[deprecated(since="0.7.4", note="please use `html_head_html` instead")]
+pub use self::html_head_html as html_head;
 
 pub mod containers;
 
-mod template_sign_in;
-pub use self::template_sign_in::sign_in;
+mod template_sign_in_html;
+pub use self::template_sign_in_html::sign_in_html;
+
+#[deprecated(since="0.7.4", note="please use `sign_in_html` instead")]
+pub use self::sign_in_html as sign_in;
 
 pub mod posts;
 

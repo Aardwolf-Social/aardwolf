@@ -6,6 +6,6 @@ use super::{Html,ToHtml};
 use crate::{SearchBar, templates::{base}};
 
 pub fn search_bar_html<W>(mut out: &mut W, search_bar: &SearchBar) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
-out.write_all(b"<div class=\"search-bar field\">\n   <p class=\"control has-icons-left has-icons-right\">\n      <input class=\"input\" type=\"text\" placeholder=\"Search\">\n      <span class=\"icon is-small is-left\">\n      \t<i class=\"fa fa-search\" aria-hidden=\"true\"></i>\n      </span>\n   </p>\n</div>\n")?;
+out.write_all(b"<div class=\"search-bar field\">\r\n   <p class=\"control has-icons-left has-icons-right\">\r\n      <input class=\"input\" type=\"text\" placeholder=\"Search\">\r\n      <span class=\"icon is-small is-left\">\r\n      \t<i class=\"fa fa-search\" aria-hidden=\"true\"></i>\r\n      </span>\r\n   </p>\r\n</div>\r\n")?;
 Ok(())
 }

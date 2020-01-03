@@ -1,7 +1,7 @@
-mod aside_settings;
-mod aside_shortcuts;
+mod settings;
+mod shortcuts;
 
 pub use self::{
-	aside_settings::{Settings},
-    aside_shortcuts::{Shortcuts},
+	settings::{Settings},
+    shortcuts::{Shortcuts},
 };

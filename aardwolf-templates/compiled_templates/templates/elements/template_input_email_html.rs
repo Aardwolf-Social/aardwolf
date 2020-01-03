@@ -7,6 +7,6 @@ use crate::{InputEmail, templates::elements::input};
 
 pub fn input_email_html<W>(mut out: &mut W, input_email: &InputEmail) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
 input(&mut out, &input_email.into())?;
-out.write_all(b"\n")?;
+out.write_all(b"\r\n")?;
 Ok(())
 }
