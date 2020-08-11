@@ -35,7 +35,7 @@
     "mini-css-extract-plugin": "^0.9.0",
     "node-sass": "^4.13.0",
     "sass-loader": "^8.0.0",
-    "serialize-javascript": ">=2.1.2",
+    "serialize-javascript": ">=3.1.0",
     "set-value": "=3.0.1",
     "style-loader": "^1.1.1",
     "webpack": "^4.41.4",
