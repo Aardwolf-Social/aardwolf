@@ -10,7 +10,7 @@ There should be a directory for all database storage (called the database cluste
 On Arch Linux this is usually `/var/run/postgresql/data`, but any directory will do.
 The postgres user must have ownership for that directory.
 
-'''
+```
 NOTE:
 The QUICKEST way to figure out where the "data" directory is located is to query PostgreSQL itself :)
 
@@ -24,8 +24,7 @@ postgres$ psql
 psql (11.9 (Debian 11.9-0+deb10u1))
 Type "help" for help.
 
-Run the command:
-'SHOW data_directory;'
+Run the command:  SHOW data_directory;
 
 postgres=# SHOW data_directory;
        data_directory        
@@ -37,9 +36,9 @@ postgres=#
 
 Should be done?
 
-'postgres=# exit;'
+postgres=# exit;
 
-'''
+```
 
 Go BACK to your normal user account, and then run this command.
 
