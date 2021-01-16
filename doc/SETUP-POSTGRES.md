@@ -14,22 +14,19 @@ The postgres user must have ownership for that directory.
 NOTE:
 The QUICKEST way to figure out where the "data" directory is located is to query PostgreSQL itself :)
 
-#--
-# Switch to the postgres user
+Switch to the postgres user
 $ su postgres
 
-#--
-# Run the psql command to enter the PostgreSQL command line
-# The following output shows the version string.  Yours may be different.
-#
+Run the psql command to enter the PostgreSQL command line
+The following output shows the version string.  Yours may be different.
+
 postgres$ psql 
 psql (11.9 (Debian 11.9-0+deb10u1))
 Type "help" for help.
 
-#--
-# Run the command:
-# SHOW data_directory;
-#
+Run the command:
+'SHOW data_directory;'
+
 postgres=# SHOW data_directory;
        data_directory        
 -----------------------------
@@ -38,10 +35,9 @@ postgres=# SHOW data_directory;
 
 postgres=# 
 
-#--
-# Should be done?
-#
-postgres=# exit;
+Should be done?
+
+'postgres=# exit;'
 
 '''
 
@@ -54,8 +50,7 @@ Go BACK to your normal user account, and then run this command.
 **The following commands need to be done as the postgres user.**
 
 Enter a shell as the postgres user
-
-    $ su postgres
+       $ su postgres
 
 Initialize the database cluster
 
