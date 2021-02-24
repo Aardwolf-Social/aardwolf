@@ -1,19 +1,28 @@
-#### Linux/OSX Instructions
+## Postgresql Official Installation 
+If you want to use the official repository for Postgresql, the following link has very good instructions for all supported operating systems.
+([https://www.postgresql.org/download/)[https://www.postgresql.org/download/]
 
-If you're on an Ubuntu-like machine, you should be able to install
+#### Linux/OSX Instructions
+**NOTE:** As of Debian 10, the OLD version of Postgresql v11 is in their repositories your safest bet is to get the *latest* from postgresql.org.
+These instructions were taken straight from their website for Debian.  Ubuntu may vary slightly.
+<br />  
+```
+If you're on an Debian-like machine, you should be able to install
 PostgreSQL like this:
 
-    $ sudo apt-get update
-    $ sudo apt-get install postgresql postgresql-contrib
+# Create the file repository configuration:
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 
-If you see an error like:
+# Import the repository signing key:
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 
-     = note: /usr/bin/ld: cannot find -lpq
-          collect2: error: ld returned 1 exit statusb
+# Update the package lists:
+sudo apt-get update
 
-Then you may need to install the libpq (PostgreSQL C-library) package as well :
-
-    $ sudo apt-get install libpq-dev
+# Install the latest version of PostgreSQL.
+# If you want a specific version, use 'postgresql-12' or similar instead of 'postgresql':
+sudo apt-get -y install postgresql libpq-dev
+```
 
 If you're on OSX and using `brew`, do
 
