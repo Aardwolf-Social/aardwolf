@@ -2,54 +2,27 @@ pub mod templates {
 use std::io::{self, Write};
 use std::fmt::Display;
 
-<<<<<<< HEAD
-mod template_first_login_html;
-pub use self::template_first_login_html::first_login_html;
-=======
-mod template_shortcuts;
-pub use self::template_shortcuts::shortcuts;
-
-mod template_head;
-pub use self::template_head::head;
-
 pub mod home;
->>>>>>> banjo/documentation-updates
 
-#[deprecated(since="0.7.4", note="please use `first_login_html` instead")]
-pub use self::first_login_html as first_login;
-
-<<<<<<< HEAD
-pub mod error;
-=======
-mod template_sign_in;
-pub use self::template_sign_in::sign_in;
-
-pub mod ui;
->>>>>>> banjo/documentation-updates
-
-pub mod elements;
-
-mod template_sign_up_html;
-pub use self::template_sign_up_html::sign_up_html;
-
-#[deprecated(since="0.7.4", note="please use `sign_up_html` instead")]
-pub use self::sign_up_html as sign_up;
-
-<<<<<<< HEAD
 pub mod asides;
-=======
-mod template_home;
-pub use self::template_home::home;
->>>>>>> banjo/documentation-updates
-
-mod template_sign_up;
-pub use self::template_sign_up::sign_up;
 
 mod template_base_html;
 pub use self::template_base_html::base_html;
 
 #[deprecated(since="0.7.4", note="please use `base_html` instead")]
 pub use self::base_html as base;
+
+pub mod containers;
+
+pub mod elements;
+
+pub mod error;
+
+mod template_first_login_html;
+pub use self::template_first_login_html::first_login_html;
+
+#[deprecated(since="0.7.4", note="please use `first_login_html` instead")]
+pub use self::first_login_html as first_login;
 
 mod template_footer_html;
 pub use self::template_footer_html::footer_html;
@@ -63,19 +36,20 @@ pub use self::template_html_head_html::html_head_html;
 #[deprecated(since="0.7.4", note="please use `html_head_html` instead")]
 pub use self::html_head_html as html_head;
 
-pub mod containers;
+pub mod posts;
 
 mod template_sign_in_html;
 pub use self::template_sign_in_html::sign_in_html;
 
-<<<<<<< HEAD
 #[deprecated(since="0.7.4", note="please use `sign_in_html` instead")]
 pub use self::sign_in_html as sign_in;
 
-pub mod posts;
+mod template_sign_up_html;
+pub use self::template_sign_up_html::sign_up_html;
 
-=======
->>>>>>> banjo/documentation-updates
+#[deprecated(since="0.7.4", note="please use `sign_up_html` instead")]
+pub use self::sign_up_html as sign_up;
+
 /// This trait should be implemented for any value that can be the
 /// result of an expression in a template.
 ///
