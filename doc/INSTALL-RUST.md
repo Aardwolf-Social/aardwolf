@@ -23,6 +23,8 @@ Then, download the [rustup installer](https://www.rust-lang.org/en-US/install.ht
 
 ### Installing Rust Toolchain
 
+***The Aardwolf packages _may_ work without the nightly rust but lets install it just to be safe***
+
 Once you have `rustup` installed, make sure you have the `nightly` rust
 toolchain installed:
 
