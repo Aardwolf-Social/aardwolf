@@ -4,7 +4,7 @@ services:
   - postgresql
 
 addons:
-  postgresql: "9.6"
+  postgresql: "13.2"
 
 before_script:
   - echo "BEFORE SCRIPT"
