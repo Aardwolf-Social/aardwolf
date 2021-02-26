@@ -1,6 +1,6 @@
 @use gettext_macros::i18n;
 
-@use crate::{SignIn, templates::{base, ui::{alert, email_input, password_input}}};
+@use crate::{SignIn, templates::{base, elements::{alert, input_email, input_password}}};
 
 @(sign_in: &SignIn)
 
@@ -14,8 +14,13 @@
 <!-- End Page Header -->
 <section class="section">
     <div class="container">
+	
+            <div class="columns is-centered">
 
-        <div class="columns is-mobile">
+				<!-- ******************************* -->
+				<!-- Begin Left-Hand Column Contents -->
+				<!-- ******************************* -->
+                <div class="column is-mobile">
             <div class="column">
                 <h1 class="title">
                     @i18n!(sign_in.catalog, "About Aardwolf")
@@ -37,12 +42,15 @@
                 }
                 <form method="POST" action="/auth/sign_in">
                     <input type="hidden" name="csrf_token" value="@sign_in.csrf">
-                    @:email_input(&sign_in.email)
-                    @:password_input(&sign_in.password)
+                    @:input_email(&sign_in.email)
+                    @:input_password(&sign_in.password)
                     <button>@i18n!(sign_in.catalog, "Log In")</button>
-                </form>
-            </div>
-        </div>
-    </div>
+				</form>
+			</div>
+			<!-- End Left-Hand Column -->
+		</div>
+	</div>
 </section>
 })
+
+

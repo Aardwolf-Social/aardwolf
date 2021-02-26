@@ -5,7 +5,7 @@ use std::io::{self, Write};
 use super::{Html,ToHtml};
 use gettext::Catalog;
 use gettext_macros::i18n;
-use crate::templates::ui::icon;
+use crate::templates::elements::icon;
 
 pub fn footer<W>(mut out: &mut W, catalog: &Catalog) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
 out.write_all(b"<footer class=\"footer\">\n  <div class=\"container\">\n    <div class=\"content has-text-centered\">\n        <a href=\"termsofservice.html\" class=\"footer_box\">")?;

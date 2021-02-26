@@ -4,7 +4,7 @@ use std::io::{self, Write};
 #[allow(unused)]
 use super::{Html,ToHtml};
 use gettext_macros::i18n;
-use crate::{SignUp, templates::{base, ui::{alert, email_input, password_input}}};
+use crate::{SignUp, templates::{base, elements::{alert, input_email, input_password}}};
 
 pub fn sign_up<W>(mut out: &mut W, sign_up: &SignUp) -> io::Result<()> where W: ?Sized, for<'a> &'a mut W: Write {
 base(&mut out, sign_up.catalog, "Aardwolf | Sign Up", |mut out| {
@@ -31,11 +31,11 @@ alert(&mut out, a)?;
 out.write_all(b"\n                    ")?;
 }
 out.write_all(b"\n\n                    ")?;
-email_input(&mut out, &sign_up.email)?;
+input_email(&mut out, &sign_up.email)?;
 out.write_all(b"\n                    ")?;
-password_input(&mut out, &sign_up.password)?;
+input_password(&mut out, &sign_up.password)?;
 out.write_all(b"\n                    ")?;
-password_input(&mut out, &sign_up.password_confirmation)?;
+input_password(&mut out, &sign_up.password_confirmation)?;
 out.write_all(b"\n                    <button>")?;
 i18n!(sign_up.catalog, "Sign Up").to_html(&mut out)?;
 out.write_all(b"</button>\n                </form>\n            </div>\n        </div>\n    </div>\n</section>\n")?;

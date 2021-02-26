@@ -1,0 +1,26 @@
+@use gettext_macros::i18n;
+
+@use crate::templates::{base, elements::{alert, notification_content}};
+
+@(notification_content: &NotificationContent)
+
+<div class="box">
+  <article class="media">
+	<div class="media-left">
+	  <figure>
+		<img src="../web/images/default_avatar.png" alt="Profile Image" aria-hidden="true">
+	  </figure>
+	</div>
+	<div class="media-content">
+	  <div class="content">
+		  <!-- Begin Sample Contents -->
+		  <strong>John Smith</strong> <small>@aardwolf.social</small>
+		  <br />
+		  @i18n!(catalog, "Favorited your post")
+		   <br />
+		   <small><time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time></small>
+		   <!-- End Sample Contents -->
+	  </div>
+	</div>
+  </article>
+</div>

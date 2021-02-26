@@ -9,27 +9,36 @@ init_i18n!("aardwolf", en, pl);
 
 include!("../compiled_templates/templates.rs");
 
-mod first_login;
+// Directories
+mod asides;
+mod containers;
+mod elements;
+mod error;
 mod home;
-mod shortcuts;
+mod posts;
+
+// Root-level files
+mod first_login;
 mod sign_in;
 mod sign_up;
-mod ui;
+
 
 pub use self::{
     first_login::FirstLogin,
-    home::{Home, NewPost},
     sign_in::SignIn,
     sign_up::SignUp,
 };
 
 use self::{
-    shortcuts::Shortcuts,
-    ui::{
-        Alert, AlertKind, CheckboxInput, EmailInput, Input, PasswordInput, SelectInput, TextInput,
-        TextareaInput,
+    asides::{
+        Settings, Shortcuts,
+        },
+    elements::{
+        Alert, AlertKind, InputCheckbox, InputEmail, Input, InputPassword, InputSelect, InputText,
+        InputTextarea,
     },
 };
+
 
 pub trait Renderable {
     fn render(&self, _: &mut dyn std::io::Write) -> std::io::Result<()>;
