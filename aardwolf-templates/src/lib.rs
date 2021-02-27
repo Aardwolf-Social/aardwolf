@@ -7,7 +7,7 @@ use gettext_macros::{compile_i18n, include_i18n, init_i18n};
 
 init_i18n!("aardwolf", en, pl);
 
-include!("../compiled_templates/templates.rs");
+include!(concat!(env!("OUT_DIR"), "/templates.rs"));
 
 mod first_login;
 mod home;
