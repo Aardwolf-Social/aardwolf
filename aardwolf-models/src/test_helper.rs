@@ -65,9 +65,7 @@ pub fn transmute_email_token(token: &EmailToken) -> Result<EmailVerificationToke
 }
 
 pub fn gen_string() -> Result<String, Error> {
-    let mut rng = OsRng::new()?;
-
-    Ok(rng.sample_iter(&Alphanumeric).take(10).collect())
+    Ok(OsRng.sample_iter(&Alphanumeric).take(10).collect())
 }
 
 pub fn gen_url() -> Result<Url, Error> {
@@ -79,11 +77,11 @@ pub fn gen_url() -> Result<Url, Error> {
 }
 
 pub fn gen_bool() -> Result<bool, Error> {
-    Ok(OsRng::new()?.gen())
+    Ok(OsRng.gen())
 }
 
 pub fn gen_datetime() -> Result<DateTime<Utc>, Error> {
-    let hours = OsRng::new()?.gen_range(0, 10000);
+    let hours = OsRng.gen_range(0, 10000);
 
     Ok(Utc::now()
         .checked_add_signed(OldDuration::hours(hours))
