@@ -26,3 +26,6 @@ path = "../aardwolf-types"
 [dependencies.aardwolf-models]
 version = "0.1"
 path = "../aardwolf-models"
+
+[dev-dependencies]
+ructe = "0.13"
