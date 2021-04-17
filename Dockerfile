@@ -18,8 +18,14 @@ RUN apk -U --no-cache add \
       bash \
       gcc \
       musl-dev \
-      rust \
-      cargo
+			curl
+
+# Install rustup
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH=/root/.cargo/bin:$PATH
+
+# Install specific rust nightly
+RUN rustup toolchain install nightly
 
 # Copy the code.
 COPY --chown=aardwolf:aardwolf . /app
@@ -35,7 +41,4 @@ EXPOSE 8080
 USER aardwolf
 
 # Set the entrypoint and default command.
-ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["mysqld_safe", "--user=mysql", "--console"]
-
-
+ENTRYPOINT ["docker-entrypoint.sh", "cargo run --bin aardwolf-server"]

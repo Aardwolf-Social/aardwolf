@@ -2,22 +2,17 @@
 set -me
 
 SCRIPT_NAME=`basename "$0"`
-AARDWOLF_SKIP_ENTRYPOINT=${AARDWOLF_SKIP_ENTRYPOINT:-false}
-
-echo "$SCRIPT_NAME: Beginning initialization..."
+AARDWOLF_SETUP_DB=${AARDWOLF_SETUP_DB:-false}
 
 case ${AARDWOLF_SKIP_ENTRYPOINT,,} in
   true|1)
-    echo "$SCRIPT_NAME: Skipping entrypoint. Starting container..."
-    exec "$@"
+		echo "$SCRIPT_NAME: Beginning initialization..."
+    exec "cargo run --bin setup"
+    echo "$SCRIPT_NAME: Database configured. Starting container..."
+		exec "$@"
     exit $?
     ;;
 esac
 
-{{ flightdeck_run_commands }}
-
-echo "$SCRIPT_NAME: Initialization complete. Starting container..."
-
+echo "$SCRIPT_NAME: Starting container..."
 exec "$@"
-
-
