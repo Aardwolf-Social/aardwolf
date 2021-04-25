@@ -1,0 +1,29 @@
+version: '3'
+services:
+  postgres:
+    image: "postgres"
+    restart: always
+    ports:
+      - "5431:5432" 
+    environment:
+      POSTGRES_USER: aardwolf
+      POSTGRES_PASSWORD: changeme
+    volumes:
+    - ./db-init.sh:/docker-entrypoint-initdb.d/db-init.sh
+
+  aardwolf:
+    image: "aardwolf"
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    environment:
+      AARDWOLF_INSTANCE_DOMAIN: aardwolf.social
+      AARDWOLF_WEB_HOST: 0.0.0.0
+      AARDWOLF_WEB_PORT: 8080
+      AARDWOLF_DATABASE_HOST: postgres
+      AARDWOLF_DATABASE_USERNAME: aardwolf
+      AARDWOLF_DATABASE_PASSWORD: changeme
+      AARDWOLF_SETUP_DB: 1

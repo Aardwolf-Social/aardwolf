@@ -3,11 +3,20 @@ set -me
 
 SCRIPT_NAME=`basename "$0"`
 AARDWOLF_SETUP_DB=${AARDWOLF_SETUP_DB:-false}
+cd app
 
-case ${AARDWOLF_SKIP_ENTRYPOINT,,} in
+echo "$SCRIPT_NAME: Setting Rust Override Nightly"
+rustup override set nightly
+
+case ${AARDWOLF_SETUP_DB,,} in
   true|1)
+		while true
+		do
+			echo "waiting"
+		done
 		echo "$SCRIPT_NAME: Beginning initialization..."
-    exec "cargo run --bin setup"
+		cargo install -f diesel_cli --no-default-features --features postgres
+    cargo run --bin setup 
     echo "$SCRIPT_NAME: Database configured. Starting container..."
 		exec "$@"
     exit $?

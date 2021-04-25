@@ -1,4 +1,4 @@
-FROM alpine:3.12
+FROM rustlang/rust:nightly-alpine3.12
 
 LABEL org.label-schema.name="aardwolf-alpine" \
     org.label-schema.description="Aardwolf-Social on Alpine" \
@@ -18,17 +18,21 @@ RUN apk -U --no-cache add \
       bash \
       gcc \
       musl-dev \
+			postgresql-dev \
+			postgresql \
+			gettext \
+	    gettext-dev \
 			curl
 
-# Install rustup
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-ENV PATH=/root/.cargo/bin:$PATH
-
 # Install specific rust nightly
-RUN rustup toolchain install nightly
+#RUN rustup toolchain install nightly
+#RUN cargo +nightly install -f diesel_cli --no-default-features --features postgres
+#RUN chown -R aardwolf:aardwolf $RUSTUP_HOME
+#RUN chmod -R a+w $RUSTUP_HOME $CARGO_HOME
 
 # Copy the code.
 COPY --chown=aardwolf:aardwolf . /app
+COPY --chown=aardwolf:aardwolf ./config/example.toml /app/aardwolf.toml
 
 # Copy the entrypoint and make it executable.
 COPY --chown=aardwolf:aardwolf ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
