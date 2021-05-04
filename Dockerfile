@@ -1,6 +1,6 @@
-FROM rustlang/rust:nightly-alpine3.12
+FROM rustlang/rust:nightly
 
-LABEL org.label-schema.name="aardwolf-alpine" \
+LABEL org.label-schema.name="aardwolf-rust" \
     org.label-schema.description="Aardwolf-Social on Alpine" \
     org.label-schema.url="https://example.com/path/to/image/on/docker/hub" \
     org.label-schema.usage="https://github.com/Aardwolf-Social/aardwolf/blob/master/README.md" \
@@ -12,16 +12,18 @@ LABEL org.label-schema.name="aardwolf-alpine" \
 # Configure a non-root user.
 # We specify the UID so that Kubernetes has something for securityContexts.
 RUN adduser -h /app -u 1000 -D aardwolf
+RUN adduser aardwolf
+
+# Update
+RUN apt-get update
 
 # Install needed software.
-RUN apk -U --no-cache add \
+RUN apt-get -y install \
       bash \
       gcc \
       musl-dev \
-			postgresql-dev \
-			postgresql \
+			postgresql-client \
 			gettext \
-	    gettext-dev \
 			curl
 
 # Install specific rust nightly

@@ -10,10 +10,6 @@ rustup override set nightly
 
 case ${AARDWOLF_SETUP_DB,,} in
   true|1)
-		while true
-		do
-			echo "waiting"
-		done
 		echo "$SCRIPT_NAME: Beginning initialization..."
 		cargo install -f diesel_cli --no-default-features --features postgres
     cargo run --bin setup 

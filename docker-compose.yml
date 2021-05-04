@@ -4,7 +4,7 @@ services:
     image: "postgres"
     restart: always
     ports:
-      - "5431:5432" 
+      - "5432:5432" 
     environment:
       POSTGRES_USER: aardwolf
       POSTGRES_PASSWORD: changeme
