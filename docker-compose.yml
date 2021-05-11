@@ -4,7 +4,7 @@ services:
     image: "postgres"
     restart: always
     ports:
-      - "5432:5432" 
+      - "5431:5432" 
     environment:
       POSTGRES_USER: aardwolf
       POSTGRES_PASSWORD: changeme
@@ -13,6 +13,8 @@ services:
 
   aardwolf:
     image: "aardwolf"
+    build:
+      context: .
     links:
       - postgres
     depends_on:
