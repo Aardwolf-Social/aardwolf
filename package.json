@@ -36,7 +36,7 @@
     "node-sass": "^5.0.0",
     "sass-loader": "^11.0.1",
     "serialize-javascript": ">=5.0.0",
-    "set-value": "~3.0.2",
+    "set-value": "~4.0.1",
     "style-loader": "^1.1.1",
     "webpack": "^5.24.2",
     "webpack-cli": "^4.5.0"
