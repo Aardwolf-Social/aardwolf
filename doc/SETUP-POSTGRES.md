@@ -92,7 +92,7 @@ Create the database for Aardwolf
 
 Create the DB user
 
-    $ psql -c "CREATE USER aardwolf WITH PASSWORD 'p4ssw0rd'"
+    $ psql -c "CREATE USER aardwolf WITH PASSWORD 'p4ssw0rd';"
 
 *** DO NOT USE THESE VALUES IN PRODUCTION :D ***
 

@@ -1,5 +1,5 @@
 const path = require('path');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
@@ -10,7 +10,9 @@ module.exports = {
 		path: path.resolve(__dirname, 'dist'),
   },
 	plugins: [
-		new CleanWebpackPlugin(['dist']),
+		new CleanWebpackPlugin({
+			cleanAfterEveryBuildPatterns: 'dist'
+		}),
 		new MiniCssExtractPlugin({
 			filename: 'app.css',
 		}),

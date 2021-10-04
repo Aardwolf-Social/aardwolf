@@ -3,9 +3,6 @@ language: rust
 services:
   - postgresql
 
-addons:
-  postgresql: "9.6"
-
 before_script:
   - echo "BEFORE SCRIPT"
   - psql -c 'CREATE DATABASE aardwolf_testing;' -U postgres

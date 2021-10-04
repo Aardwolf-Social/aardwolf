@@ -40,7 +40,7 @@ For Windows, just download the installer [here](https://www.enterprisedb.com/dow
 =======
 ## Postgresql Official Installation 
 If you want to use the official repository for Postgresql, the following link has very good instructions for all supported operating systems.
-([https://www.postgresql.org/download/)[https://www.postgresql.org/download/]
+[https://www.postgresql.org/download/](https://www.postgresql.org/download/)
 
 #### Linux/OSX Instructions
 **NOTE:** As of Debian 10, the OLD version of Postgresql v11 is in their repositories your safest bet is to get the *latest* from postgresql.org.

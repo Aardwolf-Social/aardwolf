@@ -1,5 +1,4 @@
 use std::{
-    error::Error as StdError,
     io::{self, ErrorKind},
     process::{self, Command, Output},
 };
@@ -21,7 +20,7 @@ fn check_out(output: &Result<Output, io::Error>) {
                 ErrorKind::NotFound => {
                     eprintln!("Could not find `diesel` binary, please use `cargo install diesel_cli` to install it");
                 }
-                _ => eprintln!("got error {}", e.description()),
+                _ => eprintln!("got error {}", e),
             }
             process::exit(255);
         }
