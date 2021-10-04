@@ -1,5 +1,3 @@
-#![feature(async_await)]
-
 use std::{error::Error, fmt};
 
 use aardwolf_models::{base_actor::BaseActor, generate_urls::GenerateUrls, sql_types::Url};

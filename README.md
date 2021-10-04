@@ -57,9 +57,9 @@ Please note that it's very important to us that we maintain a positive and suppo
 
 ### Contact Us
 * Chat Room: Follow the link to choose your connection method :) [#aardwolf-discussion:matrix.org](https://matrix.to/#/#aardwolf-discussion:matrix.org)
-* Mastodon: [@aardwolf@glitch.social](https://glitch.social/@aardwolf).
+* Mastodon: [@banjofox@hackers.town](https://hackers.town/@banjofox).
 
-If you would like to get in touch with the project lead (Banjo), please checkout his homepage at [banjo.codes](http://banjo.codes) for a long list of contact methods. 
+Banjo, the project leader, can be reached at through Mastodon --> [@banjofox@hackers.town](https://hackers.town/@banjofox) 
 
 ### Find out more
 * [Contributor's guidelines](/CONTRIBUTING.md)
