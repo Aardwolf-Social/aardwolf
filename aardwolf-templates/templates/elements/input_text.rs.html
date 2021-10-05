@@ -1,0 +1,5 @@
+@use crate::{InputText, templates::elements::input};
+
+@(input_text: &InputText)
+
+@:input(&input_text.into())
