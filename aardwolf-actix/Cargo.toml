@@ -7,7 +7,7 @@ edition = "2018"
 [dependencies]
 actix = "0.8.1"
 actix-files = "0.1"
-actix-http = "0.2"
+actix-http = "2.2"
 actix-session = "0.2"
 actix-web = "1.0"
 actix-web-async-compat = "0.1.0"
