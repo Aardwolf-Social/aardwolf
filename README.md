@@ -57,9 +57,7 @@ Please note that it's very important to us that we maintain a positive and suppo
 
 ### Contact Us
 * Chat Room: Follow the link to choose your connection method :) [#aardwolf-discussion:matrix.org](https://matrix.to/#/#aardwolf-discussion:matrix.org)
-* Mastodon: [@banjofox@hackers.town](https://hackers.town/@banjofox).
-
-Banjo, the project leader, can be reached at through Mastodon --> [@banjofox@hackers.town](https://hackers.town/@banjofox) 
+* Mastodon: [@banjofox2@hackers.town](https://hackers.town/@banjofox2).
 
 ### Find out more
 * [Contributor's guidelines](/CONTRIBUTING.md)
