@@ -33,6 +33,14 @@ impl File {
     pub fn path(&self) -> &str {
         &self.file_path
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 #[derive(Insertable)]

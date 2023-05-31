@@ -25,6 +25,14 @@ impl FollowRequest {
     pub fn requested_follow(&self) -> i32 {
         self.requested_follow
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 #[derive(Insertable)]

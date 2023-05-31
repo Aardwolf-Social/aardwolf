@@ -28,6 +28,14 @@ impl EventNotification {
     pub fn timer_id(&self) -> i32 {
         self.timer_id
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 #[derive(Insertable)]

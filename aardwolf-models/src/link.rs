@@ -48,6 +48,14 @@ impl Link {
     pub fn base_post(&self) -> i32 {
         self.base_post
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 #[derive(Insertable)]

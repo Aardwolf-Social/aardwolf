@@ -47,6 +47,14 @@ impl Event {
     pub fn description(&self) -> &str {
         &self.description
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 #[derive(Insertable)]

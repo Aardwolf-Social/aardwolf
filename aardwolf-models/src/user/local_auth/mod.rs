@@ -31,12 +31,16 @@ impl LocalAuth {
         self.id
     }
 
+    pub fn user_id(&self) -> i32 {
+        self.user_id
+    }
+
     pub fn created_at(&self) -> DateTime<Utc> {
         self.created_at
     }
 
-    pub fn user_id(&self) -> i32 {
-        self.user_id
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
     }
 
     /// Log In a user, given an `UnauthenticatedUser` and a `PlaintextPassword`.

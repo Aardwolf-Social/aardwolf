@@ -28,6 +28,14 @@ impl GroupBaseActor {
     pub fn base_actor_id(&self) -> i32 {
         self.base_actor_id
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 #[derive(Insertable)]

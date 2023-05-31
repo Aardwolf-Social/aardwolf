@@ -23,4 +23,8 @@ impl Permission {
     pub fn created_at(&self) -> DateTime<Utc> {
         self.created_at
     }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }

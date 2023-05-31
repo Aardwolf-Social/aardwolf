@@ -23,6 +23,14 @@ impl Timer {
     pub fn fire_time(&self) -> DateTime<Utc> {
         self.fire_time
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 #[derive(Insertable)]

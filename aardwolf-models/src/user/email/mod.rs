@@ -18,6 +18,7 @@ pub struct VerifiedEmail {
     id: i32,
     email: String,
     user_id: i32,
+    confirmed_at: DateTime<Utc>,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
 }
@@ -33,6 +34,10 @@ impl VerifiedEmail {
 
     pub fn user_id(&self) -> i32 {
         self.user_id
+    }
+
+    pub fn confirmed_at(&self) -> DateTime<Utc> {
+        self.confirmed_at
     }
 
     pub fn created_at(&self) -> DateTime<Utc> {
@@ -83,6 +88,7 @@ impl Email {
                 id: self.id,
                 email: self.email,
                 user_id: self.user_id,
+                confirmed_at: self.confirmed_at.unwrap(), // TODO: Replace unwrap with safer check
                 created_at: self.created_at,
                 updated_at: self.updated_at,
             })
@@ -143,6 +149,7 @@ impl VerifyEmail {
                 id: self.id,
                 email: self.email,
                 user_id: self.user_id,
+                confirmed_at: self.confirmed_at,
                 created_at: self.created_at,
                 updated_at: self.updated_at,
             })
