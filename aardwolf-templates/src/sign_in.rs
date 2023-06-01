@@ -5,14 +5,14 @@ use aardwolf_types::forms::auth::{
 use gettext::Catalog;
 use gettext_macros::i18n;
 
-use crate::{Alert, AlertKind, EmailInput, PasswordInput, Renderable};
+use crate::{Alert, AlertKind, InputEmail, InputPassword, Renderable};
 
 pub struct SignIn<'a> {
     pub(crate) catalog: &'a Catalog,
     pub(crate) csrf: &'a str,
     pub(crate) alert: Option<Alert>,
-    pub(crate) email: EmailInput<'a>,
-    pub(crate) password: PasswordInput<'a>,
+    pub(crate) email: InputEmail<'a>,
+    pub(crate) password: InputPassword<'a>,
 }
 
 impl<'a> SignIn<'a> {
@@ -34,7 +34,7 @@ impl<'a> SignIn<'a> {
             } else {
                 None
             },
-            email: EmailInput {
+            email: InputEmail {
                 name: "email",
                 label: i18n!(catalog, "E-Mail Address"),
                 placeholder: Some(i18n!(catalog, "E-Mail Address")),
@@ -45,7 +45,7 @@ impl<'a> SignIn<'a> {
                     })
                 }),
             },
-            password: PasswordInput {
+            password: InputPassword {
                 name: "password",
                 label: i18n!(catalog, "Password"),
                 placeholder: Some(i18n!(catalog, "Password")),
