@@ -5,15 +5,15 @@ use aardwolf_types::forms::auth::{
 use gettext::Catalog;
 use gettext_macros::i18n;
 
-use crate::{Alert, AlertKind, EmailInput, PasswordInput, Renderable};
+use crate::{Alert, AlertKind, InputEmail, InputPassword, Renderable};
 
 pub struct SignUp<'a> {
     pub(crate) catalog: &'a Catalog,
     pub(crate) csrf: &'a str,
     pub(crate) alert: Option<Alert>,
-    pub(crate) email: EmailInput<'a>,
-    pub(crate) password: PasswordInput<'a>,
-    pub(crate) password_confirmation: PasswordInput<'a>,
+    pub(crate) email: InputEmail<'a>,
+    pub(crate) password: InputPassword<'a>,
+    pub(crate) password_confirmation: InputPassword<'a>,
 }
 
 impl<'a> SignUp<'a> {
@@ -35,7 +35,7 @@ impl<'a> SignUp<'a> {
             } else {
                 None
             },
-            email: EmailInput {
+            email: InputEmail {
                 name: "email",
                 label: i18n!(catalog, "E-Mail Address"),
                 placeholder: Some(i18n!(catalog, "E-Mail Address")),
@@ -49,7 +49,7 @@ impl<'a> SignUp<'a> {
                     })
                 }),
             },
-            password: PasswordInput {
+            password: InputPassword {
                 name: "password",
                 label: i18n!(catalog, "Password"),
                 placeholder: Some(i18n!(catalog, "Password")),
@@ -64,7 +64,7 @@ impl<'a> SignUp<'a> {
                     })
                 }),
             },
-            password_confirmation: PasswordInput {
+            password_confirmation: InputPassword {
                 name: "password_confirmation",
                 label: i18n!(catalog, "Password Confirmation"),
                 placeholder: Some(i18n!(catalog, "Password Confirmation")),

@@ -1,0 +1,21 @@
+@use gettext_macros::i18n;
+
+@use crate::templates::{base, elements::{alert,lang_dropdown}};
+
+@(lang_dropdown: &LangDropdown)
+
+<div class="field">
+  <p class="control is-expanded has-icons-left has-icons-right">
+    <div class="select is-narrow">
+      <select>
+        <option value="english">English</option>
+        <option value="awoo">Awoo</option>
+        <option value="japanese">Japanese</option>
+        <option value="parcel_tongue">Parcel Tongue</option>
+        <option value="polish">Polish</option>
+        <option value="redneck">Redneck</option>
+        <option value="urdu">urdu</option>
+      </select>
+    </div>
+  </p>
+</div>

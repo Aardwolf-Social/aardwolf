@@ -5,17 +5,17 @@ use aardwolf_types::forms::personas::{
 use gettext::Catalog;
 use gettext_macros::i18n;
 
-use crate::{Alert, AlertKind, CheckboxInput, Renderable, SelectInput, TextInput};
+use crate::{Alert, AlertKind, InputCheckbox, Renderable, InputSelect, InputText};
 
 pub struct FirstLogin<'a> {
     pub(crate) catalog: &'a Catalog,
     pub(crate) csrf: &'a str,
     pub(crate) alert: Option<Alert>,
-    pub(crate) display_name: TextInput<'a>,
-    pub(crate) shortname: TextInput<'a>,
-    pub(crate) follow_policy: SelectInput<'a>,
-    pub(crate) default_visibility: SelectInput<'a>,
-    pub(crate) is_searchable: CheckboxInput<'a>,
+    pub(crate) display_name: InputText<'a>,
+    pub(crate) shortname: InputText<'a>,
+    pub(crate) follow_policy: InputSelect<'a>,
+    pub(crate) default_visibility: InputSelect<'a>,
+    pub(crate) is_searchable: InputCheckbox<'a>,
 }
 
 impl<'a> FirstLogin<'a> {
@@ -38,7 +38,7 @@ impl<'a> FirstLogin<'a> {
             } else {
                 None
             },
-            display_name: TextInput {
+            display_name: InputText {
                 name: "display_name",
                 label: i18n!(catalog, "Display Name"),
                 icon: None,
@@ -52,7 +52,7 @@ impl<'a> FirstLogin<'a> {
                     })
                 }),
             },
-            shortname: TextInput {
+            shortname: InputText {
                 name: "shortname",
                 label: i18n!(catalog, "Username"),
                 icon: None,
@@ -70,22 +70,22 @@ impl<'a> FirstLogin<'a> {
                     })
                 }),
             },
-            follow_policy: SelectInput {
+            follow_policy: InputSelect {
                 name: "follow_policy",
                 label: i18n!(catalog, "Follow Policy"),
                 selected: state.follow_policy.to_string(),
-                options: SelectInput::follow_policy_options(catalog),
+                options: InputSelect::follow_policy_options(catalog),
                 error: validation_error.and_then(|e| e.follow_policy.as_ref().map(|e| match *e {})),
             },
-            default_visibility: SelectInput {
+            default_visibility: InputSelect {
                 name: "default_visibility",
                 label: i18n!(catalog, "Post Visibility"),
                 selected: state.default_visibility.to_string(),
-                options: SelectInput::visibility_options(catalog),
+                options: InputSelect::visibility_options(catalog),
                 error: validation_error
                     .and_then(|e| e.default_visibility.as_ref().map(|e| match *e {})),
             },
-            is_searchable: CheckboxInput {
+            is_searchable: InputCheckbox {
                 name: "is_searchable",
                 label: i18n!(catalog, "Allow people to search for this profile"),
                 icon: None,
