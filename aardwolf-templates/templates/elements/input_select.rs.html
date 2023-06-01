@@ -1,0 +1,29 @@
+@use crate::InputSelect;
+
+@(input: &InputSelect)
+
+<div class="aardwolf-input-wrapper">
+    <label for="@input.name">
+        @input.label
+    </label>
+    <div class="aardwolf-input aardwolf-select-input">
+        <select name="@input.name">
+            @for option in input.options.iter() {
+                @if option.value == input.selected {
+                    <option value="@option.value" selected>
+                        @option.display
+                    </option>
+                } else {
+                    <option value="@option.value">
+                        @option.display
+                    </option>
+                }
+            }
+        </select>
+    </div>
+    <div class="aardwolf-input-meta">
+        @if let Some(ref error) = input.error {
+            <span class="aardwolf-input-error">@error</span>
+        }
+    </div>
+</div>

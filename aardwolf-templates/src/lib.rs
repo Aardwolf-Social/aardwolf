@@ -9,6 +9,15 @@ init_i18n!("aardwolf", en, pl);
 
 include!(concat!(env!("OUT_DIR"), "/templates.rs"));
 
+// Directories
+mod asides;
+mod containers;
+mod elements;
+mod error;
+mod home;
+mod posts;
+
+// Root-level files
 mod first_login;
 mod home;
 mod shortcuts;
@@ -24,10 +33,12 @@ pub use self::{
 };
 
 use self::{
-    shortcuts::Shortcuts,
-    ui::{
-        Alert, AlertKind, CheckboxInput, EmailInput, Input, PasswordInput, SelectInput, TextInput,
-        TextareaInput,
+    asides::{
+        Settings, Shortcuts,
+        },
+    elements::{
+        Alert, AlertKind, InputCheckbox, InputEmail, Input, InputPassword, InputSelect, InputText,
+        InputTextarea,
     },
 };
 
