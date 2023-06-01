@@ -13,16 +13,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BanjoFox/aardwolf.git"
+    "url": "git+https://github.com/Aardwolf-Social/aardwolf.git"
   },
   "author": "Banjo Fox <drbanjofox@protonmail.com>",
   "license": "AGPL-3.0",
   "bugs": {
-    "url": "https://github.com/BanjoFox/aardwolf/issues"
+    "url": "https://github.com/Aardwolf-Social/aardwolf/issues"
   },
-  "homepage": "https://github.com/BanjoFox/aardwolf#readme",
+  "homepage": "https://github.com/Aardwolf-Social/aardwolf#readme",
   "dependencies": {
     "fibers": "^5.0.0",
+    "nvm": "^0.0.4",
     "sass": "^1.24.0"
   },
   "devDependencies": {
