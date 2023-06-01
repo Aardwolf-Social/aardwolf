@@ -1,0 +1,93 @@
+@use gettext::Catalog;
+@use gettext_macros::i18n;
+
+@(catalog: &Catalog)
+
+<!-- Begin Profile Section -->
+<section class="section">
+    <div class="container">
+
+        <title>@i18n!(catalog, "profile title")</title>
+
+        <!-- section title -->
+        <h1 class="title">@i18n!(catalog, "profile title")</h1>
+        <h2 class="subtitle">@i18n!(catalog, "profile sub title")</h2>
+
+        <!-- Profile display name -->
+		<div class="field box">
+		  <label class="label">@i18n!(catalog, "profile display name")</label>
+		  <div class="control">
+			<input class="input" type="text" placeholder="@i18n!(catalog, "profile display name")">
+		  </div>
+		  <p>30 @i18n!(catalog, "profile char remaining")</p><!-- temporary placeholder -->
+		</div>
+
+        <!-- Profile bio -->
+		<div class="field box">
+		  <label class="label">@i18n!(catalog, "profile bio")</label>
+		  <div class="control">
+			<textarea class="textarea" placeholder="@i18n!(catalog, "profile bio")"></textarea>
+		  </div>
+		  <p>500 @i18n!(catalog, "profile char remaining")</p><!-- temporary placeholder -->
+		</div>
+
+        <!-- Profile Avatar -->
+		<div class="box">
+		  <label class="label">@i18n!(catalog, "profile avatar upload")</label>
+		<figure class="image is-128x128">
+		  <img src="https://bulma.io/images/placeholders/128x128.png">
+		</figure>
+		<br />
+
+		<!-- Avatar upload controls -->
+		<div class="file has-name">
+		  <label class="file-label">
+			<input class="file-input" type="file" name="resume">
+			<span class="file-cta">
+			  <span class="file-icon">
+				<i class="fa fa-upload"></i>
+			  </span>
+			  <span class="file-label">
+				@i18n!(catalog, "profile avatar upload label")
+			  </span>
+			</span>
+			<span class="file-name">
+			  @i18n!(catalog, "profile avatar file name")
+			</span>
+		  </label>
+		</div>
+		<p>@i18n!(catalog, "profile avatar sub text")</p>
+		</div>
+
+        <!-- Profile Header -->
+		<div class="box">
+		  <label class="label">@i18n!(catalog, "profile header upload")</label>
+		<figure class="image is-128x128">
+		  <img src="https://bulma.io/images/placeholders/128x128.png">
+		</figure>
+		<br />
+
+		<!-- Header upload controls -->
+		<div class="file has-name">
+		  <label class="file-label">
+			<input class="file-input" type="file" name="resume">
+			<span class="file-cta">
+			  <span class="file-icon">
+				<i class="fa fa-upload"></i>
+			  </span>
+			  <span class="file-label">
+				@i18n!(catalog, "profile avatar header label")
+			  </span>
+			</span>
+			<span class="file-name">
+			  @i18n!(catalog, "profile header file name")
+			</span>
+		  </label>
+		</div>
+		<p>@i18n!(catalog, "profile header sub text")</p><!-- temporary placeholder -->
+		</div>
+
+    </div>
+</section>
+<!-- End Profile Section -->
+

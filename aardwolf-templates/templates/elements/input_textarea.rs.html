@@ -1,0 +1,26 @@
+@use crate::{InputTextarea, templates::elements::icon};
+
+@(input: &InputTextarea)
+
+<div class="aardwolf-input-wrapper">
+    <label for="@input.name">
+        @if let Some(i) = input.icon {
+            @:icon(i)
+        }
+        @if let Some(ref label) = input.label {
+            @label
+        }
+    </label>
+    <div class="aardwolf-input aardwolf-textarea-input">
+        @if let Some(ref placeholder) = input.placeholder {
+            <textarea name="@input.name" placeholder="@placeholder" value="@input.value"></textarea>
+        } else {
+            <textarea name="@input.name" value="@input.value"></textarea>
+        }
+    </div>
+    <div class="aardwolf-input-meta">
+        @if let Some(ref error) = input.error {
+            <span class="aardwolf-input-error">@error</span>
+        }
+    </div>
+</div>
