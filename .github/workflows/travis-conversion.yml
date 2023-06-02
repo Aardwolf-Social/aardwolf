@@ -17,13 +17,14 @@ jobs:
 # Build Rust
 # Source: https://github.com/marketplace/actions/setup-rust
 #
-  clippy_check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Run Clippy
-        run: cargo clippy --all-targets --all-features
-        
+  rust-toolchain:
+    name: Stable with rustfmt and clippy
+    uses: actions-rs/toolchain@v1
+    with:
+        profile: minimal
+        toolchain: stable
+        components: rustfmt, clippy
+    
   lint:
     name: Lint
     runs-on: ubuntu-latest
