@@ -4,7 +4,7 @@ use chrono_tz::Tz;
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
 
 #[derive(AsExpression, Clone, Copy, Debug, Eq, FromSqlRow, PartialEq)]
-#[sql_type = "Text"]
+#[diesel(sql_type = Text)]
 pub struct Timezone(pub Tz);
 
 impl fmt::Display for Timezone {

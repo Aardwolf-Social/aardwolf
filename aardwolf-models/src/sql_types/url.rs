@@ -4,7 +4,7 @@ use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
 use url::Url as OrigUrl;
 
 #[derive(AsExpression, Clone, Debug, FromSqlRow)]
-#[sql_type = "Text"]
+#[diesel(sql_type = Text)]
 pub struct Url(pub OrigUrl);
 
 impl<DB> serialize::ToSql<Text, DB> for Url

@@ -61,7 +61,7 @@ pub fn create_token() -> Result<(EmailToken, HashedEmailToken), CreationError> {
 }
 
 #[derive(AsExpression, FromSqlRow)]
-#[sql_type = "Text"]
+#[diesel(sql_type = Text)]
 pub struct HashedEmailToken(String);
 
 impl fmt::Debug for HashedEmailToken {

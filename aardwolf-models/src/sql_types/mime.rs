@@ -8,7 +8,7 @@ use serde::{
 };
 
 #[derive(AsExpression, Clone, Debug, FromSqlRow)]
-#[sql_type = "Text"]
+#[diesel(sql_type = Text)]
 pub struct Mime(pub OrigMime);
 
 impl<DB> serialize::ToSql<Text, DB> for Mime

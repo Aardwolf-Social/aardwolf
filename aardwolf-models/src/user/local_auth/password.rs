@@ -197,7 +197,7 @@ impl Validate for PlaintextPassword {
 ///
 /// Debug and Display are both implemented for Password, but they simply print eight asterisks.
 #[derive(AsExpression, FromSqlRow)]
-#[sql_type = "Text"]
+#[diesel(sql_type = Text)]
 pub struct Password(String);
 
 impl<DB> serialize::ToSql<Text, DB> for Password

@@ -7,7 +7,7 @@ use serde::{
 };
 
 #[derive(AsExpression, Clone, Copy, Debug, Eq, FromSqlRow, Hash, PartialEq)]
-#[sql_type = "Text"]
+#[diesel(sql_type = Text)]
 pub enum PostVisibility {
     Public,
     FollowersOnly,

@@ -3,7 +3,7 @@ use std::{error::Error as StdError, fmt, io::Write, str::FromStr};
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
 
 #[derive(AsExpression, Clone, Copy, Debug, Eq, FromSqlRow, Hash, PartialEq)]
-#[sql_type = "Text"]
+#[diesel(sql_type = Text)]
 pub enum ReactionType {
     Like,
     Dislike,
