@@ -17,14 +17,6 @@ jobs:
 # Build Rust
 # Source: https://github.com/marketplace/actions/setup-rust
 #
-  rust-toolchain:
-    name: Stable with rustfmt and clippy
-    uses: actions-rs/toolchain@v1
-    with:
-        profile: minimal
-        toolchain: stable
-        components: rustfmt, clippy
-    
   lint:
     name: Lint
     runs-on: ubuntu-latest
