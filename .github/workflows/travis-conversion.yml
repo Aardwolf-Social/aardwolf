@@ -12,6 +12,62 @@ on:
     branches:
       - master
 jobs:
+
+#-
+# Build Rust
+# Source: https://github.com/marketplace/actions/setup-rust
+#
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup | Checkout
+        uses: actions/checkout@v2
+      - name: Setup | Rust
+        uses: ATiltedTree/setup-rust@v1
+        with:
+          rust-version: stable
+          components: clippy
+      - name: Build | Lint
+        run: cargo clippy
+  compile:
+    name: Compile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup | Checkout
+        uses: actions/checkout@v2
+      - name: Setup | Rust
+        uses: ATiltedTree/setup-rust@v1
+        with:
+          rust-version: stable
+      - name: Build | Compile
+        run: cargo check
+  test:
+    name: Test
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macOS-latest
+        rust:
+          - stable
+          - beta
+          - nightly
+    runs-on: ${{ matrix.os }}
+    needs: [compile]
+    steps:
+      - name: Setup | Checkout
+        uses: actions/checkout@v2
+      - name: Setup | Rust
+        uses: ATiltedTree/setup-rust@v1
+        with:
+          rust-version: ${{ matrix.rust }}
+      - name: Build | Compile
+        run: cargo test
+#-
+# Continue to build Aardwolf
+#        
   build:
     runs-on: '${{ matrix.os }}'
     strategy:
@@ -31,12 +87,7 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-    # Build steps      
-    steps:
-      # Rust language matrix
-      - name: Setup Rust
-        uses: ATiltedTree/setup-rust@v1.0.5
-      
+     
       # Postgres prep
       - run: psql --version
       - run: |
