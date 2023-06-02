@@ -20,12 +20,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Package installation 
     - uses: actions/checkout@v3
     - name: Install packages
-    - run: sudo apt install -y open_ssl
-    - uses: actions/checkout@v3
-      with:
-        path: /opt/openssl
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libssl-dev
+    - run: sudo apt-get remove -y libssl-dev
+    - uses: actions/cache@v3
+        with:
+          path: /opt/openssl
+        
+    # Cargo build    
     - name: Build
       run: cargo build --verbose
     - name: Run tests
