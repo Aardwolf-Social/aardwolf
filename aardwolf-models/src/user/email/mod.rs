@@ -50,7 +50,7 @@ impl VerifiedEmail {
 }
 
 #[derive(Debug, Queryable, QueryableByName)]
-#[table_name = "emails"]
+#[diesel(table_name = emails)]
 pub struct Email {
     id: i32,
     email: String,
@@ -121,7 +121,7 @@ pub struct VerifyEmail {
 }
 
 #[derive(AsChangeset)]
-#[table_name = "emails"]
+#[diesel(table_name = emails)]
 pub struct EmailVerificationChangeset {
     #[allow(dead_code)]
     id: i32,
@@ -161,7 +161,7 @@ impl VerifyEmail {
 }
 
 #[derive(Queryable, QueryableByName)]
-#[table_name = "emails"]
+#[diesel(table_name = emails)]
 pub struct UnverifiedEmail {
     id: i32,
     email: String,
@@ -227,7 +227,7 @@ impl UnverifiedEmail {
 }
 
 #[derive(Insertable)]
-#[table_name = "emails"]
+#[diesel(table_name = emails)]
 pub struct NewEmail {
     email: String,
     user_id: i32,

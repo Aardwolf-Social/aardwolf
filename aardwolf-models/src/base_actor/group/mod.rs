@@ -6,7 +6,7 @@ pub mod group_base_actor;
 use crate::{base_actor::BaseActor, schema::groups};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "groups"]
+#[diesel(table_name = groups)]
 pub struct Group {
     id: i32,
     base_actor_id: i32, // foreign key to BaseActor
@@ -33,7 +33,7 @@ impl Group {
 }
 
 #[derive(Insertable)]
-#[table_name = "groups"]
+#[diesel(table_name = groups)]
 pub struct NewGroup {
     base_actor_id: i32,
 }

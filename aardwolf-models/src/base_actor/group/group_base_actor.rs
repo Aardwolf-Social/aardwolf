@@ -7,7 +7,7 @@ use crate::{
 };
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "group_base_actors"]
+#[diesel(table_name = group_base_actors)]
 pub struct GroupBaseActor {
     id: i32,
     group_id: i32,      // foreign key to Group
@@ -39,7 +39,7 @@ impl GroupBaseActor {
 }
 
 #[derive(Insertable)]
-#[table_name = "group_base_actors"]
+#[diesel(table_name = group_base_actors)]
 pub struct NewGroupBaseActor {
     group_id: i32,
     base_actor_id: i32,

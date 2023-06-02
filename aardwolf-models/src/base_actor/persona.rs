@@ -7,7 +7,7 @@ use crate::{
 };
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "personas"]
+#[diesel(table_name = personas)]
 pub struct Persona {
     id: i32,
     default_visibility: PostVisibility,
@@ -90,7 +90,7 @@ impl Persona {
 }
 
 #[derive(Insertable)]
-#[table_name = "personas"]
+#[diesel(table_name = personas)]
 pub struct NewPersona {
     default_visibility: PostVisibility,
     is_searchable: bool,

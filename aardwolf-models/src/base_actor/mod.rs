@@ -17,7 +17,7 @@ pub mod persona;
 use self::follower::Follower;
 
 #[derive(Debug, AsChangeset)]
-#[table_name = "base_actors"]
+#[diesel(table_name = base_actors)]
 pub struct ModifiedBaseActor {
     id: i32,
     display_name: String,
@@ -60,7 +60,7 @@ impl ModifiedBaseActor {
 }
 
 #[derive(Clone, Debug, Queryable, QueryableByName)]
-#[table_name = "base_actors"]
+#[diesel(table_name = base_actors)]
 pub struct BaseActor {
     id: i32,
     display_name: String,        // max_length: 80
@@ -192,7 +192,7 @@ impl BaseActor {
 }
 
 #[derive(Insertable)]
-#[table_name = "base_actors"]
+#[diesel(table_name = base_actors)]
 pub struct NewBaseActor {
     display_name: String,
     profile_url: Url,

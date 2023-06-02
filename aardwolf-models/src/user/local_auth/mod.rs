@@ -17,7 +17,7 @@ pub use self::password::{
 /// `LocalAuth` can be queried from the database, but is only really usable as a tool to "log in" a
 /// user.
 #[derive(Debug, Queryable, QueryableByName)]
-#[table_name = "local_auth"]
+#[diesel(table_name = local_auth)]
 pub struct LocalAuth {
     id: i32,
     password: Password,
@@ -76,7 +76,7 @@ impl LocalAuth {
 
 /// This type exists to create new `LocalAuth` record in the database.
 #[derive(Insertable)]
-#[table_name = "local_auth"]
+#[diesel(table_name = local_auth)]
 pub struct NewLocalAuth {
     password: Password,
     created_at: DateTime<Utc>,

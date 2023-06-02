@@ -7,7 +7,7 @@ use crate::{
 };
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "followers"]
+#[diesel(table_name = followers)]
 pub struct Follower {
     id: i32,
     follower: i32, // foreign key to BaseActor
@@ -39,7 +39,7 @@ impl Follower {
 }
 
 #[derive(Insertable)]
-#[table_name = "followers"]
+#[diesel(table_name = followers)]
 pub struct NewFollower {
     follower: i32,
     follows: i32,

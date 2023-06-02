@@ -95,7 +95,7 @@ impl From<diesel::result::Error> for UpdateFieldError {
 }
 
 #[derive(Debug, Clone, Identifiable, Queryable)]
-#[table_name = "users"]
+#[diesel(table_name = users)]
 pub struct AuthenticatedUser {
     id: i32,
     created_at: DateTime<Utc>,
@@ -237,7 +237,7 @@ impl UnverifiedUser {
 }
 
 #[derive(Debug, Queryable, QueryableByName)]
-#[table_name = "users"]
+#[diesel(table_name = users)]
 pub struct QueriedUser {
     id: i32,
     created_at: DateTime<Utc>,
@@ -269,7 +269,7 @@ impl UserLike for QueriedUser {
 }
 
 #[derive(Debug, Queryable, QueryableByName)]
-#[table_name = "users"]
+#[diesel(table_name = users)]
 pub struct UnauthenticatedUser {
     id: i32,
     created_at: DateTime<Utc>,
@@ -361,7 +361,7 @@ impl UserLike for UnauthenticatedUser {
 }
 
 #[derive(Insertable)]
-#[table_name = "users"]
+#[diesel(table_name = users)]
 pub struct NewUser {
     created_at: DateTime<Utc>,
     primary_email: Option<i32>,

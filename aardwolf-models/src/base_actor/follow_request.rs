@@ -4,7 +4,7 @@ use diesel::{self, pg::PgConnection};
 use crate::{base_actor::BaseActor, schema::follow_requests};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "follow_requests"]
+#[diesel(table_name = follow_requests)]
 pub struct FollowRequest {
     id: i32,
     follower: i32,         // foreign key to BaseActor
@@ -36,7 +36,7 @@ impl FollowRequest {
 }
 
 #[derive(Insertable)]
-#[table_name = "follow_requests"]
+#[diesel(table_name = follow_requests)]
 pub struct NewFollowRequest {
     follower: i32,
     requested_follow: i32,

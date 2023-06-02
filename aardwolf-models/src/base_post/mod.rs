@@ -15,7 +15,7 @@ use crate::{
 };
 
 #[derive(Debug, Queryable, QueryableByName)]
-#[table_name = "base_posts"]
+#[diesel(table_name = base_posts)]
 pub struct BasePost {
     id: i32,
     name: Option<String>, // max_length: 140
@@ -85,7 +85,7 @@ impl BasePost {
 }
 
 #[derive(Insertable)]
-#[table_name = "base_posts"]
+#[diesel(table_name = base_posts)]
 pub struct NewBasePost {
     name: Option<String>,
     media_type: Mime,

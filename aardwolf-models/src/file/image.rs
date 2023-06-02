@@ -3,7 +3,7 @@ use chrono::{offset::Utc, DateTime};
 use crate::{file::File, schema::images};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "images"]
+#[diesel(table_name = images)]
 pub struct Image {
     id: i32,
     width: u32,
@@ -40,7 +40,7 @@ impl Image {
 }
 
 #[derive(Insertable)]
-#[table_name = "images"]
+#[diesel(table_name = images)]
 pub struct NewImage {
     width: i32,
     height: i32,

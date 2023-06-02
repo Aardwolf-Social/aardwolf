@@ -4,7 +4,7 @@ use diesel::{self, pg::PgConnection};
 use crate::{base_post::post::comment::Comment, schema::reactions, sql_types::ReactionType};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "reactions"]
+#[diesel(table_name = reactions)]
 pub struct Reaction {
     id: i32,
     reaction_type: ReactionType,
@@ -36,7 +36,7 @@ impl Reaction {
 }
 
 #[derive(Insertable)]
-#[table_name = "reactions"]
+#[diesel(table_name = reactions)]
 pub struct NewReaction {
     reaction_type: ReactionType,
     comment_id: i32,

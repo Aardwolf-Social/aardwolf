@@ -4,7 +4,7 @@ use diesel::{self, pg::PgConnection};
 use crate::{base_actor::BaseActor, base_post::BasePost, schema::direct_posts};
 
 #[derive(Debug, Queryable, QueryableByName)]
-#[table_name = "direct_posts"]
+#[diesel(table_name = direct_posts)]
 pub struct DirectPost {
     id: i32,
     base_post_id: i32,
@@ -54,7 +54,7 @@ impl DirectPost {
 }
 
 #[derive(Debug, Insertable)]
-#[table_name = "direct_posts"]
+#[diesel(table_name = direct_posts)]
 pub struct NewDirectPost {
     base_post_id: i32,
     base_actor_id: i32,

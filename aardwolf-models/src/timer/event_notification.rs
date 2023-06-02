@@ -7,7 +7,7 @@ use crate::{
 };
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "event_notifications"]
+#[diesel(table_name = event_notifications)]
 pub struct EventNotification {
     id: i32,
     event_id: i32, // foreign key to Event
@@ -39,7 +39,7 @@ impl EventNotification {
 }
 
 #[derive(Insertable)]
-#[table_name = "event_notifications"]
+#[diesel(table_name = event_notifications)]
 pub struct NewEventNotification {
     event_id: i32,
     timer_id: i32,

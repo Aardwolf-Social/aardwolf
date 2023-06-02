@@ -17,7 +17,7 @@ pub enum FileCreationError {
 }
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "files"]
+#[diesel(table_name = files)]
 pub struct File {
     id: i32,
     file_path: String,
@@ -44,7 +44,7 @@ impl File {
 }
 
 #[derive(Insertable)]
-#[table_name = "files"]
+#[diesel(table_name = files)]
 pub struct NewFile {
     file_path: String,
 }

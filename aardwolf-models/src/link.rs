@@ -7,7 +7,7 @@ use crate::{
 };
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "links"]
+#[diesel(table_name = links)]
 pub struct Link {
     id: i32,
     href: Url, // max_length: 2048
@@ -59,7 +59,7 @@ impl Link {
 }
 
 #[derive(Insertable)]
-#[table_name = "links"]
+#[diesel(table_name = links)]
 pub struct NewLink {
     href: Url,
     href_lang: Lang,

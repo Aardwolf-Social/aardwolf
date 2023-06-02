@@ -6,7 +6,7 @@ use crate::{base_post::post::Post, schema::comments};
 pub mod reaction;
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "comments"]
+#[diesel(table_name = comments)]
 pub struct Comment {
     id: i32,
     conversation: i32, // foreign key to topic Post
@@ -43,7 +43,7 @@ impl Comment {
 }
 
 #[derive(Insertable)]
-#[table_name = "comments"]
+#[diesel(table_name = comments)]
 pub struct NewComment {
     conversation: i32,
     parent: i32,

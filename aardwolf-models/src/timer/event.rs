@@ -6,7 +6,7 @@ use failure::Fail;
 use crate::{base_actor::persona::Persona, schema::events, sql_types::Timezone, timer::Timer};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "events"]
+#[diesel(table_name = events)]
 pub struct Event {
     id: i32,
     owner: i32,      // foreign key to Persona
@@ -58,7 +58,7 @@ impl Event {
 }
 
 #[derive(Insertable)]
-#[table_name = "events"]
+#[diesel(table_name = events)]
 pub struct NewEvent {
     owner: i32,
     start_date: i32,

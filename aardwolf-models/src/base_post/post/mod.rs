@@ -7,7 +7,7 @@ pub mod comment;
 pub mod media_post;
 
 #[derive(Debug, Queryable, QueryableByName)]
-#[table_name = "posts"]
+#[diesel(table_name = posts)]
 pub struct Post {
     id: i32,
     content: String,
@@ -44,7 +44,7 @@ impl Post {
 }
 
 #[derive(Insertable)]
-#[table_name = "posts"]
+#[diesel(table_name = posts)]
 pub struct NewPost {
     content: String,
     source: Option<String>,

@@ -3,7 +3,7 @@ use chrono::{offset::Utc, DateTime};
 use crate::schema::user_roles;
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "user_roles"]
+#[diesel(table_name = user_roles)]
 pub struct UserRole {
     id: i32,
     user_id: i32, // foreign key to User

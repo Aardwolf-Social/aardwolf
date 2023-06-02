@@ -4,7 +4,7 @@ use diesel::{self, pg::PgConnection};
 use crate::{base_post::post::Post, file::File, schema::media_posts};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "media_posts"]
+#[diesel(table_name = media_posts)]
 pub struct MediaPost {
     id: i32,
     file_id: i32, // foreign key to File
@@ -36,7 +36,7 @@ impl MediaPost {
 }
 
 #[derive(Insertable)]
-#[table_name = "media_posts"]
+#[diesel(table_name = media_posts)]
 pub struct NewMediaPost {
     file_id: i32,
     post_id: i32,

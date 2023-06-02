@@ -7,7 +7,7 @@ pub mod event_notification;
 use crate::schema::timers;
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "timers"]
+#[diesel(table_name = timers)]
 pub struct Timer {
     id: i32,
     fire_time: DateTime<Utc>,
@@ -34,7 +34,7 @@ impl Timer {
 }
 
 #[derive(Insertable)]
-#[table_name = "timers"]
+#[diesel(table_name = timers)]
 pub struct NewTimer {
     fire_time: DateTime<Utc>,
 }
