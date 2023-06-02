@@ -3,7 +3,7 @@
 # Default script added 2023-06-02
 #
 
-name: Rust
+name: Rust Build CI
 
 on:
   push:
