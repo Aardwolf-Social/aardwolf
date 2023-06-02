@@ -2,7 +2,6 @@
 # GitHub Action for Docker Builds
 # Default script added 2023-06-02
 #
-
 name: 'Docker Image CI'
 
 on:
