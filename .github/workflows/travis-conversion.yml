@@ -17,12 +17,19 @@ jobs:
 # Build Rust
 # Source: https://github.com/marketplace/actions/setup-rust
 #
+  clippy_check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Clippy
+        run: cargo clippy --all-targets --all-features
+        
   lint:
     name: Lint
     runs-on: ubuntu-latest
     steps:
       - name: Setup | Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup | Rust
         uses: ATiltedTree/setup-rust@v1
         with:
@@ -35,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup | Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup | openSSL
         run: sudo apt-get install -y libssl-dev
       - name: Setup | Rust
@@ -60,7 +67,7 @@ jobs:
     needs: [compile]
     steps:
       - name: Setup | Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup | Rust
         uses: ATiltedTree/setup-rust@v1
         with:
@@ -101,7 +108,7 @@ jobs:
           PGHOST: 127.0.0.1
       
       # Do stuff...    
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: echo "BEFORE SCRIPT"
       - run: psql -c 'CREATE DATABASE aardwolf_testing;' -U postgres
       - run: >-
