@@ -46,7 +46,10 @@ pub struct NewEventNotification {
 }
 
 impl NewEventNotification {
-    pub fn insert(self, conn: &PgConnection) -> Result<EventNotification, diesel::result::Error> {
+    pub fn insert(
+        self,
+        conn: &mut PgConnection,
+    ) -> Result<EventNotification, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(event_notifications::table)

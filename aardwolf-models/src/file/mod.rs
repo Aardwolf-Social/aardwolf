@@ -50,7 +50,7 @@ pub struct NewFile {
 }
 
 impl NewFile {
-    pub fn insert(self, conn: &PgConnection) -> Result<File, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<File, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(files::table)

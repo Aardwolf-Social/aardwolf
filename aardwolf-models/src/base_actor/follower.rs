@@ -46,7 +46,7 @@ pub struct NewFollower {
 }
 
 impl NewFollower {
-    pub fn insert(self, conn: &PgConnection) -> Result<Follower, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<Follower, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(followers::table)

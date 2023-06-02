@@ -46,7 +46,7 @@ pub struct NewGroupBaseActor {
 }
 
 impl NewGroupBaseActor {
-    pub fn insert(self, conn: &PgConnection) -> Result<GroupBaseActor, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<GroupBaseActor, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(group_base_actors::table)

@@ -51,7 +51,7 @@ pub trait PermissionedUser: UserLike + Sized {
     fn can_post(
         &self,
         base_actor: BaseActor,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> PermissionResult<LocalPostCreator> {
         self.with_actor(base_actor).and_then(|actor| {
             self.has_permission(Permission::MakePost, conn)
@@ -62,7 +62,7 @@ pub trait PermissionedUser: UserLike + Sized {
     fn can_post_media(
         &self,
         base_actor: BaseActor,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> PermissionResult<LocalMediaPostCreator> {
         self.with_actor(base_actor).and_then(|actor| {
             self.has_permission(Permission::MakeMediaPost, conn)
@@ -73,7 +73,7 @@ pub trait PermissionedUser: UserLike + Sized {
     fn can_post_comment(
         &self,
         base_actor: BaseActor,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> PermissionResult<LocalCommentCreator> {
         self.with_actor(base_actor).and_then(|actor| {
             self.has_permission(Permission::MakeComment, conn)
@@ -84,7 +84,7 @@ pub trait PermissionedUser: UserLike + Sized {
     fn can_follow(
         &self,
         base_actor: BaseActor,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> PermissionResult<ActorFollower> {
         self.with_actor(base_actor).and_then(|actor| {
             self.has_permission(Permission::FollowUser, conn)
@@ -92,7 +92,10 @@ pub trait PermissionedUser: UserLike + Sized {
         })
     }
 
-    fn can_make_persona(&self, conn: &PgConnection) -> PermissionResult<LocalPersonaCreator<Self>>
+    fn can_make_persona(
+        &self,
+        conn: &mut PgConnection,
+    ) -> PermissionResult<LocalPersonaCreator<Self>>
     where
         Self: Clone,
     {
@@ -103,7 +106,7 @@ pub trait PermissionedUser: UserLike + Sized {
     fn can_switch_persona(
         &self,
         persona: Persona,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> PermissionResult<PersonaSwitcher> {
         self.with_persona(persona, conn).and_then(|persona| {
             self.has_permission(Permission::SwitchPersona, conn)
@@ -114,7 +117,7 @@ pub trait PermissionedUser: UserLike + Sized {
     fn can_delete_persona(
         &self,
         persona: Persona,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> PermissionResult<PersonaDeleter> {
         self.with_persona(persona, conn).and_then(|persona| {
             self.has_permission(Permission::DeletePersona, conn)
@@ -125,7 +128,7 @@ pub trait PermissionedUser: UserLike + Sized {
     fn can_manage_follow_requests(
         &self,
         base_actor: BaseActor,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> PermissionResult<FollowRequestManager> {
         self.with_actor(base_actor).and_then(|actor| {
             self.has_permission(Permission::ManageFollowRequest, conn)
@@ -133,24 +136,24 @@ pub trait PermissionedUser: UserLike + Sized {
         })
     }
 
-    fn can_configure_instance(&self, conn: &PgConnection) -> PermissionResult<()> {
+    fn can_configure_instance(&self, conn: &mut PgConnection) -> PermissionResult<()> {
         self.has_permission(Permission::ConfigureInstance, conn)
     }
 
-    fn can_ban_user(&self, conn: &PgConnection) -> PermissionResult<()> {
+    fn can_ban_user(&self, conn: &mut PgConnection) -> PermissionResult<()> {
         self.has_permission(Permission::BanUser, conn)
     }
 
-    fn can_block_instance(&self, conn: &PgConnection) -> PermissionResult<()> {
+    fn can_block_instance(&self, conn: &mut PgConnection) -> PermissionResult<()> {
         self.has_permission(Permission::BlockInstance, conn)
     }
 
-    fn can_grant_role(&self, conn: &PgConnection) -> PermissionResult<RoleGranter> {
+    fn can_grant_role(&self, conn: &mut PgConnection) -> PermissionResult<RoleGranter> {
         self.has_permission(Permission::GrantRole, conn)
             .map(|_| RoleGranter::new())
     }
 
-    fn can_revoke_role(&self, conn: &PgConnection) -> PermissionResult<RoleRevoker> {
+    fn can_revoke_role(&self, conn: &mut PgConnection) -> PermissionResult<RoleRevoker> {
         self.has_permission(Permission::RevokeRole, conn)
             .map(|_| RoleRevoker::new())
     }
@@ -168,7 +171,7 @@ pub trait PermissionedUser: UserLike + Sized {
             .ok_or(PermissionError::Permission)
     }
 
-    fn with_persona(&self, persona: Persona, conn: &PgConnection) -> PermissionResult<Persona> {
+    fn with_persona(&self, persona: Persona, conn: &mut PgConnection) -> PermissionResult<Persona> {
         persona
             .belongs_to_user(self, conn)
             .map_err(|_| PermissionError::Permission)
@@ -181,7 +184,11 @@ pub trait PermissionedUser: UserLike + Sized {
             })
     }
 
-    fn has_permission(&self, permission: Permission, conn: &PgConnection) -> PermissionResult<()> {
+    fn has_permission(
+        &self,
+        permission: Permission,
+        conn: &mut PgConnection,
+    ) -> PermissionResult<()> {
         use crate::schema::{permissions, role_permissions, roles, user_roles};
         use diesel::prelude::*;
 
@@ -218,7 +225,7 @@ impl RoleGranter {
         &self,
         user: &U,
         role: Role,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<(), diesel::result::Error> {
         use crate::schema::{roles, user_roles};
         use diesel::prelude::*;
@@ -255,7 +262,7 @@ impl RoleRevoker {
         &self,
         user: &U,
         role: Role,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<(), diesel::result::Error> {
         use crate::schema::{roles, user_roles};
         use diesel::prelude::*;
@@ -292,12 +299,12 @@ impl LocalPostCreator {
         content: String,
         source: String,
         generate_id: impl GenerateUrls,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<(BasePost, Post), diesel::result::Error> {
         use crate::schema::{base_posts, posts};
         use diesel::prelude::*;
 
-        conn.transaction(|| {
+        conn.transaction(|conn| {
             diesel::insert_into(base_posts::table)
                 .values(&NewBasePost::local(
                     name,
@@ -332,12 +339,12 @@ impl LocalMediaPostCreator {
         source: String,
         media: &File,
         generate_id: impl GenerateUrls,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<(BasePost, Post, MediaPost), diesel::result::Error> {
         use crate::schema::media_posts;
         use diesel::prelude::*;
 
-        conn.transaction(|| {
+        conn.transaction(|conn| {
             LocalPostCreator(self.0.clone())
                 .create_post(
                     name,
@@ -374,7 +381,7 @@ impl LocalCommentCreator {
         conversation: &Post,
         parent: &Post,
         generate_id: impl GenerateUrls,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<(BasePost, Post, Comment), CommentError> {
         use crate::schema::{base_posts, comments};
         use diesel::prelude::*;
@@ -397,7 +404,7 @@ impl LocalCommentCreator {
             }
         }
 
-        conn.transaction(|| {
+        conn.transaction(|conn| {
             LocalPostCreator(self.0.clone())
                 .create_post(
                     name,
@@ -440,7 +447,7 @@ impl ActorFollower {
     pub fn follow_actor(
         &self,
         target_actor: &BaseActor,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<FollowRequest, FollowError> {
         use crate::schema::follow_requests;
         use diesel::prelude::*;
@@ -477,7 +484,7 @@ impl FollowRequestManager {
     pub fn accept_follow_request(
         &self,
         follow_request: FollowRequest,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<Follower, FollowRequestManagerError> {
         use crate::schema::followers;
         use diesel::prelude::*;
@@ -486,7 +493,7 @@ impl FollowRequestManager {
             return Err(FollowRequestManagerError::IdMismatch);
         }
 
-        conn.transaction(|| {
+        conn.transaction(|conn| {
             diesel::delete(&follow_request)
                 .execute(conn)
                 .and_then(|_| {
@@ -501,7 +508,7 @@ impl FollowRequestManager {
     pub fn reject_follow_request(
         &self,
         follow_request: &FollowRequest,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<(), FollowRequestManagerError> {
         use diesel::prelude::*;
 
@@ -545,11 +552,11 @@ impl<U: UserLike> LocalPersonaCreator<U> {
         private_key_der: Vec<u8>,
         public_key_der: Vec<u8>,
         generate_id: impl GenerateUrls,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<(BaseActor, Persona), diesel::result::Error> {
         use diesel::Connection;
 
-        conn.transaction(|| {
+        conn.transaction(|conn| {
             NewBaseActor::local(
                 display_name,
                 &self.0,
@@ -589,7 +596,7 @@ impl<U: UserLike> LocalPersonaCreator<U> {
 pub struct PersonaDeleter(Persona);
 
 impl PersonaDeleter {
-    pub fn delete_persona(self, conn: &PgConnection) -> Result<(), diesel::result::Error> {
+    pub fn delete_persona(self, conn: &mut PgConnection) -> Result<(), diesel::result::Error> {
         self.0.delete(conn)
     }
 }

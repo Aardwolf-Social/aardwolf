@@ -44,7 +44,7 @@ impl Persona {
         self.base_actor
     }
 
-    pub fn by_id(id: i32, conn: &PgConnection) -> Result<Persona, diesel::result::Error> {
+    pub fn by_id(id: i32, conn: &mut PgConnection) -> Result<Persona, diesel::result::Error> {
         use diesel::prelude::*;
 
         personas::table.find(id).first(conn)
@@ -53,7 +53,7 @@ impl Persona {
     pub fn belongs_to_user<U: UserLike>(
         &self,
         user: &U,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<bool, diesel::result::Error> {
         use crate::schema::base_actors;
         use diesel::prelude::*;
@@ -71,7 +71,7 @@ impl Persona {
             })
     }
 
-    pub fn delete(self, conn: &PgConnection) -> Result<(), diesel::result::Error> {
+    pub fn delete(self, conn: &mut PgConnection) -> Result<(), diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::delete(personas::table)
@@ -100,7 +100,7 @@ pub struct NewPersona {
 }
 
 impl NewPersona {
-    pub fn insert(self, conn: &PgConnection) -> Result<Persona, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<Persona, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(personas::table)

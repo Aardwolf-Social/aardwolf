@@ -39,7 +39,7 @@ pub struct NewGroup {
 }
 
 impl NewGroup {
-    pub fn insert(self, conn: &PgConnection) -> Result<Group, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<Group, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(groups::table)

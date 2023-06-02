@@ -57,7 +57,7 @@ impl BasePost {
     pub fn is_visible_by(
         &self,
         actor: &BaseActor,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<bool, diesel::result::Error> {
         match self.visibility {
             PostVisibility::Public => Ok(true),
@@ -97,7 +97,7 @@ pub struct NewBasePost {
 }
 
 impl NewBasePost {
-    pub fn insert(self, conn: &PgConnection) -> Result<BasePost, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<BasePost, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(base_posts::table)

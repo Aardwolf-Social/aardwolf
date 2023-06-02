@@ -43,7 +43,7 @@ pub struct NewMediaPost {
 }
 
 impl NewMediaPost {
-    pub fn insert(self, conn: &PgConnection) -> Result<MediaPost, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<MediaPost, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(media_posts::table)

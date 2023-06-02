@@ -31,19 +31,19 @@ pub trait UserLike {
     fn created_at(&self) -> DateTime<Utc>;
     fn updated_at(&self) -> DateTime<Utc>;
 
-    fn is_verified(&self, conn: &PgConnection) -> Result<bool, diesel::result::Error> {
+    fn is_verified(&self, conn: &mut PgConnection) -> Result<bool, diesel::result::Error> {
         self.has_role(Role::Verified, conn)
     }
 
-    fn is_moderator(&self, conn: &PgConnection) -> Result<bool, diesel::result::Error> {
+    fn is_moderator(&self, conn: &mut PgConnection) -> Result<bool, diesel::result::Error> {
         self.has_role(Role::Moderator, conn)
     }
 
-    fn is_admin(&self, conn: &PgConnection) -> Result<bool, diesel::result::Error> {
+    fn is_admin(&self, conn: &mut PgConnection) -> Result<bool, diesel::result::Error> {
         self.has_role(Role::Admin, conn)
     }
 
-    fn has_role(&self, name: Role, conn: &PgConnection) -> Result<bool, diesel::result::Error> {
+    fn has_role(&self, name: Role, conn: &mut PgConnection) -> Result<bool, diesel::result::Error> {
         use crate::schema::{roles, user_roles};
         use diesel::prelude::*;
 
@@ -107,7 +107,7 @@ pub struct AuthenticatedUser {
 impl AuthenticatedUser {
     pub fn get_authenticated_user_by_id(
         id: i32,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<Self, diesel::result::Error> {
         use diesel::prelude::*;
 
@@ -117,7 +117,7 @@ impl AuthenticatedUser {
     pub fn set_default_email(
         &mut self,
         email: &VerifiedEmail,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<(), UpdateFieldError> {
         if email.user_id() != self.id {
             return Err(UpdateFieldError::Relation);
@@ -134,7 +134,11 @@ impl AuthenticatedUser {
             })
     }
 
-    fn verify(&self, email: &VerifiedEmail, conn: &PgConnection) -> Result<(), UserVerifyError> {
+    fn verify(
+        &self,
+        email: &VerifiedEmail,
+        conn: &mut PgConnection,
+    ) -> Result<(), UserVerifyError> {
         if self.id != email.user_id() {
             return Err(UserVerifyError::IdMismatch);
         }
@@ -177,9 +181,9 @@ pub struct MemVerified {
 impl MemVerified {
     pub fn store_verify(
         self,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<(AuthenticatedUser, VerifiedEmail), UserVerifyError> {
-        conn.transaction(|| {
+        conn.transaction(|conn| {
             let MemVerified { email, mut user } = self;
 
             email
@@ -289,7 +293,7 @@ impl UnauthenticatedUser {
 
     pub fn into_verified(
         self,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<Result<UnauthenticatedUser, UnverifiedUser>, diesel::result::Error> {
         self.is_verified(conn).map(|has_role| {
             if has_role {
@@ -304,7 +308,7 @@ impl UnauthenticatedUser {
         })
     }
 
-    pub fn by_id(id: i32, conn: &PgConnection) -> Result<Self, diesel::result::Error> {
+    pub fn by_id(id: i32, conn: &mut PgConnection) -> Result<Self, diesel::result::Error> {
         use diesel::prelude::*;
 
         users::table.find(id).first(conn)
@@ -312,7 +316,7 @@ impl UnauthenticatedUser {
 
     pub fn by_email_id(
         email_id: i32,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<(Self, Email), diesel::result::Error> {
         use crate::schema::emails;
         use diesel::prelude::*;
@@ -325,7 +329,7 @@ impl UnauthenticatedUser {
 
     pub fn by_email_for_auth(
         email: &str,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<(Self, Email, LocalAuth), diesel::result::Error> {
         use crate::schema::{emails, local_auth};
         use diesel::prelude::*;
@@ -368,7 +372,10 @@ pub struct NewUser {
 }
 
 impl NewUser {
-    pub fn insert(self, conn: &PgConnection) -> Result<UnauthenticatedUser, diesel::result::Error> {
+    pub fn insert(
+        self,
+        conn: &mut PgConnection,
+    ) -> Result<UnauthenticatedUser, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(users::table)

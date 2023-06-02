@@ -43,7 +43,7 @@ pub struct NewFollowRequest {
 }
 
 impl NewFollowRequest {
-    pub fn insert(self, conn: &PgConnection) -> Result<FollowRequest, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<FollowRequest, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(follow_requests::table)

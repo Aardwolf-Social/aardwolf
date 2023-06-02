@@ -43,7 +43,7 @@ pub struct NewReaction {
 }
 
 impl NewReaction {
-    pub fn insert(self, conn: &PgConnection) -> Result<Reaction, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<Reaction, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(reactions::table)

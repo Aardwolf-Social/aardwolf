@@ -94,16 +94,16 @@ pub struct TimeBounds;
 
 pub fn with_connection<F>(f: F)
 where
-    F: FnOnce(&PgConnection) -> Result<(), Error>,
+    F: FnOnce(&mut PgConnection) -> Result<(), Error>,
 {
     dotenv().ok();
 
     let db_url = env::var("TEST_DATABASE_URL").unwrap();
 
-    let conn = PgConnection::establish(&db_url).unwrap();
+    let mut conn = PgConnection::establish(&db_url).unwrap();
 
-    conn.test_transaction(|| {
-        f(&conn).map_err(|e| {
+    conn.test_transaction(|conn| {
+        f(conn).map_err(|e| {
             println!("Error: {}, {:?}", e, e);
             e
         })
@@ -389,7 +389,7 @@ where
     f(event_notification)
 }
 
-pub fn with_unverified_user<F>(conn: &PgConnection, f: F) -> Result<(), Error>
+pub fn with_unverified_user<F>(conn: &mut PgConnection, f: F) -> Result<(), Error>
 where
     F: FnOnce(UnverifiedUser) -> Result<(), Error>,
 {
@@ -432,7 +432,7 @@ where
 }
 
 pub fn make_verified_authenticated_user<F>(
-    conn: &PgConnection,
+    conn: &mut PgConnection,
     password: &str,
     f: F,
 ) -> Result<(), Error>
@@ -463,7 +463,7 @@ where
 pub struct AlreadyVerified;
 
 pub fn make_unverified_authenticated_user<F>(
-    conn: &PgConnection,
+    conn: &mut PgConnection,
     password: &str,
     f: F,
 ) -> Result<(), Error>
@@ -484,7 +484,7 @@ where
 }
 
 pub fn make_verified_user_with_persona<F>(
-    conn: &PgConnection,
+    conn: &mut PgConnection,
     password: &str,
     f: F,
 ) -> Result<(), Error>

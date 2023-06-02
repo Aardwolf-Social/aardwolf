@@ -17,7 +17,7 @@ impl DirectPost {
     pub fn exists(
         actor: &BaseActor,
         post: &BasePost,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<bool, diesel::result::Error> {
         use diesel::prelude::*;
 
@@ -61,7 +61,7 @@ pub struct NewDirectPost {
 }
 
 impl NewDirectPost {
-    pub fn insert(self, conn: &PgConnection) -> Result<DirectPost, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<DirectPost, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(direct_posts::table)

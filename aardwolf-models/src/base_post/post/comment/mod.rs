@@ -51,7 +51,7 @@ pub struct NewComment {
 }
 
 impl NewComment {
-    pub fn insert(self, conn: &PgConnection) -> Result<Comment, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<Comment, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(comments::table)

@@ -69,7 +69,7 @@ pub struct NewEvent {
 }
 
 impl NewEvent {
-    pub fn insert(self, conn: &PgConnection) -> Result<Event, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<Event, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(events::table)

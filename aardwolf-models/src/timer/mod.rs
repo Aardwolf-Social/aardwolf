@@ -40,7 +40,7 @@ pub struct NewTimer {
 }
 
 impl NewTimer {
-    pub fn insert(self, conn: &PgConnection) -> Result<Timer, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<Timer, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(timers::table)

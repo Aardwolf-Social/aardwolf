@@ -52,7 +52,7 @@ pub struct NewPost {
 }
 
 impl NewPost {
-    pub fn insert(self, conn: &PgConnection) -> Result<Post, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<Post, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(posts::table)

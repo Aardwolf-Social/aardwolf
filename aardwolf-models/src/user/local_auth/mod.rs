@@ -85,7 +85,7 @@ pub struct NewLocalAuth {
 
 impl NewLocalAuth {
     /// Insert into the database
-    pub fn insert(self, conn: &PgConnection) -> Result<LocalAuth, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<LocalAuth, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(local_auth::table)

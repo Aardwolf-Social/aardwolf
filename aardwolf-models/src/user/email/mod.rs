@@ -65,7 +65,7 @@ pub struct Email {
 impl Email {
     pub fn first_by_user_id(
         user_id: i32,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<Self, diesel::result::Error> {
         use diesel::prelude::*;
 
@@ -74,7 +74,7 @@ impl Email {
             .get_result(conn)
     }
 
-    pub fn by_id(id: i32, conn: &PgConnection) -> Result<Self, diesel::result::Error> {
+    pub fn by_id(id: i32, conn: &mut PgConnection) -> Result<Self, diesel::result::Error> {
         use diesel::prelude::*;
 
         emails::table
@@ -133,7 +133,7 @@ pub struct EmailVerificationChangeset {
 impl VerifyEmail {
     pub(crate) fn store_verify(
         self,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<VerifiedEmail, diesel::result::Error> {
         use diesel::prelude::*;
 
@@ -236,7 +236,7 @@ pub struct NewEmail {
 }
 
 impl NewEmail {
-    pub fn insert(self, conn: &PgConnection) -> Result<UnverifiedEmail, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<UnverifiedEmail, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(emails::table)
