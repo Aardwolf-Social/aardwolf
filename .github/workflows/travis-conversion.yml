@@ -86,9 +86,10 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         ports:
-          - 5432:5432
-     
-      # Postgres prep
+          - 5432:5432  
+
+    # Postgres prep
+    steps:      
       - run: psql --version
       - run: |
           psql -c 'create user pguser;' -U postgres
