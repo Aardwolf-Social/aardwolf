@@ -1,4 +1,4 @@
-use std::{error::Error as StdError, io::Write, str::FromStr};
+use std::{error::Error as StdError, str::FromStr};
 
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
 use url::Url as OrigUrl;
@@ -10,17 +10,19 @@ pub struct Url(pub OrigUrl);
 impl<DB> serialize::ToSql<Text, DB> for Url
 where
     DB: Backend,
+    str: serialize::ToSql<Text, DB>,
 {
-    fn to_sql<W: Write>(&self, out: &mut serialize::Output<W, DB>) -> serialize::Result {
-        serialize::ToSql::<Text, DB>::to_sql(self.0.as_str(), out)
+    fn to_sql<'b>(&'b self, out: &mut serialize::Output<'b, '_, DB>) -> serialize::Result {
+        self.0.as_str().to_sql(out)
     }
 }
 
 impl<DB> deserialize::FromSql<Text, DB> for Url
 where
-    DB: Backend<RawValue = [u8]>,
+    DB: Backend,
+    *const str: deserialize::FromSql<diesel::sql_types::Text, DB>,
 {
-    fn from_sql(bytes: Option<&DB::RawValue>) -> deserialize::Result<Self> {
+    fn from_sql(bytes: <DB as Backend>::RawValue<'_>) -> deserialize::Result<Self> {
         deserialize::FromSql::<Text, DB>::from_sql(bytes).and_then(|s: String| {
             s.parse()
                 .map(Url)

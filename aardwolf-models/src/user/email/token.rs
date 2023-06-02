@@ -1,4 +1,4 @@
-use std::{fmt, io::Write};
+use std::fmt;
 
 use bcrypt::{hash, verify};
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
@@ -79,17 +79,19 @@ impl fmt::Display for HashedEmailToken {
 impl<DB> serialize::ToSql<Text, DB> for HashedEmailToken
 where
     DB: Backend,
+    String: serialize::ToSql<Text, DB>,
 {
-    fn to_sql<W: Write>(&self, out: &mut serialize::Output<W, DB>) -> serialize::Result {
-        serialize::ToSql::<Text, DB>::to_sql(&self.0, out)
+    fn to_sql<'b>(&'b self, out: &mut serialize::Output<'b, '_, DB>) -> serialize::Result {
+        self.0.to_sql(out)
     }
 }
 
 impl<DB> deserialize::FromSql<Text, DB> for HashedEmailToken
 where
-    DB: Backend<RawValue = [u8]>,
+    DB: Backend,
+    *const str: deserialize::FromSql<diesel::sql_types::Text, DB>,
 {
-    fn from_sql(bytes: Option<&DB::RawValue>) -> deserialize::Result<Self> {
+    fn from_sql(bytes: <DB as Backend>::RawValue<'_>) -> deserialize::Result<Self> {
         deserialize::FromSql::<Text, DB>::from_sql(bytes).map(HashedEmailToken)
     }
 }
