@@ -20,8 +20,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v3
     - name: Install packages
-    - run: sudo apt install open_ssl
+    - run: sudo apt install -y open_ssl
     - uses: actions/checkout@v3
       with:
         path: /opt/openssl
