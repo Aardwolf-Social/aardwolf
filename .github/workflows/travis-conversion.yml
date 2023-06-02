@@ -36,6 +36,8 @@ jobs:
     steps:
       - name: Setup | Checkout
         uses: actions/checkout@v2
+      - name: Setup | openSSL
+        run: sudo apt-get install -y libssl-dev
       - name: Setup | Rust
         uses: ATiltedTree/setup-rust@v1
         with:
@@ -74,6 +76,7 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
+          
     # Postgres Service      
     services:
       postgres:
