@@ -18,11 +18,6 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-    
-    # Rust language matrix
-    - name: Setup Rust
-      uses: ATiltedTree/setup-rust@v1.0.5
-          
     # Postgres Service      
     services:
       postgres:
@@ -38,14 +33,19 @@ jobs:
           - 5432:5432
     # Build steps      
     steps:
+      # Rust language matrix
+      - name: Setup Rust
+        uses: ATiltedTree/setup-rust@v1.0.5
+      
+      # Postgres prep
       - run: psql --version
       - run: |
           psql -c 'create user pguser;' -U postgres
           psql -c 'alter user pguser createdb; ' -U postgres
         env:
           PGHOST: 127.0.0.1
-          
-    steps:
+      
+      # Do stuff...    
       - uses: actions/checkout@v2
       - run: echo "BEFORE SCRIPT"
       - run: psql -c 'CREATE DATABASE aardwolf_testing;' -U postgres
@@ -66,8 +66,8 @@ jobs:
       - run: cargo build --all --verbose
       - run: cargo test --all --verbose
 
-    # Cargo build    
-    - name: Build
-      run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose      
+      # Cargo build    
+      - name: Build
+        run: cargo build --verbose
+      - name: Run tests
+        run: cargo test --verbose      
