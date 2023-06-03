@@ -74,6 +74,14 @@ impl BasePost {
     pub fn updated_at(&self) -> DateTime<Utc> {
         self.updated_at
     }
+
+    pub fn local_uuid(&self) -> Option<Uuid> {
+        self.local_uuid
+    }
+
+    pub fn activitypub_id(&self) -> &str {
+        self.activitypub_id.as_str()
+    }
 }
 
 #[derive(Insertable)]

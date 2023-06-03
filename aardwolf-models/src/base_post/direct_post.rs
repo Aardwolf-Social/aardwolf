@@ -32,6 +32,18 @@ impl DirectPost {
             })
     }
 
+    pub fn id(&self) -> i32 {
+        self.id
+    }
+
+    pub fn base_post_id(&self) -> i32 {
+        self.base_post_id
+    }
+
+    pub fn base_actor_id(&self) -> i32 {
+        self.base_actor_id
+    }
+
     pub fn created_at(&self) -> DateTime<Utc> {
         self.created_at
     }

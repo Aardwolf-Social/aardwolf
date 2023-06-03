@@ -256,7 +256,7 @@ impl UserLike for QueriedUser {
     }
 
     fn primary_persona(&self) -> Option<i32> {
-        None
+        self.primary_persona
     }
 
     fn created_at(&self) -> DateTime<Utc> {
