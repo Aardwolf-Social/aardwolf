@@ -1,0 +1,31 @@
+#-
+# GitHub Action for Rust Builds
+# Default script added 2023-06-02
+#
+
+name: Rust Build CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install packages
+    - run: sudo apt install open_ssl
+    - uses: actions/checkout@v3
+      with:
+        path: /opt/openssl
+    - name: Build
+      run: cargo build --verbose
+    - name: Run tests
+      run: cargo test --verbose
