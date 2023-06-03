@@ -5,10 +5,7 @@
 # Aardwolf
 
 <p align="center">
-  <img alt="banner" src="/doc/images/aardwolf_banner.png/">
-</p>
-<p align="center" href="">
-  Aardwolf, building social communities with open software.
+  <img alt="Aardwolf Social: Powering connected social communities with open software" src="/doc/images/aardwolf_banner_small.png/">
 </p>
 
 
