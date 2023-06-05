@@ -16,7 +16,7 @@ name: Labeler
 on: 
   pull_request:
     branches:
-     - master
+     - main
      - 'dependabot/security-updates'
      - 'dependabot/version-updates'
      - 'banjofox/*' 
