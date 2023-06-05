@@ -1,20 +1,19 @@
-#-
-# To update npm packages do the following
-#
 
+# Updating the NPM Package.json (and thus package-lock.json)
+This is based on Banjo-hacking and absolutely NOT a BEST PRACTICE document! (Yet)
+
+```
 $ cd [project_root]
 $ sudo npm install -g npm-check-updates
 $ ncu -u
 $ npm install
+```
 
-#-
-# To fix security issues run
-#
+- Show out of date packages
+`$ npm outdated` 
 
-$ npm audit fix
+Update specific package (start with outdated ones)
+`$ npm update [outdated package name]`
 
-
-### Need to look into these.
-
-npm WARN deprecated har-validator@5.1.5: this library is no longer supported
-npm WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
+Apply "safe" Security Updates
+`$ npm audit fix`  (use --force to apply potentially breaking ones)
