@@ -76,11 +76,9 @@ mod tests {
     #[test]
     fn create_post() {
         with_connection(|conn| {
-            with_base_actor(conn, |posted_by| {
-                with_base_post(conn, &posted_by, |base_post| {
-                    with_post(conn, &base_post, |_| Ok(()))
-                })
-            })
+            let _ = make_post(conn)?;
+
+            Ok(())
         })
     }
 }

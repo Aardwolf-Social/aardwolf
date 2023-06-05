@@ -66,17 +66,15 @@ mod tests {
     #[test]
     fn create_reaction() {
         with_connection(|conn| {
-            make_post(conn, |conversation_post| {
-                make_post(conn, |comment_post| {
-                    with_comment(
-                        conn,
-                        &conversation_post,
-                        &conversation_post,
-                        &comment_post,
-                        |comment| with_reaction(conn, &comment, |_| Ok(())),
-                    )
-                })
-            })
+            let conversation_post = make_post(conn)?;
+            let comment_post = make_post(conn)?;
+            let comment =
+                make_comment(conn, &conversation_post, &conversation_post, &comment_post)?;
+            let reaction = make_reaction(conn, &comment);
+
+            assert!(reaction.is_ok());
+
+            Ok(())
         })
     }
 }

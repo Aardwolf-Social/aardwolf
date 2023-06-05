@@ -82,7 +82,13 @@ mod tests {
 
     #[test]
     fn create_file() {
-        with_connection(|conn| with_file(conn, |_| Ok(())))
+        with_connection(|conn| {
+            let file = make_file(conn);
+
+            assert!(file.is_ok());
+
+            Ok(())
+        })
     }
 
     #[test]

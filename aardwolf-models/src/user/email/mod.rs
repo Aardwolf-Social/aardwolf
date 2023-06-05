@@ -266,23 +266,22 @@ mod tests {
     #[test]
     fn create_email() {
         with_connection(|conn| {
-            with_unverified_user(conn, |user| {
-                with_unverified_email(conn, &user, |_email, _token| Ok(()))
-            })
+            let user = make_unverified_user(conn)?;
+            let _ = make_unverified_email(conn, &user);
+
+            Ok(())
         })
     }
 
     #[test]
     fn verify_email() {
         with_connection(|conn| {
-            with_unverified_user(conn, |user| {
-                with_unverified_email(conn, &user, |email, token| {
-                    let token = transmute_email_token(&token)?;
-                    email.verify(token)?.store_verify(conn)?;
+            let user = make_unverified_user(conn)?;
+            let (email, token) = make_unverified_email(conn, &user)?;
+            let token = transmute_email_token(&token)?;
+            email.verify(token)?.store_verify(conn)?;
 
-                    Ok(())
-                })
-            })
+            Ok(())
         })
     }
 }

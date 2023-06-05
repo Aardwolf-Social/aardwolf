@@ -153,9 +153,10 @@ mod tests {
     #[test]
     fn create_base_post() {
         with_connection(|conn| {
-            with_base_actor(conn, |posted_by| {
-                with_base_post(conn, &posted_by, |_| Ok(()))
-            })
+            let posted_by = make_base_actor(conn)?;
+            let _ = make_base_post(conn, &posted_by)?;
+
+            Ok(())
         })
     }
 }

@@ -78,11 +78,14 @@ mod tests {
     #[test]
     fn create_follower() {
         with_connection(|conn| {
-            with_base_actor(conn, |follower| {
-                with_base_actor(conn, |follows| {
-                    with_follower(conn, &follower, &follows, |_| Ok(()))
-                })
-            })
+            let follower_actor = make_base_actor(conn)?;
+            let follows = make_base_actor(conn)?;
+
+            let follower = make_follower(conn, &follower_actor, &follows);
+
+            assert!(follower.is_ok());
+
+            Ok(())
         })
     }
 }

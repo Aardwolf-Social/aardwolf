@@ -84,13 +84,14 @@ mod tests {
     #[test]
     fn create_direct_post() {
         with_connection(|conn| {
-            with_base_actor(conn, |post_author| {
-                with_base_post(conn, &post_author, |base_post| {
-                    with_base_actor(conn, |viewer| {
-                        with_direct_post(conn, &base_post, &viewer, |_| Ok(()))
-                    })
-                })
-            })
+            let post_author = make_base_actor(conn)?;
+            let base_post = make_base_post(conn, &post_author)?;
+            let viewer = make_base_actor(conn)?;
+            let post = make_direct_post(conn, &base_post, &viewer);
+
+            assert!(post.is_ok());
+
+            Ok(())
         })
     }
 }

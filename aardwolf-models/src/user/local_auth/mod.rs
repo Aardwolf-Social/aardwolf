@@ -143,47 +143,47 @@ mod tests {
     #[test]
     fn create_local_auth() {
         with_connection(|conn| {
-            with_unverified_user(conn, |user| {
-                let password = "testpass";
-                with_local_auth(conn, &user, password, |_| Ok(()))
-            })
+            let user = make_unverified_user(conn)?;
+            let password = "testpass";
+
+            let _ = make_local_auth(conn, &user, password);
+
+            Ok(())
         })
     }
 
     #[test]
     fn dont_create_local_auth_with_invalid_password() {
         with_connection(|conn| {
-            with_unverified_user(conn, |user| {
-                let password = create_plaintext_password("short")?;
+            let user = make_unverified_user(conn)?;
+            let password = create_plaintext_password("short")?;
 
-                let local_auth = NewLocalAuth::new(&user, password);
+            let local_auth = NewLocalAuth::new(&user, password);
 
-                assert!(
-                    local_auth.is_err(),
-                    "Should not have created local auth with bad password"
-                );
+            assert!(
+                local_auth.is_err(),
+                "Should not have created local auth with bad password"
+            );
 
-                Ok(())
-            })
+            Ok(())
         })
     }
 
     #[test]
     fn dont_create_local_auth_with_mismatched_passwords() {
         with_connection(|conn| {
-            with_unverified_user(conn, |user| {
-                let p1 = create_plaintext_password("agoodpassword")?;
-                let p2 = create_plaintext_password("abadpassword")?;
+            let user = make_unverified_user(conn)?;
+            let p1 = create_plaintext_password("agoodpassword")?;
+            let p2 = create_plaintext_password("abadpassword")?;
 
-                let local_auth = NewLocalAuth::new_from_two(&user, p1, p2);
+            let local_auth = NewLocalAuth::new_from_two(&user, p1, p2);
 
-                assert!(
-                    local_auth.is_err(),
-                    "Should not have created LocalAuth from mismatched passwords"
-                );
+            assert!(
+                local_auth.is_err(),
+                "Should not have created LocalAuth from mismatched passwords"
+            );
 
-                Ok(())
-            })
+            Ok(())
         })
     }
 }

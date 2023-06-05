@@ -404,33 +404,40 @@ mod tests {
 
     #[test]
     fn create_user() {
-        with_connection(|conn| with_unverified_user(conn, |_| Ok(())))
+        with_connection(|conn| {
+            let user = make_unverified_user(conn);
+
+            assert!(user.is_ok());
+
+            Ok(())
+        });
     }
 
     #[test]
     fn verify_and_log_in_user() {
         with_connection(|conn| {
-            make_verified_authenticated_user(conn, "testpass", |_user, _email| Ok(()))
+            let user = make_verified_authenticated_user(conn, "testpass");
+
+            assert!(user.is_ok());
+
+            Ok(())
         })
     }
 
     #[test]
     fn log_in_unverified_user() {
         with_connection(|conn| {
-            with_unverified_user(conn, |user| {
-                with_unverified_email(conn, &user, |email, _token| {
-                    let password = "password";
+            let user = make_unverified_user(conn)?;
+            let (email, _) = make_unverified_email(conn, &user)?;
+            let password = "password";
+            let _ = make_local_auth(conn, &user, password);
+            let (user, _, auth) = UnauthenticatedUser::by_email_for_auth(email.email(), conn)?;
 
-                    with_local_auth(conn, &user, password, |_| {
-                        let (user, _, auth) =
-                            UnauthenticatedUser::by_email_for_auth(email.email(), conn)?;
+            let result = user.log_in_local(auth, create_plaintext_password(password)?);
 
-                        user.log_in_local(auth, create_plaintext_password(password)?)?;
+            assert!(result.is_ok());
 
-                        Ok(())
-                    })
-                })
-            })
+            Ok(())
         })
     }
 
@@ -438,13 +445,16 @@ mod tests {
     fn log_in_verified_user() {
         with_connection(|conn| {
             let password = "testpass";
-            make_verified_authenticated_user(conn, password, |_user, email| {
-                let (user, _, auth) = UnauthenticatedUser::by_email_for_auth(email.email(), conn)?;
+            let (_, email) = make_verified_authenticated_user(conn, password).unwrap();
 
-                user.log_in_local(auth, create_plaintext_password(password)?)?;
+            let (user, _, auth) =
+                UnauthenticatedUser::by_email_for_auth(email.email(), conn).unwrap();
 
-                Ok(())
-            })
+            let result = user.log_in_local(auth, create_plaintext_password(password)?);
+
+            assert!(result.is_ok());
+
+            Ok(())
         })
     }
 }

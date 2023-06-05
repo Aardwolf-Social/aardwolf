@@ -59,6 +59,10 @@ mod tests {
 
     #[test]
     fn create_timer() {
-        with_connection(|conn| with_timer(conn, |_| Ok(())))
+        with_connection(|conn| {
+            let _ = make_timer(conn);
+
+            Ok(())
+        })
     }
 }

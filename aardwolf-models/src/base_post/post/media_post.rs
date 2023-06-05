@@ -66,9 +66,14 @@ mod tests {
     #[test]
     fn create_media_post() {
         with_connection(|conn| {
-            make_post(conn, |post| {
-                with_file(conn, |file| with_media_post(conn, &file, &post, |_| Ok(())))
-            })
+            let post = make_post(conn)?;
+
+            let file = make_file(conn)?;
+            let media_post = make_media_post(conn, &file, &post);
+
+            assert!(media_post.is_ok());
+
+            Ok(())
         })
     }
 }

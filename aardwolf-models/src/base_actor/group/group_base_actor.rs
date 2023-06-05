@@ -69,13 +69,16 @@ mod tests {
     #[test]
     fn create_group_base_actor() {
         with_connection(|conn| {
-            with_base_actor(conn, |base_group| {
-                with_group(conn, &base_group, |group| {
-                    with_base_actor(conn, |base_actor| {
-                        with_group_base_actor(conn, &group, &base_actor, |_| Ok(()))
-                    })
-                })
-            })
+            let base_group = make_base_actor(conn)?;
+            let group = make_group(conn, &base_group)?;
+
+            let base_actor = make_base_actor(conn)?;
+
+            let result = make_group_base_actor(conn, &group, &base_actor);
+
+            assert!(result.is_ok());
+
+            Ok(())
         });
     }
 }

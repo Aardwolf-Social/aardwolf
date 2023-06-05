@@ -66,11 +66,14 @@ mod tests {
     #[test]
     fn create_follow_request() {
         with_connection(|conn| {
-            with_base_actor(conn, |follower| {
-                with_base_actor(conn, |requested_follow| {
-                    with_follow_request(conn, &follower, &requested_follow, |_| Ok(()))
-                })
-            })
+            let follower_actor = make_base_actor(conn)?;
+            let target_actor = make_base_actor(conn)?;
+
+            let request = make_follow_request(conn, &follower_actor, &target_actor);
+
+            assert!(request.is_ok());
+
+            Ok(())
         })
     }
 }

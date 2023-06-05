@@ -269,6 +269,12 @@ mod tests {
 
     #[test]
     fn create_base_actor() {
-        with_connection(|conn| with_base_actor(conn, |_| Ok(())))
+        with_connection(|conn| {
+            let actor = make_base_actor(conn);
+
+            assert!(actor.is_ok());
+
+            Ok(())
+        })
     }
 }

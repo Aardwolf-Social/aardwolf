@@ -114,55 +114,45 @@ mod tests {
     #[test]
     fn create_event() {
         with_connection(|conn| {
-            with_timer(conn, |t1| {
-                with_timer(conn, |t2| {
-                    let (start, end) = if t1.fire_time() < t2.fire_time() {
-                        (t1, t2)
-                    } else {
-                        (t2, t1)
-                    };
+            let t1 = make_timer(conn)?;
+            let t2 = make_timer(conn)?;
+            let (start, end) = if t1.fire_time() < t2.fire_time() {
+                (t1, t2)
+            } else {
+                (t2, t1)
+            };
 
-                    with_base_actor(conn, |owner_base| {
-                        with_persona(conn, &owner_base, |owner| {
-                            with_event(conn, &owner, &start, &end, |_| Ok(()))
-                        })
-                    })
-                })
-            })
+            let owner_base = make_base_actor(conn)?;
+            let owner = make_persona(conn, &owner_base)?;
+            let _ = make_event(conn, &owner, &start, &end)?;
+
+            Ok(())
         })
     }
 
     #[test]
     fn dont_create_event_with_invalid_times() {
         with_connection(|conn| {
-            with_timer(conn, |t1| {
-                with_timer(conn, |t2| {
-                    let (start, end) = if t1.fire_time() < t2.fire_time() {
-                        (t1, t2)
-                    } else {
-                        (t2, t1)
-                    };
+            let t1 = make_timer(conn)?;
+            let t2 = make_timer(conn)?;
+            let (start, end) = if t1.fire_time() < t2.fire_time() {
+                (t1, t2)
+            } else {
+                (t2, t1)
+            };
 
-                    with_base_actor(conn, |owner_base| {
-                        with_persona(conn, &owner_base, |owner| {
-                            let new_event = NewEvent::new(
-                                &owner,
-                                &end,
-                                &start,
-                                Tz::UTC,
-                                gen_string()?,
-                                gen_string()?,
-                            );
+            let owner_base = make_base_actor(conn)?;
+            let owner = make_persona(conn, &owner_base)?;
 
-                            assert!(
-                                new_event.is_err(),
-                                "Should not have created event with invalid start and end times"
-                            );
-                            Ok(())
-                        })
-                    })
-                })
-            })
+            let new_event =
+                NewEvent::new(&owner, &end, &start, Tz::UTC, gen_string(), gen_string());
+
+            assert!(
+                new_event.is_err(),
+                "Should not have created event with invalid start and end times"
+            );
+
+            Ok(())
         })
     }
 }

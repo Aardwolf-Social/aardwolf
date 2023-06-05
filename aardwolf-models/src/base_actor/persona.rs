@@ -132,9 +132,12 @@ mod tests {
     #[test]
     fn create_persona() {
         with_connection(|conn| {
-            with_base_actor(conn, |base_actor| {
-                with_persona(conn, &base_actor, |_| Ok(()))
-            })
+            let base_actor = make_base_actor(conn)?;
+            let persona = make_persona(conn, &base_actor);
+
+            assert!(persona.is_ok());
+
+            Ok(())
         })
     }
 }
