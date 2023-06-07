@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #### Linux/OSX Instructions
 
 If you're on an Ubuntu-like machine, you should be able to install
@@ -85,4 +84,3 @@ For Arch/Manjaro, do
 #### Windows Instructions
 
 For Windows, just download the installer [here](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads#windows) and run it. After installing, make sure to add the <POSTGRES INSTALL PATH>/lib directory to your PATH system variable.
->>>>>>> banjo/documentation-updates
