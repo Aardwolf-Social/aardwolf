@@ -9,6 +9,7 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+      
     # Disable version updates for cargo dependencies
     open-pull-requests-limit: 0
     
@@ -16,6 +17,7 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+      
     # Disable version updates for npm dependencies
     open-pull-requests-limit: 0    
     
@@ -23,5 +25,6 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"  
+      
     # Disable version updates for docker dependencies
-    open-pull-requests-limit: 0      
+    open-pull-requests-limit: 0     
