@@ -98,14 +98,13 @@ dependencies = [
  "aardwolf-test-helpers",
  "actix-web 1.0.9",
  "derive_builder",
- "diesel 1.4.8",
+ "diesel 2.1.0",
  "failure",
- "futures-preview",
+ "futures 0.3.28",
  "log",
  "mime",
  "openssl",
  "r2d2",
- "r2d2-diesel",
  "serde 1.0.163",
  "serde_derive",
  "url 2.4.0",
@@ -1840,6 +1839,7 @@ checksum = "23342abe12aba583913b2e62f22225ff9c950774065e4bfb61a19cd9770fec40"
 dependencies = [
  "futures-channel",
  "futures-core",
+ "futures-executor",
  "futures-io",
  "futures-sink",
  "futures-task",
@@ -1886,6 +1886,17 @@ checksum = "ab90cde24b3319636588d0c35fe03b1333857621051837ed769faefb4c2162e4"
 dependencies = [
  "futures 0.1.31",
  "num_cpus",
+]
+
+[[package]]
+name = "futures-executor"
+version = "0.3.28"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ccecee823288125bd88b4d7f565c9e58e41858e47ab72e8ea2d64e93624386e0"
+dependencies = [
+ "futures-core",
+ "futures-task",
+ "futures-util",
 ]
 
 [[package]]
@@ -1987,6 +1998,7 @@ version = "0.3.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "26b01e40b772d54cf6c6d721c1d1abd0647a0106a12ecaa1c186273392a69533"
 dependencies = [
+ "futures 0.1.31",
  "futures-channel",
  "futures-core",
  "futures-io",
