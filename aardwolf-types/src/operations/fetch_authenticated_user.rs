@@ -30,9 +30,9 @@ impl DbAction for FetchAuthenticatedUser {
 
     fn db_action(
         self,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<AuthenticatedUser, FetchAuthenticatedUserFail> {
-        AuthenticatedUser::get_authenticated_user_by_id(self.0, &conn).map_err(From::from)
+        AuthenticatedUser::get_authenticated_user_by_id(self.0, conn).map_err(From::from)
     }
 }
 
@@ -49,36 +49,33 @@ mod tests {
     #[test]
     fn fetches_verified_user() {
         with_connection(|conn| {
-            make_verified_authenticated_user(conn, &gen_string()?, |user, _email| {
-                let operation = FetchAuthenticatedUser(user.id());
+            let (user, email) = make_verified_authenticated_user(conn, &gen_string())?;
+            let operation = FetchAuthenticatedUser(user.id());
 
-                assert!(operation.db_action(conn).is_ok());
-                Ok(())
-            })
+            assert!(operation.db_action(conn).is_ok());
+            Ok(())
         })
     }
 
     #[test]
     fn fetches_unverified_user() {
         with_connection(|conn| {
-            make_unverified_authenticated_user(conn, &gen_string()?, |user| {
-                let operation = FetchAuthenticatedUser(user.id());
+            let user = make_unverified_authenticated_user(conn, &gen_string())?;
+            let operation = FetchAuthenticatedUser(user.id());
 
-                assert!(operation.db_action(conn).is_ok());
-                Ok(())
-            })
+            assert!(operation.db_action(conn).is_ok());
+            Ok(())
         })
     }
 
     #[test]
     fn doesnt_fetch_nonexistant_user() {
         with_connection(|conn| {
-            make_unverified_authenticated_user(conn, &gen_string()?, |user| {
-                let operation = FetchAuthenticatedUser(user.id() + 1);
+            let user = make_unverified_authenticated_user(conn, &gen_string())?;
+            let operation = FetchAuthenticatedUser(user.id() + 1);
 
-                assert!(operation.db_action(conn).is_err());
-                Ok(())
-            })
+            assert!(operation.db_action(conn).is_err());
+            Ok(())
         })
     }
 }

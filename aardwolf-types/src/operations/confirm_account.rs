@@ -24,7 +24,7 @@ impl DbAction for ConfirmAccount {
     type Item = AuthenticatedUser;
     type Error = ConfirmAccountFail;
 
-    fn db_action(self, conn: &PgConnection) -> Result<AuthenticatedUser, ConfirmAccountFail> {
+    fn db_action(self, conn: &mut PgConnection) -> Result<AuthenticatedUser, ConfirmAccountFail> {
         let (unauthenticated_user, email) = UnauthenticatedUser::by_email_id(self.0.id, conn)
             .map_err(|_| ConfirmAccountFail::EmailNotFound)?;
 
@@ -100,7 +100,7 @@ impl AardwolfFail for ConfirmAccountFail {}
 mod tests {
     use aardwolf_models::user::email::{EmailToken, UnverifiedEmail};
     use aardwolf_test_helpers::models::{
-        transmute_email_token, with_connection, with_unverified_email, with_unverified_user,
+        make_unverified_email, make_unverified_user, transmute_email_token, with_connection,
     };
     use diesel::pg::PgConnection;
     use failure::Error;
@@ -112,18 +112,19 @@ mod tests {
 
     fn setup<F>(f: F)
     where
-        F: FnOnce(&PgConnection, UnverifiedEmail, EmailToken) -> Result<(), Error>,
+        F: FnOnce(&mut PgConnection, UnverifiedEmail, EmailToken) -> Result<(), Error>,
     {
         with_connection(|conn| setup_with_conn(conn, f))
     }
 
-    fn setup_with_conn<F>(conn: &PgConnection, f: F) -> Result<(), Error>
+    fn setup_with_conn<F>(conn: &mut PgConnection, f: F) -> Result<(), Error>
     where
-        F: FnOnce(&PgConnection, UnverifiedEmail, EmailToken) -> Result<(), Error>,
+        F: FnOnce(&mut PgConnection, UnverifiedEmail, EmailToken) -> Result<(), Error>,
     {
-        with_unverified_user(conn, |user| {
-            with_unverified_email(conn, &user, |email, token| f(conn, email, token))
-        })
+        let user = make_unverified_user(conn)?;
+        let (email, token) = make_unverified_email(conn, &user)?;
+
+        f(conn, email, token)
     }
 
     #[test]

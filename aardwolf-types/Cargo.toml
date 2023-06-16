@@ -30,7 +30,7 @@ optional = true
 [dependencies.diesel]
 version = "2.1"
 default-features = false
-features = ["postgres", "uuid", "chrono"]
+features = ["postgres", "uuid", "chrono", "r2d2"]
 
 [dependencies.r2d2]
 version = "0.8"
