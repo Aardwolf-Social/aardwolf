@@ -9,12 +9,12 @@ init_i18n!("aardwolf", en, pl);
 include!(concat!(env!("OUT_DIR"), "/templates.rs"));
 
 // Directories
-mod asides;
-mod containers;
-mod elements;
-mod error;
-mod home;
-mod posts;
+pub mod asides;
+pub mod containers;
+pub mod elements;
+pub mod error;
+pub mod home;
+pub mod posts;
 
 // Root-level files
 mod first_login;
@@ -22,10 +22,9 @@ mod sign_in;
 mod sign_up;
 
 pub use self::{
-    first_login::FirstLogin,
-    home::home::{Home, NewPost},
-    sign_in::SignIn,
-    sign_up::SignUp,
+    first_login::*,
+    sign_in::*,
+    sign_up::*,
 };
 
 use self::{

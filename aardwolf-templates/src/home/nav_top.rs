@@ -18,13 +18,13 @@ pub struct NewPost<'a> {
     pub(crate) name: InputText<'a>,
 }
 
-pub struct Home<'a> {
+pub struct NavTop<'a> {
     pub(crate) catalog: &'a Catalog,
     pub(crate) new_post: NewPost<'a>,
     pub(crate) shortcuts: Shortcuts<'a>,
 }
 
-impl<'a> Home<'a> {
+impl<'a> NavTop<'a> {
     pub fn new(
         catalog: &'a Catalog,
         profile_link: &'a str,
@@ -34,7 +34,7 @@ impl<'a> Home<'a> {
         validation_error: Option<&'a ValidatePostCreationFail>,
         server_error: bool,
     ) -> Self {
-        Home {
+        NavTop {
             catalog,
             new_post: NewPost {
                 csrf,
@@ -84,8 +84,8 @@ impl<'a> Home<'a> {
     }
 }
 
-impl<'a> Renderable for Home<'a> {
+impl<'a> Renderable for NavTop<'a> {
     fn render(&self, write: &mut dyn std::io::Write) -> std::io::Result<()> {
-        crate::templates::home::home(write, self)
+        crate::templates::home::nav_top(write, self)
     }
 }
