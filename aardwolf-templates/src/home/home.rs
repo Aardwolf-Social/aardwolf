@@ -4,7 +4,11 @@ use aardwolf_types::forms::posts::{
 use gettext::Catalog;
 use gettext_macros::i18n;
 
-use crate::{Renderable, asides::{Shortcuts}, elements::{Alert, AlertKind, InputSelect, InputText, InputTextarea}};
+use crate::{
+    asides::Shortcuts,
+    elements::{Alert, AlertKind, InputSelect, InputText, InputTextarea},
+    Renderable,
+};
 
 pub struct NewPost<'a> {
     pub(crate) csrf: &'a str,
@@ -82,6 +86,6 @@ impl<'a> Home<'a> {
 
 impl<'a> Renderable for Home<'a> {
     fn render(&self, write: &mut dyn std::io::Write) -> std::io::Result<()> {
-        crate::templates::home(write, self)
+        crate::templates::home::home(write, self)
     }
 }

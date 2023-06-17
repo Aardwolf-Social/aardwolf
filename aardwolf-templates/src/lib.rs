@@ -1,9 +1,8 @@
-#![feature(proc_macro_hygiene)]
 #![allow(clippy::inline_fn_without_body)]
 #![allow(clippy::into_iter_on_ref)]
 
-use rocket_i18n::Translations;
 use gettext_macros::{compile_i18n, include_i18n, init_i18n};
+use rocket_i18n::Translations;
 
 init_i18n!("aardwolf", en, pl);
 
@@ -19,25 +18,20 @@ mod posts;
 
 // Root-level files
 mod first_login;
-mod home;
-mod shortcuts;
 mod sign_in;
 mod sign_up;
-mod ui;
 
 pub use self::{
     first_login::FirstLogin,
-    home::{Home, NewPost},
+    home::home::{Home, NewPost},
     sign_in::SignIn,
     sign_up::SignUp,
 };
 
 use self::{
-    asides::{
-        Settings, Shortcuts,
-        },
+    asides::Shortcuts,
     elements::{
-        Alert, AlertKind, InputCheckbox, InputEmail, Input, InputPassword, InputSelect, InputText,
+        Alert, AlertKind, Input, InputCheckbox, InputEmail, InputPassword, InputSelect, InputText,
         InputTextarea,
     },
 };
