@@ -9,11 +9,11 @@ mod search_bar;
 
 pub use self::{
     alert::{Alert, AlertKind},
-    input::{InputCheckbox, InputEmail, Input, InputPassword, InputPasswordConfirm, InputText},
+    input::{Input, InputCheckbox, InputEmail, InputPassword, InputPasswordConfirm, InputText},
     input_select::{InputSelect, SelectOption},
-    input_textarea::{InputTextarea},
-    lang_dropdown::{},
-    notification_content::{},
-    notification_dropdown::{},
-    search_bar::{},
+    input_textarea::InputTextarea,
+    lang_dropdown::*,
+    notification_content::*,
+    notification_dropdown::*,
+    search_bar::*,
 };

@@ -1,25 +1,27 @@
-@use gettext::Catalog;
 @use gettext_macros::i18n;
 
-@use crate::templates::{posts::{reply_post}, elements::{alert, input_select, input_text, input_textarea}};
+@use crate::{
+  posts::ReplyPost,
+  templates::{elements::{alert, input_select, input_text, input_textarea}},
+};
 
-@(catalog: &Catalog, username: &str, reply_post: &PostNew)
+@(reply_post: &ReplyPost)
 
 <article class="media"><!-- Begin reply box -->
   <figure class="media-left">
 	<p class="image is-64x64">
-	  <img src="https://bulma.io/images/placeholders/128x128.png" alt="@user_name">
+	  <img src="https://bulma.io/images/placeholders/128x128.png" alt="@reply_post.username">
 	</p>
   </figure>
         <form method="POST" action="/posts/create">
             @if let Some(ref a) = reply_post.alert {
                 @:alert(a)
             }
-            <input type="hidden" name="csrf_token" value="@new_post.csrf">
+            <input type="hidden" name="csrf_token" value="@reply_post.csrf">
             @:input_textarea(&reply_post.source)
             @:input_select(&reply_post.visibility)
             @:input_text(&reply_post.name)
-            <button>@i18n!(catalog, "Wooa!")</button>
+            <button>@i18n!(&reply_post.catalog, "Wooa!")</button>
         </form>
   </div>
 </article><!-- End reply box -->

@@ -1,4 +1,7 @@
-pub mod feed;
-#[path = "home.rs"]
-pub mod home;
-pub mod nav_top;
+mod feed;
+mod home;
+mod nav_top;
+
+pub use feed::Feed;
+pub use home::Home;
+pub use nav_top::NavTop;

@@ -7,21 +7,18 @@ use gettext_macros::i18n;
 use crate::{
     asides::Shortcuts,
     elements::{Alert, AlertKind, InputSelect, InputText, InputTextarea},
+    home::Feed,
+    home::NavTop,
+    posts::NewPost,
     Renderable,
 };
-
-pub struct NewPost<'a> {
-    pub(crate) csrf: &'a str,
-    pub(crate) alert: Option<Alert>,
-    pub(crate) source: InputTextarea<'a>,
-    pub(crate) visibility: InputSelect<'a>,
-    pub(crate) name: InputText<'a>,
-}
 
 pub struct Home<'a> {
     pub(crate) catalog: &'a Catalog,
     pub(crate) new_post: NewPost<'a>,
     pub(crate) shortcuts: Shortcuts<'a>,
+    pub(crate) nav_top: &'a NavTop<'a>,
+    pub(crate) feed: Feed<'a>,
 }
 
 impl<'a> Home<'a> {
@@ -33,9 +30,11 @@ impl<'a> Home<'a> {
         state: &'a PostCreationFormState,
         validation_error: Option<&'a ValidatePostCreationFail>,
         server_error: bool,
+        nav_top: &'a NavTop,
     ) -> Self {
         Home {
             catalog,
+            nav_top,
             new_post: NewPost {
                 csrf,
                 alert: if server_error {
@@ -46,6 +45,8 @@ impl<'a> Home<'a> {
                 } else {
                     None
                 },
+                catalog: &catalog,
+                username: username,
                 source: InputTextarea {
                     name: "source",
                     label: None,
@@ -75,6 +76,7 @@ impl<'a> Home<'a> {
                     error: validation_error.and_then(|e| e.name.as_ref().map(|e| match *e {})),
                 },
             },
+            feed: Feed { catalog },
             shortcuts: Shortcuts {
                 catalog,
                 profile_link,
