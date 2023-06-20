@@ -4,7 +4,7 @@ use diesel::{self, pg::PgConnection};
 use crate::{base_post::post::comment::Comment, schema::reactions, sql_types::ReactionType};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "reactions"]
+#[diesel(table_name = reactions)]
 pub struct Reaction {
     id: i32,
     reaction_type: ReactionType,
@@ -25,17 +25,25 @@ impl Reaction {
     pub fn comment_id(&self) -> i32 {
         self.comment_id
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 #[derive(Insertable)]
-#[table_name = "reactions"]
+#[diesel(table_name = reactions)]
 pub struct NewReaction {
     reaction_type: ReactionType,
     comment_id: i32,
 }
 
 impl NewReaction {
-    pub fn insert(self, conn: &PgConnection) -> Result<Reaction, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<Reaction, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(reactions::table)
@@ -58,17 +66,15 @@ mod tests {
     #[test]
     fn create_reaction() {
         with_connection(|conn| {
-            make_post(conn, |conversation_post| {
-                make_post(conn, |comment_post| {
-                    with_comment(
-                        conn,
-                        &conversation_post,
-                        &conversation_post,
-                        &comment_post,
-                        |comment| with_reaction(conn, &comment, |_| Ok(())),
-                    )
-                })
-            })
+            let conversation_post = make_post(conn)?;
+            let comment_post = make_post(conn)?;
+            let comment =
+                make_comment(conn, &conversation_post, &conversation_post, &comment_post)?;
+            let reaction = make_reaction(conn, &comment);
+
+            assert!(reaction.is_ok());
+
+            Ok(())
         })
     }
 }

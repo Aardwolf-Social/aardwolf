@@ -3,7 +3,7 @@ use chrono::{offset::Utc, DateTime};
 use crate::{schema::permissions, sql_types::Permission as PermissionSql};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "permissions"]
+#[diesel(table_name = permissions)]
 pub struct Permission {
     id: i32,
     name: PermissionSql,
@@ -22,5 +22,9 @@ impl Permission {
 
     pub fn created_at(&self) -> DateTime<Utc> {
         self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
     }
 }

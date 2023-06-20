@@ -16,7 +16,7 @@ impl DbAction for DeletePersona {
     type Item = ();
     type Error = DeletePersonaFail;
 
-    fn db_action(self, conn: &PgConnection) -> Result<(), DeletePersonaFail> {
+    fn db_action(self, conn: &mut PgConnection) -> Result<(), DeletePersonaFail> {
         self.0.delete_persona(conn).map_err(From::from)
     }
 }
@@ -64,8 +64,8 @@ impl AardwolfFail for DeletePersonaFail {}
 mod tests {
     use aardwolf_models::user::PermissionedUser;
     use aardwolf_test_helpers::models::{
-        gen_string, make_verified_authenticated_user, user_with_base_actor, with_connection,
-        with_persona,
+        gen_string, make_persona, make_verified_authenticated_user, user_make_base_actor,
+        with_connection,
     };
 
     use crate::{operations::delete_persona::DeletePersona, traits::DbAction};
@@ -73,18 +73,15 @@ mod tests {
     #[test]
     fn deleting_persona_works() {
         with_connection(|conn| {
-            make_verified_authenticated_user(conn, &gen_string()?, |user, _email| {
-                user_with_base_actor(conn, &user, |base_actor| {
-                    with_persona(conn, &base_actor, |persona| {
-                        let deleter = user.can_delete_persona(persona, conn)?;
+            let (user, _email) = make_verified_authenticated_user(conn, &gen_string())?;
+            let base_actor = user_make_base_actor(conn, &user)?;
+            let persona = make_persona(conn, &base_actor)?;
+            let deleter = user.can_delete_persona(persona, conn)?;
 
-                        let operation = DeletePersona(deleter);
+            let operation = DeletePersona(deleter);
 
-                        assert!(operation.db_action(conn).is_ok());
-                        Ok(())
-                    })
-                })
-            })
+            assert!(operation.db_action(conn).is_ok());
+            Ok(())
         })
     }
 }

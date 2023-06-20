@@ -9,7 +9,7 @@ impl DbAction for FetchPersona {
     type Item = Persona;
     type Error = FetchPersonaFail;
 
-    fn db_action(self, conn: &PgConnection) -> Result<Persona, FetchPersonaFail> {
+    fn db_action(self, conn: &mut PgConnection) -> Result<Persona, FetchPersonaFail> {
         Persona::by_id(self.0, conn).map_err(From::from)
     }
 }
@@ -36,7 +36,7 @@ impl AardwolfFail for FetchPersonaFail {}
 #[cfg(test)]
 mod tests {
     use aardwolf_models::base_actor::persona::Persona;
-    use aardwolf_test_helpers::models::{with_base_actor, with_connection, with_persona};
+    use aardwolf_test_helpers::models::{make_base_actor, make_persona, with_connection};
     use diesel::pg::PgConnection;
     use failure::Error;
 
@@ -44,12 +44,13 @@ mod tests {
 
     fn setup<F>(f: F)
     where
-        F: FnOnce(&PgConnection, Persona) -> Result<(), Error>,
+        F: FnOnce(&mut PgConnection, Persona) -> Result<(), Error>,
     {
         with_connection(|conn| {
-            with_base_actor(conn, |base_actor| {
-                with_persona(conn, &base_actor, |persona| f(conn, persona))
-            })
+            let base_actor = make_base_actor(conn)?;
+            let persona = make_persona(conn, &base_actor)?;
+
+            f(conn, persona)
         })
     }
 

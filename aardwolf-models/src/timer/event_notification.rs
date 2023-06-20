@@ -7,7 +7,7 @@ use crate::{
 };
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "event_notifications"]
+#[diesel(table_name = event_notifications)]
 pub struct EventNotification {
     id: i32,
     event_id: i32, // foreign key to Event
@@ -28,17 +28,28 @@ impl EventNotification {
     pub fn timer_id(&self) -> i32 {
         self.timer_id
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 #[derive(Insertable)]
-#[table_name = "event_notifications"]
+#[diesel(table_name = event_notifications)]
 pub struct NewEventNotification {
     event_id: i32,
     timer_id: i32,
 }
 
 impl NewEventNotification {
-    pub fn insert(self, conn: &PgConnection) -> Result<EventNotification, diesel::result::Error> {
+    pub fn insert(
+        self,
+        conn: &mut PgConnection,
+    ) -> Result<EventNotification, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(event_notifications::table)
@@ -62,33 +73,31 @@ mod tests {
     #[test]
     fn create_event() {
         with_connection(|conn| {
-            with_timer(conn, |t1| {
-                with_timer(conn, |t2| {
-                    with_timer(conn, |t3| {
-                        let (start, end) = if t1.fire_time() < t2.fire_time() {
-                            (t1, t2)
-                        } else {
-                            (t2, t1)
-                        };
+            let t1 = make_timer(conn)?;
+            let t2 = make_timer(conn)?;
+            let t3 = make_timer(conn)?;
 
-                        let (notif, start, end) = if t3.fire_time() < start.fire_time() {
-                            (t3, start, end)
-                        } else if t3.fire_time() < end.fire_time() {
-                            (start, t3, end)
-                        } else {
-                            (start, end, t3)
-                        };
+            let (start, end) = if t1.fire_time() < t2.fire_time() {
+                (t1, t2)
+            } else {
+                (t2, t1)
+            };
 
-                        with_base_actor(conn, |owner_base| {
-                            with_persona(conn, &owner_base, |owner| {
-                                with_event(conn, &owner, &start, &end, |event| {
-                                    with_event_notification(conn, &event, &notif, |_| Ok(()))
-                                })
-                            })
-                        })
-                    })
-                })
-            })
+            let (notif, start, end) = if t3.fire_time() < start.fire_time() {
+                (t3, start, end)
+            } else if t3.fire_time() < end.fire_time() {
+                (start, t3, end)
+            } else {
+                (start, end, t3)
+            };
+
+            let owner_base = make_base_actor(conn)?;
+            let owner = make_persona(conn, &owner_base)?;
+            let event = make_event(conn, &owner, &start, &end)?;
+
+            let _ = make_event_notification(conn, &event, &notif)?;
+
+            Ok(())
         })
     }
 }

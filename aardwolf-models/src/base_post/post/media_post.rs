@@ -4,7 +4,7 @@ use diesel::{self, pg::PgConnection};
 use crate::{base_post::post::Post, file::File, schema::media_posts};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "media_posts"]
+#[diesel(table_name = media_posts)]
 pub struct MediaPost {
     id: i32,
     file_id: i32, // foreign key to File
@@ -25,17 +25,25 @@ impl MediaPost {
     pub fn post_id(&self) -> i32 {
         self.post_id
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 #[derive(Insertable)]
-#[table_name = "media_posts"]
+#[diesel(table_name = media_posts)]
 pub struct NewMediaPost {
     file_id: i32,
     post_id: i32,
 }
 
 impl NewMediaPost {
-    pub fn insert(self, conn: &PgConnection) -> Result<MediaPost, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<MediaPost, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(media_posts::table)
@@ -58,9 +66,14 @@ mod tests {
     #[test]
     fn create_media_post() {
         with_connection(|conn| {
-            make_post(conn, |post| {
-                with_file(conn, |file| with_media_post(conn, &file, &post, |_| Ok(())))
-            })
+            let post = make_post(conn)?;
+
+            let file = make_file(conn)?;
+            let media_post = make_media_post(conn, &file, &post);
+
+            assert!(media_post.is_ok());
+
+            Ok(())
         })
     }
 }

@@ -29,7 +29,10 @@ where
     type Item = (BaseActor, Persona);
     type Error = PersonaCreationFail;
 
-    fn db_action(self, conn: &PgConnection) -> Result<(BaseActor, Persona), PersonaCreationFail> {
+    fn db_action(
+        self,
+        conn: &mut PgConnection,
+    ) -> Result<(BaseActor, Persona), PersonaCreationFail> {
         let key = Rsa::generate(2048)?;
         let priv_key = key.private_key_to_der()?;
         let pub_key = key.public_key_to_der_pkcs1()?;
@@ -67,22 +70,21 @@ mod tests {
     #[test]
     fn create_persona_works() {
         with_connection(|conn| {
-            make_verified_authenticated_user(conn, &gen_string()?, |user, _| {
-                let creator = user.can_make_persona(conn)?;
+            let (user, _) = make_verified_authenticated_user(conn, &gen_string())?;
+            let creator = user.can_make_persona(conn)?;
 
-                let form = ValidatedPersonaCreationForm {
-                    display_name: "username".to_owned(),
-                    follow_policy: FollowPolicy::AutoAccept,
-                    default_visibility: PostVisibility::Public,
-                    shortname: "shortname".to_owned(),
-                    is_searchable: true,
-                };
+            let form = ValidatedPersonaCreationForm {
+                display_name: "username".to_owned(),
+                follow_policy: FollowPolicy::AutoAccept,
+                default_visibility: PostVisibility::Public,
+                shortname: "shortname".to_owned(),
+                is_searchable: true,
+            };
 
-                let operation = CreatePersona(creator, form, UrlGenerator);
+            let operation = CreatePersona(creator, form, UrlGenerator);
 
-                assert!(operation.db_action(conn).is_ok());
-                Ok(())
-            })
+            assert!(operation.db_action(conn).is_ok());
+            Ok(())
         })
     }
 }

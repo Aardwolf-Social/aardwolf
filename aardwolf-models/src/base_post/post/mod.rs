@@ -7,7 +7,7 @@ pub mod comment;
 pub mod media_post;
 
 #[derive(Debug, Queryable, QueryableByName)]
-#[table_name = "posts"]
+#[diesel(table_name = posts)]
 pub struct Post {
     id: i32,
     content: String,
@@ -33,10 +33,18 @@ impl Post {
     pub fn base_post(&self) -> i32 {
         self.base_post
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 #[derive(Insertable)]
-#[table_name = "posts"]
+#[diesel(table_name = posts)]
 pub struct NewPost {
     content: String,
     source: Option<String>,
@@ -44,7 +52,7 @@ pub struct NewPost {
 }
 
 impl NewPost {
-    pub fn insert(self, conn: &PgConnection) -> Result<Post, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<Post, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(posts::table)
@@ -68,11 +76,9 @@ mod tests {
     #[test]
     fn create_post() {
         with_connection(|conn| {
-            with_base_actor(conn, |posted_by| {
-                with_base_post(conn, &posted_by, |base_post| {
-                    with_post(conn, &base_post, |_| Ok(()))
-                })
-            })
+            let _ = make_post(conn)?;
+
+            Ok(())
         })
     }
 }

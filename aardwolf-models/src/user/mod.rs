@@ -31,19 +31,19 @@ pub trait UserLike {
     fn created_at(&self) -> DateTime<Utc>;
     fn updated_at(&self) -> DateTime<Utc>;
 
-    fn is_verified(&self, conn: &PgConnection) -> Result<bool, diesel::result::Error> {
+    fn is_verified(&self, conn: &mut PgConnection) -> Result<bool, diesel::result::Error> {
         self.has_role(Role::Verified, conn)
     }
 
-    fn is_moderator(&self, conn: &PgConnection) -> Result<bool, diesel::result::Error> {
+    fn is_moderator(&self, conn: &mut PgConnection) -> Result<bool, diesel::result::Error> {
         self.has_role(Role::Moderator, conn)
     }
 
-    fn is_admin(&self, conn: &PgConnection) -> Result<bool, diesel::result::Error> {
+    fn is_admin(&self, conn: &mut PgConnection) -> Result<bool, diesel::result::Error> {
         self.has_role(Role::Admin, conn)
     }
 
-    fn has_role(&self, name: Role, conn: &PgConnection) -> Result<bool, diesel::result::Error> {
+    fn has_role(&self, name: Role, conn: &mut PgConnection) -> Result<bool, diesel::result::Error> {
         use crate::schema::{roles, user_roles};
         use diesel::prelude::*;
 
@@ -95,7 +95,7 @@ impl From<diesel::result::Error> for UpdateFieldError {
 }
 
 #[derive(Debug, Clone, Identifiable, Queryable)]
-#[table_name = "users"]
+#[diesel(table_name = users)]
 pub struct AuthenticatedUser {
     id: i32,
     created_at: DateTime<Utc>,
@@ -107,7 +107,7 @@ pub struct AuthenticatedUser {
 impl AuthenticatedUser {
     pub fn get_authenticated_user_by_id(
         id: i32,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<Self, diesel::result::Error> {
         use diesel::prelude::*;
 
@@ -117,7 +117,7 @@ impl AuthenticatedUser {
     pub fn set_default_email(
         &mut self,
         email: &VerifiedEmail,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<(), UpdateFieldError> {
         if email.user_id() != self.id {
             return Err(UpdateFieldError::Relation);
@@ -134,7 +134,11 @@ impl AuthenticatedUser {
             })
     }
 
-    fn verify(&self, email: &VerifiedEmail, conn: &PgConnection) -> Result<(), UserVerifyError> {
+    fn verify(
+        &self,
+        email: &VerifiedEmail,
+        conn: &mut PgConnection,
+    ) -> Result<(), UserVerifyError> {
         if self.id != email.user_id() {
             return Err(UserVerifyError::IdMismatch);
         }
@@ -177,9 +181,9 @@ pub struct MemVerified {
 impl MemVerified {
     pub fn store_verify(
         self,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<(AuthenticatedUser, VerifiedEmail), UserVerifyError> {
-        conn.transaction(|| {
+        conn.transaction(|conn| {
             let MemVerified { email, mut user } = self;
 
             email
@@ -237,7 +241,7 @@ impl UnverifiedUser {
 }
 
 #[derive(Debug, Queryable, QueryableByName)]
-#[table_name = "users"]
+#[diesel(table_name = users)]
 pub struct QueriedUser {
     id: i32,
     created_at: DateTime<Utc>,
@@ -256,7 +260,7 @@ impl UserLike for QueriedUser {
     }
 
     fn primary_persona(&self) -> Option<i32> {
-        None
+        self.primary_persona
     }
 
     fn created_at(&self) -> DateTime<Utc> {
@@ -269,7 +273,7 @@ impl UserLike for QueriedUser {
 }
 
 #[derive(Debug, Queryable, QueryableByName)]
-#[table_name = "users"]
+#[diesel(table_name = users)]
 pub struct UnauthenticatedUser {
     id: i32,
     created_at: DateTime<Utc>,
@@ -289,7 +293,7 @@ impl UnauthenticatedUser {
 
     pub fn into_verified(
         self,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<Result<UnauthenticatedUser, UnverifiedUser>, diesel::result::Error> {
         self.is_verified(conn).map(|has_role| {
             if has_role {
@@ -304,7 +308,7 @@ impl UnauthenticatedUser {
         })
     }
 
-    pub fn by_id(id: i32, conn: &PgConnection) -> Result<Self, diesel::result::Error> {
+    pub fn by_id(id: i32, conn: &mut PgConnection) -> Result<Self, diesel::result::Error> {
         use diesel::prelude::*;
 
         users::table.find(id).first(conn)
@@ -312,7 +316,7 @@ impl UnauthenticatedUser {
 
     pub fn by_email_id(
         email_id: i32,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<(Self, Email), diesel::result::Error> {
         use crate::schema::emails;
         use diesel::prelude::*;
@@ -325,7 +329,7 @@ impl UnauthenticatedUser {
 
     pub fn by_email_for_auth(
         email: &str,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<(Self, Email, LocalAuth), diesel::result::Error> {
         use crate::schema::{emails, local_auth};
         use diesel::prelude::*;
@@ -361,14 +365,17 @@ impl UserLike for UnauthenticatedUser {
 }
 
 #[derive(Insertable)]
-#[table_name = "users"]
+#[diesel(table_name = users)]
 pub struct NewUser {
     created_at: DateTime<Utc>,
     primary_email: Option<i32>,
 }
 
 impl NewUser {
-    pub fn insert(self, conn: &PgConnection) -> Result<UnauthenticatedUser, diesel::result::Error> {
+    pub fn insert(
+        self,
+        conn: &mut PgConnection,
+    ) -> Result<UnauthenticatedUser, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(users::table)
@@ -397,33 +404,40 @@ mod tests {
 
     #[test]
     fn create_user() {
-        with_connection(|conn| with_unverified_user(conn, |_| Ok(())))
+        with_connection(|conn| {
+            let user = make_unverified_user(conn);
+
+            assert!(user.is_ok());
+
+            Ok(())
+        });
     }
 
     #[test]
     fn verify_and_log_in_user() {
         with_connection(|conn| {
-            make_verified_authenticated_user(conn, "testpass", |_user, _email| Ok(()))
+            let user = make_verified_authenticated_user(conn, "testpass");
+
+            assert!(user.is_ok());
+
+            Ok(())
         })
     }
 
     #[test]
     fn log_in_unverified_user() {
         with_connection(|conn| {
-            with_unverified_user(conn, |user| {
-                with_unverified_email(conn, &user, |email, _token| {
-                    let password = "password";
+            let user = make_unverified_user(conn)?;
+            let (email, _) = make_unverified_email(conn, &user)?;
+            let password = "password";
+            let _ = make_local_auth(conn, &user, password);
+            let (user, _, auth) = UnauthenticatedUser::by_email_for_auth(email.email(), conn)?;
 
-                    with_local_auth(conn, &user, password, |_| {
-                        let (user, _, auth) =
-                            UnauthenticatedUser::by_email_for_auth(email.email(), conn)?;
+            let result = user.log_in_local(auth, create_plaintext_password(password)?);
 
-                        user.log_in_local(auth, create_plaintext_password(password)?)?;
+            assert!(result.is_ok());
 
-                        Ok(())
-                    })
-                })
-            })
+            Ok(())
         })
     }
 
@@ -431,13 +445,16 @@ mod tests {
     fn log_in_verified_user() {
         with_connection(|conn| {
             let password = "testpass";
-            make_verified_authenticated_user(conn, password, |_user, email| {
-                let (user, _, auth) = UnauthenticatedUser::by_email_for_auth(email.email(), conn)?;
+            let (_, email) = make_verified_authenticated_user(conn, password).unwrap();
 
-                user.log_in_local(auth, create_plaintext_password(password)?)?;
+            let (user, _, auth) =
+                UnauthenticatedUser::by_email_for_auth(email.email(), conn).unwrap();
 
-                Ok(())
-            })
+            let result = user.log_in_local(auth, create_plaintext_password(password)?);
+
+            assert!(result.is_ok());
+
+            Ok(())
         })
     }
 }

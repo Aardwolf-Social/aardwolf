@@ -1,6 +1,6 @@
 @use gettext_macros::i18n;
-
-@use crate::templates::{base, elements::{alert, notification_content}};
+@use gettext::Catalog;
+@user crate::templates::NotificationContent;
 
 @(notification_content: &NotificationContent)
 

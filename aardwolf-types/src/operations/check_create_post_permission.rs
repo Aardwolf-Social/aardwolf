@@ -17,7 +17,7 @@ where
     type Item = LocalPostCreator;
     type Error = CheckCreatePostPermissionFail;
 
-    fn db_action(self, conn: &PgConnection) -> Result<Self::Item, Self::Error> {
+    fn db_action(self, conn: &mut PgConnection) -> Result<Self::Item, Self::Error> {
         Ok(self.0.can_post(self.1, conn)?)
     }
 }
@@ -47,8 +47,8 @@ impl AardwolfFail for CheckCreatePostPermissionFail {}
 #[cfg(test)]
 mod tests {
     use aardwolf_test_helpers::models::{
-        gen_string, make_verified_authenticated_user, make_verified_user_with_persona,
-        with_base_actor, with_connection,
+        gen_string, make_base_actor, make_verified_authenticated_user,
+        make_verified_user_make_persona, with_connection,
     };
 
     use crate::{
@@ -58,26 +58,23 @@ mod tests {
     #[test]
     fn verified_user_can_create_post() {
         with_connection(|conn| {
-            make_verified_user_with_persona(conn, &gen_string()?, |user, actor, _persona| {
-                let operation = CheckCreatePostPermission(user, actor);
+            let (user, actor, _persona) = make_verified_user_make_persona(conn, &gen_string())?;
+            let operation = CheckCreatePostPermission(user, actor);
 
-                assert!(operation.db_action(conn).is_ok());
-                Ok(())
-            })
+            assert!(operation.db_action(conn).is_ok());
+            Ok(())
         })
     }
 
     #[test]
     fn verified_user_cannot_impersonate_persona() {
         with_connection(|conn| {
-            make_verified_authenticated_user(conn, &gen_string()?, |user, _email| {
-                with_base_actor(conn, |actor| {
-                    let operation = CheckCreatePostPermission(user, actor);
+            let (user, _email) = make_verified_authenticated_user(conn, &gen_string())?;
+            let actor = make_base_actor(conn)?;
+            let operation = CheckCreatePostPermission(user, actor);
 
-                    assert!(operation.db_action(conn).is_err());
-                    Ok(())
-                })
-            })
+            assert!(operation.db_action(conn).is_err());
+            Ok(())
         })
     }
 }

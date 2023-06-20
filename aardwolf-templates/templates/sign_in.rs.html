@@ -43,7 +43,7 @@
                 <form method="POST" action="/auth/sign_in">
                     <input type="hidden" name="csrf_token" value="@sign_in.csrf">
                     @:input_email(&sign_in.email)
-                    @:input_password(&sign_in.password)
+                    @:input_password(&sign_in.password, &sign_in.catalog)
                     <button>@i18n!(sign_in.catalog, "Log In")</button>
 				</form>
 			</div>

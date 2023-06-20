@@ -6,7 +6,7 @@ edition = "2018"
 
 [features]
 default = ["with-actix"]
-with-actix = ["actix-web", "futures-preview", "futures-preview/compat", "futures-preview/nightly", "futures-preview/async-await", "r2d2", "r2d2-diesel"]
+with-actix = ["actix-web", "futures", "r2d2"]
 
 [dependencies]
 derive_builder = "0.7.0"
@@ -28,21 +28,18 @@ version = "1.0"
 optional = true
 
 [dependencies.diesel]
-version = "1.4"
+version = "2.1"
 default-features = false
-features = ["postgres", "uuid", "chrono"]
+features = ["postgres", "uuid", "chrono", "r2d2"]
 
 [dependencies.r2d2]
 version = "0.8"
 optional = true
 
-[dependencies.r2d2-diesel]
-version = "1.0"
+[dependencies.futures]
+version = "0.3"
 optional = true
-
-[dependencies.futures-preview]
-version = "0.3.0-alpha.18"
-optional = true
+features = ["compat"]
 
 [dev-dependencies]
 aardwolf-test-helpers = { version = "0.1", path = "../aardwolf-test-helpers" }

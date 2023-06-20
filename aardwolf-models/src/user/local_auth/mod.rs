@@ -17,7 +17,7 @@ pub use self::password::{
 /// `LocalAuth` can be queried from the database, but is only really usable as a tool to "log in" a
 /// user.
 #[derive(Debug, Queryable, QueryableByName)]
-#[table_name = "local_auth"]
+#[diesel(table_name = local_auth)]
 pub struct LocalAuth {
     id: i32,
     password: Password,
@@ -31,12 +31,16 @@ impl LocalAuth {
         self.id
     }
 
+    pub fn user_id(&self) -> i32 {
+        self.user_id
+    }
+
     pub fn created_at(&self) -> DateTime<Utc> {
         self.created_at
     }
 
-    pub fn user_id(&self) -> i32 {
-        self.user_id
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
     }
 
     /// Log In a user, given an `UnauthenticatedUser` and a `PlaintextPassword`.
@@ -72,7 +76,7 @@ impl LocalAuth {
 
 /// This type exists to create new `LocalAuth` record in the database.
 #[derive(Insertable)]
-#[table_name = "local_auth"]
+#[diesel(table_name = local_auth)]
 pub struct NewLocalAuth {
     password: Password,
     created_at: DateTime<Utc>,
@@ -81,7 +85,7 @@ pub struct NewLocalAuth {
 
 impl NewLocalAuth {
     /// Insert into the database
-    pub fn insert(self, conn: &PgConnection) -> Result<LocalAuth, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<LocalAuth, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(local_auth::table)
@@ -139,47 +143,47 @@ mod tests {
     #[test]
     fn create_local_auth() {
         with_connection(|conn| {
-            with_unverified_user(conn, |user| {
-                let password = "testpass";
-                with_local_auth(conn, &user, password, |_| Ok(()))
-            })
+            let user = make_unverified_user(conn)?;
+            let password = "testpass";
+
+            let _ = make_local_auth(conn, &user, password);
+
+            Ok(())
         })
     }
 
     #[test]
     fn dont_create_local_auth_with_invalid_password() {
         with_connection(|conn| {
-            with_unverified_user(conn, |user| {
-                let password = create_plaintext_password("short")?;
+            let user = make_unverified_user(conn)?;
+            let password = create_plaintext_password("short")?;
 
-                let local_auth = NewLocalAuth::new(&user, password);
+            let local_auth = NewLocalAuth::new(&user, password);
 
-                assert!(
-                    local_auth.is_err(),
-                    "Should not have created local auth with bad password"
-                );
+            assert!(
+                local_auth.is_err(),
+                "Should not have created local auth with bad password"
+            );
 
-                Ok(())
-            })
+            Ok(())
         })
     }
 
     #[test]
     fn dont_create_local_auth_with_mismatched_passwords() {
         with_connection(|conn| {
-            with_unverified_user(conn, |user| {
-                let p1 = create_plaintext_password("agoodpassword")?;
-                let p2 = create_plaintext_password("abadpassword")?;
+            let user = make_unverified_user(conn)?;
+            let p1 = create_plaintext_password("agoodpassword")?;
+            let p2 = create_plaintext_password("abadpassword")?;
 
-                let local_auth = NewLocalAuth::new_from_two(&user, p1, p2);
+            let local_auth = NewLocalAuth::new_from_two(&user, p1, p2);
 
-                assert!(
-                    local_auth.is_err(),
-                    "Should not have created LocalAuth from mismatched passwords"
-                );
+            assert!(
+                local_auth.is_err(),
+                "Should not have created LocalAuth from mismatched passwords"
+            );
 
-                Ok(())
-            })
+            Ok(())
         })
     }
 }
