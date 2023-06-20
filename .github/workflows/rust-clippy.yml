@@ -41,7 +41,10 @@ jobs:
           override: true
 
       - name: Install required cargo
-        run: cargo install clippy-sarif sarif-fmt openssl
+        run: cargo install clippy-sarif sarif-fmt
+        
+      - name: Add openssl
+        run: cargo add openssl        
 
       - name: Run rust-clippy
         run:
