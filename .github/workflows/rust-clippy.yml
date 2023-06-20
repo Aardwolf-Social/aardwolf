@@ -30,10 +30,10 @@ jobs:
       actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.5.3 # Marketplace - https://github.com/marketplace/actions/checkout
 
       - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1 #was @16499b5e05bf2e26879000db0c1d13f7e13fa3af
+        uses: actions-rs/toolchain@v1.0.6 # Marketplace - https://github.com/marketplace/actions/rust-toolchain
         with:
           profile: minimal
           toolchain: stable

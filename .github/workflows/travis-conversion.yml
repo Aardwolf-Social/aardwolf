@@ -21,12 +21,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2    
+        uses: actions/checkout@v3.5.3 # Marketplace - https://github.com/marketplace/actions/checkout2    
      #-
      # Install rust-toolchain
      # Source: https://github.com/marketplace/actions/rust-toolchain
      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1 #was @16499b5e05bf2e26879000db0c1d13f7e13fa3af
+        uses: actions-rs/toolchain@v1.0.6
         with:
           profile: minimal
           toolchain: stable
