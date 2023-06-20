@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 To setup and start the database server, first install PostGRE SQL as described here:
 [INSTALL-POSTGRES.md](INSTALL-POSTGRES.md)
 
@@ -99,4 +98,3 @@ Create the DB user
 **You can now `exit` the postgres user shell.**
 
 Make sure to use the specified db user name and password in the `aardwolf.toml` config file.
->>>>>>> banjo/documentation-updates
