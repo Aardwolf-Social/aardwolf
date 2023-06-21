@@ -35,7 +35,10 @@ pub trait Renderable {
     fn render(&self, _: &mut dyn std::io::Write) -> std::io::Result<()>;
 }
 
+// compile_i18n! must be called before before include_i18n!
+// https://crates.io/crates/gettext-macros -- ORDER OF THE MACROS
 compile_i18n!();
+
 pub fn managed_state() -> Translations {
     include_i18n!()
 }
