@@ -4,12 +4,9 @@
 name: Travis.yml Conversion
 
 on:
-  push:
-    branches:
-      - 'banjofox/*'
   pull_request:
     branches:
-      - 'banjofox/*'
+      - 'main'
 jobs:
 
 #-
