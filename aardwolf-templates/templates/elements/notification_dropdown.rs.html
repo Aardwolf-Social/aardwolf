@@ -1,12 +1,11 @@
 @use gettext_macros::i18n;
-@use gettext::Catalog;
-@user crate::templates::NotificationDropdown;
+@use crate::elements::NotificationDropdown;
 
-@(notification_dropdown: &NotificationDropdown, catalog: Catalog)
+@(notification_dropdown: &NotificationDropdown)
 
 <!-- Top Nav Notifications Dropdown -->
 <div class="navbar-item has-dropdown is-hoverable">
-	<a class="navbar-link">@i18n!(catalog, "Notifications")</a>
+	<a class="navbar-link">@i18n!(&notification_dropdown.catalog, "Notifications")</a>
 	<div class="navbar-dropdown notifications-dropdown">
 
 		<!-- ************************************************* -->
@@ -30,7 +29,7 @@
 				<div class="media-content">
 					<div class="content">
 						<p><strong>Juan Quixote</strong> <a href="#link-to-user-account">&commat;the_don</a></p>
-						<p class="action">@i18n!(catalog, "Accepted your Friend Request")</p>
+						<p class="action">@i18n!(&notification_dropdown.catalog, "Accepted your Friend Request")</p>
 						<hr/>
 						<p class="notification-date"><small><time datetime="2016-1-1">13:11 PM - 2 Jan 2016</time></small></p>
 					</div>

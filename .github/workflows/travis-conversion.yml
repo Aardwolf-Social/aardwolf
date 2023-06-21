@@ -1,11 +1,7 @@
 #-
 # GitHub Action for Building Aardwolf
 #
-<<<<<<< HEAD
 name: Travis.yml Conversion
-=======
-name: 'Travis.yml conversion'
->>>>>>> main
 
 on:
   push:
@@ -16,25 +12,15 @@ on:
       - 'banjofox/*'
 jobs:
 
-<<<<<<< HEAD
-=======
-#-
-# Install rust-toolchain
-# Source: https://github.com/marketplace/actions/rust-toolchain
-- name: rust-toolchain
-  uses: actions-rs/toolchain@v1.0.6
-
 #-
 # Try building Aardwolf
 #        
->>>>>>> main
   build-aardwolf:
     runs-on: '${{ matrix.os }}'
     strategy:
       matrix:
         os:
           - ubuntu-latest
-<<<<<<< HEAD
 
     steps:
       - name: Checkout code
@@ -55,14 +41,7 @@ jobs:
         
       - name: Add openssl
         run: cargo add openssl
-
-#-
-# Try building Aardwolf
-#        
-
-=======
->>>>>>> main
-          
+         
     # Postgres Service      
     services:
       postgres:

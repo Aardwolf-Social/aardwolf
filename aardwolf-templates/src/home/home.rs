@@ -5,11 +5,11 @@ use gettext::Catalog;
 use gettext_macros::i18n;
 
 use crate::{
-    home::NavTop,
-    home::Feed,
-    post::NewPost,
     asides::Shortcuts,
     elements::{Alert, AlertKind, InputSelect, InputText, InputTextarea},
+    home::Feed,
+    home::NavTop,
+    posts::NewPost,
     Renderable,
 };
 
@@ -30,7 +30,7 @@ impl<'a> Home<'a> {
         state: &'a PostCreationFormState,
         validation_error: Option<&'a ValidatePostCreationFail>,
         server_error: bool,
-        nav_top:  &'a NavTop,
+        nav_top: &'a NavTop,
     ) -> Self {
         Home {
             catalog,
@@ -45,6 +45,8 @@ impl<'a> Home<'a> {
                 } else {
                     None
                 },
+                catalog: &catalog,
+                username: username,
                 source: InputTextarea {
                     name: "source",
                     label: None,
@@ -74,9 +76,7 @@ impl<'a> Home<'a> {
                     error: validation_error.and_then(|e| e.name.as_ref().map(|e| match *e {})),
                 },
             },
-            feed: Feed {
-                catalog,
-            },
+            feed: Feed { catalog },
             shortcuts: Shortcuts {
                 catalog,
                 profile_link,

@@ -14,15 +14,15 @@ impl<'a> InputSelect<'a> {
     pub(crate) fn follow_policy_options(catalog: &Catalog) -> Vec<SelectOption> {
         vec![
             SelectOption {
-                value: FollowPolicy::AutoAccept.to_string().as_str(),
+                value: FollowPolicy::AutoAccept.into(),
                 display: i18n!(catalog, "Automatically accept new followers"),
             },
             SelectOption {
-                value: FollowPolicy::AutoReject.to_string().as_str(),
+                value: FollowPolicy::AutoReject.into(),
                 display: i18n!(catalog, "Automatically reject new followers"),
             },
             SelectOption {
-                value: FollowPolicy::ManualReview.to_string().as_str(),
+                value: FollowPolicy::ManualReview.into(),
                 display: i18n!(catalog, "Manually review new followers"),
             },
         ]
@@ -31,19 +31,19 @@ impl<'a> InputSelect<'a> {
     pub(crate) fn visibility_options(catalog: &Catalog) -> Vec<SelectOption> {
         vec![
             SelectOption {
-                value: PostVisibility::Public.to_string().as_str(),
+                value: PostVisibility::Public.into(),
                 display: i18n!(catalog, "Visible to everyone"),
             },
             SelectOption {
-                value: PostVisibility::FollowersOnly.to_string().as_str(),
+                value: PostVisibility::FollowersOnly.into(),
                 display: i18n!(catalog, "Visible to followers"),
             },
             SelectOption {
-                value: PostVisibility::FriendsOnly.to_string().as_str(),
+                value: PostVisibility::FriendsOnly.into(),
                 display: i18n!(catalog, "Visible to mutuals"),
             },
             SelectOption {
-                value: PostVisibility::ListedPeopleOnly.to_string().as_str(),
+                value: PostVisibility::ListedPeopleOnly.into(),
                 display: i18n!(catalog, "Only visible to mentioned users"),
             },
         ]
