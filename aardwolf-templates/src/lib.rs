@@ -35,8 +35,7 @@ pub trait Renderable {
     fn render(&self, _: &mut dyn std::io::Write) -> std::io::Result<()>;
 }
 
+compile_i18n!();
 pub fn managed_state() -> Translations {
     include_i18n!()
 }
-
-compile_i18n!();
