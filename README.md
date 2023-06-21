@@ -20,13 +20,12 @@ Our vision is to create a social-networking platform that mirrors the functional
 As a COMMUNITY it is very important to us that we maintain a positive and supportive environment for everyone who wants to participate. When you join us we ask that you follow our [code of conduct](/CODE_OF_CONDUCT.md) in all interactions both on and offline.
 
 Here are the areas we could use help with!
-_ProTip: Working on a project is a great way to learn programming ;)_
 
 * Rust Developers, folk that want to learn are welcome! - [Rust](https://www.rust-lang.org) 
 * Frontend Developers, HTML/CSS folks that want to help with the [Aardwolf Interface](https://github.com/Aardwolf-Social/aardwolf-interface)
 * Documentation help.  Proofreading, organization, update wiki, etc.
 * Docker containers/VM's.  Some progress has been made building Docker images (for developement)
-* PostgreSQL database admins.  Since Postgres is our current DB of choice, it'd be nice to make sure that we're doing things right ;)
+* PostgreSQL database admins.  Since Postgres is our current DB of choice, it'd be nice to make sure that we're doing things right.
 
 Once your ready to dive in please check out our [contributor's guidelines](/CONTRIBUTING.md), and our [roadmap](ROADMAP.md).  
 

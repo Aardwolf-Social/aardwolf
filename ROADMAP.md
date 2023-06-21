@@ -4,21 +4,28 @@ Our vision is to create a social-networking platform that mirrors the functional
 We welcome help from technical, as well as non-technical folks equally.  Even if you do not code, there is a growing list of items that you may still be able to help out with. <br />
 
 Please do not hesitate to ask questions, or volunteer for things that you might be interested in poking at.
-Also checkout the [Developer Documentation](https://github.com/Aardwolf-Social/aardwolf/tree/master/doc/development) for more information on specific development targets.
+Also checkout the [Developer Documentation](https://github.com/Aardwolf-Social/aardwolf/doc/development) for more information on specific development targets.
 
 --------
+## Goals
+- Immediate: Update code-base to a working state
+- Immediate: Finalize UI-framework decision (Yew vs. Slint vs. Leptos)
+
 ## Requirements for Minimum Viable Product
 - Web-interface that uses language/locales as started in a-i18n-langages branch
 - Basic user profiles
-- "Just enough" API to create, and read messages on the "local timeline"
-- Templates for web interface (prioritizing accessibility. **TIP:** [use the Web Accessibility Evaluation Tool (WAVE)](http://wave.webaim.org/))
-- Color scheme (colorblind- and low-vision-friendly). **TIP:** [use a contrast checker](https://webaim.org/resources/contrastchecker/)
-- Clarify and beautify Github documentation. **TIP:** check out [Github's Markdown Guide](https://guides.github.com/features/mastering-markdown/)
+- Create a useable local timeline
+- Create a basic set templates for web interface
 
 ## Requirements for Alpha-build
-- ActivityPub implementation (as best we can)
+- ActivityPub implementation, or similar federation.
 
-## Stretch Goals
+## Stretch Goals for Alpha
+- UI Accessibility - [Web Accessibility Evaluation Tool (WAVE)](http://wave.webaim.org/))
+- Color scheme (colorblind- and low-vision-friendly). [Contrast Checker](https://webaim.org/resources/contrastchecker/)
+- Clarify and beautify Github documentation. [Github's Markdown Guide](https://guides.github.com/features/mastering-markdown/)
+
+# Future Goals
 - Bridge connection to [Plume](https://github.com/Plume-org/Plume)
 - Bridge connection to Matrix (or similar) for chat service
 - Bridge connection to [PeerTube](https://github.com/Chocobozzz/PeerTube) for video sharing
@@ -26,3 +33,4 @@ Also checkout the [Developer Documentation](https://github.com/Aardwolf-Social/a
 ## Other items under consideration
 - End-to-End Encryption
 - IP FileSystem for file sharing (?)
+- Can Veilid help?
