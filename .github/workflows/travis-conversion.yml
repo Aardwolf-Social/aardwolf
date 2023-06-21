@@ -21,11 +21,11 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.5.3 # Marketplace - https://github.com/marketplace/actions/checkout2    
+        uses: actions/checkout@v3.5.3 #Marketplace - https://github.com/marketplace/actions/checkout2    
      #-
      # Install rust-toolchain
      # Source: https://github.com/marketplace/actions/rust-toolchain
-     - name: Install Rust toolchain
+      - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1.0.6
         with:
           profile: minimal
@@ -39,52 +39,38 @@ jobs:
       - name: Add openssl
         run: cargo add openssl
          
-    # Postgres Service      
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_HOST_AUTH_METHOD: trust
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432  
+  #-
+  # PostgreSQL Service
+  # Source: https://docs.github.com/en/actions/using-containerized-services/creating-postgresql-service-containers
+  setup-postgresql: 
+    - name: Checkout code
+      uses: postgresql@v0.1  
 
-    # Postgres prep
-    steps:      
-      - run: psql --version
-      - run: |
-          psql -c 'create user pguser;' -U postgres
-          psql -c 'alter user pguser createdb; ' -U postgres
-        env:
-          PGHOST: 127.0.0.1
-      
-      # Do stuff...    
-      - uses: actions/checkout@v3
-      - run: echo "BEFORE SCRIPT"
-      - run: psql -c 'CREATE DATABASE aardwolf_testing;' -U postgres
-      - run: >-
+
+  # Build it?  
+  compile-aardwolf:         
+    uses: actions/checkout@v3
+    - run: echo "BEFORE SCRIPT"
+    - run: psql -c 'CREATE DATABASE aardwolf_testing;' -U postgres
+    - run: >-
           if which diesel; then echo "diesel already installed"; else cargo
           install diesel_cli --no-default-features --features=postgres; fi
-      - run: >-
+    - run: >-
           echo 'DATABASE_URL=postgres://postgres@localhost/aardwolf_testing' >
           .env
-      - run: >-
+    - run: >-
           echo
           'TEST_DATABASE_URL=postgres://postgres@localhost/aardwolf_testing' >>
           .env
-      - run: pushd aardwolf-models
-      - run: diesel migration run
-      - run: popd
-      - run: echo "SCRIPT"
-      - run: cargo build --all --verbose
-      - run: cargo test --all --verbose
+    - run: pushd aardwolf-models
+    - run: diesel migration run
+    - run: popd
+    - run: echo "SCRIPT"
+    - run: cargo build --all --verbose
+    - run: cargo test --all --verbose
 
-      # Cargo build    
-      - name: cargo build
-        run: cargo build --verbose
-      - name: Run tests
-        run: cargo test --verbose      
+    # Cargo build    
+    - name: cargo build
+      run: cargo build --verbose
+    - name: Run tests
+      run: cargo test --verbose      
