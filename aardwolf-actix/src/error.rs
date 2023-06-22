@@ -16,6 +16,6 @@ pub fn redirect_error(to: &str, msg: Option<String>) -> HttpResponse {
     let location = format!("{}{}", to, msg);
 
     HttpResponse::SeeOther()
-        .header(LOCATION, location.as_str())
+        .append_header((LOCATION, location.as_str()))
         .finish()
 }
