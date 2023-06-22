@@ -1,5 +1,5 @@
 use aardwolf_templates::Renderable;
-use actix_web::{dev::HttpResponseBuilder, http::header::CONTENT_TYPE, HttpResponse};
+use actix_web::{http::header::CONTENT_TYPE, HttpResponse, HttpResponseBuilder};
 
 pub trait RenderableExt: Renderable + Sized {
     fn ok(self) -> HttpResponse {
