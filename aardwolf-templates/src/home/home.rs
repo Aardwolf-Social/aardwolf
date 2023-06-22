@@ -17,7 +17,7 @@ pub struct Home<'a> {
     pub(crate) catalog: &'a Catalog,
     pub(crate) new_post: NewPost<'a>,
     pub(crate) shortcuts: Shortcuts<'a>,
-    pub(crate) nav_top: &'a NavTop<'a>,
+    pub(crate) nav_top: NavTop<'a>,
     pub(crate) feed: Feed<'a>,
 }
 
@@ -30,11 +30,10 @@ impl<'a> Home<'a> {
         state: &'a PostCreationFormState,
         validation_error: Option<&'a ValidatePostCreationFail>,
         server_error: bool,
-        nav_top: &'a NavTop,
     ) -> Self {
         Home {
             catalog,
-            nav_top,
+            nav_top: NavTop { catalog },
             new_post: NewPost {
                 csrf,
                 alert: if server_error {
