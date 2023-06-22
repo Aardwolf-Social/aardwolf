@@ -202,7 +202,7 @@ impl From<DbActionError<PersonaCreationFail>> for PersonaCreateError {
 
 fn set_persona_cookie(session: Session, persona: Persona) -> Result<(), PersonaCreateError> {
     session
-        .set("persona_id", persona.id())
+        .insert("persona_id", persona.id())
         .map_err(|_| PersonaCreateError::Cookie)
 }
 

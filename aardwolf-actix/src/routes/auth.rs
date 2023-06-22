@@ -275,7 +275,7 @@ struct SetUserCookie(Session, AuthenticatedUser);
 impl SetUserCookie {
     fn run(self) -> Result<(), SignInError> {
         self.0
-            .set("user_id", self.1.id())
+            .insert("user_id", self.1.id())
             .map_err(|_| SignInError::Cookie)
     }
 }
