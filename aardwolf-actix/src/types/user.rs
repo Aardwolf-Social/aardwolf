@@ -7,36 +7,39 @@ use actix_http::Payload;
 use actix_session::Session;
 use actix_web::{error::ResponseError, FromRequest, HttpRequest, HttpResponse};
 use failure::Fail;
-use futures::future::{FutureExt, TryFutureExt};
+use futures::future::{FutureExt, LocalBoxFuture, TryFutureExt};
 
-use crate::{error::redirect_error, from_session, AppConfig};
+use crate::{error::redirect_error, from_session, routes::personas::new, AppConfig};
 
 pub struct SignedInUser(pub AuthenticatedUser);
 
 impl FromRequest for SignedInUser {
-    type Config = ();
     type Error = actix_web::Error;
-    type Future = Box<dyn futures_old::Future<Item = Self, Error = Self::Error>>;
+    type Future = LocalBoxFuture<'static, Result<Self, Self::Error>>;
 
-    fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
-        use futures_old::future::{Future, IntoFuture};
-        Box::new(
-            extract(req).into_future().and_then(|(state, session)| {
-                from_request_inner(state, session).boxed_local().compat()
-            }),
-        )
+    fn from_request<'a>(req: &HttpRequest, _: &mut Payload) -> Self::Future {
+        extract(req.clone())
+            .and_then(|(state, session)| from_request_inner(state, session))
+            .boxed_local()
     }
 }
 
-fn extract(req: &HttpRequest) -> Result<(AppConfig, Session), actix_web::Error> {
-    let state = req
-        .app_data::<AppConfig>()
-        .ok_or(MissingState)
-        .map(|s| s.clone())?;
+fn extract(
+    req: HttpRequest,
+) -> LocalBoxFuture<'static, Result<(AppConfig, Session), actix_web::Error>> {
+    let state = req.app_data::<AppConfig>();
 
-    let session = Session::extract(req).map_err(|_| SignedInUserError::Cookie)?;
+    match state {
+        Some(state) => {
+            let state = state.clone();
 
-    Ok((state, session))
+            Session::extract(&req)
+                .map_ok(move |session| (state.clone(), session.clone()))
+                .map_err(|_: _| SignedInUserError::Cookie.into())
+                .boxed_local()
+        }
+        None => futures::future::err(MissingState.into()).boxed_local(),
+    }
 }
 
 async fn from_request_inner(
