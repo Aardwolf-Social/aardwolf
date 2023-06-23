@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #### Linux/OSX Instructions
 
 Open your terminal and run the following command:
@@ -92,4 +91,3 @@ manager) to install the newest version of the `diesel_cli` crate. The
 `--no-default-features --features "postgres"` options tell `cargo` to
 skip installing the `mysql` and `sqlite` parts of `diesel`, which
 requires some additional support libraries.
->>>>>>> banjo/documentation-updates
