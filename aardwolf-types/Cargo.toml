@@ -24,7 +24,7 @@ version = "0.1"
 path = "../aardwolf-models"
 
 [dependencies.actix-web]
-version = "1.0"
+version = "4.3"
 optional = true
 
 [dependencies.diesel]

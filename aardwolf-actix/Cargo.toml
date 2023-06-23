@@ -9,9 +9,8 @@ actix = "0.12"
 actix-files = "0.6"
 actix-http = "3.3"
 actix-web = "4.3"
-# actix-web-async-compat = "0.1.0"
-config = "0.9.0"
-failure = "~0.1"
+config = "0.9"
+failure = "0.1"
 log = "0.4"
 r2d2 = "0.8"
 serde = "1.0"
@@ -43,8 +42,3 @@ features = ["postgres", "uuid", "chrono"]
 [dependencies.futures]
 version = "0.3"
 features = ["compat"]
-
-[dependencies.rocket_i18n]
-version = "0.4"
-git = "https://github.com/Plume-org/rocket_i18n"
-rev = "3eca920593b41d3232aec702733f5c91da8ec808"
