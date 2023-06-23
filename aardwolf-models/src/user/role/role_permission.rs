@@ -3,7 +3,7 @@ use chrono::{offset::Utc, DateTime};
 use crate::schema::role_permissions;
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "role_permissions"]
+#[diesel(table_name = role_permissions)]
 pub struct RolePermission {
     id: i32,
     role_id: i32,       // foreign key to Role
@@ -27,5 +27,9 @@ impl RolePermission {
 
     pub fn created_at(&self) -> DateTime<Utc> {
         self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
     }
 }

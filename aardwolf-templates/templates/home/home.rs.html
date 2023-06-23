@@ -1,9 +1,12 @@
-@use crate::templates::{base, home::{home, feed, nav_top}, posts::{new_post}, asides::{shortcuts}};
+@use crate::{
+	home::Home,
+	templates::{base, home::{feed, nav_top}, posts::{new_post}, asides::{shortcuts}}
+};
 
 @(home: &Home)
 
 @:base(home.catalog, "Aardwolf | Home", {
-    @:nav(home.catalog)
+    @:nav_top(&home.nav_top)
 	<div class="columns is-mobile"><!-- Column Content Container -->
 	  <div class="left-column columns is-3"><!-- Left-column (Nav) -->
 
@@ -15,8 +18,8 @@
 		<section class="section"><!-- Right-column Section -->
 
 		<!-- Right-hand Body Content -->
-		@:new_post(home.catalog, &home.shortcuts.username, &home.new_post)
-		@:feed(home.catalog)
+		@:new_post(&home.new_post)
+		@:feed(&home.feed)
 
 		</section><!-- /Right-column Section -->
 	  </div><!-- /Right-column -->

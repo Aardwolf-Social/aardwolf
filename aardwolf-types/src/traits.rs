@@ -28,6 +28,7 @@ mod default_impls {
 #[cfg(feature = "with-actix")]
 mod actix_web_impls {
     use actix_web::{error::BlockingError, web::block};
+    use diesel::r2d2::ConnectionManager;
     use diesel::PgConnection;
     use failure::Fail;
     use futures::{
@@ -35,7 +36,6 @@ mod actix_web_impls {
         future::{BoxFuture, FutureExt, TryFutureExt},
     };
     use r2d2::Pool;
-    use r2d2_diesel::ConnectionManager;
 
     #[derive(Debug, Fail)]
     pub enum DbActionError<E>
@@ -89,7 +89,7 @@ mod actix_web_impls {
         type Item: Send + 'static;
         type Error: Fail;
 
-        fn db_action(self, conn: &PgConnection) -> Result<Self::Item, Self::Error>;
+        fn db_action(self, conn: &mut PgConnection) -> Result<Self::Item, Self::Error>;
 
         fn run(
             self,
@@ -99,8 +99,8 @@ mod actix_web_impls {
             Self: Sized + Send + 'static,
         {
             block::<_, _, DbActionError<Self::Error>>(move || {
-                let conn = pool.get()?;
-                let res = self.db_action(&conn).map_err(DbActionError::Error)?;
+                let conn = &mut *pool.get()?;
+                let res = self.db_action(conn).map_err(DbActionError::Error)?;
                 Ok(res)
             })
             .compat()

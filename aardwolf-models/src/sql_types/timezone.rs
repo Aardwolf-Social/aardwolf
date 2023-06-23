@@ -1,10 +1,10 @@
-use std::{error::Error as StdError, fmt, io::Write, str::FromStr};
+use std::{error::Error as StdError, fmt, str::FromStr};
 
 use chrono_tz::Tz;
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
 
 #[derive(AsExpression, Clone, Copy, Debug, Eq, FromSqlRow, PartialEq)]
-#[sql_type = "Text"]
+#[diesel(sql_type = Text)]
 pub struct Timezone(pub Tz);
 
 impl fmt::Display for Timezone {
@@ -26,17 +26,19 @@ impl FromStr for Timezone {
 impl<DB> serialize::ToSql<Text, DB> for Timezone
 where
     DB: Backend,
+    str: serialize::ToSql<Text, DB>,
 {
-    fn to_sql<W: Write>(&self, out: &mut serialize::Output<W, DB>) -> serialize::Result {
-        serialize::ToSql::<Text, DB>::to_sql(self.0.name(), out)
+    fn to_sql<'b>(&self, out: &mut serialize::Output<'b, '_, DB>) -> serialize::Result {
+        self.0.name().to_sql(out)
     }
 }
 
 impl<DB> deserialize::FromSql<Text, DB> for Timezone
 where
-    DB: Backend<RawValue = [u8]>,
+    DB: Backend,
+    *const str: deserialize::FromSql<diesel::sql_types::Text, DB>,
 {
-    fn from_sql(bytes: Option<&DB::RawValue>) -> deserialize::Result<Self> {
+    fn from_sql(bytes: <DB as Backend>::RawValue<'_>) -> deserialize::Result<Self> {
         deserialize::FromSql::<Text, DB>::from_sql(bytes).and_then(|string: String| {
             string
                 .parse::<Timezone>()

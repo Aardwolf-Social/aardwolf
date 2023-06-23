@@ -15,7 +15,6 @@ use aardwolf_types::{
     },
     traits::{DbAction, DbActionError, Validate},
 };
-use rocket_i18n::I18n;
 use actix_session::Session;
 use actix_web::{
     http::header::LOCATION,
@@ -23,17 +22,18 @@ use actix_web::{
     HttpResponse, ResponseError,
 };
 use failure::Fail;
+use rocket_i18n::I18n;
 use std::fmt;
 
 use crate::{
-    action::{redirect},
-    traits::{WithRucte, RenderableExt},
+    action::redirect,
     error::redirect_error,
+    traits::{RenderableExt, WithRucte},
     types::user::SignedInUser,
     AppConfig,
 };
 
-pub(crate) fn sign_up_form(i18n: I18n) -> HttpResponse {
+pub(crate) async fn sign_up_form(i18n: Data<I18n>) -> HttpResponse {
     let res = TSignUp::new(
         &i18n.catalog,
         "csrf token",
@@ -48,7 +48,7 @@ pub(crate) fn sign_up_form(i18n: I18n) -> HttpResponse {
     res
 }
 
-async fn sign_up_inner(state: AppConfig, form: SignUpForm) -> Result<HttpResponse, SignUpError> {
+async fn sign_up_inner(state: &AppConfig, form: SignUpForm) -> Result<HttpResponse, SignUpError> {
     let form = ValidateSignUpForm(form).validate()?;
     let (email, token) = SignUp(form).run(state.pool.clone()).await?;
     print_result(email, token);
@@ -56,22 +56,26 @@ async fn sign_up_inner(state: AppConfig, form: SignUpForm) -> Result<HttpRespons
 }
 
 pub(crate) async fn sign_up(
-    (state, form, i18n): (Data<AppConfig>, Form<SignUpForm>, I18n),
+    (state, form, i18n): (Data<AppConfig>, Form<SignUpForm>, Data<I18n>),
 ) -> Result<HttpResponse, SignUpResponseError> {
     let form = form.into_inner();
     let form_state = form.as_state();
 
-    sign_up_inner((*state).clone(), form)
+    sign_up_inner(&state, form)
         .await
         .map_err(|error| SignUpResponseError {
-            i18n,
+            i18n: I18n {
+                // I18n can't be cloned but its fields can be
+                catalog: i18n.catalog.clone(),
+                lang: i18n.lang,
+            },
             csrf_token: "csrf token".to_owned(),
             form_state,
             error,
         })
 }
 
-pub(crate) fn sign_in_form(i18n: I18n) -> HttpResponse {
+pub(crate) async fn sign_in_form(i18n: Data<I18n>) -> HttpResponse {
     let res = TSignIn::new(
         &i18n.catalog,
         "csrf token",
@@ -87,7 +91,7 @@ pub(crate) fn sign_in_form(i18n: I18n) -> HttpResponse {
 }
 
 async fn sign_in_inner(
-    state: AppConfig,
+    state: &AppConfig,
     form: SignInForm,
     session: Session,
 ) -> Result<HttpResponse, SignInError> {
@@ -98,15 +102,19 @@ async fn sign_in_inner(
 }
 
 pub(crate) async fn sign_in(
-    (state, session, form, i18n): (Data<AppConfig>, Session, Form<SignInForm>, I18n),
+    (state, session, form, i18n): (Data<AppConfig>, Session, Form<SignInForm>, Data<I18n>),
 ) -> Result<HttpResponse, SignInResponseError> {
     let form = form.into_inner();
     let form_state = form.as_state();
 
-    sign_in_inner((*state).clone(), form, session)
+    sign_in_inner(&state, form, session)
         .await
         .map_err(|error| SignInResponseError {
-            i18n,
+            i18n: I18n {
+                // I18n can't be cloned but its fields can be
+                catalog: i18n.catalog.clone(),
+                lang: i18n.lang,
+            },
             csrf_token: "csrf token".to_owned(),
             form_state,
             error,
@@ -122,7 +130,7 @@ pub(crate) async fn confirm(
     Ok(redirect("/auth/sign_in"))
 }
 
-pub(crate) fn sign_out((session, _user): (Session, SignedInUser)) -> HttpResponse {
+pub(crate) async fn sign_out((session, _user): (Session, SignedInUser)) -> HttpResponse {
     session.remove("user_id");
 
     HttpResponse::SeeOther()
@@ -267,7 +275,7 @@ struct SetUserCookie(Session, AuthenticatedUser);
 impl SetUserCookie {
     fn run(self) -> Result<(), SignInError> {
         self.0
-            .set("user_id", self.1.id())
+            .insert("user_id", self.1.id())
             .map_err(|_| SignInError::Cookie)
     }
 }

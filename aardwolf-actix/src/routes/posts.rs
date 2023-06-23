@@ -2,7 +2,7 @@ use aardwolf_models::{
     base_actor::{persona::Persona, BaseActor},
     user::AuthenticatedUser,
 };
-use aardwolf_templates::Home;
+use aardwolf_templates::home::Home;
 use aardwolf_types::{
     forms::posts::{
         PostCreationForm, PostCreationFormState, ValidatePostCreationFail, ValidatePostCreationForm,
@@ -13,23 +13,23 @@ use aardwolf_types::{
     },
     traits::{DbAction, DbActionError, Validate},
 };
-use rocket_i18n::I18n;
 use actix_web::{
     web::{Data, Form},
     HttpResponse, ResponseError,
 };
 use failure::Fail;
+use rocket_i18n::I18n;
 use std::fmt;
 
 use crate::{
     action::redirect,
+    traits::WithRucte,
     types::{actor::CurrentActor, user::SignedInUser},
     AppConfig,
-    traits::{WithRucte},
 };
 
 async fn create_inner(
-    state: AppConfig,
+    state: &AppConfig,
     form: PostCreationForm,
     user: AuthenticatedUser,
     base_actor: BaseActor,
@@ -50,17 +50,21 @@ pub(crate) async fn create(
         SignedInUser,
         CurrentActor,
         Form<PostCreationForm>,
-        I18n,
+        Data<I18n>,
     ),
 ) -> Result<HttpResponse, PostCreateResponseError> {
     let form = form.into_inner();
     let form_state = form.as_state();
     let CurrentActor(base_actor, persona) = actor;
 
-    create_inner((*state).clone(), form, user.0, base_actor.clone())
+    create_inner(&state, form, user.0, base_actor.clone())
         .await
         .map_err(|error| PostCreateResponseError {
-            i18n,
+            i18n: I18n {
+                // I18n can't be cloned but its fields can be
+                catalog: i18n.catalog.clone(),
+                lang: i18n.lang,
+            },
             csrf_token: "csrf token".to_string(),
             persona,
             base_actor,

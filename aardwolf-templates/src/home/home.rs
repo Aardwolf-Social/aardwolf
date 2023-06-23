@@ -4,20 +4,21 @@ use aardwolf_types::forms::posts::{
 use gettext::Catalog;
 use gettext_macros::i18n;
 
-use crate::{Renderable, asides::{Shortcuts}, elements::{Alert, AlertKind, InputSelect, InputText, InputTextarea}};
-
-pub struct NewPost<'a> {
-    pub(crate) csrf: &'a str,
-    pub(crate) alert: Option<Alert>,
-    pub(crate) source: InputTextarea<'a>,
-    pub(crate) visibility: InputSelect<'a>,
-    pub(crate) name: InputText<'a>,
-}
+use crate::{
+    asides::Shortcuts,
+    elements::{Alert, AlertKind, InputSelect, InputText, InputTextarea},
+    home::Feed,
+    home::NavTop,
+    posts::NewPost,
+    Renderable,
+};
 
 pub struct Home<'a> {
     pub(crate) catalog: &'a Catalog,
     pub(crate) new_post: NewPost<'a>,
     pub(crate) shortcuts: Shortcuts<'a>,
+    pub(crate) nav_top: NavTop<'a>,
+    pub(crate) feed: Feed<'a>,
 }
 
 impl<'a> Home<'a> {
@@ -32,6 +33,7 @@ impl<'a> Home<'a> {
     ) -> Self {
         Home {
             catalog,
+            nav_top: NavTop { catalog },
             new_post: NewPost {
                 csrf,
                 alert: if server_error {
@@ -42,6 +44,8 @@ impl<'a> Home<'a> {
                 } else {
                     None
                 },
+                catalog: &catalog,
+                username: username,
                 source: InputTextarea {
                     name: "source",
                     label: None,
@@ -71,6 +75,7 @@ impl<'a> Home<'a> {
                     error: validation_error.and_then(|e| e.name.as_ref().map(|e| match *e {})),
                 },
             },
+            feed: Feed { catalog },
             shortcuts: Shortcuts {
                 catalog,
                 profile_link,
@@ -82,6 +87,6 @@ impl<'a> Home<'a> {
 
 impl<'a> Renderable for Home<'a> {
     fn render(&self, write: &mut dyn std::io::Write) -> std::io::Result<()> {
-        crate::templates::home(write, self)
+        crate::templates::home::home(write, self)
     }
 }

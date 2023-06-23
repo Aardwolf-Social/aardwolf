@@ -1,5 +1,5 @@
 use aardwolf_templates::Renderable;
-use actix_web::{dev::HttpResponseBuilder, http::header::CONTENT_TYPE, HttpResponse};
+use actix_web::{http::header::CONTENT_TYPE, HttpResponse, HttpResponseBuilder};
 
 pub trait RenderableExt: Renderable + Sized {
     fn ok(self) -> HttpResponse {
@@ -31,9 +31,9 @@ impl WithRucte for HttpResponseBuilder {
         let mut buf = Vec::new();
 
         match r.render(&mut buf) {
-            Ok(_) => self.header(CONTENT_TYPE, "text/html").body(buf),
+            Ok(_) => self.append_header((CONTENT_TYPE, "text/html")).body(buf),
             Err(e) => self
-                .header(CONTENT_TYPE, "text/plain")
+                .append_header((CONTENT_TYPE, "text/plain"))
                 .body(format!("{}", e)),
         }
     }

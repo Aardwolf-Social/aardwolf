@@ -15,7 +15,7 @@ use crate::{
 };
 
 #[derive(Debug, Queryable, QueryableByName)]
-#[table_name = "base_posts"]
+#[diesel(table_name = base_posts)]
 pub struct BasePost {
     id: i32,
     name: Option<String>, // max_length: 140
@@ -57,7 +57,7 @@ impl BasePost {
     pub fn is_visible_by(
         &self,
         actor: &BaseActor,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<bool, diesel::result::Error> {
         match self.visibility {
             PostVisibility::Public => Ok(true),
@@ -66,10 +66,26 @@ impl BasePost {
             _ => Ok(false),
         }
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
+
+    pub fn local_uuid(&self) -> Option<Uuid> {
+        self.local_uuid
+    }
+
+    pub fn activitypub_id(&self) -> &str {
+        self.activitypub_id.as_str()
+    }
 }
 
 #[derive(Insertable)]
-#[table_name = "base_posts"]
+#[diesel(table_name = base_posts)]
 pub struct NewBasePost {
     name: Option<String>,
     media_type: Mime,
@@ -81,7 +97,7 @@ pub struct NewBasePost {
 }
 
 impl NewBasePost {
-    pub fn insert(self, conn: &PgConnection) -> Result<BasePost, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<BasePost, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(base_posts::table)
@@ -137,9 +153,10 @@ mod tests {
     #[test]
     fn create_base_post() {
         with_connection(|conn| {
-            with_base_actor(conn, |posted_by| {
-                with_base_post(conn, &posted_by, |_| Ok(()))
-            })
+            let posted_by = make_base_actor(conn)?;
+            let _ = make_base_post(conn, &posted_by)?;
+
+            Ok(())
         })
     }
 }

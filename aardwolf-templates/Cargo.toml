@@ -6,19 +6,13 @@ edition = "2018"
 build = "build.rs"
 
 [build-dependencies]
-config = "0.9.0"
+config = "0.9"
 ructe = "0.13"
 
 [dependencies]
 gettext = "0.4"
-gettext-macros = { git = "https://github.com/Plume-org/gettext-macros/", rev = "a7c605f7edd6bfbfbfe7778026bfefd88d82db10" }
-gettext-utils = { git = "https://github.com/Plume-org/gettext-macros/", rev = "a7c605f7edd6bfbfbfe7778026bfefd88d82db10" }
-
-[dependencies.rocket_i18n]
-version = "0.4"
-default-features = false
-features = ["actix-web"]
-
+gettext-macros = "0.6.1"
+gettext-utils = "0.1.0"
 [dependencies.aardwolf-types]
 version = "0.1"
 path = "../aardwolf-types"
@@ -28,4 +22,4 @@ version = "0.1"
 path = "../aardwolf-models"
 
 [dev-dependencies]
-ructe = "0.13"
+ructe = "0.16"

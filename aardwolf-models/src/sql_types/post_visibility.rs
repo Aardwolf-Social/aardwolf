@@ -1,35 +1,35 @@
-use std::{error::Error as StdError, fmt, io::Write, str::FromStr};
+use std::error::Error as StdError;
 
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
 use serde::{
     de::{Deserialize, Deserializer},
     ser::{Serialize, Serializer},
 };
+use strum_macros::{Display, EnumString, IntoStaticStr};
 
-#[derive(AsExpression, Clone, Copy, Debug, Eq, FromSqlRow, Hash, PartialEq)]
-#[sql_type = "Text"]
+#[derive(
+    AsExpression,
+    Clone,
+    Copy,
+    Debug,
+    Display,
+    EnumString,
+    Eq,
+    FromSqlRow,
+    Hash,
+    IntoStaticStr,
+    PartialEq,
+)]
+#[diesel(sql_type = Text)]
 pub enum PostVisibility {
+    #[strum(serialize = "PUB")]
     Public,
+    #[strum(serialize = "FL")]
     FollowersOnly,
+    #[strum(serialize = "MUT")]
     FriendsOnly,
+    #[strum(serialize = "LIST")]
     ListedPeopleOnly,
-}
-
-impl PostVisibility {
-    pub fn as_str(&self) -> &str {
-        match *self {
-            PostVisibility::Public => "PUB",
-            PostVisibility::FollowersOnly => "FL",
-            PostVisibility::FriendsOnly => "MUT",
-            PostVisibility::ListedPeopleOnly => "LIST",
-        }
-    }
-}
-
-impl fmt::Display for PostVisibility {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.as_str())
-    }
 }
 
 impl Serialize for PostVisibility {
@@ -38,20 +38,6 @@ impl Serialize for PostVisibility {
         S: Serializer,
     {
         serializer.serialize_str(&self.to_string())
-    }
-}
-
-impl FromStr for PostVisibility {
-    type Err = VisibilityParseError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "PUB" => Ok(PostVisibility::Public),
-            "FL" => Ok(PostVisibility::FollowersOnly),
-            "MUT" => Ok(PostVisibility::FriendsOnly),
-            "LIST" => Ok(PostVisibility::ListedPeopleOnly),
-            _ => Err(VisibilityParseError),
-        }
     }
 }
 
@@ -69,40 +55,25 @@ impl<'de> Deserialize<'de> for PostVisibility {
 impl<DB> serialize::ToSql<Text, DB> for PostVisibility
 where
     DB: Backend,
+    str: serialize::ToSql<Text, DB>,
 {
-    fn to_sql<W: Write>(&self, out: &mut serialize::Output<W, DB>) -> serialize::Result {
-        serialize::ToSql::<Text, DB>::to_sql(&format!("{}", self), out)
+    fn to_sql<'b>(&'b self, out: &mut serialize::Output<'b, '_, DB>) -> serialize::Result {
+        let name: &'static str = self.into();
+
+        name.to_sql(out)
     }
 }
 
 impl<DB> deserialize::FromSql<Text, DB> for PostVisibility
 where
-    DB: Backend<RawValue = [u8]>,
+    DB: Backend,
+    *const str: deserialize::FromSql<diesel::sql_types::Text, DB>,
 {
-    fn from_sql(bytes: Option<&DB::RawValue>) -> deserialize::Result<Self> {
+    fn from_sql(bytes: <DB as Backend>::RawValue<'_>) -> deserialize::Result<Self> {
         deserialize::FromSql::<Text, DB>::from_sql(bytes).and_then(|string: String| {
             string
                 .parse::<PostVisibility>()
                 .map_err(|e| Box::new(e) as Box<dyn StdError + Send + Sync>)
         })
-    }
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub struct VisibilityParseError;
-
-impl fmt::Display for VisibilityParseError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Failed to parse PostVisibility")
-    }
-}
-
-impl StdError for VisibilityParseError {
-    fn description(&self) -> &str {
-        "Failed to parse PostVisibility"
-    }
-
-    fn cause(&self) -> Option<&dyn StdError> {
-        None
     }
 }

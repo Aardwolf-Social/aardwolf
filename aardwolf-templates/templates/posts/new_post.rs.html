@@ -1,14 +1,16 @@
-@use gettext::Catalog;
 @use gettext_macros::i18n;
 
-@use crate::templates::{posts::{new_post}, elements::{alert, input_select, input_text, input_textarea}};
+@use crate::{
+    posts::NewPost,
+    templates::{elements::{alert, input_select, input_text, input_textarea}},
+};
 
-@(catalog: &Catalog, username: &str, new_post: &PostNew)
+@(new_post: &NewPost)
 
 <article class="media"><!-- Begin new post -->
     <figure class="media-left">
         <p class="image is-64x64">
-        <img src="https://bulma.io/images/placeholders/128x128.png" alt="@username">
+        <img src="https://bulma.io/images/placeholders/128x128.png" alt="@new_post.username">
         </p>
     </figure>
     <div class="media-content">
@@ -16,11 +18,15 @@
             @if let Some(ref a) = new_post.alert {
                 @:alert(a)
             }
+
             <input type="hidden" name="csrf_token" value="@new_post.csrf">
-            @:input_textarea(&new_post.source)
-            @:input_select(&new_post.visibility)
-            @:input_text(&new_post.name)
-            <button>@i18n!(catalog, "Awoo!")</button>
+
+            @:input_textarea(&new_post.source);
+
+            @:input_select(&new_post.visibility);
+
+            @:input_text(&new_post.name);
+            <button>@i18n!(&new_post.catalog, "Awoo!")</button>
         </form>
     </div>
 </article><!-- End of new post -->
