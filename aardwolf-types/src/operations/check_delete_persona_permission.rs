@@ -14,7 +14,7 @@ impl DbAction for CheckDeletePersonaPermission {
 
     fn db_action(
         self,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<PersonaDeleter, CheckDeletePersonaPermissionFail> {
         Ok(self.0.can_delete_persona(self.1, conn)?)
     }
@@ -43,8 +43,8 @@ impl AardwolfFail for CheckDeletePersonaPermissionFail {}
 mod tests {
     use aardwolf_models::{base_actor::persona::Persona, user::AuthenticatedUser};
     use aardwolf_test_helpers::models::{
-        gen_string, make_unverified_authenticated_user, make_verified_authenticated_user,
-        user_with_base_actor, with_connection, with_persona,
+        gen_string, make_persona, make_unverified_authenticated_user,
+        make_verified_authenticated_user, user_make_base_actor, with_connection,
     };
     use diesel::pg::PgConnection;
     use failure::Error;
@@ -53,21 +53,21 @@ mod tests {
         operations::check_delete_persona_permission::CheckDeletePersonaPermission, traits::DbAction,
     };
 
-    fn setup_with_connection<F>(conn: &PgConnection, f: F) -> Result<(), Error>
+    fn setup_with_connection<F>(conn: &mut PgConnection, f: F) -> Result<(), Error>
     where
-        F: FnOnce(AuthenticatedUser, Persona) -> Result<(), Error>,
+        F: FnOnce(&mut PgConnection, AuthenticatedUser, Persona) -> Result<(), Error>,
     {
-        make_verified_authenticated_user(conn, &gen_string()?, |user, _email| {
-            user_with_base_actor(conn, &user, |base_actor| {
-                with_persona(conn, &base_actor, |persona| f(user.clone(), persona))
-            })
-        })
+        let (user, email) = make_verified_authenticated_user(conn, &gen_string())?;
+        let base_actor = user_make_base_actor(conn, &user)?;
+        let persona = make_persona(conn, &base_actor)?;
+
+        f(conn, user, persona)
     }
 
     #[test]
     fn verified_user_can_delete_their_persona() {
         with_connection(|conn| {
-            setup_with_connection(conn, |user, persona| {
+            setup_with_connection(conn, |conn, user, persona| {
                 let operation = CheckDeletePersonaPermission(user, persona);
 
                 assert!(operation.db_action(conn).is_ok());
@@ -79,13 +79,12 @@ mod tests {
     #[test]
     fn verified_user_cannot_delete_another_users_persona() {
         with_connection(|conn| {
-            setup_with_connection(conn, |_user, persona| {
-                make_verified_authenticated_user(conn, &gen_string()?, |user2, _email| {
-                    let operation = CheckDeletePersonaPermission(user2, persona);
+            setup_with_connection(conn, |conn, _user, persona| {
+                let (user2, _email) = make_verified_authenticated_user(conn, &gen_string())?;
+                let operation = CheckDeletePersonaPermission(user2, persona);
 
-                    assert!(operation.db_action(conn).is_err());
-                    Ok(())
-                })
+                assert!(operation.db_action(conn).is_err());
+                Ok(())
             })
         })
     }
@@ -93,13 +92,12 @@ mod tests {
     #[test]
     fn unverified_user_cannot_delete_another_users_persona() {
         with_connection(|conn| {
-            setup_with_connection(conn, |_user, persona| {
-                make_unverified_authenticated_user(conn, &gen_string()?, |user2| {
-                    let operation = CheckDeletePersonaPermission(user2, persona);
+            setup_with_connection(conn, |conn, _user, persona| {
+                let user2 = make_unverified_authenticated_user(conn, &gen_string())?;
+                let operation = CheckDeletePersonaPermission(user2, persona);
 
-                    assert!(operation.db_action(conn).is_err());
-                    Ok(())
-                })
+                assert!(operation.db_action(conn).is_err());
+                Ok(())
             })
         })
     }

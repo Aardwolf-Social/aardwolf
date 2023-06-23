@@ -64,28 +64,28 @@ pub fn transmute_email_token(token: &EmailToken) -> Result<EmailVerificationToke
     Ok(token)
 }
 
-pub fn gen_string() -> Result<String, Error> {
-    Ok(OsRng.sample_iter(&Alphanumeric).take(10).collect())
+pub fn gen_string() -> String {
+    OsRng.sample_iter(&Alphanumeric).take(10).collect()
 }
 
-pub fn gen_url() -> Result<Url, Error> {
-    let mut url: OrigUrl = "https://example.com".parse()?;
+pub fn gen_url() -> Url {
+    let mut url: OrigUrl = "https://example.com".parse().unwrap();
 
-    url.set_path(&gen_string()?);
+    url.set_path(&gen_string());
 
-    Ok(Url(url))
+    Url(url)
 }
 
-pub fn gen_bool() -> Result<bool, Error> {
-    Ok(OsRng.gen())
+pub fn gen_bool() -> bool {
+    OsRng.gen()
 }
 
-pub fn gen_datetime() -> Result<DateTime<Utc>, Error> {
+pub fn gen_datetime() -> DateTime<Utc> {
     let hours = OsRng.gen_range(0, 10000);
 
-    Ok(Utc::now()
+    Utc::now()
         .checked_add_signed(OldDuration::hours(hours))
-        .ok_or(TimeBounds)?)
+        .unwrap()
 }
 
 #[derive(Debug, Fail)]
@@ -94,49 +94,44 @@ pub struct TimeBounds;
 
 pub fn with_connection<F>(f: F)
 where
-    F: FnOnce(&PgConnection) -> Result<(), Error>,
+    F: FnOnce(&mut PgConnection) -> Result<(), Error>,
 {
     dotenv().ok();
 
     let db_url = env::var("TEST_DATABASE_URL").unwrap();
 
-    let conn = PgConnection::establish(&db_url).unwrap();
+    let mut conn = PgConnection::establish(&db_url).unwrap();
 
-    conn.test_transaction(|| {
-        f(&conn).map_err(|e| {
+    conn.test_transaction(|conn| {
+        f(conn).map_err(|e| {
             println!("Error: {}, {:?}", e, e);
             e
         })
     });
 }
 
-pub fn with_base_actor<F>(conn: &PgConnection, f: F) -> Result<(), Error>
-where
-    F: FnOnce(BaseActor) -> Result<(), Error>,
-{
-    let (_pr, pu) = gen_keypair()?;
+pub fn make_base_actor(conn: &mut PgConnection) -> Result<BaseActor, diesel::result::Error> {
+    let (_pr, pu) = gen_keypair();
 
-    let base_actor = NewBaseActor::new(
-        gen_string()?,
-        gen_url()?,
-        gen_url()?,
-        gen_url()?,
+    NewBaseActor::new(
+        gen_string(),
+        gen_url(),
+        gen_url(),
+        gen_url(),
         FollowPolicy::AutoAccept,
         pu,
-        gen_string()?,
+        gen_string(),
     )
-    .insert(conn)?;
-
-    f(base_actor)
+    .insert(conn)
 }
 
-pub fn gen_keypair() -> Result<(Vec<u8>, Vec<u8>), Error> {
-    let priv_key = Rsa::generate(2048)?;
+pub fn gen_keypair() -> (Vec<u8>, Vec<u8>) {
+    let priv_key = Rsa::generate(2048).unwrap();
 
-    Ok((
-        priv_key.private_key_to_der()?,
-        priv_key.public_key_to_der_pkcs1()?,
-    ))
+    (
+        priv_key.private_key_to_der().unwrap(),
+        priv_key.public_key_to_der_pkcs1().unwrap(),
+    )
 }
 
 pub struct UrlGenerator;
@@ -167,101 +162,73 @@ impl GenerateUrls for UrlGenerator {
     }
 }
 
-pub fn user_with_base_actor<F>(
-    conn: &PgConnection,
+pub fn user_make_base_actor(
+    conn: &mut PgConnection,
     user: &AuthenticatedUser,
-    f: F,
-) -> Result<(), Error>
-where
-    F: FnOnce(BaseActor) -> Result<(), Error>,
-{
-    let (pr, pu) = gen_keypair()?;
+) -> Result<BaseActor, diesel::result::Error> {
+    let (pr, pu) = gen_keypair();
 
-    let base_actor = NewBaseActor::local(
-        gen_string()?,
+    NewBaseActor::local(
+        gen_string(),
         user,
         FollowPolicy::AutoAccept,
         pr,
         pu,
         UrlGenerator,
     )
-    .insert(conn)?;
-
-    f(base_actor)
+    .insert(conn)
 }
 
-pub fn with_group<F>(conn: &PgConnection, base_actor: &BaseActor, f: F) -> Result<(), Error>
-where
-    F: FnOnce(Group) -> Result<(), Error>,
-{
-    let group = NewGroup::new(base_actor).insert(conn)?;
-
-    f(group)
+pub fn make_group(
+    conn: &mut PgConnection,
+    base_actor: &BaseActor,
+) -> Result<Group, diesel::result::Error> {
+    NewGroup::new(base_actor).insert(conn)
 }
 
-pub fn with_group_base_actor<F>(
-    conn: &PgConnection,
+pub fn make_group_base_actor(
+    conn: &mut PgConnection,
     group: &Group,
     base_actor: &BaseActor,
-    f: F,
-) -> Result<(), Error>
-where
-    F: FnOnce(GroupBaseActor) -> Result<(), Error>,
-{
-    let group_base_actor = NewGroupBaseActor::new(group, base_actor).insert(conn)?;
-
-    f(group_base_actor)
+) -> Result<GroupBaseActor, diesel::result::Error> {
+    NewGroupBaseActor::new(group, base_actor).insert(conn)
 }
 
-pub fn with_follow_request<F>(
-    conn: &PgConnection,
+pub fn make_follow_request(
+    conn: &mut PgConnection,
     follower: &BaseActor,
     requested_follow: &BaseActor,
-    f: F,
-) -> Result<(), Error>
-where
-    F: FnOnce(FollowRequest) -> Result<(), Error>,
-{
-    let follow_request = NewFollowRequest::new(follower, requested_follow).insert(conn)?;
-
-    f(follow_request)
+) -> Result<FollowRequest, diesel::result::Error> {
+    NewFollowRequest::new(follower, requested_follow).insert(conn)
 }
 
-pub fn with_follower<F>(
-    conn: &PgConnection,
+pub fn make_follower(
+    conn: &mut PgConnection,
     follower: &BaseActor,
     follows: &BaseActor,
-    f: F,
-) -> Result<(), Error>
-where
-    F: FnOnce(Follower) -> Result<(), Error>,
-{
-    let follower = NewFollower::new(follower, follows).insert(conn)?;
-
-    f(follower)
+) -> Result<Follower, diesel::result::Error> {
+    NewFollower::new(follower, follows).insert(conn)
 }
 
-pub fn with_persona<F>(conn: &PgConnection, base_actor: &BaseActor, f: F) -> Result<(), Error>
-where
-    F: FnOnce(Persona) -> Result<(), Error>,
-{
-    let persona = NewPersona::new(
+pub fn make_persona(
+    conn: &mut PgConnection,
+    base_actor: &BaseActor,
+) -> Result<Persona, diesel::result::Error> {
+    NewPersona::new(
         PostVisibility::Public,
-        gen_bool()?,
+        gen_bool(),
         None,
-        gen_string()?,
+        gen_string(),
         base_actor,
     )
-    .insert(conn)?;
-
-    f(persona)
+    .insert(conn)
 }
 
-pub fn with_base_post<F>(conn: &PgConnection, posted_by: &BaseActor, f: F) -> Result<(), Error>
-where
-    F: FnOnce(BasePost) -> Result<(), Error>,
-{
-    let base_post = NewBasePost::local(
+pub fn make_base_post(
+    conn: &mut PgConnection,
+    posted_by: &BaseActor,
+) -> Result<BasePost, diesel::result::Error> {
+    NewBasePost::local(
         None,
         TEXT_PLAIN.into(),
         posted_by,
@@ -269,233 +236,167 @@ where
         PostVisibility::Public,
         UrlGenerator,
     )
-    .insert(conn)?;
-
-    f(base_post)
+    .insert(conn)
 }
 
-pub fn with_post<F>(conn: &PgConnection, base_post: &BasePost, f: F) -> Result<(), Error>
-where
-    F: FnOnce(Post) -> Result<(), Error>,
-{
-    let post = NewPost::new(gen_string()?, Some(gen_string()?), base_post).insert(conn)?;
-
-    f(post)
+pub fn make_post_with(
+    conn: &mut PgConnection,
+    base_post: &BasePost,
+) -> Result<Post, diesel::result::Error> {
+    NewPost::new(gen_string(), Some(gen_string()), &base_post).insert(conn)
 }
 
-pub fn make_post<F>(conn: &PgConnection, f: F) -> Result<(), Error>
-where
-    F: FnOnce(Post) -> Result<(), Error>,
-{
-    with_base_actor(conn, |base_actor| {
-        with_base_post(conn, &base_actor, |base_post| {
-            with_post(conn, &base_post, f)
-        })
-    })
+pub fn make_post(conn: &mut PgConnection) -> Result<Post, diesel::result::Error> {
+    let base_actor = make_base_actor(conn)?;
+    let base_post = make_base_post(conn, &base_actor)?;
+
+    make_post_with(conn, &base_post)
 }
 
-pub fn with_comment<F>(
-    conn: &PgConnection,
+pub fn make_comment(
+    conn: &mut PgConnection,
     conversation: &Post,
     parent: &Post,
     post: &Post,
-    f: F,
-) -> Result<(), Error>
-where
-    F: FnOnce(Comment) -> Result<(), Error>,
-{
-    let comment = NewComment::new(conversation, parent, post).insert(conn)?;
-
-    f(comment)
+) -> Result<Comment, diesel::result::Error> {
+    NewComment::new(conversation, parent, post).insert(conn)
 }
 
-pub fn with_reaction<F>(conn: &PgConnection, comment: &Comment, f: F) -> Result<(), Error>
-where
-    F: FnOnce(Reaction) -> Result<(), Error>,
-{
-    let reaction = NewReaction::new(ReactionType::Like, comment).insert(conn)?;
-
-    f(reaction)
+pub fn make_reaction(
+    conn: &mut PgConnection,
+    comment: &Comment,
+) -> Result<Reaction, diesel::result::Error> {
+    NewReaction::new(ReactionType::Like, comment).insert(conn)
 }
 
-pub fn with_file<F>(conn: &PgConnection, f: F) -> Result<(), Error>
-where
-    F: FnOnce(File) -> Result<(), Error>,
-{
-    let file = NewFile::new("Cargo.toml")?.insert(conn)?;
-
-    f(file)
+pub fn make_file(conn: &mut PgConnection) -> Result<File, diesel::result::Error> {
+    NewFile::new("Cargo.toml").unwrap().insert(conn)
 }
 
-pub fn with_media_post<F>(conn: &PgConnection, file: &File, post: &Post, f: F) -> Result<(), Error>
-where
-    F: FnOnce(MediaPost) -> Result<(), Error>,
-{
-    let media_post = NewMediaPost::new(file, post).insert(conn)?;
-
-    f(media_post)
+pub fn make_media_post(
+    conn: &mut PgConnection,
+    file: &File,
+    post: &Post,
+) -> Result<MediaPost, diesel::result::Error> {
+    NewMediaPost::new(file, post).insert(conn)
 }
 
-pub fn with_direct_post<F>(
-    conn: &PgConnection,
+pub fn make_direct_post(
+    conn: &mut PgConnection,
     base_post: &BasePost,
     base_actor: &BaseActor,
-    f: F,
-) -> Result<(), Error>
-where
-    F: FnOnce(DirectPost) -> Result<(), Error>,
-{
-    let direct_post = NewDirectPost::new(base_post, base_actor).insert(conn)?;
-
-    f(direct_post)
+) -> Result<DirectPost, diesel::result::Error> {
+    NewDirectPost::new(base_post, base_actor).insert(conn)
 }
 
-pub fn with_timer<F>(conn: &PgConnection, f: F) -> Result<(), Error>
-where
-    F: FnOnce(Timer) -> Result<(), Error>,
-{
-    let timer = NewTimer::new(gen_datetime()?).insert(conn)?;
-
-    f(timer)
+pub fn make_timer(conn: &mut PgConnection) -> Result<Timer, diesel::result::Error> {
+    NewTimer::new(gen_datetime()).insert(conn)
 }
 
-pub fn with_event<F>(
-    conn: &PgConnection,
+pub fn make_event(
+    conn: &mut PgConnection,
     owner: &Persona,
     start: &Timer,
     end: &Timer,
-    f: F,
-) -> Result<(), Error>
-where
-    F: FnOnce(Event) -> Result<(), Error>,
-{
-    let event =
-        NewEvent::new(owner, start, end, Tz::UTC, gen_string()?, gen_string()?)?.insert(conn)?;
-
-    f(event)
+) -> Result<Event, diesel::result::Error> {
+    NewEvent::new(owner, start, end, Tz::UTC, gen_string(), gen_string())
+        .unwrap()
+        .insert(conn)
 }
 
-pub fn with_event_notification<F>(
-    conn: &PgConnection,
+pub fn make_event_notification(
+    conn: &mut PgConnection,
     event: &Event,
     timer: &Timer,
-    f: F,
-) -> Result<(), Error>
-where
-    F: FnOnce(EventNotification) -> Result<(), Error>,
-{
-    let event_notification = NewEventNotification::new(event, timer).insert(conn)?;
-
-    f(event_notification)
+) -> Result<EventNotification, diesel::result::Error> {
+    NewEventNotification::new(event, timer).insert(conn)
 }
 
-pub fn with_unverified_user<F>(conn: &PgConnection, f: F) -> Result<(), Error>
-where
-    F: FnOnce(UnverifiedUser) -> Result<(), Error>,
-{
+pub fn make_unverified_user(
+    conn: &mut PgConnection,
+) -> Result<UnverifiedUser, diesel::result::Error> {
     let unauthenticated_user = NewUser::new().insert(conn)?;
 
-    let unverified_user = match unauthenticated_user.into_verified(conn)? {
-        Ok(_) => return Err(AlreadyVerified.into()),
-        Err(unverified_user) => unverified_user,
-    };
-
-    f(unverified_user)
+    match unauthenticated_user.into_verified(conn)? {
+        Ok(_) => panic!("User is already verified"),
+        Err(unverified_user) => Ok(unverified_user),
+    }
 }
 
-pub fn with_unverified_email<F, U>(conn: &PgConnection, user: &U, f: F) -> Result<(), Error>
+pub fn make_unverified_email<U>(
+    conn: &mut PgConnection,
+    user: &U,
+) -> Result<(UnverifiedEmail, EmailToken), diesel::result::Error>
 where
-    F: FnOnce(UnverifiedEmail, EmailToken) -> Result<(), Error>,
     U: UserLike,
 {
-    let (email, token) = NewEmail::new(gen_string()?, user)?;
+    let (email, token) = NewEmail::new(gen_string(), user).unwrap();
 
     let email = email.insert(conn)?;
 
-    f(email, token)
+    Ok((email, token))
 }
 
-pub fn with_local_auth<F>(
-    conn: &PgConnection,
+pub fn make_local_auth(
+    conn: &mut PgConnection,
     user: &UnverifiedUser,
     password: &str,
-    f: F,
-) -> Result<(), Error>
-where
-    F: FnOnce(LocalAuth) -> Result<(), Error>,
-{
-    let password = create_plaintext_password(password)?;
+) -> Result<LocalAuth, diesel::result::Error> {
+    let password = create_plaintext_password(password).unwrap();
 
-    let local_auth = NewLocalAuth::new(user, password)?.insert(conn)?;
-
-    f(local_auth)
+    NewLocalAuth::new(user, password).unwrap().insert(conn)
 }
 
-pub fn make_verified_authenticated_user<F>(
-    conn: &PgConnection,
+pub fn make_verified_authenticated_user(
+    conn: &mut PgConnection,
     password: &str,
-    f: F,
-) -> Result<(), Error>
-where
-    F: FnOnce(AuthenticatedUser, VerifiedEmail) -> Result<(), Error>,
-{
+) -> Result<(AuthenticatedUser, VerifiedEmail), Error> {
     let unauthenticated_user = NewUser::new().insert(conn)?;
 
     let user = match unauthenticated_user.into_verified(conn)? {
-        Ok(_) => return Err(AlreadyVerified.into()),
+        Ok(_) => panic!("User is already verified"),
         Err(unverified_user) => unverified_user,
     };
 
     let password = create_plaintext_password(password)?;
     NewLocalAuth::new(&user, password)?.insert(conn)?;
 
-    let (email, token) = NewEmail::new(gen_string()?, &user)?;
+    let (email, token) = NewEmail::new(gen_string(), &user)?;
     let email = email.insert(conn)?;
     let token = transmute_email_token(&token)?;
 
     let (user, email) = user.verify(email, token)?.store_verify(conn)?;
 
-    f(user, email)
+    Ok((user, email))
 }
 
 #[derive(Debug, Fail)]
 #[fail(display = "User is already verified")]
 pub struct AlreadyVerified;
 
-pub fn make_unverified_authenticated_user<F>(
-    conn: &PgConnection,
+pub fn make_unverified_authenticated_user(
+    conn: &mut PgConnection,
     password: &str,
-    f: F,
-) -> Result<(), Error>
-where
-    F: FnOnce(AuthenticatedUser) -> Result<(), Error>,
-{
-    with_unverified_user(conn, |user| {
-        with_unverified_email(conn, &user, |_email, _token| {
-            with_local_auth(conn, &user, password, |auth| {
-                let user = UnauthenticatedUser::by_id(user.id(), conn)?;
+) -> Result<AuthenticatedUser, Error> {
+    let user = make_unverified_user(conn)?;
+    let _ = make_unverified_email(conn, &user)?;
+    let auth = make_local_auth(conn, &user, password)?;
+    let user = UnauthenticatedUser::by_id(user.id(), conn)?;
 
-                let user = user.log_in_local(auth, create_plaintext_password(password)?)?;
+    let user = user
+        .log_in_local(auth, create_plaintext_password(password).unwrap())
+        .unwrap();
 
-                f(user)
-            })
-        })
-    })
+    Ok(user)
 }
 
-pub fn make_verified_user_with_persona<F>(
-    conn: &PgConnection,
+pub fn make_verified_user_make_persona(
+    conn: &mut PgConnection,
     password: &str,
-    f: F,
-) -> Result<(), Error>
-where
-    F: FnOnce(AuthenticatedUser, BaseActor, Persona) -> Result<(), Error>,
-{
-    make_verified_authenticated_user(conn, password, |user, _email| {
-        user_with_base_actor(conn, &user, |base_actor| {
-            with_persona(conn, &base_actor, |persona| {
-                f(user.clone(), base_actor.clone(), persona)
-            })
-        })
-    })
+) -> Result<(AuthenticatedUser, BaseActor, Persona), diesel::result::Error> {
+    let (user, _email) = make_verified_authenticated_user(conn, password).unwrap();
+    let base_actor = user_make_base_actor(conn, &user)?;
+    let persona = make_persona(conn, &base_actor)?;
+
+    Ok((user.clone(), base_actor.clone(), persona))
 }

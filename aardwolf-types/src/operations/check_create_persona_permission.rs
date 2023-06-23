@@ -19,7 +19,7 @@ where
 
     fn db_action(
         self,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<LocalPersonaCreator<U>, CheckCreatePersonaPermissionFail> {
         Ok(self.0.can_make_persona(conn)?)
     }
@@ -61,24 +61,22 @@ mod tests {
     #[test]
     fn verified_user_can_create_persona() {
         with_connection(|conn| {
-            make_verified_authenticated_user(conn, &gen_string()?, |user, _| {
-                let operation = CheckCreatePersonaPermission(user);
+            let (user, _) = make_verified_authenticated_user(conn, &gen_string())?;
+            let operation = CheckCreatePersonaPermission(user);
 
-                assert!(operation.db_action(conn).is_ok());
-                Ok(())
-            })
+            assert!(operation.db_action(conn).is_ok());
+            Ok(())
         })
     }
 
     #[test]
     fn unverified_user_cannot_create_persona() {
         with_connection(|conn| {
-            make_unverified_authenticated_user(conn, &gen_string()?, |user| {
-                let operation = CheckCreatePersonaPermission(user);
+            let user = make_unverified_authenticated_user(conn, &gen_string())?;
+            let operation = CheckCreatePersonaPermission(user);
 
-                assert!(operation.db_action(conn).is_err());
-                Ok(())
-            })
+            assert!(operation.db_action(conn).is_err());
+            Ok(())
         })
     }
 }

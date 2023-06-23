@@ -48,9 +48,9 @@ fn main() {
     env::set_var("RUST_LOG", "aardwolf_models=debug");
     env_logger::init();
 
-    let connection = establish_connection();
+    let mut connection = establish_connection();
 
-    connection.test_transaction::<(), diesel::result::Error, _>(|| {
+    connection.test_transaction::<(), diesel::result::Error, _>(|conn| {
         // Create a user. Users are initially unverified
         let (token, email) = {
             let json = json!({
@@ -62,9 +62,9 @@ fn main() {
             let payload: Payload = serde_json::from_value(json).unwrap();
 
             let user = match NewUser::new()
-                .insert(&connection)
+                .insert(conn)
                 .unwrap()
-                .into_verified(&connection)
+                .into_verified(conn)
                 .unwrap()
             {
                 Ok(_) => panic!("Unexpected verified user"),
@@ -73,12 +73,12 @@ fn main() {
 
             NewLocalAuth::new_from_two(&user, payload.password, payload.confirm_password)
                 .unwrap()
-                .insert(&connection)
+                .insert(conn)
                 .unwrap();
 
             let (new_email, token) = NewEmail::new(payload.email, &user).unwrap();
 
-            let email = new_email.insert(&connection).unwrap();
+            let email = new_email.insert(conn).unwrap();
 
             println!("Created user, local_auth, and email!");
             (token, email)
@@ -94,12 +94,12 @@ fn main() {
             let payload: AuthPayload = serde_json::from_value(json).unwrap();
 
             let (user, _email, local_auth) =
-                UnauthenticatedUser::by_email_for_auth(&payload.email, &connection).unwrap();
+                UnauthenticatedUser::by_email_for_auth(&payload.email, conn).unwrap();
 
             let user = user.log_in_local(local_auth, payload.password).unwrap();
 
             assert!(
-                !user.is_verified(&connection).unwrap(),
+                !user.is_verified(conn).unwrap(),
                 "User shouldn't be verified at this point"
             );
 
@@ -116,9 +116,9 @@ fn main() {
             let payload: VerificationPayload = serde_json::from_value(json).unwrap();
 
             let (unauthenticated_user, email) =
-                UnauthenticatedUser::by_email_id(payload.id, &connection).unwrap();
+                UnauthenticatedUser::by_email_id(payload.id, conn).unwrap();
 
-            let user = match unauthenticated_user.into_verified(&connection).unwrap() {
+            let user = match unauthenticated_user.into_verified(conn).unwrap() {
                 Ok(_unauthenticatec_user) => panic!("User shouldn't be verified"),
                 Err(unverified_user) => unverified_user,
             };
@@ -131,7 +131,7 @@ fn main() {
             let (_user, _email) = user
                 .verify(email, payload.token)
                 .unwrap()
-                .store_verify(&connection)
+                .store_verify(conn)
                 .unwrap();
 
             println!("Verified user!");
@@ -147,12 +147,12 @@ fn main() {
             let payload: AuthPayload = serde_json::from_value(json).unwrap();
 
             let (user, _email, local_auth) =
-                UnauthenticatedUser::by_email_for_auth(&payload.email, &connection).unwrap();
+                UnauthenticatedUser::by_email_for_auth(&payload.email, conn).unwrap();
 
             let user = user.log_in_local(local_auth, payload.password).unwrap();
 
             assert!(
-                user.is_verified(&connection).unwrap(),
+                user.is_verified(conn).unwrap(),
                 "User should be verified at this point"
             );
 

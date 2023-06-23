@@ -1,7 +1,7 @@
-@use gettext::Catalog;
 @use gettext_macros::i18n;
+@use crate::home::NavTop;
 
-@(catalog: &Catalog)
+@(nav_top: &NavTop)
 
 <nav class="navbar" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
@@ -25,10 +25,10 @@
       <div class="navbar-end">
           <!-- Nav Right-hand Menu -->	
           <a class="navbar-item">
-            @i18n!(catalog, "Home")
+            @i18n!(nav_top.catalog, "Home")
           </a>
-          <a @click="toggleNotifCompView" class="navbar-item" href="#">
-            @i18n!(catalog, "Notifications")
+          <a onclick="toggleNotifCompView" class="navbar-item" href="#">
+            @i18n!(nav_top.catalog, "Notifications")
           </a>
           <notification-box v-if="showNotificationBox"></notification-box>
         <!-- Nav Right-hand Dropdown -->
@@ -57,7 +57,7 @@
         <div class="navbar-item">
           <div class="buttons">
             <a class="button is-light">
-              @i18n!(catalog, "Logout")
+              @i18n!(nav_top.catalog, "Logout")
             </a>
           </div>
         </div>

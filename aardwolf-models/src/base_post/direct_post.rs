@@ -4,7 +4,7 @@ use diesel::{self, pg::PgConnection};
 use crate::{base_actor::BaseActor, base_post::BasePost, schema::direct_posts};
 
 #[derive(Debug, Queryable, QueryableByName)]
-#[table_name = "direct_posts"]
+#[diesel(table_name = direct_posts)]
 pub struct DirectPost {
     id: i32,
     base_post_id: i32,
@@ -17,7 +17,7 @@ impl DirectPost {
     pub fn exists(
         actor: &BaseActor,
         post: &BasePost,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<bool, diesel::result::Error> {
         use diesel::prelude::*;
 
@@ -31,17 +31,37 @@ impl DirectPost {
                 e => Err(e),
             })
     }
+
+    pub fn id(&self) -> i32 {
+        self.id
+    }
+
+    pub fn base_post_id(&self) -> i32 {
+        self.base_post_id
+    }
+
+    pub fn base_actor_id(&self) -> i32 {
+        self.base_actor_id
+    }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 #[derive(Debug, Insertable)]
-#[table_name = "direct_posts"]
+#[diesel(table_name = direct_posts)]
 pub struct NewDirectPost {
     base_post_id: i32,
     base_actor_id: i32,
 }
 
 impl NewDirectPost {
-    pub fn insert(self, conn: &PgConnection) -> Result<DirectPost, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<DirectPost, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(direct_posts::table)
@@ -64,13 +84,14 @@ mod tests {
     #[test]
     fn create_direct_post() {
         with_connection(|conn| {
-            with_base_actor(conn, |post_author| {
-                with_base_post(conn, &post_author, |base_post| {
-                    with_base_actor(conn, |viewer| {
-                        with_direct_post(conn, &base_post, &viewer, |_| Ok(()))
-                    })
-                })
-            })
+            let post_author = make_base_actor(conn)?;
+            let base_post = make_base_post(conn, &post_author)?;
+            let viewer = make_base_actor(conn)?;
+            let post = make_direct_post(conn, &base_post, &viewer);
+
+            assert!(post.is_ok());
+
+            Ok(())
         })
     }
 }

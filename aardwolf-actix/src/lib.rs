@@ -3,17 +3,17 @@ use std::{error::Error, fmt};
 use aardwolf_models::{base_actor::BaseActor, generate_urls::GenerateUrls, sql_types::Url};
 use actix::System;
 use actix_files::Files;
-use actix_session::CookieSession;
+use actix_session::{storage::CookieSessionStore, SessionMiddleware};
 use actix_web::{
+    cookie::Key,
     middleware::Logger,
-    web::{get, post, resource, scope},
+    web::{get, post, resource, scope, Data},
     App, HttpServer,
 };
-use actix_web_async_compat::async_compat;
 use config::Config;
+use diesel::r2d2::ConnectionManager;
 use diesel::PgConnection;
 use r2d2::Pool;
-use r2d2_diesel::ConnectionManager;
 use uuid::Uuid;
 
 mod action;
@@ -155,7 +155,7 @@ mod assets {
 }
 
 pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
-    let sys = System::new("aardwolf-actix");
+    let sys = System::new();
 
     let pool = db_pool(database_url)?;
 
@@ -170,6 +170,9 @@ pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
         https: config.get_bool("Instance.https")?,
     };
 
+    // TODO: Allow key to be loaded from config file
+    let secret_key = Key::generate();
+
     #[cfg(debug_assertions)]
     let assets = assets::Assets::from_config(&config)?;
 
@@ -182,49 +185,42 @@ pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
         let translations = aardwolf_templates::managed_state();
 
         App::new()
-            .data(state.clone())
-            .data(translations)
+            .app_data(Data::new(state))
+            .app_data(Data::new(translations))
             .wrap(Logger::default())
-            .wrap(CookieSession::signed(&[0; 32]).secure(false))
+            .wrap(SessionMiddleware::new(
+                CookieSessionStore::default(),
+                secret_key.clone(),
+            ))
             .service(
                 scope("/auth")
                     .service(
                         resource("/sign_up")
-                            .route(get().to_async(self::routes::auth::sign_up_form))
-                            .route(post().to_async(async_compat(self::routes::auth::sign_up))),
+                            .route(get().to(self::routes::auth::sign_up_form))
+                            .route(post().to(self::routes::auth::sign_up)),
                     )
                     .service(
                         resource("/sign_in")
-                            .route(get().to_async(self::routes::auth::sign_in_form))
-                            .route(post().to_async(async_compat(self::routes::auth::sign_in))),
+                            .route(get().to(self::routes::auth::sign_in_form))
+                            .route(post().to(self::routes::auth::sign_in)),
                     )
-                    .service(
-                        resource("/confirmation")
-                            .route(get().to_async(async_compat(self::routes::auth::confirm))),
-                    )
-                    .service(
-                        resource("/sign_out").route(get().to_async(self::routes::auth::sign_out)),
-                    ),
+                    .service(resource("/confirmation").route(get().to(self::routes::auth::confirm)))
+                    .service(resource("/sign_out").route(get().to(self::routes::auth::sign_out))),
             )
             .service(
-                scope("/posts").service(
-                    resource("/create")
-                        .route(post().to_async(async_compat(self::routes::posts::create))),
-                ),
+                scope("/posts")
+                    .service(resource("/create").route(post().to(self::routes::posts::create))),
             )
             .service(
                 scope("/personas")
                     .service(
                         resource("/create")
-                            .route(get().to_async(self::routes::personas::new))
-                            .route(post().to_async(async_compat(self::routes::personas::create))),
+                            .route(get().to(self::routes::personas::new))
+                            .route(post().to(self::routes::personas::create)),
                     )
-                    .service(
-                        resource("/delete")
-                            .route(get().to_async(async_compat(self::routes::personas::delete))),
-                    ),
+                    .service(resource("/delete").route(get().to(self::routes::personas::delete))),
             )
-            .service(resource("/").route(get().to_async(self::routes::app::index)))
+            .service(resource("/").route(get().to(self::routes::app::index)))
             .service(Files::new("/web", assets.web()))
             .service(Files::new("/images", assets.images()))
             .service(Files::new("/themes", assets.themes()))
@@ -232,7 +228,7 @@ pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
             .service(Files::new("/stylesheets", assets.stylesheets()))
     })
     .bind(&listen_address)?
-    .start();
+    .run();
 
     sys.run()?;
 

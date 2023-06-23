@@ -17,7 +17,7 @@ pub mod persona;
 use self::follower::Follower;
 
 #[derive(Debug, AsChangeset)]
-#[table_name = "base_actors"]
+#[diesel(table_name = base_actors)]
 pub struct ModifiedBaseActor {
     id: i32,
     display_name: String,
@@ -50,7 +50,7 @@ impl ModifiedBaseActor {
         self.follow_policy = follow_policy;
     }
 
-    pub fn save_changes(self, conn: &PgConnection) -> Result<BaseActor, diesel::result::Error> {
+    pub fn save_changes(self, conn: &mut PgConnection) -> Result<BaseActor, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::update(base_actors::table)
@@ -60,7 +60,7 @@ impl ModifiedBaseActor {
 }
 
 #[derive(Clone, Debug, Queryable, QueryableByName)]
-#[table_name = "base_actors"]
+#[diesel(table_name = base_actors)]
 pub struct BaseActor {
     id: i32,
     display_name: String,        // max_length: 80
@@ -97,7 +97,7 @@ impl BaseActor {
 
     pub fn by_persona_id(
         persona_id: i32,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<Self, diesel::result::Error> {
         use crate::schema::personas;
         use diesel::prelude::*;
@@ -126,7 +126,7 @@ impl BaseActor {
     pub fn is_following(
         &self,
         follows: &BaseActor,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<bool, diesel::result::Error> {
         self.is_following_id(follows.id, conn)
     }
@@ -134,7 +134,7 @@ impl BaseActor {
     pub fn is_following_id(
         &self,
         follows: i32,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<bool, diesel::result::Error> {
         use crate::schema::followers;
         use diesel::prelude::*;
@@ -173,10 +173,26 @@ impl BaseActor {
     pub fn follow_policy(&self) -> FollowPolicy {
         self.follow_policy
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
+
+    pub fn local_uuid(&self) -> Option<Uuid> {
+        self.local_uuid
+    }
+
+    pub fn activitypub_id(&self) -> &str {
+        self.activitypub_id.as_str()
+    }
 }
 
 #[derive(Insertable)]
-#[table_name = "base_actors"]
+#[diesel(table_name = base_actors)]
 pub struct NewBaseActor {
     display_name: String,
     profile_url: Url,
@@ -191,7 +207,7 @@ pub struct NewBaseActor {
 }
 
 impl NewBaseActor {
-    pub fn insert(self, conn: &PgConnection) -> Result<BaseActor, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<BaseActor, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(base_actors::table)
@@ -253,6 +269,12 @@ mod tests {
 
     #[test]
     fn create_base_actor() {
-        with_connection(|conn| with_base_actor(conn, |_| Ok(())))
+        with_connection(|conn| {
+            let actor = make_base_actor(conn);
+
+            assert!(actor.is_ok());
+
+            Ok(())
+        })
     }
 }

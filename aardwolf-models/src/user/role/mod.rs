@@ -7,7 +7,7 @@ pub mod user_role;
 use crate::{schema::roles, sql_types::Role as RoleSql};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "roles"]
+#[diesel(table_name = roles)]
 pub struct Role {
     id: i32,
     name: RoleSql,
@@ -26,5 +26,9 @@ impl Role {
 
     pub fn created_at(&self) -> DateTime<Utc> {
         self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
     }
 }

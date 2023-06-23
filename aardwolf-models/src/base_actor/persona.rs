@@ -7,7 +7,7 @@ use crate::{
 };
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "personas"]
+#[diesel(table_name = personas)]
 pub struct Persona {
     id: i32,
     default_visibility: PostVisibility,
@@ -44,7 +44,7 @@ impl Persona {
         self.base_actor
     }
 
-    pub fn by_id(id: i32, conn: &PgConnection) -> Result<Persona, diesel::result::Error> {
+    pub fn by_id(id: i32, conn: &mut PgConnection) -> Result<Persona, diesel::result::Error> {
         use diesel::prelude::*;
 
         personas::table.find(id).first(conn)
@@ -53,7 +53,7 @@ impl Persona {
     pub fn belongs_to_user<U: UserLike>(
         &self,
         user: &U,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<bool, diesel::result::Error> {
         use crate::schema::base_actors;
         use diesel::prelude::*;
@@ -71,7 +71,7 @@ impl Persona {
             })
     }
 
-    pub fn delete(self, conn: &PgConnection) -> Result<(), diesel::result::Error> {
+    pub fn delete(self, conn: &mut PgConnection) -> Result<(), diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::delete(personas::table)
@@ -79,10 +79,18 @@ impl Persona {
             .execute(conn)
             .map(|_| ())
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 #[derive(Insertable)]
-#[table_name = "personas"]
+#[diesel(table_name = personas)]
 pub struct NewPersona {
     default_visibility: PostVisibility,
     is_searchable: bool,
@@ -92,7 +100,7 @@ pub struct NewPersona {
 }
 
 impl NewPersona {
-    pub fn insert(self, conn: &PgConnection) -> Result<Persona, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<Persona, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(personas::table)
@@ -124,9 +132,12 @@ mod tests {
     #[test]
     fn create_persona() {
         with_connection(|conn| {
-            with_base_actor(conn, |base_actor| {
-                with_persona(conn, &base_actor, |_| Ok(()))
-            })
+            let base_actor = make_base_actor(conn)?;
+            let persona = make_persona(conn, &base_actor);
+
+            assert!(persona.is_ok());
+
+            Ok(())
         })
     }
 }

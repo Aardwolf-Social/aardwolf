@@ -17,7 +17,7 @@ pub enum FileCreationError {
 }
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "files"]
+#[diesel(table_name = files)]
 pub struct File {
     id: i32,
     file_path: String,
@@ -33,16 +33,24 @@ impl File {
     pub fn path(&self) -> &str {
         &self.file_path
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 #[derive(Insertable)]
-#[table_name = "files"]
+#[diesel(table_name = files)]
 pub struct NewFile {
     file_path: String,
 }
 
 impl NewFile {
-    pub fn insert(self, conn: &PgConnection) -> Result<File, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<File, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(files::table)
@@ -74,7 +82,13 @@ mod tests {
 
     #[test]
     fn create_file() {
-        with_connection(|conn| with_file(conn, |_| Ok(())))
+        with_connection(|conn| {
+            let file = make_file(conn);
+
+            assert!(file.is_ok());
+
+            Ok(())
+        })
     }
 
     #[test]

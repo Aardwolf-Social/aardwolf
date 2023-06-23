@@ -7,7 +7,7 @@ use crate::{
 };
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "links"]
+#[diesel(table_name = links)]
 pub struct Link {
     id: i32,
     href: Url, // max_length: 2048
@@ -48,10 +48,18 @@ impl Link {
     pub fn base_post(&self) -> i32 {
         self.base_post
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 #[derive(Insertable)]
-#[table_name = "links"]
+#[diesel(table_name = links)]
 pub struct NewLink {
     href: Url,
     href_lang: Lang,
