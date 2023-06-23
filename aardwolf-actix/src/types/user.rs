@@ -9,7 +9,7 @@ use actix_web::{error::ResponseError, FromRequest, HttpRequest, HttpResponse};
 use failure::Fail;
 use futures::future::{FutureExt, LocalBoxFuture, TryFutureExt};
 
-use crate::{error::redirect_error, from_session, routes::personas::new, AppConfig};
+use crate::{error::redirect_error, from_session, AppConfig};
 
 pub struct SignedInUser(pub AuthenticatedUser);
 
