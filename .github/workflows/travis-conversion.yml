@@ -1,7 +1,7 @@
 #-
 # GitHub Action for Building Aardwolf
 #
-name: 'Travis.yml conversion'
+name: Travis.yml Conversion
 
 on:
   push:
@@ -13,12 +13,6 @@ on:
 jobs:
 
 #-
-# Install rust-toolchain
-# Source: https://github.com/marketplace/actions/rust-toolchain
-- name: rust-toolchain
-  uses: actions-rs/toolchain@v1.0.6
-
-#-
 # Try building Aardwolf
 #        
   build-aardwolf:
@@ -27,7 +21,27 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3.5.3 # Marketplace - https://github.com/marketplace/actions/checkout2    
+     #-
+     # Install rust-toolchain
+     # Source: https://github.com/marketplace/actions/rust-toolchain
+     - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1.0.6
+        with:
+          profile: minimal
+          toolchain: stable
+          components: clippy
+          override: true
+
+      - name: Install required cargo
+        run: cargo install clippy-sarif sarif-fmt
+        
+      - name: Add openssl
+        run: cargo add openssl
+         
     # Postgres Service      
     services:
       postgres:
