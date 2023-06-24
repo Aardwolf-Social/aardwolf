@@ -4,7 +4,7 @@ use diesel::{self, pg::PgConnection};
 use crate::{base_actor::BaseActor, schema::follow_requests};
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "follow_requests"]
+#[diesel(table_name = follow_requests)]
 pub struct FollowRequest {
     id: i32,
     follower: i32,         // foreign key to BaseActor
@@ -25,17 +25,25 @@ impl FollowRequest {
     pub fn requested_follow(&self) -> i32 {
         self.requested_follow
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 #[derive(Insertable)]
-#[table_name = "follow_requests"]
+#[diesel(table_name = follow_requests)]
 pub struct NewFollowRequest {
     follower: i32,
     requested_follow: i32,
 }
 
 impl NewFollowRequest {
-    pub fn insert(self, conn: &PgConnection) -> Result<FollowRequest, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<FollowRequest, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(follow_requests::table)
@@ -58,11 +66,14 @@ mod tests {
     #[test]
     fn create_follow_request() {
         with_connection(|conn| {
-            with_base_actor(conn, |follower| {
-                with_base_actor(conn, |requested_follow| {
-                    with_follow_request(conn, &follower, &requested_follow, |_| Ok(()))
-                })
-            })
+            let follower_actor = make_base_actor(conn)?;
+            let target_actor = make_base_actor(conn)?;
+
+            let request = make_follow_request(conn, &follower_actor, &target_actor);
+
+            assert!(request.is_ok());
+
+            Ok(())
         })
     }
 }

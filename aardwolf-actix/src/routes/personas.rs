@@ -17,25 +17,25 @@ use aardwolf_types::{
     },
     traits::{DbAction, DbActionError, Validate},
 };
-use rocket_i18n::I18n;
 use actix_session::Session;
 use actix_web::{
     web::{Data, Form, Path},
     HttpResponse, ResponseError,
 };
 use failure::Fail;
+use rocket_i18n::I18n;
 use serde_derive::Serialize;
 use std::fmt;
 
 use crate::{
-    action::{redirect},
-    traits::{WithRucte, RenderableExt},
+    action::redirect,
     error::redirect_error,
+    traits::{RenderableExt, WithRucte},
     types::user::SignedInUser,
     AppConfig,
 };
 
-pub(crate) fn new((_user, i18n): (SignedInUser, I18n)) -> HttpResponse {
+pub(crate) async fn new((_user, i18n): (SignedInUser, Data<I18n>)) -> HttpResponse {
     let res = FirstLogin::new(
         &i18n.catalog,
         "csrf",
@@ -51,7 +51,7 @@ pub(crate) fn new((_user, i18n): (SignedInUser, I18n)) -> HttpResponse {
 }
 
 async fn create_inner(
-    state: AppConfig,
+    state: &AppConfig,
     form: PersonaCreationForm,
     user: AuthenticatedUser,
     session: Session,
@@ -73,16 +73,20 @@ pub(crate) async fn create(
         Data<AppConfig>,
         SignedInUser,
         Form<PersonaCreationForm>,
-        I18n,
+        Data<I18n>,
     ),
 ) -> Result<HttpResponse, PersonaCreateResponseError> {
     let form = form.into_inner();
     let form_state = form.as_state();
 
-    create_inner((*state).clone(), form, user.0, session)
+    create_inner(state.as_ref(), form, user.0, session)
         .await
-        .map_err(|error| PersonaCreateResponseError {
-            i18n,
+        .map_err(move |error| PersonaCreateResponseError {
+            i18n: I18n {
+                // I18n can't be cloned but its fields can be
+                catalog: i18n.catalog.clone(),
+                lang: i18n.lang,
+            },
             csrf_token: "csrf token".to_owned(),
             form_state,
             error,
@@ -198,7 +202,7 @@ impl From<DbActionError<PersonaCreationFail>> for PersonaCreateError {
 
 fn set_persona_cookie(session: Session, persona: Persona) -> Result<(), PersonaCreateError> {
     session
-        .set("persona_id", persona.id())
+        .insert("persona_id", persona.id())
         .map_err(|_| PersonaCreateError::Cookie)
 }
 

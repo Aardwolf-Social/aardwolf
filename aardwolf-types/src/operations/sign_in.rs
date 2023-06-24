@@ -14,7 +14,7 @@ impl DbAction for SignIn {
     type Item = AuthenticatedUser;
     type Error = SignInFail;
 
-    fn db_action(self, conn: &PgConnection) -> Result<AuthenticatedUser, SignInFail> {
+    fn db_action(self, conn: &mut PgConnection) -> Result<AuthenticatedUser, SignInFail> {
         UnauthenticatedUser::by_email_for_auth(&self.0.email, conn)
             .map_err(|_| SignInFail::GenericLoginError)
             .and_then(|(user, _email, auth)| {
@@ -61,21 +61,20 @@ mod tests {
 
     fn setup<F>(f: F)
     where
-        F: FnOnce(&PgConnection, ValidatedSignInForm) -> Result<(), Error>,
+        F: FnOnce(&mut PgConnection, ValidatedSignInForm) -> Result<(), Error>,
     {
         with_connection(|conn| {
-            let pass = gen_string()?;
+            let pass = gen_string();
 
-            make_verified_authenticated_user(conn, &pass, |_auth_user, email| {
-                let password = create_plaintext_password(&pass)?;
+            let (auth_user, email) = make_verified_authenticated_user(conn, &pass)?;
+            let password = create_plaintext_password(&pass)?;
 
-                let form = ValidatedSignInForm {
-                    email: email.email().to_owned(),
-                    password,
-                };
+            let form = ValidatedSignInForm {
+                email: email.email().to_owned(),
+                password,
+            };
 
-                f(conn, form)
-            })
+            f(conn, form)
         })
     }
 

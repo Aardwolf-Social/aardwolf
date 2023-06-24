@@ -7,7 +7,7 @@ use crate::{
 };
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "group_base_actors"]
+#[diesel(table_name = group_base_actors)]
 pub struct GroupBaseActor {
     id: i32,
     group_id: i32,      // foreign key to Group
@@ -28,17 +28,25 @@ impl GroupBaseActor {
     pub fn base_actor_id(&self) -> i32 {
         self.base_actor_id
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 #[derive(Insertable)]
-#[table_name = "group_base_actors"]
+#[diesel(table_name = group_base_actors)]
 pub struct NewGroupBaseActor {
     group_id: i32,
     base_actor_id: i32,
 }
 
 impl NewGroupBaseActor {
-    pub fn insert(self, conn: &PgConnection) -> Result<GroupBaseActor, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<GroupBaseActor, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(group_base_actors::table)
@@ -61,13 +69,16 @@ mod tests {
     #[test]
     fn create_group_base_actor() {
         with_connection(|conn| {
-            with_base_actor(conn, |base_group| {
-                with_group(conn, &base_group, |group| {
-                    with_base_actor(conn, |base_actor| {
-                        with_group_base_actor(conn, &group, &base_actor, |_| Ok(()))
-                    })
-                })
-            })
+            let base_group = make_base_actor(conn)?;
+            let group = make_group(conn, &base_group)?;
+
+            let base_actor = make_base_actor(conn)?;
+
+            let result = make_group_base_actor(conn, &group, &base_actor);
+
+            assert!(result.is_ok());
+
+            Ok(())
         });
     }
 }

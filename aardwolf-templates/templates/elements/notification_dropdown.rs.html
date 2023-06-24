@@ -1,12 +1,11 @@
 @use gettext_macros::i18n;
-
-@use crate::templates::{base, elements::{alert, notification_dropdown}};
+@use crate::elements::NotificationDropdown;
 
 @(notification_dropdown: &NotificationDropdown)
 
 <!-- Top Nav Notifications Dropdown -->
 <div class="navbar-item has-dropdown is-hoverable">
-	<a class="navbar-link">@i18n!(catalog, "Notifications")</a>
+	<a class="navbar-link">@i18n!(&notification_dropdown.catalog, "Notifications")</a>
 	<div class="navbar-dropdown notifications-dropdown">
 
 		<!-- ************************************************* -->
@@ -29,8 +28,8 @@
 				</div>
 				<div class="media-content">
 					<div class="content">
-						<p><strong>Juan Quixote</strong> <a href="#link-to-user-account">@the_don</a></p>
-						<p class="action">@i18n!(catalog, "Accepted your Friend Request")</p>
+						<p><strong>Juan Quixote</strong> <a href="#link-to-user-account">&commat;the_don</a></p>
+						<p class="action">@i18n!(&notification_dropdown.catalog, "Accepted your Friend Request")</p>
 						<hr/>
 						<p class="notification-date"><small><time datetime="2016-1-1">13:11 PM - 2 Jan 2016</time></small></p>
 					</div>
@@ -47,7 +46,7 @@
 				</div>
 				<div class="media-content">
 					<div class="content">
-						<p><strong>John Smith</strong> <a href="#link-to-user-account">@mrsmith</a></p>
+						<p><strong>John Smith</strong> <a href="#link-to-user-account">&commat;mrsmith</a></p>
 						<p class="action">Favorited <a href="#your-post">your post</a>!</p>
 						<hr/>
 						<p class="notification-date"><small><time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time></small></p>
@@ -65,7 +64,7 @@
 				</div>
 				<div class="media-content">
 					<div class="content">
-						<p><strong>Alice Marquee</strong> <a href="#link-to-user-account">@amarquis</a></p>
+						<p><strong>Alice Marquee</strong> <a href="#link-to-user-account">&commat;amarquis</a></p>
 						<p class="action">Accepted your Friend Request!</p>
 						<hr/>
 						<p class="notification-date"><small><time datetime="2016-1-1">12:34 PM - 1 Jan 2016</time></small></p>
@@ -83,7 +82,7 @@
 				</div>
 				<div class="media-content">
 					<div class="content">
-						<p><strong>Bob Staffers</strong> <a href="#link-to-user-account">@bobsyouruncle</a></p>
+						<p><strong>Bob Staffers</strong> <a href="#link-to-user-account">&commat;bobsyouruncle</a></p>
 						<p class="action">Wants to be your friend.</p>
 						<hr/>
 						<p class="notification-date"><small><time datetime="2016-1-1">08:40 PM - 27 Dec 2015</time></small></p>

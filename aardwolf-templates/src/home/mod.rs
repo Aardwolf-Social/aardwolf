@@ -1,9 +1,7 @@
-mod home;
 mod feed;
+mod home;
 mod nav_top;
 
-pub use self::{
-	home::{},
-	feed::{},
-	nav_top::{},
-};
+pub use feed::Feed;
+pub use home::Home;
+pub use nav_top::NavTop;

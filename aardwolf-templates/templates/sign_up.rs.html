@@ -39,8 +39,8 @@
                     }
 
                     @:input_email(&sign_up.email)
-                    @:input_password(&sign_up.password)
-                    @:input_password(&sign_up.password_confirmation)
+                    @:input_password(&sign_up.password, &sign_up.catalog)
+                    @:input_password(&sign_up.password_confirmation, &sign_up.catalog)
                     <button>@i18n!(sign_up.catalog, "Sign Up")</button>
                 </form>
             </div>

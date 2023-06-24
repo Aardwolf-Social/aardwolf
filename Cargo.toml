@@ -19,9 +19,9 @@ default = ["simple-logging", "actix"]
 actix = ["aardwolf-actix"]
 
 [dependencies]
-config = "~0.9.3"
-failure = "~0.1.8"
-log = "~0.4.14"
+config = "0.9"
+failure = "0.1"
+log = "0.4"
 yaml-rust = "~0.4.5"
 # Use simple log files or stdout/stderr. Conflicts with use-systemd and
 # log-* features.

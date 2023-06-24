@@ -7,7 +7,7 @@ use crate::{
 };
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "followers"]
+#[diesel(table_name = followers)]
 pub struct Follower {
     id: i32,
     follower: i32, // foreign key to BaseActor
@@ -28,17 +28,25 @@ impl Follower {
     pub fn follows(&self) -> i32 {
         self.follows
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 #[derive(Insertable)]
-#[table_name = "followers"]
+#[diesel(table_name = followers)]
 pub struct NewFollower {
     follower: i32,
     follows: i32,
 }
 
 impl NewFollower {
-    pub fn insert(self, conn: &PgConnection) -> Result<Follower, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<Follower, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(followers::table)
@@ -70,11 +78,14 @@ mod tests {
     #[test]
     fn create_follower() {
         with_connection(|conn| {
-            with_base_actor(conn, |follower| {
-                with_base_actor(conn, |follows| {
-                    with_follower(conn, &follower, &follows, |_| Ok(()))
-                })
-            })
+            let follower_actor = make_base_actor(conn)?;
+            let follows = make_base_actor(conn)?;
+
+            let follower = make_follower(conn, &follower_actor, &follows);
+
+            assert!(follower.is_ok());
+
+            Ok(())
         })
     }
 }

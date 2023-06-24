@@ -18,6 +18,7 @@ pub struct VerifiedEmail {
     id: i32,
     email: String,
     user_id: i32,
+    confirmed_at: DateTime<Utc>,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
 }
@@ -35,6 +36,10 @@ impl VerifiedEmail {
         self.user_id
     }
 
+    pub fn confirmed_at(&self) -> DateTime<Utc> {
+        self.confirmed_at
+    }
+
     pub fn created_at(&self) -> DateTime<Utc> {
         self.created_at
     }
@@ -45,7 +50,7 @@ impl VerifiedEmail {
 }
 
 #[derive(Debug, Queryable, QueryableByName)]
-#[table_name = "emails"]
+#[diesel(table_name = emails)]
 pub struct Email {
     id: i32,
     email: String,
@@ -60,7 +65,7 @@ pub struct Email {
 impl Email {
     pub fn first_by_user_id(
         user_id: i32,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<Self, diesel::result::Error> {
         use diesel::prelude::*;
 
@@ -69,7 +74,7 @@ impl Email {
             .get_result(conn)
     }
 
-    pub fn by_id(id: i32, conn: &PgConnection) -> Result<Self, diesel::result::Error> {
+    pub fn by_id(id: i32, conn: &mut PgConnection) -> Result<Self, diesel::result::Error> {
         use diesel::prelude::*;
 
         emails::table
@@ -83,6 +88,7 @@ impl Email {
                 id: self.id,
                 email: self.email,
                 user_id: self.user_id,
+                confirmed_at: self.confirmed_at.unwrap(), // TODO: Replace unwrap with safer check
                 created_at: self.created_at,
                 updated_at: self.updated_at,
             })
@@ -115,7 +121,7 @@ pub struct VerifyEmail {
 }
 
 #[derive(AsChangeset)]
-#[table_name = "emails"]
+#[diesel(table_name = emails)]
 pub struct EmailVerificationChangeset {
     #[allow(dead_code)]
     id: i32,
@@ -127,7 +133,7 @@ pub struct EmailVerificationChangeset {
 impl VerifyEmail {
     pub(crate) fn store_verify(
         self,
-        conn: &PgConnection,
+        conn: &mut PgConnection,
     ) -> Result<VerifiedEmail, diesel::result::Error> {
         use diesel::prelude::*;
 
@@ -143,6 +149,7 @@ impl VerifyEmail {
                 id: self.id,
                 email: self.email,
                 user_id: self.user_id,
+                confirmed_at: self.confirmed_at,
                 created_at: self.created_at,
                 updated_at: self.updated_at,
             })
@@ -154,7 +161,7 @@ impl VerifyEmail {
 }
 
 #[derive(Queryable, QueryableByName)]
-#[table_name = "emails"]
+#[diesel(table_name = emails)]
 pub struct UnverifiedEmail {
     id: i32,
     email: String,
@@ -220,7 +227,7 @@ impl UnverifiedEmail {
 }
 
 #[derive(Insertable)]
-#[table_name = "emails"]
+#[diesel(table_name = emails)]
 pub struct NewEmail {
     email: String,
     user_id: i32,
@@ -229,7 +236,7 @@ pub struct NewEmail {
 }
 
 impl NewEmail {
-    pub fn insert(self, conn: &PgConnection) -> Result<UnverifiedEmail, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<UnverifiedEmail, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(emails::table)
@@ -259,23 +266,22 @@ mod tests {
     #[test]
     fn create_email() {
         with_connection(|conn| {
-            with_unverified_user(conn, |user| {
-                with_unverified_email(conn, &user, |_email, _token| Ok(()))
-            })
+            let user = make_unverified_user(conn)?;
+            let _ = make_unverified_email(conn, &user);
+
+            Ok(())
         })
     }
 
     #[test]
     fn verify_email() {
         with_connection(|conn| {
-            with_unverified_user(conn, |user| {
-                with_unverified_email(conn, &user, |email, token| {
-                    let token = transmute_email_token(&token)?;
-                    email.verify(token)?.store_verify(conn)?;
+            let user = make_unverified_user(conn)?;
+            let (email, token) = make_unverified_email(conn, &user)?;
+            let token = transmute_email_token(&token)?;
+            email.verify(token)?.store_verify(conn)?;
 
-                    Ok(())
-                })
-            })
+            Ok(())
         })
     }
 }

@@ -7,7 +7,7 @@ pub mod event_notification;
 use crate::schema::timers;
 
 #[derive(Debug, Identifiable, Queryable, QueryableByName)]
-#[table_name = "timers"]
+#[diesel(table_name = timers)]
 pub struct Timer {
     id: i32,
     fire_time: DateTime<Utc>,
@@ -23,16 +23,24 @@ impl Timer {
     pub fn fire_time(&self) -> DateTime<Utc> {
         self.fire_time
     }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 #[derive(Insertable)]
-#[table_name = "timers"]
+#[diesel(table_name = timers)]
 pub struct NewTimer {
     fire_time: DateTime<Utc>,
 }
 
 impl NewTimer {
-    pub fn insert(self, conn: &PgConnection) -> Result<Timer, diesel::result::Error> {
+    pub fn insert(self, conn: &mut PgConnection) -> Result<Timer, diesel::result::Error> {
         use diesel::prelude::*;
 
         diesel::insert_into(timers::table)
@@ -51,6 +59,10 @@ mod tests {
 
     #[test]
     fn create_timer() {
-        with_connection(|conn| with_timer(conn, |_| Ok(())))
+        with_connection(|conn| {
+            let _ = make_timer(conn);
+
+            Ok(())
+        })
     }
 }

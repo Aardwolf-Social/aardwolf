@@ -17,8 +17,11 @@ impl DbAction for SignUp {
     type Item = (UnverifiedEmail, EmailToken);
     type Error = SignUpFail;
 
-    fn db_action(self, conn: &PgConnection) -> Result<(UnverifiedEmail, EmailToken), SignUpFail> {
-        conn.transaction::<_, SignUpFail, _>(|| {
+    fn db_action(
+        self,
+        conn: &mut PgConnection,
+    ) -> Result<(UnverifiedEmail, EmailToken), SignUpFail> {
+        conn.transaction::<_, SignUpFail, _>(|conn| {
             let user = NewUser::new()
                 .insert(conn)
                 .map_err(|_| SignUpFail::UserCreateError)?;
@@ -108,11 +111,11 @@ mod tests {
 
     fn setup<F>(f: F)
     where
-        F: FnOnce(&PgConnection, ValidatedSignUpForm) -> Result<(), Error>,
+        F: FnOnce(&mut PgConnection, ValidatedSignUpForm) -> Result<(), Error>,
     {
         with_connection(|conn| {
-            let email = format!("{}@{}.{}", gen_string()?, gen_string()?, gen_string()?);
-            let pass = gen_string()?;
+            let email = format!("{}@{}.{}", gen_string(), gen_string(), gen_string());
+            let pass = gen_string();
 
             let form = ValidatedSignUpForm {
                 email,
@@ -126,10 +129,10 @@ mod tests {
 
     #[test]
     fn sign_up_succeedes() {
-        setup(|conn, form| {
+        setup(|mut conn, form| {
             let operation = SignUp(form);
 
-            assert!(operation.db_action(conn).is_ok());
+            assert!(operation.db_action(&mut conn).is_ok());
             Ok(())
         })
     }
@@ -149,8 +152,8 @@ mod tests {
     #[test]
     fn duplicate_email_fails_signup() {
         with_connection(|conn| {
-            let email = format!("{}@{}.{}", gen_string()?, gen_string()?, gen_string()?);
-            let pass = gen_string()?;
+            let email = format!("{}@{}.{}", gen_string(), gen_string(), gen_string());
+            let pass = gen_string();
 
             let form = ValidatedSignUpForm {
                 email: email.clone(),
