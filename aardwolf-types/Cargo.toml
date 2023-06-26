@@ -18,6 +18,8 @@ serde = "1.0"
 serde_derive = "1.0"
 url = "2.1"
 url_serde = "0.2"
+tokio = "1.28.2"
+actix-rt = "2.8.0"
 
 [dependencies.aardwolf-models]
 version = "0.1"

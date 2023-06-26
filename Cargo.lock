@@ -92,6 +92,7 @@ version = "0.1.0"
 dependencies = [
  "aardwolf-models",
  "aardwolf-test-helpers",
+ "actix-rt",
  "actix-web",
  "derive_builder",
  "diesel",
@@ -103,6 +104,7 @@ dependencies = [
  "r2d2",
  "serde 1.0.163",
  "serde_derive",
+ "tokio",
  "url 2.4.0",
  "url_serde",
 ]
@@ -239,6 +241,7 @@ version = "2.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "15265b6b8e2347670eb363c47fc8c75208b4a4994b27192f345fcbe707804f3e"
 dependencies = [
+ "actix-macros",
  "futures-core",
  "tokio",
 ]
