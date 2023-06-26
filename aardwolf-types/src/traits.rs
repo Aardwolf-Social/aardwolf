@@ -1,6 +1,4 @@
 use failure::Fail;
-use std::sync::Arc;
-use tokio::sync::Mutex;
 
 pub trait Validate {
     type Item;
@@ -29,29 +27,41 @@ mod default_impls {
 
 #[cfg(feature = "with-actix")]
 mod actix_web_impls {
-    use actix_rt::blocking::BlockingError;
-    use actix_web::web::block;
-    use diesel::{
-        r2d2::{self, ConnectionManager, Pool},
-        PgConnection,
-    };
+    use actix_web::{error::BlockingError, web::block};
+    use diesel::r2d2::ConnectionManager;
+    use diesel::PgConnection;
     use failure::Fail;
-    use futures::{future::BoxFuture, FutureExt, TryFutureExt};
-    use r2d2::PooledConnection;
+    use futures::{
+        compat::Future01CompatExt,
+        future::{BoxFuture, FutureExt, TryFutureExt},
+    };
+    use r2d2::Pool;
 
     #[derive(Debug, Fail)]
     pub enum DbActionError<E>
     where
         E: Fail,
     {
-        #[fail(display = "Error in Db Action: {}", _0)]
+        #[fail(display = "Error in Db Action, {}", _0)]
         Error(#[cause] E),
 
-        #[fail(display = "Error in pooling: {}", _0)]
+        #[fail(display = "Error in pooling, {}", _0)]
         Pool(#[cause] r2d2::Error),
 
         #[fail(display = "Db Action was canceled")]
         Canceled,
+    }
+
+    impl<E> From<BlockingError<E>> for DbActionError<E>
+    where
+        E: Fail,
+    {
+        fn from(e: BlockingError<E>) -> Self {
+            match e {
+                BlockingError::Error(e) => DbActionError::Error(e),
+                BlockingError::Canceled => DbActionError::Canceled,
+            }
+        }
     }
 
     impl<E> From<r2d2::Error> for DbActionError<E>
@@ -69,7 +79,7 @@ mod actix_web_impls {
     {
         fn from(e: BlockingError<DbActionError<E>>) -> Self {
             match e {
-                BlockingError::Error(err) => err,
+                BlockingError::Error(e) => e,
                 BlockingError::Canceled => DbActionError::Canceled,
             }
         }
@@ -83,16 +93,19 @@ mod actix_web_impls {
 
         fn run(
             self,
-            pool: Arc<Mutex<Pool<ConnectionManager<PgConnection>>>>,
+            pool: Pool<ConnectionManager<PgConnection>>,
         ) -> BoxFuture<'static, Result<Self::Item, DbActionError<Self::Error>>>
         where
             Self: Sized + Send + 'static,
         {
-            let pool = pool.clone();
-            Box::pin(async move {
-                let mut conn = pool.lock().await.map_err(DbActionError::Pool)?.get().map_err(DbActionError::Pool)?;
-                self.db_action(&mut conn).map_err(DbActionError::Error)
+            block::<_, _, DbActionError<Self::Error>>(move || {
+                let conn = &mut *pool.get()?;
+                let res = self.db_action(conn).map_err(DbActionError::Error)?;
+                Ok(res)
             })
+            .compat()
+            .map_err(DbActionError::from)
+            .boxed()
         }
     }
 }
