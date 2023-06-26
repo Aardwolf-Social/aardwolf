@@ -1,1 +1,1 @@
-This directory is where the documentation images live.
+This is a collection of static images for use with documentation.
