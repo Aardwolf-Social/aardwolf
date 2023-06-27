@@ -1,7 +1,4 @@
 mod settings;
 mod shortcuts;
 
-pub use self::{
-	settings::{Settings},
-    shortcuts::{Shortcuts},
-};
+pub use self::{settings::Settings, shortcuts::Shortcuts};
