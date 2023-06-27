@@ -1,11 +1,11 @@
-use std::error::Error;
+use std::error::Error as _;
 
 use aardwolf::{begin_log, configure};
 use clap::{load_yaml, App};
 use config::Config;
 use toml::from_str;
 
-fn cli<'a, 'b>(toml: &'a str) -> App<'a, 'b> {
+fn cli(toml: &str) -> App {
     let table: toml::value::Table = toml.parse().unwrap();
     App::from(table)
         .name(env!("CARGO_PKG_NAME"))
@@ -36,7 +36,7 @@ mod actix {
 
 fn main() -> Result<(), Box<dyn Error>> {
     let toml = include_str!("cli.toml");
-    let cli = cli(&toml);
+    let cli = cli(toml);
     let config = configure(cli)?;
     let db_url = aardwolf::db_conn_string(&config)?;
 
