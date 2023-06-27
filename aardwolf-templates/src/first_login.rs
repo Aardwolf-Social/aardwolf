@@ -5,7 +5,7 @@ use aardwolf_types::forms::personas::{
 use gettext::Catalog;
 use gettext_macros::i18n;
 
-use crate::{Alert, AlertKind, InputCheckbox, Renderable, InputSelect, InputText};
+use crate::{Alert, AlertKind, InputCheckbox, InputSelect, InputText, Renderable};
 
 pub struct FirstLogin<'a> {
     pub(crate) catalog: &'a Catalog,
