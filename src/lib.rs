@@ -36,8 +36,8 @@ pub fn configure(app: App) -> Result<Config, Error> {
 
     if let Some(c) = args.value_of("config") {
         config
-        .set("cfg_file", c)
-        .context(ErrorKind::ConfigImmutable)?;
+            .set("cfg_file", c)
+            .context(ErrorKind::ConfigImmutable)?;
     }
 
     // Merge config file and apply over-rides
@@ -58,8 +58,8 @@ pub fn configure(app: App) -> Result<Config, Error> {
 
     if let Some(l) = args.value_of("log") {
         config
-        .set("Log.file", l)
-        .context(ErrorKind::ConfigImmutable)?;
+            .set("Log.file", l)
+            .context(ErrorKind::ConfigImmutable)?;
     }
 
     Ok(config)
