@@ -16,9 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.3
-          # Gita To Do: test here if works
-          with:
-            persist-credentials: false
+        # Gita To Do: test here if works
+        with:
+          persist-credentials: false
       - uses: gita-codaio/batch-dependabot@main
         with:
           branchPrefix: "dependabot"
