@@ -1,9 +1,10 @@
 use aardwolf_models::user::local_auth::PlaintextPassword;
+use thiserror::Error;
 
 use crate::{error::AardwolfFail, traits::Validate};
 
-#[derive(Clone, Debug, Fail, Serialize)]
-#[fail(display = "Missing required field")]
+#[derive(Clone, Debug, Error, Serialize)]
+#[error("Missing required field")]
 pub struct ValidateSignInFormFail {
     pub email: Option<SignInEmailValidationFail>,
     pub password: Option<SignInPasswordValidationFail>,

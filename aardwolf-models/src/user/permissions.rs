@@ -1,6 +1,6 @@
 use chrono::offset::Utc;
 use diesel::{self, pg::PgConnection};
-use failure::Fail;
+use thiserror::Error;
 
 use crate::{
     base_actor::{
@@ -23,11 +23,11 @@ use crate::{
     user::UserLike,
 };
 
-#[derive(Clone, Debug, Fail)]
+#[derive(Clone, Debug, Error)]
 pub enum PermissionError {
-    #[fail(display = "Failed to check user's permission")]
+    #[error("Failed to check user's permission")]
     Diesel,
-    #[fail(display = "User doesn't have this permission")]
+    #[error("User doesn't have this permission")]
     Permission,
 }
 
@@ -427,11 +427,11 @@ impl LocalCommentCreator {
     }
 }
 
-#[derive(Debug, Fail)]
+#[derive(Debug, Error)]
 pub enum CommentError {
-    #[fail(display = "Error creating comment")]
+    #[error("Error creating comment")]
     Diesel(diesel::result::Error),
-    #[fail(display = "Not allowed to comment on provided post")]
+    #[error("Not allowed to comment on provided post")]
     Permission,
 }
 
@@ -464,11 +464,11 @@ impl ActorFollower {
     }
 }
 
-#[derive(Debug, Fail)]
+#[derive(Debug, Error)]
 pub enum FollowError {
-    #[fail(display = "Error creating follow request")]
-    Diesel(#[cause] diesel::result::Error),
-    #[fail(display = "Target actor is not accepting follow requests")]
+    #[error("Error creating follow request")]
+    Diesel(#[source] diesel::result::Error),
+    #[error("Target actor is not accepting follow requests")]
     Reject,
 }
 
@@ -523,11 +523,11 @@ impl FollowRequestManager {
     }
 }
 
-#[derive(Debug, Fail)]
+#[derive(Debug, Error)]
 pub enum FollowRequestManagerError {
-    #[fail(display = "Error managing follow request")]
-    Diesel(#[cause] diesel::result::Error),
-    #[fail(display = "Cannot manage other actor's follow requests")]
+    #[error("Error managing follow request")]
+    Diesel(#[source] diesel::result::Error),
+    #[error("Cannot manage other actor's follow requests")]
     IdMismatch,
 }
 

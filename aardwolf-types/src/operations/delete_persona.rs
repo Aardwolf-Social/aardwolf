@@ -1,5 +1,6 @@
 use aardwolf_models::user::PersonaDeleter;
 use diesel::{pg::PgConnection, result::Error as DieselError};
+use thiserror::Error;
 
 use crate::{
     error::AardwolfFail,
@@ -21,13 +22,13 @@ impl DbAction for DeletePersona {
     }
 }
 
-#[derive(Clone, Debug, Fail, Serialize)]
+#[derive(Clone, Debug, Error, Serialize)]
 pub enum DeletePersonaFail {
-    #[fail(display = "Insufficient permissions")]
+    #[error("Insufficient permissions")]
     Permission,
-    #[fail(display = "Error in database")]
+    #[error("Error in database")]
     Database,
-    #[fail(display = "Persona not found")]
+    #[error("Persona not found")]
     NotFound,
 }
 

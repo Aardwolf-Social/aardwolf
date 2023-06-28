@@ -1,5 +1,5 @@
-use failure::Fail;
 use serde::ser::Serialize;
+use std::error::Error;
 
 pub enum ResponseKind {
     BadRequest,
@@ -9,7 +9,7 @@ pub enum ResponseKind {
     InternalServerError,
 }
 
-pub trait AardwolfFail: Serialize + Fail {}
+pub trait AardwolfFail: Serialize + Error {}
 
 #[derive(Clone, Debug)]
 pub struct RedirectTo(String);

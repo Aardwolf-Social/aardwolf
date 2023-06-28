@@ -1,7 +1,7 @@
 use chrono::{offset::Utc, DateTime};
 use chrono_tz::Tz;
 use diesel::{self, pg::PgConnection};
-use failure::Fail;
+use thiserror::Error;
 
 use crate::{base_actor::persona::Persona, schema::events, sql_types::Timezone, timer::Timer};
 
@@ -100,8 +100,8 @@ impl NewEvent {
     }
 }
 
-#[derive(Clone, Copy, Debug, Eq, Fail, PartialEq)]
-#[fail(display = "Start time must be before end time")]
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
+#[error("Start time must be before end time")]
 pub struct EventCreationError;
 
 #[cfg(test)]

@@ -1,5 +1,6 @@
 use aardwolf_models::user::{AuthenticatedUser, UnauthenticatedUser};
 use diesel::{self, pg::PgConnection};
+use thiserror::Error;
 
 use crate::{
     error::AardwolfFail,
@@ -24,13 +25,13 @@ impl DbAction for SignIn {
     }
 }
 
-#[derive(Clone, Debug, Fail, Serialize)]
+#[derive(Clone, Debug, Error, Serialize)]
 pub enum SignInFail {
-    #[fail(display = "Sign in failed because {}", _0)]
+    #[error("Sign in failed because {}", _0)]
     /// The login form was invalid for some reason
-    ValidationError(#[cause] ValidateSignInFormFail),
+    ValidationError(#[source] ValidateSignInFormFail),
 
-    #[fail(display = "Invalid username or password")]
+    #[error("Invalid username or password")]
     /// The generic "login failed" error the user will see
     GenericLoginError,
 }
@@ -54,8 +55,8 @@ mod tests {
     use aardwolf_test_helpers::models::{
         create_plaintext_password, gen_string, make_verified_authenticated_user, with_connection,
     };
+    use anyhow::Error;
     use diesel::pg::PgConnection;
-    use failure::Error;
 
     use crate::{forms::auth::ValidatedSignInForm, operations::sign_in::SignIn, traits::DbAction};
 

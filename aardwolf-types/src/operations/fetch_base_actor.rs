@@ -1,5 +1,6 @@
 use aardwolf_models::base_actor::BaseActor;
 use diesel::{pg::PgConnection, result::Error as DieselError};
+use thiserror::Error;
 
 use crate::{error::AardwolfFail, traits::DbAction};
 
@@ -14,11 +15,11 @@ impl DbAction for FetchBaseActor {
     }
 }
 
-#[derive(Clone, Debug, Fail, Serialize)]
+#[derive(Clone, Debug, Error, Serialize)]
 pub enum FetchBaseActorFail {
-    #[fail(display = "Error in database")]
+    #[error("Error in database")]
     Database,
-    #[fail(display = "BaseActor not found")]
+    #[error("BaseActor not found")]
     NotFound,
 }
 
@@ -37,8 +38,8 @@ impl AardwolfFail for FetchBaseActorFail {}
 mod tests {
     use aardwolf_models::base_actor::persona::Persona;
     use aardwolf_test_helpers::models::{make_base_actor, make_persona, with_connection};
+    use anyhow::Error;
     use diesel::pg::PgConnection;
-    use failure::Error;
 
     use crate::{operations::fetch_base_actor::FetchBaseActor, traits::DbAction};
 

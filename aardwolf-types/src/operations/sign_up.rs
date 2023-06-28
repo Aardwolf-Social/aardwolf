@@ -10,6 +10,7 @@ use crate::{
     forms::auth::{ValidateSignUpFormFail, ValidatedSignUpForm},
     traits::DbAction,
 };
+use thiserror::Error;
 
 pub struct SignUp(pub ValidatedSignUpForm);
 
@@ -50,25 +51,25 @@ impl DbAction for SignUp {
     }
 }
 
-#[derive(Clone, Debug, Fail, Serialize)]
+#[derive(Clone, Debug, Error, Serialize)]
 pub enum SignUpFail {
-    #[fail(display = "Sign up failed because {}", _0)]
-    ValidationError(#[cause] ValidateSignUpFormFail),
-    #[fail(display = "Failed to insert local_auth into database")]
+    #[error("Sign up failed because {}", _0)]
+    ValidationError(#[source] ValidateSignUpFormFail),
+    #[error("Failed to insert local_auth into database")]
     LocalAuthCreateError,
-    #[fail(display = "Failed to insert user into database")]
+    #[error("Failed to insert user into database")]
     UserCreateError,
-    #[fail(display = "Failed to insert email into database")]
+    #[error("Failed to insert email into database")]
     EmailCreateError,
-    #[fail(display = "Failed to hash password")]
+    #[error("Failed to hash password")]
     PasswordHashError,
-    #[fail(display = "Failed to create confirmation token")]
+    #[error("Failed to create confirmation token")]
     CreateTokenError,
-    #[fail(display = "New user shouldn't be verified")]
+    #[error("New user shouldn't be verified")]
     VerifiedUser,
-    #[fail(display = "Failed to lookup newly created user")]
+    #[error("Failed to lookup newly created user")]
     UserLookup,
-    #[fail(display = "Failed to perform database transaction")]
+    #[error("Failed to perform database transaction")]
     Transaction,
 }
 
@@ -104,8 +105,8 @@ impl From<CreationError> for SignUpFail {
 #[cfg(test)]
 mod tests {
     use aardwolf_test_helpers::models::{create_plaintext_password, gen_string, with_connection};
+    use anyhow::Error;
     use diesel::pg::PgConnection;
-    use failure::Error;
 
     use crate::{forms::auth::ValidatedSignUpForm, operations::sign_up::SignUp, traits::DbAction};
 

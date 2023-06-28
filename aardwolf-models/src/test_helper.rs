@@ -4,11 +4,11 @@ use chrono::{offset::Utc, DateTime, Duration as OldDuration};
 use chrono_tz::Tz;
 use diesel::{pg::PgConnection, Connection};
 use dotenv::dotenv;
-use failure::{Error, Fail};
 use mime::TEXT_PLAIN;
 use openssl::rsa::Rsa;
 use rand::{distributions::Alphanumeric, rngs::OsRng, Rng};
 use serde_json;
+use thiserror::Error;
 use url::Url as OrigUrl;
 use uuid::Uuid;
 
@@ -50,14 +50,14 @@ use crate::{
     },
 };
 
-pub fn create_plaintext_password(pass: &str) -> Result<PlaintextPassword, Error> {
+pub fn create_plaintext_password(pass: &str) -> Result<PlaintextPassword, anyhow::Error> {
     let v = serde_json::Value::String(pass.to_owned());
     let pass = serde_json::from_value(v)?;
 
     Ok(pass)
 }
 
-pub fn transmute_email_token(token: &EmailToken) -> Result<EmailVerificationToken, Error> {
+pub fn transmute_email_token(token: &EmailToken) -> Result<EmailVerificationToken, anyhow::Error> {
     let s = serde_json::to_string(token)?;
     let token = serde_json::from_str(&s)?;
 
@@ -88,13 +88,13 @@ pub fn gen_datetime() -> DateTime<Utc> {
         .unwrap()
 }
 
-#[derive(Debug, Fail)]
-#[fail(display = "Error in time bounds")]
+#[derive(Debug, Error)]
+#[error("Error in time bounds")]
 pub struct TimeBounds;
 
 pub fn with_connection<F>(f: F)
 where
-    F: FnOnce(&mut PgConnection) -> Result<(), Error>,
+    F: FnOnce(&mut PgConnection) -> Result<(), anyhow::Error>,
 {
     dotenv().ok();
 
@@ -350,7 +350,7 @@ pub fn make_local_auth(
 pub fn make_verified_authenticated_user(
     conn: &mut PgConnection,
     password: &str,
-) -> Result<(AuthenticatedUser, VerifiedEmail), Error> {
+) -> Result<(AuthenticatedUser, VerifiedEmail), anyhow::Error> {
     let unauthenticated_user = NewUser::new().insert(conn)?;
 
     let user = match unauthenticated_user.into_verified(conn)? {
@@ -370,14 +370,14 @@ pub fn make_verified_authenticated_user(
     Ok((user, email))
 }
 
-#[derive(Debug, Fail)]
-#[fail(display = "User is already verified")]
+#[derive(Debug, Error)]
+#[error("User is already verified")]
 pub struct AlreadyVerified;
 
 pub fn make_unverified_authenticated_user(
     conn: &mut PgConnection,
     password: &str,
-) -> Result<AuthenticatedUser, Error> {
+) -> Result<AuthenticatedUser, anyhow::Error> {
     let user = make_unverified_user(conn)?;
     let _ = make_unverified_email(conn, &user)?;
     let auth = make_local_auth(conn, &user, password)?;
