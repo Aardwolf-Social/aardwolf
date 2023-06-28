@@ -13,6 +13,12 @@ ructe = "0.13"
 gettext = "0.4"
 gettext-macros = "0.6.1"
 gettext-utils = "0.1.0"
+
+[dependencies.rocket_i18n]
+rocket_i18n = "0.4"
+default-features = false
+features = ["actix-web"]
+
 [dependencies.aardwolf-types]
 version = "0.1"
 path = "../aardwolf-types"
