@@ -5,6 +5,7 @@ use aardwolf_models::user::{
 use diesel::pg::PgConnection;
 
 use crate::{error::AardwolfFail, traits::DbAction};
+use thiserror::Error;
 
 #[derive(Debug, Deserialize)]
 /// The token type required to confirm an account
@@ -74,22 +75,22 @@ impl DbAction for ConfirmAccount {
     }
 }
 
-#[derive(Clone, Debug, Fail, Serialize)]
+#[derive(Clone, Debug, Error, Serialize)]
 /// An error representing different ways confirming an account can fail
 pub enum ConfirmAccountFail {
-    #[fail(display = "email was not found")]
+    #[error("email was not found")]
     /// The email being confirmed doesn't exist
     EmailNotFound,
 
-    #[fail(display = "account already confirmed")]
+    #[error("account already confirmed")]
     /// The email or user has alraedy been verified
     Confirmed,
 
-    #[fail(display = "Failed to lookup newly created user")]
+    #[error("Failed to lookup newly created user")]
     /// There was an error determining if the user is already verified or not
     UserLookup,
 
-    #[fail(display = "Failed to verify email")]
+    #[error("Failed to verify email")]
     /// There was an error performing the verification operation
     Verify,
 }
@@ -102,8 +103,8 @@ mod tests {
     use aardwolf_test_helpers::models::{
         make_unverified_email, make_unverified_user, transmute_email_token, with_connection,
     };
+    use anyhow::Error;
     use diesel::pg::PgConnection;
-    use failure::Error;
 
     use crate::{
         operations::confirm_account::{ConfirmAccount, ConfirmAccountToken},

@@ -1,18 +1,19 @@
 use aardwolf_models::user::PermissionError;
 use diesel::result::Error as DieselError;
 use openssl::error::ErrorStack;
+use thiserror::Error;
 
 use crate::{error::AardwolfFail, forms::personas::ValidatePersonaCreationFail};
 
-#[derive(Clone, Debug, Fail, Serialize)]
+#[derive(Clone, Debug, Error, Serialize)]
 pub enum PersonaCreationFail {
-    #[fail(display = "Failed to validate persona")]
-    Validation(#[cause] ValidatePersonaCreationFail),
-    #[fail(display = "User doesn't have permission to create persona")]
+    #[error("Failed to validate persona")]
+    Validation(#[source] ValidatePersonaCreationFail),
+    #[error("User doesn't have permission to create persona")]
     Permission,
-    #[fail(display = "Error in database")]
+    #[error("Error in database")]
     Database,
-    #[fail(display = "Error generating keys")]
+    #[error("Error generating keys")]
     Keygen,
 }
 

@@ -3,6 +3,7 @@ use aardwolf_models::{
     user::{LocalPostCreator, PermissionError, PermissionedUser},
 };
 use diesel::pg::PgConnection;
+use thiserror::Error;
 
 use crate::{error::AardwolfFail, traits::DbAction};
 
@@ -22,13 +23,13 @@ where
     }
 }
 
-#[derive(Clone, Debug, Fail, Serialize)]
+#[derive(Clone, Debug, Error, Serialize)]
 pub enum CheckCreatePostPermissionFail {
-    #[fail(display = "Could not check user permissions")]
+    #[error("Could not check user permissions")]
     /// There was an error checking the permission of the user
     Database,
 
-    #[fail(display = "User does not haver permission to create persona")]
+    #[error("User does not haver permission to create persona")]
     /// The user doesn't have permission to create a persona
     Permission,
 }

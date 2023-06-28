@@ -21,9 +21,9 @@ use actix_web::{
     web::{Data, Form, Query},
     HttpResponse, ResponseError,
 };
-use failure::Fail;
 use rocket_i18n::I18n;
 use std::fmt;
+use thiserror::Error;
 
 use crate::{
     action::redirect,
@@ -138,8 +138,8 @@ pub(crate) async fn sign_out((session, _user): (Session, SignedInUser)) -> HttpR
         .finish()
 }
 
-#[derive(Fail)]
-#[fail(display = "Error")]
+#[derive(Error)]
+#[error("Error")]
 pub struct SignUpResponseError {
     i18n: I18n,
     csrf_token: String,
@@ -173,8 +173,8 @@ impl ResponseError for SignUpResponseError {
     }
 }
 
-#[derive(Fail)]
-#[fail(display = "Error")]
+#[derive(Error)]
+#[error("Error")]
 pub struct SignInResponseError {
     i18n: I18n,
     csrf_token: String,
@@ -208,14 +208,14 @@ impl ResponseError for SignInResponseError {
     }
 }
 
-#[derive(Clone, Debug, Fail)]
+#[derive(Clone, Debug, Error)]
 pub enum SignUpError {
-    #[fail(display = "Error talking to db actor")]
+    #[error("Error talking to db actor")]
     Canceled,
-    #[fail(display = "Error talking db")]
+    #[error("Error talking db")]
     Database,
-    #[fail(display = "Error signing up: {}", _0)]
-    SignUp(#[cause] SignUpFail),
+    #[error("Error signing up: {}", _0)]
+    SignUp(#[source] SignUpFail),
 }
 
 impl From<DbActionError<SignUpFail>> for SignUpError {
@@ -242,16 +242,16 @@ fn print_result(email: UnverifiedEmail, token: EmailToken) {
     );
 }
 
-#[derive(Clone, Debug, Fail)]
+#[derive(Clone, Debug, Error)]
 pub enum SignInError {
-    #[fail(display = "Error talking to db actor")]
+    #[error("Error talking to db actor")]
     Canceled,
-    #[fail(display = "Error talking db")]
+    #[error("Error talking db")]
     Database,
-    #[fail(display = "Error setting the cookie")]
+    #[error("Error setting the cookie")]
     Cookie,
-    #[fail(display = "Error signing in: {}", _0)]
-    SignIn(#[cause] SignInFail),
+    #[error("Error signing in: {}", _0)]
+    SignIn(#[source] SignInFail),
 }
 
 impl From<DbActionError<SignInFail>> for SignInError {
@@ -280,14 +280,14 @@ impl SetUserCookie {
     }
 }
 
-#[derive(Clone, Debug, Fail)]
+#[derive(Clone, Debug, Error)]
 pub enum ConfirmError {
-    #[fail(display = "Error talking to db actor")]
+    #[error("Error talking to db actor")]
     Canceled,
-    #[fail(display = "Error talking db")]
+    #[error("Error talking db")]
     Database,
-    #[fail(display = "Error confirming account: {}", _0)]
-    Confirm(#[cause] ConfirmAccountFail),
+    #[error("Error confirming account: {}", _0)]
+    Confirm(#[source] ConfirmAccountFail),
 }
 
 impl From<DbActionError<ConfirmAccountFail>> for ConfirmError {

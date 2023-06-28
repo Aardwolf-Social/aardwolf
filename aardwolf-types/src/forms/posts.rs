@@ -1,6 +1,7 @@
 use aardwolf_models::sql_types::{Mime, PostVisibility};
 use mime::TEXT_HTML;
 use serde_derive::{Deserialize, Serialize};
+use thiserror::Error;
 
 use crate::{error::AardwolfFail, traits::Validate};
 
@@ -29,8 +30,8 @@ pub struct PostCreationFormState {
     pub source: String,
 }
 
-#[derive(Clone, Debug, Fail, Serialize)]
-#[fail(display = "Error validating post creation form")]
+#[derive(Clone, Debug, Error, Serialize)]
+#[error("Error validating post creation form")]
 pub struct ValidatePostCreationFail {
     pub visibility: Option<ValidateVisibilityError>,
     pub source: Option<ValidateSourceError>,
@@ -40,8 +41,9 @@ pub struct ValidatePostCreationFail {
 #[derive(Clone, Debug, Serialize)]
 pub enum ValidateVisibilityError {}
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Error)]
 pub enum ValidateSourceError {
+    #[error("Source must not be empty")]
     Empty,
 }
 

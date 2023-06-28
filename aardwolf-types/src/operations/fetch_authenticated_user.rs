@@ -1,13 +1,14 @@
 use aardwolf_models::user::AuthenticatedUser;
 use diesel::pg::PgConnection;
+use thiserror::Error;
 
 use crate::{error::AardwolfFail, traits::DbAction};
 
-#[derive(Clone, Debug, Fail, Serialize)]
+#[derive(Clone, Debug, Error, Serialize)]
 pub enum FetchAuthenticatedUserFail {
-    #[fail(display = "Error in database")]
+    #[error("Error in database")]
     Database,
-    #[fail(display = "User not found")]
+    #[error("User not found")]
     NotFound,
 }
 

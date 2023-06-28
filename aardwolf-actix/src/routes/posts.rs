@@ -17,9 +17,9 @@ use actix_web::{
     web::{Data, Form},
     HttpResponse, ResponseError,
 };
-use failure::Fail;
 use rocket_i18n::I18n;
 use std::fmt;
+use thiserror::Error;
 
 use crate::{
     action::redirect,
@@ -73,8 +73,8 @@ pub(crate) async fn create(
         })
 }
 
-#[derive(Fail)]
-#[fail(display = "Error")]
+#[derive(Error)]
+#[error("Error")]
 pub struct PostCreateResponseError {
     i18n: I18n,
     csrf_token: String,
@@ -109,16 +109,16 @@ impl ResponseError for PostCreateResponseError {
     }
 }
 
-#[derive(Clone, Debug, Fail)]
+#[derive(Clone, Debug, Error)]
 pub enum PostCreateError {
-    #[fail(display = "Error talking to db actor")]
+    #[error("Error talking to db actor")]
     Canceled,
-    #[fail(display = "Error talking db")]
+    #[error("Error talking db")]
     Database,
-    #[fail(display = "User does not have permission to create a persona")]
+    #[error("User does not have permission to create a persona")]
     Permission,
-    #[fail(display = "Submitted form is invalid")]
-    Form(#[cause] ValidatePostCreationFail),
+    #[error("Submitted form is invalid")]
+    Form(#[source] ValidatePostCreationFail),
 }
 
 impl From<ValidatePostCreationFail> for PostCreateError {

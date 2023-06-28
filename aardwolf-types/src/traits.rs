@@ -1,8 +1,6 @@
-use failure::Fail;
-
 pub trait Validate {
     type Item;
-    type Error: Fail;
+    type Error: std::error::Error;
 
     fn validate(self) -> Result<Self::Item, Self::Error>;
 }
@@ -30,31 +28,31 @@ mod actix_web_impls {
     use actix_web::{error::BlockingError, web::block};
     use diesel::r2d2::ConnectionManager;
     use diesel::PgConnection;
-    use failure::Fail;
     use futures::{
         compat::Future01CompatExt,
         future::{BoxFuture, FutureExt, TryFutureExt},
     };
     use r2d2::Pool;
+    use thiserror::Error;
 
-    #[derive(Debug, Fail)]
+    #[derive(Debug, Error)]
     pub enum DbActionError<E>
     where
-        E: Fail,
+        E: std::error::Error,
     {
-        #[fail(display = "Error in Db Action, {}", _0)]
-        Error(#[cause] E),
+        #[error("Error in Db Action, {}", _0)]
+        Error(#[source] E),
 
-        #[fail(display = "Error in pooling, {}", _0)]
-        Pool(#[cause] r2d2::Error),
+        #[error("Error in pooling, {}", _0)]
+        Pool(#[source] r2d2::Error),
 
-        #[fail(display = "Db Action was canceled")]
+        #[error("Db Action was canceled")]
         Canceled,
     }
 
     impl<E> From<BlockingError<E>> for DbActionError<E>
     where
-        E: Fail,
+        E: std::error::Error,
     {
         fn from(e: BlockingError<E>) -> Self {
             match e {
@@ -66,7 +64,7 @@ mod actix_web_impls {
 
     impl<E> From<r2d2::Error> for DbActionError<E>
     where
-        E: Fail,
+        E: std::error::Error,
     {
         fn from(e: r2d2::Error) -> Self {
             DbActionError::Pool(e)
@@ -75,7 +73,7 @@ mod actix_web_impls {
 
     impl<E> From<BlockingError<DbActionError<E>>> for DbActionError<E>
     where
-        E: Fail,
+        E: std::error::Error,
     {
         fn from(e: BlockingError<DbActionError<E>>) -> Self {
             match e {
@@ -87,7 +85,7 @@ mod actix_web_impls {
 
     pub trait DbAction {
         type Item: Send + 'static;
-        type Error: Fail;
+        type Error: std::error::Error;
 
         fn db_action(self, conn: &mut PgConnection) -> Result<Self::Item, Self::Error>;
 

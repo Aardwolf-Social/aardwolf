@@ -1,4 +1,5 @@
 use aardwolf_models::sql_types::{FollowPolicy, PostVisibility};
+use thiserror::Error;
 
 use crate::{error::AardwolfFail, traits::Validate};
 
@@ -45,8 +46,8 @@ impl PersonaCreationForm {
     }
 }
 
-#[derive(Clone, Debug, Fail, Serialize)]
-#[fail(display = "Failed to validate persona creation form")]
+#[derive(Clone, Debug, Error, Serialize)]
+#[error("Failed to validate persona creation form")]
 pub struct ValidatePersonaCreationFail {
     pub display_name: Option<ValidateDisplayNameFail>,
     pub follow_policy: Option<ValidateFollowPolicyFail>,

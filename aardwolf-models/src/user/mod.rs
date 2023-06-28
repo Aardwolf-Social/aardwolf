@@ -1,6 +1,6 @@
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, connection::Connection, pg::PgConnection};
-use failure::Fail;
+use thiserror::Error;
 
 pub mod email;
 pub mod local_auth;
@@ -57,11 +57,11 @@ pub trait UserLike {
     }
 }
 
-#[derive(Debug, Fail)]
+#[derive(Debug, Error)]
 pub enum UserVerifyError {
-    #[fail(display = "Error in diesel: {}", _0)]
-    Diesel(#[cause] diesel::result::Error),
-    #[fail(display = "Cannot verify user with other user's ID")]
+    #[error("Error in diesel: {}", _0)]
+    Diesel(#[source] diesel::result::Error),
+    #[error("Cannot verify user with other user's ID")]
     IdMismatch,
 }
 
@@ -80,11 +80,11 @@ impl From<UpdateFieldError> for UserVerifyError {
     }
 }
 
-#[derive(Debug, Fail)]
+#[derive(Debug, Error)]
 pub enum UpdateFieldError {
-    #[fail(display = "Error updating record: {}", _0)]
-    Diesel(#[cause] diesel::result::Error),
-    #[fail(display = "Provided records are not related")]
+    #[error("Error updating record: {}", _0)]
+    Diesel(#[source] diesel::result::Error),
+    #[error("Provided records are not related")]
     Relation,
 }
 

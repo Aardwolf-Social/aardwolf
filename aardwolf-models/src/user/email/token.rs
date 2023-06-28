@@ -2,7 +2,6 @@ use std::fmt;
 
 use bcrypt::{hash, verify};
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
-use failure::Fail;
 #[cfg(any(test, feature = "test"))]
 use log::warn;
 use rand::{distributions::Alphanumeric, rngs::OsRng, Rng};
@@ -10,6 +9,7 @@ use serde::{
     de::{Deserialize, Deserializer},
     ser::{Serialize, Serializer},
 };
+use thiserror::Error;
 
 /// A trait used to verify emails
 ///
@@ -19,19 +19,19 @@ pub trait VerifyEmail {
     fn verify_email(&self, token: EmailVerificationToken) -> Result<(), VerificationError>;
 }
 
-#[derive(Clone, Copy, Debug, Eq, Fail, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum CreationError {
-    #[fail(display = "Failed to create Random Number Generator")]
+    #[error("Failed to create Random Number Generator")]
     Rng,
-    #[fail(display = "Failed to hash generated token")]
+    #[error("Failed to hash generated token")]
     Hash,
 }
 
-#[derive(Clone, Copy, Debug, Eq, Fail, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum VerificationError {
-    #[fail(display = "Failed to verify token")]
+    #[error("Failed to verify token")]
     Process,
-    #[fail(display = "Token was invaid")]
+    #[error("Token was invaid")]
     Token,
 }
 
