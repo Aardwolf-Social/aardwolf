@@ -28,10 +28,7 @@ mod actix_web_impls {
     use actix_web::{error::BlockingError, web::block};
     use diesel::r2d2::ConnectionManager;
     use diesel::PgConnection;
-    use futures::{
-        compat::Future01CompatExt,
-        future::{BoxFuture, FutureExt, TryFutureExt},
-    };
+    use futures::future::{BoxFuture, FutureExt, TryFutureExt};
     use r2d2::Pool;
     use thiserror::Error;
 
@@ -46,19 +43,19 @@ mod actix_web_impls {
         #[error("Error in pooling, {}", _0)]
         Pool(#[source] r2d2::Error),
 
+        #[error("Error in thread, {}", _0)]
+        Thread(#[source] BlockingError),
+
         #[error("Db Action was canceled")]
         Canceled,
     }
 
-    impl<E> From<BlockingError<E>> for DbActionError<E>
+    impl<E> From<BlockingError> for DbActionError<E>
     where
         E: std::error::Error,
     {
-        fn from(e: BlockingError<E>) -> Self {
-            match e {
-                BlockingError::Error(e) => DbActionError::Error(e),
-                BlockingError::Canceled => DbActionError::Canceled,
-            }
+        fn from(e: BlockingError) -> Self {
+            DbActionError::Thread(e)
         }
     }
 
@@ -71,21 +68,9 @@ mod actix_web_impls {
         }
     }
 
-    impl<E> From<BlockingError<DbActionError<E>>> for DbActionError<E>
-    where
-        E: std::error::Error,
-    {
-        fn from(e: BlockingError<DbActionError<E>>) -> Self {
-            match e {
-                BlockingError::Error(e) => e,
-                BlockingError::Canceled => DbActionError::Canceled,
-            }
-        }
-    }
-
     pub trait DbAction {
         type Item: Send + 'static;
-        type Error: std::error::Error;
+        type Error: std::error::Error + Send;
 
         fn db_action(self, conn: &mut PgConnection) -> Result<Self::Item, Self::Error>;
 
@@ -96,14 +81,17 @@ mod actix_web_impls {
         where
             Self: Sized + Send + 'static,
         {
-            block::<_, _, DbActionError<Self::Error>>(move || {
+            let result = block(move || -> Result<Self::Item, DbActionError<Self::Error>> {
                 let conn = &mut *pool.get()?;
-                let res = self.db_action(conn).map_err(DbActionError::Error)?;
-                Ok(res)
+
+                self.db_action(conn).map_err(DbActionError::Error)
             })
-            .compat()
-            .map_err(DbActionError::from)
-            .boxed()
+            .map_err(DbActionError::from);
+
+            // Flatten nested result
+            let result = result.map(|result| result.and_then(|inner| inner));
+
+            result.boxed()
         }
     }
 }
