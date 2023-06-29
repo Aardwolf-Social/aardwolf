@@ -1,10 +1,10 @@
 use std::{env, fmt};
 
+use anyhow::{Context, Result};
 use clap::App;
 use config::{Config, ConfigError, Environment};
-use failure::{Backtrace, Context, Error, Fail, ResultExt};
 
-pub fn configure(app: App) -> Result<Config, Error> {
+pub fn configure(app: App) -> Result<Config> {
     // Order of how configuration values are set:
     // cli arguments > environment variables > config file > default values
 
@@ -65,7 +65,7 @@ pub fn configure(app: App) -> Result<Config, Error> {
     Ok(config)
 }
 
-pub fn db_conn_string(config: &Config) -> Result<String, Error> {
+pub fn db_conn_string(config: &Config) -> Result<String> {
     let keys = vec![
         "Database.type",
         "Database.username",
@@ -92,7 +92,7 @@ pub fn db_conn_string(config: &Config) -> Result<String, Error> {
     );
 
     if !error_vec.is_empty() {
-        Err(MissingKeys(error_vec).context(ErrorKind::ConfigMissingKeys))?;
+        return Err(ErrorKind::ConfigMissingKeys).context(MissingKeys(error_vec));
     }
 
     match string_vec[0].as_ref() {
@@ -111,46 +111,11 @@ pub fn db_conn_string(config: &Config) -> Result<String, Error> {
     ))
 }
 
-#[derive(Debug, Error)]
-#[error("Configuration was missing exected keys: [{:?}]", _0)]
+#[derive(Debug, thiserror::Error)]
+#[error("Configuration was missing expected keys: [{:?}]", _0)]
 pub struct MissingKeys(Vec<String>);
 
-#[derive(Debug)]
-pub struct CommonError {
-    inner: Context<ErrorKind>,
-}
-
-impl Fail for CommonError {
-    fn cause(&self) -> Option<&dyn Fail> {
-        self.inner.cause()
-    }
-
-    fn backtrace(&self) -> Option<&Backtrace> {
-        self.inner.backtrace()
-    }
-}
-
-impl fmt::Display for CommonError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        fmt::Display::fmt(&self.inner, f)
-    }
-}
-
-impl From<ErrorKind> for CommonError {
-    fn from(e: ErrorKind) -> Self {
-        CommonError {
-            inner: Context::new(e),
-        }
-    }
-}
-
-impl From<Context<ErrorKind>> for CommonError {
-    fn from(e: Context<ErrorKind>) -> Self {
-        CommonError { inner: e }
-    }
-}
-
-#[derive(Clone, Copy, Debug, Eq, Error, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, thiserror::Error, Hash, PartialEq)]
 pub enum ErrorKind {
     #[error("Unsupported database scheme, only 'postgres' and 'postgresql' are allowed.")]
     UnsupportedDbScheme,

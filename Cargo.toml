@@ -20,6 +20,7 @@ actix = ["aardwolf-actix"]
 
 [dependencies]
 config = "0.9"
+anyhow = "1.0"
 thiserror = "1.0"
 log = "0.4"
 yaml-rust = "~0.4.5"
