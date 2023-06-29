@@ -43,9 +43,6 @@ mod actix_web_impls {
         #[error("Error in pooling, {}", _0)]
         Pool(#[source] r2d2::Error),
 
-        #[error("Error in thread, {}", _0)]
-        Thread(#[source] BlockingError),
-
         #[error("Db Action was canceled")]
         Canceled,
     }
@@ -55,7 +52,7 @@ mod actix_web_impls {
         E: std::error::Error,
     {
         fn from(e: BlockingError) -> Self {
-            DbActionError::Thread(e)
+            DbActionError::Canceled  // TODO: Add actual handling for this
         }
     }
 
