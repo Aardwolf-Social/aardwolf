@@ -1,9 +1,9 @@
+use aardwolf::Args;
+use clap::Parser;
 use std::{
     io::{self, ErrorKind},
     process::{self, Command, Output},
 };
-use toml::value::Table;
-use clap::{App, Arg};
 
 fn check_out(output: &Result<Output, io::Error>) {
     match *output {
@@ -29,20 +29,16 @@ fn check_out(output: &Result<Output, io::Error>) {
 }
 
 fn main() {
-    let toml_str = include_str!("setup.toml");
-    let toml: Table = toml::from_str(toml_str).unwrap();
-    
-    let app = App::new(toml["name"].as_str().unwrap())
-        .version(toml["version"].as_str().unwrap())
-        .author(toml["author"].as_str().unwrap());
-    
+    // TODO: Override the name returned by clap
+    let app = Args::parse();
+
     let config = aardwolf::configure(app).unwrap();
     let db_url = aardwolf::db_conn_string(&config).unwrap();
     println!(
         "using database url `{}' to setup the aardwolf database",
         &db_url
     );
-    
+
     let output = Command::new("diesel")
         .arg("setup")
         .arg("--migration-dir")
@@ -50,6 +46,6 @@ fn main() {
         .env("DATABASE_URL", &db_url)
         .output();
     check_out(&output);
-    
+
     println!("database migrations were successfully run, you're ready to go!");
 }

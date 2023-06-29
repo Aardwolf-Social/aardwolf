@@ -124,11 +124,11 @@ mod assets {
     impl Assets {
         pub fn from_config(config: &Config) -> Result<Self, Box<dyn Error>> {
             Ok(Assets {
-                web: config.get_str("Assets.web")?,
-                images: config.get_str("Assets.images")?,
-                emoji: config.get_str("Assets.emoji")?,
-                themes: config.get_str("Assets.themes")?,
-                stylesheets: config.get_str("Assets.stylesheets")?,
+                web: config.get_string("Assets.web")?,
+                images: config.get_string("Assets.images")?,
+                emoji: config.get_string("Assets.emoji")?,
+                themes: config.get_string("Assets.themes")?,
+                stylesheets: config.get_string("Assets.stylesheets")?,
             })
         }
 
@@ -161,12 +161,12 @@ pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
 
     let listen_address = format!(
         "{}:{}",
-        config.get_str("Web.address")?,
-        config.get_str("Web.port")?
+        config.get_string("Web.address")?,
+        config.get_string("Web.port")?
     );
 
     let url_generator = UrlGenerator {
-        domain: config.get_str("Instance.domain")?,
+        domain: config.get_string("Instance.domain")?,
         https: config.get_bool("Instance.https")?,
     };
 
