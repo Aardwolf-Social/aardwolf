@@ -5,14 +5,10 @@
 name: 'Docker Image CI'
 
 on:
-  push:
-    branches:
-     - main
-     - 'dependabot/security-updates'
-     - 'dependabot/version-updates'
-     - 'banjofox/*'
   pull_request:
-    branches: [ "master" ]
+    branches:
+     - main'
+     - 'banjofox/*'
 
 jobs:
 
