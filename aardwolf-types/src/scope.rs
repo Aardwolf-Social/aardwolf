@@ -1,6 +1,7 @@
 use std::{fmt, str::FromStr};
 
 use serde::{self, Deserialize, Deserializer, Serialize, Serializer};
+use thiserror::Error;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Scope {
@@ -75,8 +76,8 @@ impl fmt::Display for Scope {
     }
 }
 
-#[derive(Debug, Fail)]
-#[fail(display = "Error decoding 'scope'")]
+#[derive(Debug, Error)]
+#[error("Error decoding 'scope'")]
 pub struct ScopeDecodeError;
 
 impl FromStr for Scope {

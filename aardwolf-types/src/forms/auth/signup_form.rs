@@ -1,9 +1,10 @@
 use aardwolf_models::user::local_auth::{PlaintextPassword, ValidationError};
+use thiserror::Error;
 
 use crate::{error::AardwolfFail, traits::Validate};
 
-#[derive(Clone, Fail, Debug, Serialize)]
-#[fail(display = "There was an error validating the form")]
+#[derive(Clone, Error, Debug, Serialize)]
+#[error("There was an error validating the form")]
 pub struct ValidateSignUpFormFail {
     pub email: Option<SignUpEmailValidationFail>,
     pub password: Option<SignUpPasswordValidationFail>,

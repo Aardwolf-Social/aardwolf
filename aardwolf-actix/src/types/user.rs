@@ -6,8 +6,8 @@ use aardwolf_types::{
 use actix_http::Payload;
 use actix_session::Session;
 use actix_web::{error::ResponseError, FromRequest, HttpRequest, HttpResponse};
-use failure::Fail;
 use futures::future::{FutureExt, LocalBoxFuture, TryFutureExt};
+use thiserror::Error;
 
 use crate::{error::redirect_error, from_session, AppConfig};
 
@@ -57,15 +57,15 @@ async fn fetch_user(state: AppConfig, id: i32) -> Result<AuthenticatedUser, Sign
     Ok(FetchAuthenticatedUser(id).run(state.pool.clone()).await?)
 }
 
-#[derive(Clone, Debug, Fail)]
+#[derive(Clone, Debug, Error)]
 pub enum SignedInUserError {
-    #[fail(display = "Error talking to db actor")]
+    #[error("Error talking to db actor")]
     Canceled,
-    #[fail(display = "Error in database")]
+    #[error("Error in database")]
     Database,
-    #[fail(display = "No user cookie present")]
+    #[error("No user cookie present")]
     Cookie,
-    #[fail(display = "User doesn't exist")]
+    #[error("User doesn't exist")]
     User,
 }
 
@@ -88,8 +88,8 @@ impl ResponseError for SignedInUserError {
     }
 }
 
-#[derive(Clone, Debug, Fail)]
-#[fail(display = "State is missing")]
+#[derive(Clone, Debug, Error)]
+#[error("State is missing")]
 pub struct MissingState;
 
 impl ResponseError for MissingState {

@@ -2,17 +2,17 @@ use std::path::Path;
 
 use chrono::{offset::Utc, DateTime};
 use diesel::{self, pg::PgConnection};
-use failure::Fail;
+use thiserror::Error;
 
 pub mod image;
 
 use crate::schema::files;
 
-#[derive(Clone, Copy, Debug, Eq, Fail, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum FileCreationError {
-    #[fail(display = "File is missing")]
+    #[error("File is missing")]
     Missing,
-    #[fail(display = "File path contains invalid utf8")]
+    #[error("File path contains invalid utf8")]
     Utf8,
 }
 

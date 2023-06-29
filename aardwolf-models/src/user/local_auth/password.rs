@@ -2,11 +2,11 @@ use std::fmt;
 
 use bcrypt::{hash, verify};
 use diesel::{backend::Backend, deserialize, serialize, sql_types::Text};
-use failure::Fail;
 use log::error;
 #[cfg(any(test, feature = "test"))]
 use log::warn;
 use serde::de::{Deserialize, Deserializer};
+use thiserror::Error;
 
 /// Create a trait used to verify passwords.
 ///
@@ -52,26 +52,26 @@ pub(crate) trait Validate: Sized {
 ///
 /// A password verification can fail if any step leading to the verification fails, or if the
 /// password itself cannot be verified with the given `PlaintextPassword`
-#[derive(Clone, Copy, Debug, Eq, Fail, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum VerificationError {
     /// The password could not be checked because something failed before that step
-    #[fail(display = "Error validating password")]
+    #[error("Error validating password")]
     Process,
     /// The password was checked and was found to be invalid
-    #[fail(display = "Invalid password")]
+    #[error("Invalid password")]
     Password,
 }
 
 /// The error used when creating a password fails.
-#[derive(Clone, Copy, Debug, Eq, Fail, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum CreationError {
     /// This happens when a password does not meet the requirements to be considered usable.
     /// Currently, this means the password is too short, or two submitted passwords do not match.
-    #[fail(display = "Error validating password")]
-    Validation(#[cause] ValidationError),
+    #[error("Error validating password")]
+    Validation(#[source] ValidationError),
     /// This should only happen in very rare circumstances, since generally bcrypt is good about not
     /// having errors.
-    #[fail(display = "Error creating password")]
+    #[error("Error creating password")]
     Bcrypt,
 }
 
@@ -86,8 +86,8 @@ impl From<ValidationError> for CreationError {
 /// Since there are many errors that can occur when validating a password, and typically we want to
 /// show all errors to the user when they are creating a password, this is implemented as a series
 /// of booleans for the different kinds of errors.
-#[derive(Clone, Copy, Debug, Eq, Fail, PartialEq)]
-#[fail(display = "Password is invalid")]
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
+#[error("Password is invalid")]
 pub struct ValidationError {
     no_match: bool,
     too_short: bool,

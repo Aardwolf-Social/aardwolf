@@ -22,10 +22,10 @@ use actix_web::{
     web::{Data, Form, Path},
     HttpResponse, ResponseError,
 };
-use failure::Fail;
 use rocket_i18n::I18n;
 use serde_derive::Serialize;
 use std::fmt;
+use thiserror::Error;
 
 use crate::{
     action::redirect,
@@ -106,8 +106,8 @@ pub(crate) async fn delete(
     Ok(redirect("/"))
 }
 
-#[derive(Fail)]
-#[fail(display = "Error")]
+#[derive(Error)]
+#[error("Error")]
 pub struct PersonaCreateResponseError {
     i18n: I18n,
     csrf_token: String,
@@ -138,19 +138,19 @@ impl ResponseError for PersonaCreateResponseError {
     }
 }
 
-#[derive(Clone, Debug, Fail)]
+#[derive(Clone, Debug, Error)]
 pub enum PersonaCreateError {
-    #[fail(display = "Error talking to db actor")]
+    #[error("Error talking to db actor")]
     Canceled,
-    #[fail(display = "Error talking db")]
+    #[error("Error talking db")]
     Database,
-    #[fail(display = "User does not have permission to create a persona")]
+    #[error("User does not have permission to create a persona")]
     Permission,
-    #[fail(display = "Could not set cookie")]
+    #[error("Could not set cookie")]
     Cookie,
-    #[fail(display = "Submitted form is invalid")]
-    Form(#[cause] ValidatePersonaCreationFail),
-    #[fail(display = "Could not generate keys")]
+    #[error("Submitted form is invalid")]
+    Form(#[source] ValidatePersonaCreationFail),
+    #[error("Could not generate keys")]
     Keygen,
 }
 
@@ -206,14 +206,14 @@ fn set_persona_cookie(session: Session, persona: Persona) -> Result<(), PersonaC
         .map_err(|_| PersonaCreateError::Cookie)
 }
 
-#[derive(Clone, Debug, Fail, Serialize)]
+#[derive(Clone, Debug, Error, Serialize)]
 pub enum PersonaDeleteError {
-    #[fail(display = "Error talking to db actor")]
+    #[error("Error talking to db actor")]
     Canceled,
-    #[fail(display = "Error talking db")]
+    #[error("Error talking db")]
     Database,
-    #[fail(display = "Error deleting persona: {}", _0)]
-    Delete(#[cause] DeletePersonaFail),
+    #[error("Error deleting persona: {}", _0)]
+    Delete(#[source] DeletePersonaFail),
 }
 
 impl<E> From<DbActionError<E>> for PersonaDeleteError

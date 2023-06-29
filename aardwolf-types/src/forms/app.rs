@@ -1,8 +1,9 @@
 use crate::{apps::App, error::AardwolfFail, scope::Scope, traits::Validate};
+use thiserror::Error;
 
-#[derive(Clone, Debug, Fail, Serialize)]
+#[derive(Clone, Debug, Error, Serialize)]
 pub enum CreateAppError {
-    #[fail(display = "validation error when creating app")]
+    #[error("validation error when creating app")]
     ValidationError,
 }
 

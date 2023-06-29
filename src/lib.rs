@@ -111,8 +111,8 @@ pub fn db_conn_string(config: &Config) -> Result<String, Error> {
     ))
 }
 
-#[derive(Debug, Fail)]
-#[fail(display = "Configuration was missing exected keys: [{:?}]", _0)]
+#[derive(Debug, Error)]
+#[error("Configuration was missing exected keys: [{:?}]", _0)]
 pub struct MissingKeys(Vec<String>);
 
 #[derive(Debug)]
@@ -150,13 +150,13 @@ impl From<Context<ErrorKind>> for CommonError {
     }
 }
 
-#[derive(Clone, Copy, Debug, Eq, Fail, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Error, Hash, PartialEq)]
 pub enum ErrorKind {
-    #[fail(display = "Unsupported database scheme, only 'postgres' and 'postgresql' are allowed.")]
+    #[error("Unsupported database scheme, only 'postgres' and 'postgresql' are allowed.")]
     UnsupportedDbScheme,
-    #[fail(display = "Configuration was missing expected keys")]
+    #[error("Configuration was missing expected keys")]
     ConfigMissingKeys,
-    #[fail(display = "Config struct cannot be modified")]
+    #[error("Config struct cannot be modified")]
     ConfigImmutable,
 }
 

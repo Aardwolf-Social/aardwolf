@@ -5,6 +5,7 @@ use aardwolf_models::{
 use diesel::pg::PgConnection;
 
 use crate::{error::AardwolfFail, traits::DbAction};
+use thiserror::Error;
 
 pub struct CheckDeletePersonaPermission(pub AuthenticatedUser, pub Persona);
 
@@ -20,11 +21,11 @@ impl DbAction for CheckDeletePersonaPermission {
     }
 }
 
-#[derive(Debug, Clone, Fail, Serialize)]
+#[derive(Debug, Clone, Error, Serialize)]
 pub enum CheckDeletePersonaPermissionFail {
-    #[fail(display = "User does not have permission to delete persona")]
+    #[error("User does not have permission to delete persona")]
     Permission,
-    #[fail(display = "Error accessing database to check permissions")]
+    #[error("Error accessing database to check permissions")]
     Database,
 }
 
@@ -46,8 +47,8 @@ mod tests {
         gen_string, make_persona, make_unverified_authenticated_user,
         make_verified_authenticated_user, user_make_base_actor, with_connection,
     };
+    use anyhow::Error;
     use diesel::pg::PgConnection;
-    use failure::Error;
 
     use crate::{
         operations::check_delete_persona_permission::CheckDeletePersonaPermission, traits::DbAction,

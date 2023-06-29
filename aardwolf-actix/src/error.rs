@@ -1,8 +1,8 @@
 use actix_web::{http::header::LOCATION, HttpResponse, ResponseError};
-use failure::Fail;
+use thiserror::Error;
 
-#[derive(Clone, Debug, Fail)]
-#[fail(display = "Could not render template")]
+#[derive(Clone, Debug, Error)]
+#[error("Could not render template")]
 pub struct RenderError;
 
 impl ResponseError for RenderError {
