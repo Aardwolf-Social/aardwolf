@@ -5,6 +5,11 @@
 .github
 
 #-
+# Ignore personal .vscode settings
+#
+.vscode
+
+#-
 # Not sure what this is anymore
 #
 .env
