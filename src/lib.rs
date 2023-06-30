@@ -1,10 +1,24 @@
 use std::{env, fmt};
 
 use anyhow::{Context, Result};
-use clap::App;
+use clap::Parser;
+use clap_verbosity_flag::Verbosity;
 use config::{Config, ConfigError, Environment};
 
-pub fn configure(app: App) -> Result<Config> {
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+pub struct Args {
+    #[arg(short = 'c', long, help = "Sets a custom config file")]
+    config: Option<std::path::PathBuf>,
+
+    #[arg(short = 'l', long, help = "Sets logging destination")]
+    log: Option<std::path::PathBuf>,
+
+    #[command(flatten)]
+    verbose: Verbosity,
+}
+
+pub fn configure(args: Args) -> Result<Config> {
     // Order of how configuration values are set:
     // cli arguments > environment variables > config file > default values
 
@@ -31,18 +45,15 @@ pub fn configure(app: App) -> Result<Config> {
             .context(ErrorKind::ConfigImmutable)?;
     }
 
-    // Parse arguments
-    let args = app.get_matches();
-
-    if let Some(c) = args.value_of("config") {
+    if let Some(c) = args.config {
         config
-            .set("cfg_file", c)
+            .set("cfg_file", c.to_str())
             .context(ErrorKind::ConfigImmutable)?;
     }
 
     // Merge config file and apply over-rides
     let cfg_file_string = config
-        .get_str("cfg_file")
+        .get_string("cfg_file")
         .context(ErrorKind::ConfigMissingKeys)?;
     let cfg_file = config::File::with_name(&cfg_file_string);
     config.merge(cfg_file).context(ErrorKind::ConfigImmutable)?;
@@ -56,11 +67,13 @@ pub fn configure(app: App) -> Result<Config> {
     // Remove the need for a .env file to avoid defining env vars twice.
     env::set_var("DATABASE_URL", db_conn_string(&config)?);
 
-    if let Some(l) = args.value_of("log") {
+    if let Some(l) = args.log {
         config
-            .set("Log.file", l)
+            .set("Log.file", l.to_str())
             .context(ErrorKind::ConfigImmutable)?;
     }
+
+    // TODO: Use verbosity setting from args
 
     Ok(config)
 }
@@ -75,7 +88,7 @@ pub fn db_conn_string(config: &Config) -> Result<String> {
         "Database.database",
     ];
 
-    let (string_vec, error_vec) = keys.into_iter().map(|key| config.get_str(key)).fold(
+    let (string_vec, error_vec) = keys.into_iter().map(|key| config.get_string(key)).fold(
         (Vec::new(), Vec::new()),
         |(mut string_vec, mut error_vec), res| {
             match res {
@@ -129,7 +142,7 @@ pub enum ErrorKind {
 pub fn begin_log(config: &config::Config) {
     use log::LevelFilter;
 
-    match config.get_str("Log.file").unwrap().as_ref() {
+    match config.get_string("Log.file").unwrap().as_ref() {
         "_CONSOLE_" => (),
         l => simple_logging::log_to_file(l, LevelFilter::Debug).unwrap(),
     }

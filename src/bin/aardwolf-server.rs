@@ -1,16 +1,8 @@
 use std::error::Error;
 
-use aardwolf::{begin_log, configure};
-use clap::{load_yaml, App};
+use aardwolf::{begin_log, configure, Args};
+use clap::Parser;
 use config::Config;
-
-fn cli<'a, 'b>(yaml: &'a yaml_rust::yaml::Yaml) -> App<'a, 'b> {
-    App::from_yaml(yaml)
-        .name(env!("CARGO_PKG_NAME"))
-        .version(env!("CARGO_PKG_VERSION"))
-        .author(env!("CARGO_PKG_AUTHORS"))
-        .about(env!("CARGO_PKG_DESCRIPTION"))
-}
 
 pub trait AardwolfServer {
     fn run(&self, config: &Config, db_url: &str) -> Result<(), Box<dyn Error>>;
@@ -33,9 +25,8 @@ mod actix {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let yaml = load_yaml!("cli.yml");
-    let cli = cli(&yaml);
-    let config = configure(cli)?;
+    let args = Args::parse();
+    let config = configure(args)?;
     let db_url = aardwolf::db_conn_string(&config)?;
 
     begin_log(&config);
