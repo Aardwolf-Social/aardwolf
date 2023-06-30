@@ -3,7 +3,7 @@ name = "aardwolf"
 version = "0.1.0"
 authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Elijah Mark Anderson <kd0bpv@gmail.com>", "Paul Woolcock <paul@woolcock.us>", "asonix <asonix@asonix.dog>"]
 description = "Powering connected social communities with free software."
-edition = "2018"
+edition = "2021"
 
 [workspace]
 members = [
@@ -28,10 +28,10 @@ log = "0.4"
 # log-* features.
 simple-logging = { version = "~2.0", optional = true }
 # Use syslog for writing logs. Conflicts with use-systemd and log-* features.
-syslog = { version = "~5.0", optional = true }
+syslog = { version = "6.1.0", optional = true }
 # Integrate with Systemd, includes Journald for logging. Conflicts with log-*
 # features.
-systemd = { version = "~0.8.2", optional = true }
+systemd = { version = "0.10.0", optional = true }
 
 [dependencies.aardwolf-actix]
 version = "0.1"

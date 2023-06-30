@@ -1,4 +1,4 @@
-use std::{env, fmt};
+use std::{env};
 
 use anyhow::{Context, Result};
 use clap::Parser;
