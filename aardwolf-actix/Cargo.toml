@@ -2,7 +2,7 @@
 name = "aardwolf-actix"
 version = "0.1.0"
 authors = ["asonix <asonix@asonix.dog>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 actix = "0.13.0"

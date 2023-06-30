@@ -2,12 +2,12 @@
 name = "aardwolf-templates"
 version = "0.1.0"
 authors = ["asonix <asonix@asonix.dog>"]
-edition = "2018"
+edition = "2021"
 build = "build.rs"
 
 [build-dependencies]
 config = "0.13"
-ructe = "0.13"
+ructe = "0.16.1"
 
 [dependencies]
 gettext = "0.4"
