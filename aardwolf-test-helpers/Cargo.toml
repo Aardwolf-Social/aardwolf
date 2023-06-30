@@ -2,7 +2,7 @@
 name = "aardwolf-test-helpers"
 version = "0.1.0"
 authors = ["asonix <asonix@asonix.dog>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies.aardwolf-models]
 version = "0.1"
