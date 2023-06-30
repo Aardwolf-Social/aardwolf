@@ -20,7 +20,7 @@ actix = ["aardwolf-actix"]
 
 [dependencies]
 anyhow = "1.0"
-clap = "4.3.5"
+clap = "4.3"
 clap-verbosity-flag = "2.0"
 thiserror = "1.0"
 log = "0.4"

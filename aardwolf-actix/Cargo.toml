@@ -42,7 +42,6 @@ features = ["postgres", "uuid", "chrono"]
 [dependencies.rocket_i18n]
 rocket_i18n = "0.4"
 default-features = false
-features = ["actix-web"]
 
 [dependencies.futures]
 version = "0.3"

@@ -17,7 +17,6 @@ gettext-utils = "0.1.0"
 [dependencies.rocket_i18n]
 rocket_i18n = "0.4"
 default-features = false
-features = ["actix-web"]
 
 [dependencies.aardwolf-types]
 version = "0.1"
