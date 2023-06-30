@@ -51,7 +51,7 @@ mod actix_web_impls {
     where
         E: std::error::Error,
     {
-        fn from(e: BlockingError) -> Self {
+        fn from(_e: BlockingError) -> Self {
             DbActionError::Canceled  // TODO: Add actual handling for this
         }
     }

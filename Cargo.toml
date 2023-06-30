@@ -39,4 +39,4 @@ path = "aardwolf-actix"
 optional = true
 
 [dependencies.config]
-version = "0.13"
+version = "0.13.3"

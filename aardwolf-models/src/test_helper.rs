@@ -65,7 +65,7 @@ pub fn transmute_email_token(token: &EmailToken) -> Result<EmailVerificationToke
 }
 
 pub fn gen_string() -> String {
-    OsRng.sample_iter(&Alphanumeric).take(10).collect()
+    OsRng.sample_iter(&Alphanumeric).take(10).map(char::from).collect()
 }
 
 pub fn gen_url() -> Url {
@@ -81,7 +81,7 @@ pub fn gen_bool() -> bool {
 }
 
 pub fn gen_datetime() -> DateTime<Utc> {
-    let hours = OsRng.gen_range(0, 10000);
+    let hours = OsRng.gen_range(0..=10000);
 
     Utc::now()
         .checked_add_signed(OldDuration::hours(hours))
