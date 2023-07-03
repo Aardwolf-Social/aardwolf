@@ -6,8 +6,10 @@ PostgreSQL is the database backend we have chosen for the project. To install an
 If you're on an Ubuntu-like machine, you should be able to install
 PostgreSQL like this:
 
+```
     $ sudo apt-get update
     $ sudo apt-get install postgresql postgresql-contrib libpq-dev
+```
 
 **For OSX Homebrew**
 
@@ -36,13 +38,18 @@ For Windows, just download the installer [here](https://www.enterprisedb.com/dow
 ### Configure postgres user and database cluster directory ##
 
 Installation should create a system user and a group called `postgres`.
-Set its password via `passwd postgres`.
+Set its password via `$ passwd postgres`.
+
+Don't forget to start the server! (v13 on WSL does not autostart?)
+```
+    $ sudo /etc/init.d/postgresql start
+```
 
 There should be a directory for all database storage (called the database cluster).
 On Arch Linux this is usually `/var/run/postgresql/data`, but any directory will do.
 The postgres user must have ownership for that directory.
 
-    $ sudo chown postgres:postgres /var/lib/postgres/data
+    $ sudo chown postgres:postgres /var/run/postgressql
 
 ### Setup database and start database server for Aardwolf ##
 
