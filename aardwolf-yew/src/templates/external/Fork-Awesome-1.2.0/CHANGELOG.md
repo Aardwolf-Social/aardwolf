@@ -1,0 +1,98 @@
+# Changelog
+
+## Changelog of Fork awesome
+- v1.2
+  - Added icons: Wire, Tor project, volume mute, ringing bell & outlined ringing bell, HAL, Jupytr, Julia, research gate, Open Collective, ClassicPress, ORCID, funkwhale and 38 more. 🎉
+  - Updated Joplin icon.
+  - Added fa-content() function to fix issue with css displaying glyphs when converted to unicode values by sass.
+  - Updated npm packages for security reasons, and added a new option to fix odd behavior that came with svgo update (the icons chaging shape).
+  - Added docker container and instructions in readme.
+  - Build process now 'works without errors' 😅
+- v1.1.6
+  - Added icons: file-epub, python, archlinux, pleroma, unsplash, hackster, spell-check, moon, sun, f-droid, and biometric
+  - Some documentation correction and augmentation, mostly in the README
+  - Gave access to the @all-contributors [bot] to the repo for easier contributor list management
+  - Added a plugin to automatically update the Contributors badge when building the documentation
+  - Added an official domain name for the project: https://forkaweso.me
+- v1.1.5
+  - Just bumped the version number to trigger an automated deploy
+- v1.1.4
+  - Added icons: Gitea, AT&T, Digitalocean, C (language), Wikidata, Emby, Jirafeau, Hashnode, DevTo, Pixelfed, Matrix, Inkscape, Syncthing.
+- v1.1.3
+  - Added icons: Syncthing and Inkscape
+  - Fixed sizing with PHP icon
+  - Added the `sync` alias to the refresh icon
+- v1.1.2
+  - Adds a `v5-compat.css` file in order to ease transition from Font Awesome v5 to Frok Awesome [#112](https://github.com/ForkAwesome/Fork-Awesome/issues/112)
+  - Adds full MIT license in the CSS, LESS and SCSS headers [#113](https://github.com/ForkAwesome/Fork-Awesome/issues/113)
+  - Ignoring some unnecessary files that were distributed with the CDN
+- v1.1.1
+  - Adding a CI pipeline with Travis.
+  - Fixes bell and bell-o icons who were switched up [#88](https://github.com/ForkAwesome/Fork-Awesome/issues/88)
+  - Add a mention in the documentation that the SIL-OFL also applies to SVG glyphs [#62](https://github.com/ForkAwesome/Fork-Awesome/issues/62)
+- v1.1.0
+  - Upgrade of build tools to latest versions ( Jekyll & svgo mainly)
+  - Change of Globe icon to be more world friendly
+  - Adds more icons: more globes (east & west views), zotero, nodejs, nextcloud, hackaday, laravel, signal, gnupg, php, ffmpeg amd joplin.
+- v1.0.11
+  - Adds icons: Dogmazic, React, Tipeee, Mastodon Square.
+  - Fix variable names for generated SCSS variables.
+  - Fix old reference to Font Awesome in SCSS variables.
+- v1.0.10
+  - Adding a few icons: Debian, Messenger, Freedombox
+- v1.0.9
+  - Adding icons for Archive.org & Xmpp
+  - Improving icons for QRcode & Barcode
+- v1.0.8
+  - Bumping just for jsDelivr because it won't accept an array as default files.
+- v1.0.7
+  - Prepares for jsDelivr CDN distribution
+  - Adds sourcemap for min version of CSS (jsDelivr requirement)
+  - Updates Medium icon to latest branding + adds Medium square icon.
+- v1.0.6
+  - Removes Twitter js tracker in the doc and add Disapora* and Mastodon share button (Distributopia)
+  - Adding a few more icons: Shaarli, Key (modern)
+- v1.0.5
+  - Solves a bug where CSS, LESS & SCSS folder were not updated
+- v1.0.4
+  - Some build process changes
+  - Adds a SVG template file in src/icons for better icon placement and sizing comparison
+  - Adds Discord, Patreon, Snowdrift, Ethereum, ActivityPub and Keybase icons
+- v1.0.3
+  - Adding Artstation icon [#19](https://github.com/ForkAwesome/Fork-Awesome/pull/19)
+  - Adding an SVG Inkscape template for icon sizing and positioning
+- v1.0.2
+  - Solves a Makefile bug that packaged files that were not updated.
+  - Correction of typos in the documentation.
+- v1.0.1
+  − Mainly solving a packaging bug.
+- v1.0.0
+  - Forked from Font Awesome 4.7.0. Rename of the project to Fork Awesome.
+  - Cleaned up the doc and removed 3rd party trackers and advertisement from documentation.
+  - Extracted all the icons from the SVG webfont into individual SVG files.
+  - Added 12 new icons.
+  - Removed 3 imaginary brand icons.
+  - Added FontCustom as a build tool to create the webfonts.
+
+## Changelog of Font Awesome
+- [v4.7.0 GitHub pull request](https://github.com/FortAwesome/Font-Awesome/pull/10012)
+- [v4.6.3 GitHub pull request](https://github.com/FortAwesome/Font-Awesome/pull/9189)
+- [v4.6.2 GitHub pull request](https://github.com/FortAwesome/Font-Awesome/pull/9117)
+- [v4.6.1 GitHub pull request](https://github.com/FortAwesome/Font-Awesome/pull/8962)
+- [v4.6.0 GitHub milestones](https://github.com/FortAwesome/Font-Awesome/issues?q=milestone%3A4.6.0+is%3Aclosed)
+- [v4.5.0 GitHub milestones](https://github.com/FortAwesome/Font-Awesome/issues?q=milestone%3A4.5.0+is%3Aclosed)
+- [v4.4.0 GitHub milestones](https://github.com/FortAwesome/Font-Awesome/issues?q=milestone%3A4.4.0+is%3Aclosed)
+- [v4.3.0 GitHub milestones](https://github.com/FortAwesome/Font-Awesome/issues?q=milestone%3A4.3.0+is%3Aclosed)
+- [v4.2.0 GitHub milestones](https://github.com/FortAwesome/Font-Awesome/issues?milestone=12&page=1&state=closed)
+- [v4.1.0 GitHub milestones](https://github.com/FortAwesome/Font-Awesome/issues?milestone=6&page=1&state=closed)
+- [v4.0.3 GitHub milestones](https://github.com/FortAwesome/Font-Awesome/issues?milestone=9&page=1&state=closed)
+- [v4.0.2 GitHub milestones](https://github.com/FortAwesome/Font-Awesome/issues?milestone=8&page=1&state=closed)
+- [v4.0.1 GitHub milestones](https://github.com/FortAwesome/Font-Awesome/issues?milestone=7&page=1&state=closed)
+- [v4.0.0 GitHub milestones](https://github.com/FortAwesome/Font-Awesome/issues?milestone=2&page=1&state=closed)
+- [v3.2.1 GitHub milestones](https://github.com/FortAwesome/Font-Awesome/issues?milestone=5&page=1&state=closed)
+- [v3.2.0 GitHub milestones](https://github.com/FortAwesome/Font-Awesome/issues?milestone=3&page=1&state=closed)
+- [v3.1.1 GitHub milestones](https://github.com/FortAwesome/Font-Awesome/issues?milestone=4&page=1&state=closed)
+- v3.1.0 - Added 54 icons, icon stacking styles, flipping and rotating icons, removed Sass support
+- v3.0.2 - much improved rendering and alignment in IE7
+- v3.0.1 - much improved rendering in webkit, various bug fixes
+- v3.0.0 - all icons redesigned from scratch, optimized for Bootstrap's 14px default

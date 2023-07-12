@@ -1,0 +1,31 @@
+language:
+  - ruby
+  - node_js
+
+install:
+  - bundle install
+  - npm install
+
+script:
+  - npm run build
+
+deploy:
+  - provider: pages
+    skip-cleanup: true
+    github-token: $GITHUB_TOKEN
+    keep-history: true
+    local-dir: _site
+    on:
+      branch: master
+      tags: true
+  - provider: npm
+    email: $NPM_EMAIL
+    api_key: $NPM_TOKEN
+    on:
+      branch: master
+      tags: true
+
+# blocklist
+branches:
+  except:
+  - gh-pages

@@ -1,0 +1,66 @@
+safe:             false
+port:             7998
+url:              http://localhost:7998
+
+source:           src/doc/
+destination:      _site
+
+highlighter:      rouge
+permalink:        pretty
+
+# ensures SCSS files are compiled
+# include:          [_*.scss]
+
+# used in building icon pages
+icon_meta:        src/icons/icons.yml
+icon_layout:      icon.html    # Relative to _layouts directory
+icon_destination: icon         # Relative to destination
+
+forkawesome:
+  name:           Fork Awesome
+  tagline:        A fork of the iconic font and CSS toolkit
+  version:        1.2.0
+  minor_version:  1.2
+  major_version:  1
+  doc_blob:       v1.1.7
+  url:            https://forkaweso.me/Fork-Awesome/
+  css_prefix:     fa
+  font_family:    ForkAwesome
+  github:
+    url:          https://github.com/ForkAwesome/Fork-Awesome
+    project:      Fork-Awesome
+    org:          ForkAwesome
+  license:
+    font:
+      version:      SIL OFL 1.1
+      url:          http://scripts.sil.org/OFL
+    code:
+      version:      MIT License
+      url:          http://opensource.org/licenses/mit-license.html
+    documentation:
+      version:      CC BY 3.0
+      url:          http://creativecommons.org/licenses/by/3.0/
+
+fontawesome:
+  name:           Font Awesome
+  minor_version:  4.7
+  url:            http://fontawesome.com
+  author:
+    name:         Dave Gandy
+    email:        dave@fontawesome.io
+    twitter:      davegandy
+    github:       davegandy
+  github:
+    url:          https://github.com/FortAwesome/Font-Awesome
+    project:      Font-Awesome
+    org:          FortAwesome
+
+bootstrap:
+  version:        3.3.5
+  url:            http://getbootstrap.com
+
+jquery:
+  version:        1.11.3
+
+jquery_validate:
+  version:        1.13.1
