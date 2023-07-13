@@ -67,7 +67,7 @@ To install it, run the following command:
 
     $ cargo +nightly install -f diesel_cli --no-default-features --features "postgres"
 
-This command will use the nightly version of `cargo` (the rust package
+This command will use the `nightly` version of `cargo` (the rust package
 manager) to install the newest version of the `diesel_cli` crate. The
 `--no-default-features --features "postgres"` options tell `cargo` to
 skip installing the `mysql` and `sqlite` parts of `diesel`, which
