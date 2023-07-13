@@ -39,10 +39,10 @@ body {
   .show-on-hover:hover > ul.dropdown-menu {
     display: block;    
   }
-  .verticalLine {
+  .vertical-line {
     border-left: 2px solid #000;
   }
   .footer {
     padding: 2rem 1rem 1.5rem 1rem;
-    border-top: 15px solid #11121e;
+    border-top: 1px solid #1e1c11;
   }
