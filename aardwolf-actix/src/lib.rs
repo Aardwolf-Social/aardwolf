@@ -1,4 +1,4 @@
-use std::{error::Error, fmt};
+use std::{error::Error, fmt, thread};
 
 use aardwolf_models::{base_actor::BaseActor, generate_urls::GenerateUrls, sql_types::Url};
 use actix::System;
@@ -9,7 +9,9 @@ use actix_web::{
     middleware::Logger,
     web::{get, post, resource, scope, Data},
     App, HttpServer,
+    rt::Runtime
 };
+
 use config::Config;
 use diesel::r2d2::ConnectionManager;
 use diesel::PgConnection;
@@ -155,8 +157,6 @@ mod assets {
 }
 
 pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
-    let sys = System::new();
-
     let pool = db_pool(database_url)?;
 
     let listen_address = format!(
@@ -176,61 +176,66 @@ pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
     #[cfg(debug_assertions)]
     let assets = assets::Assets::from_config(&config)?;
 
-    HttpServer::new(move || {
-        let state = AppConfig {
-            generator: url_generator.clone(),
-            pool: pool.clone(),
-        };
+    let sys = System::new();
 
-        let translations = aardwolf_templates::managed_state();
+    thread::spawn(move || {
+        let _ = &Runtime::new().unwrap().block_on(async {
+            HttpServer::new(move || {
+                let state = AppConfig {
+                    generator: url_generator.clone(),
+                    pool: pool.clone(),
+                };
 
-        App::new()
-            .app_data(Data::new(state))
-            .app_data(Data::new(translations))
-            .wrap(Logger::default())
-            .wrap(SessionMiddleware::new(
-                CookieSessionStore::default(),
-                secret_key.clone(),
-            ))
-            .service(
-                scope("/auth")
+                let translations = aardwolf_templates::managed_state();
+
+                App::new()
+                    .app_data(Data::new(state))
+                    .app_data(Data::new(translations))
+                    .wrap(Logger::default())
+                    .wrap(SessionMiddleware::new(
+                        CookieSessionStore::default(),
+                        secret_key.clone(),
+                    ))
                     .service(
-                        resource("/sign_up")
-                            .route(get().to(self::routes::auth::sign_up_form))
-                            .route(post().to(self::routes::auth::sign_up)),
+                        scope("/auth")
+                            .service(
+                                resource("/sign_up")
+                                    .route(get().to(self::routes::auth::sign_up_form))
+                                    .route(post().to(self::routes::auth::sign_up)),
+                            )
+                            .service(
+                                resource("/sign_in")
+                                    .route(get().to(self::routes::auth::sign_in_form))
+                                    .route(post().to(self::routes::auth::sign_in)),
+                            )
+                            .service(resource("/confirmation").route(get().to(self::routes::auth::confirm)))
+                            .service(resource("/sign_out").route(get().to(self::routes::auth::sign_out))),
                     )
                     .service(
-                        resource("/sign_in")
-                            .route(get().to(self::routes::auth::sign_in_form))
-                            .route(post().to(self::routes::auth::sign_in)),
+                        scope("/posts")
+                            .service(resource("/create").route(post().to(self::routes::posts::create))),
                     )
-                    .service(resource("/confirmation").route(get().to(self::routes::auth::confirm)))
-                    .service(resource("/sign_out").route(get().to(self::routes::auth::sign_out))),
-            )
-            .service(
-                scope("/posts")
-                    .service(resource("/create").route(post().to(self::routes::posts::create))),
-            )
-            .service(
-                scope("/personas")
                     .service(
-                        resource("/create")
-                            .route(get().to(self::routes::personas::new))
-                            .route(post().to(self::routes::personas::create)),
+                        scope("/personas")
+                            .service(
+                                resource("/create")
+                                    .route(get().to(self::routes::personas::new))
+                                    .route(post().to(self::routes::personas::create)),
+                            )
+                            .service(resource("/delete").route(get().to(self::routes::personas::delete))),
                     )
-                    .service(resource("/delete").route(get().to(self::routes::personas::delete))),
-            )
-            .service(resource("/").route(get().to(self::routes::app::index)))
-            .service(Files::new("/web", assets.web()))
-            .service(Files::new("/images", assets.images()))
-            .service(Files::new("/themes", assets.themes()))
-            .service(Files::new("/emoji", assets.emoji()))
-            .service(Files::new("/stylesheets", assets.stylesheets()))
-    })
-    .bind(&listen_address)?
-    .run();
+                    .service(resource("/").route(get().to(self::routes::app::index)))
+                    .service(Files::new("/web", assets.web()))
+                    .service(Files::new("/images", assets.images()))
+                    .service(Files::new("/themes", assets.themes()))
+                    .service(Files::new("/emoji", assets.emoji()))
+                    .service(Files::new("/stylesheets", assets.stylesheets()))
+            })
+            .bind(&listen_address)?
+            .run()
+            .await
+        });
+    });
 
-    sys.run()?;
-
-    Ok(())
+    Ok(sys.run()?)
 }
