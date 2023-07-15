@@ -12,6 +12,7 @@ members = [
     "aardwolf-templates",
     "aardwolf-test-helpers",
     "aardwolf-types",
+    "aardwolf-yew",
 ]
 
 [features]
