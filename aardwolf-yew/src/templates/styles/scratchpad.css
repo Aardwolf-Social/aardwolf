@@ -18,14 +18,3 @@ hr.style-seven:before { /* Not really supposed to work, but does */
     border-width: 0 0 1px 0;
     border-radius: 10px;
 }
-
-footer {
-	text-align: center;
-  /* top | right | bottom | left */
-  padding: 0.5em 1em 2em 2em;
-}
-
-.footer-box {
-  /* top | right | bottom | left */
-  padding: 4px 1em 6px 2em;
-}
