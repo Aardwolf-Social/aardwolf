@@ -134,7 +134,7 @@ pub(crate) async fn sign_out((session, _user): (Session, SignedInUser)) -> HttpR
     session.remove("user_id");
 
     HttpResponse::SeeOther()
-        .header(LOCATION, "/auth/sign_in")
+        .append_header((LOCATION, "/auth/sign_in"))
         .finish()
 }
 
