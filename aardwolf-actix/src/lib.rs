@@ -239,4 +239,3 @@ pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
 
     Ok(sys.run()?)
 }
-
