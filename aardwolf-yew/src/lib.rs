@@ -2,7 +2,7 @@ use yew::prelude::*;
 use serde::{Serialize, Deserialize};
 
 // Pull in the template modules
-mod templates;
+pub mod templates;
 
 // Start using the template
 use templates::elements::main_title::MainTitle;
