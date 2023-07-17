@@ -5,7 +5,7 @@ use uuid::Uuid;
 use crate::{
     generate_urls::GenerateUrls,
     schema::base_actors,
-    sql_types::{FollowPolicy, Url},
+    sql_types::{FollowPolicy, Url,},
     user::UserLike,
 };
 
