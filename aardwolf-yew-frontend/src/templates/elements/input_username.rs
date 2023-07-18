@@ -2,8 +2,7 @@ use yew::prelude::*;
 
 #[function_component(InputUsername)]
 pub fn input_username() -> Html {
-
-    html!{
+    html! {
         <>
             <div class="field">
             <label class="label">{"Desired Username"}</label>

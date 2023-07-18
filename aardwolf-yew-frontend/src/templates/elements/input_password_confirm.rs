@@ -2,8 +2,7 @@ use yew::prelude::*;
 
 #[function_component(InputPasswordConfirm)]
 pub fn input_password_confirm() -> Html {
-
-    html!{
+    html! {
         <>
             <div class="field">
                 <label class="label">{"Confirm Password"}</label>
