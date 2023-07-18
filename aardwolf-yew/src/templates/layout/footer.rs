@@ -2,8 +2,7 @@ use yew::prelude::*;
 
 #[function_component(Footer)]
 pub fn footer() -> Html {
-
-    html!{
+    html! {
         <>
             <footer class="footer">
                 <div class="container">
@@ -14,7 +13,7 @@ pub fn footer() -> Html {
                     <span class="vertical-line" />
                     <a href="https://github.com/BanjoFox/aardwolf" class="footer-box"> {" Check us out on GitHub "}<i class="fa fa-github"></i>{"!"}</a>
                     <span class="vertical-line" />
-                    <a href="https://www.patreon.com/banjofox" class="footer-box">{" Buy the team a coffee "}<i class="fa fa-beer" aria-hidden="true"></i></a>		
+                    <a href="https://www.patreon.com/banjofox" class="footer-box">{" Buy the team a coffee "}<i class="fa fa-beer" aria-hidden="true"></i></a>
                 </div>
                 </div>
             </footer>

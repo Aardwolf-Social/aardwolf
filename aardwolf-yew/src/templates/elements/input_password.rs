@@ -2,8 +2,7 @@ use yew::prelude::*;
 
 #[function_component(InputPassword)]
 pub fn input_password() -> Html {
-
-    html!{
+    html! {
         <>
             <div class="field">
                 <label class="label">{"Password"}</label>

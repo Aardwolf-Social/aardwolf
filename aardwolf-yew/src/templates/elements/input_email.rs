@@ -2,8 +2,7 @@ use yew::prelude::*;
 
 #[function_component(InputEmail)]
 pub fn input_email() -> Html {
-
-    html!{
+    html! {
         <>
             <div class="field">
             <label class="label">{"Email Address"}</label>

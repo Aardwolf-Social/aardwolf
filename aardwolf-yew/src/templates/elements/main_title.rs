@@ -1,12 +1,16 @@
 use yew::prelude::*;
 
-#[function_component(MainTitle)]
-pub fn main_title() -> Html {
+#[derive(Properties, PartialEq)]
+pub struct PageTitleProps {
+    pub page_title: String,
+}
 
-    html!{
+#[function_component(PageTitle)]
+pub fn main_title(props: &PageTitleProps) -> Html {
+    html! {
         <>
             <head>
-                <title>{"Aardwolf Social | Sign Up"}</title>
+                <title>{&props.page_title}</title>
             </head>
         </>
     }
