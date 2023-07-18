@@ -43,12 +43,16 @@ body {
     border-left: 2px solid #000;
   }
   .footer {
-    padding: 0.5em 1em 2em 2em;
+    padding: 2rem 1rem 1.5rem 1rem;
     border-top: 1px solid #1e1c11;
-    text-align: center;
-    /* top | right | bottom | left */
   }
-.footer-box {
+  .footer-box {
+    /* top | right | bottom | left */
+    padding: 4px 1em 6px 2em;
+  }
+  
+footer {
+	text-align: center;
   /* top | right | bottom | left */
-  padding: 4px 1em 6px 2em;
+  padding: 0.5em 1em 2em 2em;
 }
