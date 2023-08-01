@@ -1,0 +1,35 @@
+name: Aardwolf-Social/aardwolf
+on:
+  push:
+    branches:
+    - "**/*"
+  pull_request:
+concurrency:
+#   # This item has no matching transformer
+#   maximum_number_of_builds: 0
+  group: "${{ github.ref }}"
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - uses: actions-rs/toolchain@v1.0.6
+      with:
+        toolchain: nightly
+    - run: cargo build --verbose
+    - run: echo "BEFORE SCRIPT"
+    - run: psql -c 'CREATE DATABASE aardwolf_testing;' -U postgres
+    - run: if which diesel; then echo "diesel already installed"; else cargo install diesel_cli --no-default-features --features=postgres; fi
+    - run: echo 'DATABASE_URL=postgres://postgres@localhost/aardwolf_testing' > .env
+    - run: echo 'TEST_DATABASE_URL=postgres://postgres@localhost/aardwolf_testing' >> .env
+    - run: pushd aardwolf-models
+    - run: diesel migration run
+    - run: popd
+    - run: echo "SCRIPT"
+    - run: cargo build --all --verbose
+    - run: cargo test --all --verbose
+    services:
+      postgresql:
+        image: postgres
