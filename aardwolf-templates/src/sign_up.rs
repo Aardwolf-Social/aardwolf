@@ -7,6 +7,7 @@ use gettext_macros::i18n;
 
 use crate::{Alert, AlertKind, InputEmail, InputPassword, Renderable};
 
+
 pub struct SignUp<'a> {
     pub(crate) catalog: &'a Catalog,
     pub(crate) csrf: &'a str,

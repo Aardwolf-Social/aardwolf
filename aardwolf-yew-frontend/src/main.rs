@@ -1,4 +1,4 @@
-use aardwolf_yew_app::Aardwolf;
+use aardwolf_yew_frontend::Aardwolf;
 
 fn main() {
     yew::Renderer::<Aardwolf>::new().render();

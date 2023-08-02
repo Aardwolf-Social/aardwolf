@@ -1,5 +1,5 @@
 [package]
-name = "aardwolf-yew-app"
+name = "aardwolf-yew-frontend"
 version = "0.1.0"
 edition = "2021"
 

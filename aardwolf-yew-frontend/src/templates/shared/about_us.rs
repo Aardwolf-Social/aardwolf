@@ -2,8 +2,7 @@ use yew::prelude::*;
 
 #[function_component(AboutUs)]
 pub fn about_us() -> Html {
-
-    html!{
+    html! {
         <>
             <div class="column is-mobile">
                 <h1 class="title">
