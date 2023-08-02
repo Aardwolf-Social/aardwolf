@@ -1,5 +1,4 @@
-use std::{env};
-
+use std::env;
 use anyhow::{Context, Result};
 use clap::Parser;
 use clap_verbosity_flag::Verbosity;
@@ -18,10 +17,7 @@ pub struct Args {
     verbose: Verbosity,
 }
 
-pub fn configure(args: Args) -> Result<Config> {
-    // Order of how configuration values are set:
-    // cli arguments > environment variables > config file > default values
-
+pub fn configure(parsed_args: Args) -> Result<Config> {
     // Set defaults
     let mut config = Config::default();
     config
@@ -38,25 +34,24 @@ pub fn configure(args: Args) -> Result<Config> {
         .context(ErrorKind::ConfigImmutable)?;
 
     // Determine config file
-    // TODO: Is there a better way to handle this?
-    if let Ok(c) = env::var("AARDWOLF_CONFIG") {
+    if let Ok(config_file) = env::var("AARDWOLF_CONFIG") {
         config
-            .set("cfg_file", c)
+            .set("cfg_file", config_file)
             .context(ErrorKind::ConfigImmutable)?;
     }
 
-    if let Some(c) = args.config {
+    if let Some(config_path) = parsed_args.config {
         config
-            .set("cfg_file", c.to_str())
+            .set("cfg_file", config_path.to_str())
             .context(ErrorKind::ConfigImmutable)?;
     }
 
-    // Merge config file and apply over-rides
-    let cfg_file_string = config
+    // Merge config file and apply overrides
+    let config_file_string = config
         .get_string("cfg_file")
         .context(ErrorKind::ConfigMissingKeys)?;
-    let cfg_file = config::File::with_name(&cfg_file_string);
-    config.merge(cfg_file).context(ErrorKind::ConfigImmutable)?;
+    let config_file = config::File::with_name(&config_file_string);
+    config.merge(config_file).context(ErrorKind::ConfigImmutable)?;
 
     // Apply environment variable overrides
     let env_vars = Environment::with_prefix("AARDWOLF")
@@ -67,19 +62,17 @@ pub fn configure(args: Args) -> Result<Config> {
     // Remove the need for a .env file to avoid defining env vars twice.
     env::set_var("DATABASE_URL", db_conn_string(&config)?);
 
-    if let Some(l) = args.log {
+    if let Some(log_path) = parsed_args.log {
         config
-            .set("Log.file", l.to_str())
+            .set("Log.file", log_path.to_str())
             .context(ErrorKind::ConfigImmutable)?;
     }
-
-    // TODO: Use verbosity setting from args
 
     Ok(config)
 }
 
 pub fn db_conn_string(config: &Config) -> Result<String> {
-    let keys = vec![
+    let keys = [
         "Database.type",
         "Database.username",
         "Database.password",
@@ -88,30 +81,17 @@ pub fn db_conn_string(config: &Config) -> Result<String> {
         "Database.database",
     ];
 
-    let (string_vec, error_vec) = keys.into_iter().map(|key| config.get_string(key)).fold(
-        (Vec::new(), Vec::new()),
-        |(mut string_vec, mut error_vec), res| {
-            match res {
-                Ok(string) => string_vec.push(string),
-                Err(error) => {
-                    if let ConfigError::NotFound(key) = error {
-                        error_vec.push(key);
-                    }
-                }
-            }
+    let string_vec: Vec<String> = keys
+        .iter()
+        .map(|key| config.get_string(key))
+        .collect::<Result<_, _>>()
+        .context(ErrorKind::ConfigMissingKeys)?;
 
-            (string_vec, error_vec)
-        },
-    );
-
-    if !error_vec.is_empty() {
-        return Err(ErrorKind::ConfigMissingKeys).context(MissingKeys(error_vec));
-    }
-
-    match string_vec[0].as_ref() {
-        "postgres" | "postgresql" => (),
-        _ => Err(ErrorKind::UnsupportedDbScheme)?,
-    }
+    match string_vec[0].as_str()
+        {
+            "postgres" | "postgresql" => (),
+            _ => Err(ErrorKind::UnsupportedDbScheme)?,
+        }
 
     Ok(format!(
         "{scheme}://{username}:{password}@{host}:{port}/{database}",
