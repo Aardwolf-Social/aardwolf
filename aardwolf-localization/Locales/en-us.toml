@@ -1,0 +1,102 @@
+# Project-Id-Version: aardwolf
+# Report-=-Bugs-To: 
+# POT-Creation-Date: 2018-06-15 16:33-0700
+# PO-Revision-Date: 2018-06-15 16:33-0700
+# Last-Translator: Automatically generated
+# Language-Team: none
+# Language: en
+# MIME-Version: 1.0
+# Content-Type: text/plain; charset=UTF-8
+# Content-Transfer-Encoding: 8bit
+# Plural-Forms: nplurals=2; plural=(n != 1);
+
+[display_name]
+# aardwolf-templates/src/first_login.rs:47
+# aardwolf-templates/src/first_login.rs:49
+display_name = "Display Name"
+
+# aardwolf-templates/src/first_login.rs:54
+display_name_empty ="Display name must not be empty"
+
+[username]
+# aardwolf-templates/src/first_login.rs:61
+username = "Username"
+
+# aardwolf-templates/src/first_login.rs:68
+username_empty = "Username must not be empty"
+
+# aardwolf-templates/src/first_login.rs:71
+username_special_characters = "Username must not contain special characters"
+
+# aardwolf-templates/src/first_login.rs:73
+username_too_long = "Username is too long"
+
+[followers]
+# aardwolf-templates/src/first_login.rs:79
+followers_policy = "Follow Policy"
+
+# aardwolf-templates/src/first_login.rs:84
+followers_auto_accept = "Automatically accept new followers"
+
+# aardwolf-templates/src/first_login.rs:88
+followers_auto_reject = "Automatically reject new followers"
+
+# aardwolf-templates/src/first_login.rs:92
+followers_manual_review = "Manually review new followers"
+
+[post_visibility]
+# aardwolf-templates/src/first_login.rs:99
+post_visibility = "Post Visibility"
+
+# aardwolf-templates/src/first_login.rs:104
+post_visibility_all = "Visible to everyone"
+
+# aardwolf-templates/src/first_login.rs:108
+post_visibility_followers = "Visible to followers"
+
+# aardwolf-templates/src/first_login.rs:112
+post_visibility_mutuals = "Visible to mutuals"
+
+# aardwolf-templates/src/first_login.rs:116
+post_visibility_direct = "Only visible to mentioned users"
+
+[profile]
+# aardwolf-templates/src/first_login.rs:124
+profile_searchable = "Allow people to search for this profile"
+
+# aardwolf-templates/src/sign_in.rs:38
+profile_email = "E-Mail Address"
+
+# aardwolf-templates/src/sign_in.rs:49
+profile_password = "Password"
+
+# aardwolf-templates/src/sign_up.rs:69
+profile_password_confirmation = "Password Confirmation"
+
+[error]
+# aardwolf-templates/src/sign_up.rs:33
+error_create_account = "There was an error creating your account"
+
+# aardwolf-templates/src/first_login.rs:40
+error_create_persona = "There was an error creating your persona"
+
+# aardwolf-templates/src/sign_in.rs:31
+error_login = "There was an error logging in"
+
+# aardwolf-templates/src/sign_in.rs:43
+error_email_empty = "Email cannot be empty"
+
+# aardwolf-templates/src/sign_up.rs:47
+error_email_invalid = "Invalid email address"
+
+# aardwolf-templates/src/sign_in.rs:54
+error_password_empty= "Password cannot be empty"
+
+# aardwolf-templates/src/sign_up.rs:62
+error_password_short= "Password is too short"
+
+# aardwolf-templates/src/sign_up.rs:74
+error_password_confirmation_empty = "Password confirmation cannot be empty"
+
+# aardwolf-templates/src/sign_up.rs:77
+error_passwords_dont_match= "Password confirmation must match password"
