@@ -35,6 +35,9 @@ syslog = { version = "6.1.0", optional = true }
 # features.
 systemd = { version = "0.10.0", optional = true }
 
+# Locale crate - Putting it here fixes "cannot find function `_rust_i18n_translate` in the crate root"
+rust-i18n = "2.1.0" # https://crates.io/crates/rust-i18n
+
 [dependencies.aardwolf-actix]
 version = "0.1"
 path = "aardwolf-actix"
@@ -42,7 +45,3 @@ optional = true
 
 [dependencies.config]
 version = "0.13"
-
-[dependencies.aardwolf-yew-frontend]
-# Locale crate
-rust-i18n = "2.1.0" # https://crates.io/crates/rust-i18n

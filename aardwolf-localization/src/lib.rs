@@ -1,14 +1,10 @@
-// Using direct import of i18n crate example
+// Load macro and init translations.
 // https://crates.io/crates/rust-i18n
 
-// You must import in each files when you wants use `t!` macro.
-use rust_i18n::t;
+// Load I18n macro, for allow you use `t!` macro in anywhere.
+#[macro_use]
+extern crate rust_i18n;
 
-rust_i18n::i18n!("locales");
-
-fn main() {
-    println!("{}", t!("hello"));
-
-    // Use `available_locales!` method to get all available locales.
-    println!("{:?}", rust_i18n::available_locales!());
-}
+// Config fallback missing translations to "en" locale.
+// Use `fallback` option to set fallback locale.
+i18n!("locales", fallback = "en-us");

@@ -14,7 +14,9 @@ log = {version = "0.4.6", features = ["std", "serde"]} # Also used by main app f
 wasm-logger = "0.2.0" # Using this instead of Gloo because we already use log
 serde = "1.0.164"
 serde_json = "1.0.102"
-ybc = "0.4.0" # YewBulmaCrate? - https://crates.io/crates/ybc
 
-# Locale crate
-rust-i18n = "2.1.0" # https://crates.io/crates/rust-i18n
+rust-i18n = "2.1.0"
+
+[dependencies.aardwolf-localization]
+version = "0.1"
+path = "../aardwolf-localization"
