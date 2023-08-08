@@ -1,7 +1,7 @@
 [package]
 name = "aardwolf"
 version = "0.1.0"
-authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Elijah Mark Anderson <kd0bpv@gmail.com>", "Paul Woolcock <paul@woolcock.us>", "asonix <asonix@asonix.dog>"]
+authors = ["Banjo Fox <drbanjofox@protonmail.com>","Elijah Mark Anderson <kd0bpv@gmail.com>", "Paul Woolcock <paul@woolcock.us>", "asonix <asonix@asonix.dog>"]
 description = "Powering connected social communities with free software."
 edition = "2021"
 
@@ -13,7 +13,7 @@ members = [
     "aardwolf-templates",
     "aardwolf-test-helpers",
     "aardwolf-types",
-    "aardwolf-yew-frontend",
+    "aardwolf-yew-frontend"
 ]
 
 [features]
