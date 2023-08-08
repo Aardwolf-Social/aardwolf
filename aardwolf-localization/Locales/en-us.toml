@@ -90,13 +90,20 @@ error_email_empty = "Email cannot be empty"
 error_email_invalid = "Invalid email address"
 
 # aardwolf-templates/src/sign_in.rs:54
-error_password_empty= "Password cannot be empty"
+error_password_empty = "Password cannot be empty"
 
 # aardwolf-templates/src/sign_up.rs:62
-error_password_short= "Password is too short"
+error_password_short = "Password is too short"
 
 # aardwolf-templates/src/sign_up.rs:74
 error_password_confirmation_empty = "Password confirmation cannot be empty"
 
 # aardwolf-templates/src/sign_up.rs:77
-error_passwords_dont_match= "Password confirmation must match password"
+error_passwords_dont_match = "Password confirmation must match password"
+
+
+[about_us]
+aardwolf_summary = "Aardwolf is a platform for creating new social networks, connected across the web. While existing social media sites work to funnel the world into a single shared experience (and advertising marketplace), we recognize that we are all individuals with different identities and interests."
+about_aardwolf_subtitle = "This is who we are!"
+about_aardwolf_title = "About Aardwolf"
+about_aardwolf_text = "Each server hosts it's own community of users who are posting, sharing pictures, links, etc. They are replying and liking each other's posts, and re-sharing the ones they like best."

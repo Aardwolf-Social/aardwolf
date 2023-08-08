@@ -8,6 +8,7 @@ edition = "2021"
 [workspace]
 members = [
     "aardwolf-actix",
+    "aardwolf-localization",
     "aardwolf-models",
     "aardwolf-templates",
     "aardwolf-test-helpers",
@@ -41,3 +42,7 @@ optional = true
 
 [dependencies.config]
 version = "0.13"
+
+[dependencies.aardwolf-yew-frontend]
+# Locale crate
+rust-i18n = "2.1.0" # https://crates.io/crates/rust-i18n
