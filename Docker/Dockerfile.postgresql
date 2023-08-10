@@ -1,0 +1,5 @@
+FROM postgres:latest
+
+RUN psql -c "CREATE DATABASE aardwolf;"
+RUN psql -c "CREATE USER aardwolf WITH PASSWORD 'p4ssw0rd'"
+RUN psql -c "GRANT ALL PRIVILEGES ON DATABASE aardwolf TO aardwolf;"
