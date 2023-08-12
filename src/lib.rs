@@ -34,32 +34,30 @@ pub fn configure(parsed_args: Args) -> Result<Config> {
         .context(ErrorKind::ConfigImmutable)?;
 
     // Determine config file
-    let config_file = env::var("AARDWOLF_CONFIG").unwrap();
+    let config_path = parsed_args.config.unwrap();
+    let config_file = config_path.to_str().unwrap();
+
     builder = builder
-        .set_override("cfg_file", config_file.clone())
+        .set_override("cfg_file", config_file)
         .context(ErrorKind::ConfigImmutable)?;
 
-    builder = builder.add_source(File::new(&config_file, FileFormat::Json)); // Or whatever format
+    builder = builder.add_source(File::new(config_file, FileFormat::Toml)); // Or whatever format
 
-    let config_path = parsed_args.config.unwrap();
         builder = builder
-            .set_override("cfg_file", config_path.to_str())
+            .set_override("cfg_file", config_file)
             .context(ErrorKind::ConfigImmutable)?;
-    //}
 
     // Apply environmenet variable overrides
     let env_vars = Environment::with_prefix("AARDWOLF")
         .separator("_")
         .ignore_empty(true);
     builder = builder.add_source(env_vars);
-//
+
     let log_path = parsed_args.log.unwrap(); 
     builder = builder
         .set_override("Log.file", log_path.to_str())
         .context(ErrorKind::ConfigImmutable)?;
     
-    //Err(ErrorKind::ConfigImmutable.into())
-
     match builder.build() {
         Ok(config) => {
             env::set_var("DATABASE_URL", db_conn_string(&config)?);
@@ -70,18 +68,6 @@ pub fn configure(parsed_args: Args) -> Result<Config> {
             return Err(e.into());
         }
     }
-
-    // Merge config file and apply overrides
-    //let config_file_string = config
-    //    .get_string("cfg_file")
-    //    .context(ErrorKind::ConfigMissingKeys)?;
-    //let config_file = config::File::with_name(&config_file_string);
-    //config.merge(config_file).context(ErrorKind::ConfigImmutable)?;
-
-    // Apply environment variable overrides
-
-    // Remove the need for a .env file to avoid defining env vars twice.
-
 }
 
 pub fn db_conn_string(config: &Config) -> Result<String> {
