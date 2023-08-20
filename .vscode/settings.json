@@ -1,5 +1,10 @@
 {
     "rust-analyzer.linkedProjects": [
+        "./aardwolf-actix/Cargo.toml",
         "./aardwolf-models/Cargo.toml",
+        "./aardwolf-templates/Cargo.toml",
+        "./aardwolf-test-helpers/Cargo.toml",
+        "./aardwolf-types/Cargo.toml",
+        ".aardwolf-yew-frontend/Cargo.toml",
     ]
 }
