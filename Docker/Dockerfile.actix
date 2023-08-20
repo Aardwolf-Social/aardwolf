@@ -1,0 +1,6 @@
+FROM rust:bookworm-slim
+
+RUN apt-get --yes update && apt-get --yes install curl git pkg-config libssl-dev
+RUN cargo install cargo-watch
+RUN rustup component add clippy-preview
+RUN rustup component add rustfmt
