@@ -45,6 +45,3 @@ optional = true
 
 [dependencies.config]
 version = "0.13"
-
-[dependencies.diesel]
-version = "0.3"

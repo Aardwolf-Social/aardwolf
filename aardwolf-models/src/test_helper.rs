@@ -3,7 +3,7 @@ use std::env;
 use chrono::{offset::Utc, DateTime, Duration as OldDuration};
 use chrono_tz::Tz;
 use diesel::{pg::PgConnection, Connection};
-use dotenv::dotenv;
+use dotenvy::dotenv;
 use mime::TEXT_PLAIN;
 use openssl::rsa::Rsa;
 use rand::{distributions::Alphanumeric, rngs::OsRng, Rng};

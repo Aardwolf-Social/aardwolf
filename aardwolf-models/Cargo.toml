@@ -22,6 +22,7 @@ thiserror = "1.0"
 url = "2.1"
 dotenvy ="0.15"
 
+
 [dependencies.uuid]
 version = "1.3"
 features = ["v4"]
