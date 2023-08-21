@@ -1,0 +1,67 @@
+name: Aardwolf-Social/aardwolf
+on:
+  push:
+    branches:
+      - "**/*"
+  pull_request:
+
+concurrency:
+  group: "${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+ 
+  Test-Aardwolf-Build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: checkout
+        uses: actions/checkout@v3.5.3
+        # Installs the most recent stable rust toolchain as of the specified time
+        # offset, which may be written in years, months, weeks, or days.
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+
+      - name: Start PostgreSQL
+        run: |
+          sudo systemctl enable postgresql.service
+          sudo systemctl start postgresql.service
+          
+      # Create the aardwolf database
+      - name: Create database
+        run: |
+          cd ~postgres/
+          sudo -u postgres psql -c 'CREATE DATABASE aardwolf_testing;'
+      # Create the aardwolf database user
+      - name: Create database user
+        run: | 
+          cd ~postgres/
+          sudo sudo netstat -plunt |grep postgres
+          sudo -u postgres psql -c "CREATE USER aardwolf_user WITH PASSWORD 'changeme';"
+          sudo -u postgres psql -c "grant all privileges on database aardwolf_testing to aardwolf_user;"
+      # Set up environment variables for database URLs
+      - name: Set up environment variables
+        run: |
+          echo "DATABASE_URL=postgresql://aardwolf_user:changeme@127.0.0.1:5432/aardwolf_testing" > "$GITHUB_ENV"
+          echo "TEST_DATABASE_URL=postgresql://aardwolf_user:changeme@127.0.0.1:5432/aardwolf_testing" >> "$GITHUB_ENV"
+      # Install diesel CLI if not already installed
+      - name: Check diesel installation
+        run: if which diesel; then echo "diesel already installed"; else cargo install diesel_cli --no-default-features --features=postgres; fi
+
+      # Set up diesel CLI
+      - name: Set up diesel CLI
+        run: diesel setup
+
+      # Push the aardwolf-models directory, and run migrations
+      - run: |
+          pushd aardwolf-models
+          diesel migration run
+          popd
+      - name: Cargo build aardwolf
+        run: cargo build --all --verbose
+
+      - name: Cargo test aardwolf  
+        run: cargo test --all --verbose
