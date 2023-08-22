@@ -1,10 +1,12 @@
-name: Aardwolf-Social/build
+---
+name: Build
 on:
   push:
     branches:
-      - "**/*"
+      - "*"
   pull_request:
-  workflow_call:
+    branches:
+      - main
 
 concurrency:
   group: "${{ github.ref }}"
@@ -12,12 +14,12 @@ concurrency:
 
 jobs:
  
-  Aardwolf-Build:
+  cargo-build:
     runs-on: ubuntu-latest
 
     steps:
 
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v3.5.3
         # Installs the most recent stable rust toolchain as of the specified time
         # offset, which may be written in years, months, weeks, or days.
