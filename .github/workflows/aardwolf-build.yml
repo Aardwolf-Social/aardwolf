@@ -1,4 +1,4 @@
-name: Aardwolf-Social/aardwolf
+name: Aardwolf-Social/build
 on:
   push:
     branches:
@@ -57,9 +57,6 @@ jobs:
           diesel migration run
           popd
 
-      # Build and test    
+      # Run cargo build
       - name: Cargo build aardwolf
         run: cargo build --all --verbose
-
-      - name: Cargo test aardwolf  
-        run: cargo test --all --verbose
