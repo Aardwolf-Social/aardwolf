@@ -51,15 +51,13 @@ jobs:
       - name: Check diesel installation
         run: if which diesel; then echo "diesel already installed"; else cargo install diesel_cli --no-default-features --features=postgres; fi
 
-      # Set up diesel CLI
-      - name: Set up diesel CLI
-        run: diesel setup
-
       # Push the aardwolf-models directory, and run migrations
       - run: |
           pushd aardwolf-models
           diesel migration run
           popd
+
+      # Build and test    
       - name: Cargo build aardwolf
         run: cargo build --all --verbose
 
