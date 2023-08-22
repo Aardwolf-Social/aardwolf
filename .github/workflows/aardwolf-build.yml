@@ -4,6 +4,7 @@ on:
     branches:
       - "**/*"
   pull_request:
+  workflow_call:
 
 concurrency:
   group: "${{ github.ref }}"
@@ -11,7 +12,7 @@ concurrency:
 
 jobs:
  
-  Test-Aardwolf-Build:
+  Aardwolf-Build:
     runs-on: ubuntu-latest
 
     steps:

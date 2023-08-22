@@ -1,8 +1,9 @@
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
-[![Docker Image CI](https://github.com/Aardwolf-Social/aardwolf/actions/workflows/docker.yml/badge.svg)](https://github.com/Aardwolf-Social/aardwolf/actions/workflows/docker.yml)
-[![rust-clippy analyze](https://github.com/Aardwolf-Social/aardwolf/actions/workflows/rust-clippy.yml/badge.svg)](https://github.com/Aardwolf-Social/aardwolf/actions/workflows/rust-clippy.yml)
+[![Aardwolf-Social/build](https://github.com/Aardwolf-Social/aardwolf/actions/workflows/aardwolf-build.yml/badge.svg)](https://github.com/Aardwolf-Social/aardwolf/actions/workflows/aardwolf-build.yml)
+[![Aardwolf-Social/test](https://github.com/Aardwolf-Social/aardwolf/actions/workflows/aardwolf-test.yml/badge.svg)](https://github.com/Aardwolf-Social/aardwolf/actions/workflows/aardwolf-test.yml)
 ![GitHub issues](https://img.shields.io/github/issues/Aardwolf-Social/aardwolf)
-[![Aardwolf-Social | Tests](https://github.com/Aardwolf-Social/aardwolf/actions/workflows/aardwolf.yml/badge.svg)](https://github.com/Aardwolf-Social/aardwolf/actions/workflows/aardwolf.yml)
+[![rust-clippy analyze](https://github.com/Aardwolf-Social/aardwolf/actions/workflows/rust-clippy.yml/badge.svg)](https://github.com/Aardwolf-Social/aardwolf/actions/workflows/rust-clippy.yml)
+[![Docker Image CI](https://github.com/Aardwolf-Social/aardwolf/actions/workflows/docker.yml/badge.svg)](https://github.com/Aardwolf-Social/aardwolf/actions/workflows/docker.yml)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
 
 # Aardwolf
 
