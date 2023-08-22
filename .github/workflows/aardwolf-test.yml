@@ -1,18 +1,17 @@
 name: Aardwolf-Social/test
 on:
   workflow_run:
-    workflows: ["Aardwolf-Social/build"]
-    branches: 
-      - "**/*"
-    types: 
+    workflows:
+      - Aardwolf-Social/build
+    types:
       - completed
 
 jobs:
  
-  Test-Aardwolf-Build:
+  Aardwolf-Test:
     runs-on: ubuntu-latest
-
     steps:
-
-      - name: Cargo test aardwolf  
-        run: cargo test --all --verbose
+    - uses: ./.github/workflows/aardwolf-build.yml
+  
+    - name: Cargo test aardwolf  
+      run: cargo test --all --verbose
