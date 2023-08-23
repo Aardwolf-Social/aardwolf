@@ -27,6 +27,12 @@ jobs:
         with:
           toolchain: stable
           components: rustfmt, clippy
+      - name: Cache dependencies
+        uses: actions/cache@v3.3.1
+        with:
+          path: ~/.cargo
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
 
       - name: Start PostgreSQL
         run: |
@@ -62,4 +68,4 @@ jobs:
 
       # Run cargo build
       - name: Cargo build aardwolf
-        run: cargo build --all --verbose
+        run: cargo build --release

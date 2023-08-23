@@ -18,6 +18,15 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_branch }}     
   
+      # Cache dependencies
+      - name: Cache dependencies
+        uses: actions/cache@v3.3.1
+        with:
+          path: ~/.cargo
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+  
       # Run cargo test
       - name: Cargo test Aardwolf  
         run: cargo test --all --verbose
