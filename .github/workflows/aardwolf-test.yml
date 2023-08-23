@@ -13,5 +13,11 @@ jobs:
     name: Cargo Test
     runs-on: ubuntu-latest
     steps:
+      # Checkout the originating  branch 
+      - uses: actions/checkout@v3.5.3
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}     
+  
+      # Run cargo test
       - name: Cargo test Aardwolf  
         run: cargo test --all --verbose
