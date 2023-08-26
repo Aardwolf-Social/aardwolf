@@ -12,9 +12,9 @@
 
 
 ### About
-Aardwolf is a platform for creating new social networks, connected across the web. While existing social media sites work to funnel the world into a single shared experience (and advertising marketplace), we recognize that we are all individuals with different identities and interests. 
+Aardwolf is a social networking app which aims to provide the features of Facebook while respecting user privacy. Unlike mainstream social media sites that work to funnel the world into a single (advertising-filled) shared experience, we recognize that individuals with different identities and interests.  
 
-Our vision is to create a social-networking platform that mirrors the functionality of Facebook while also considering the needs of the community.  We hope to be one of many federated applications working towards a better, friendlier, social Internet.
+Our vision is to create a social-networking platform that is easy to mirrors the functionality of Facebook while also considering the needs of the community.  We hope to be one of many federated applications working towards a better, friendlier, social Internet.
 
 ###  Contributing
 As a COMMUNITY it is very important to us that we maintain a positive and supportive environment for everyone who wants to participate. When you join us we ask that you follow our [code of conduct](/CODE_OF_CONDUCT.md) in all interactions both on and offline.
