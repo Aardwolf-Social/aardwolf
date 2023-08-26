@@ -7,9 +7,11 @@ Please do not hesitate to ask questions, or volunteer for things that you might 
 Also checkout the [Developer Documentation](/doc/development) for more information on specific development targets.
 
 --------
-## Goals
-- Immediate: Update code-base to a working state
-- Immediate: Finalize UI-framework decision (Yew vs. Slint vs. Leptos)
+## Definitions
+* Minimum Viable Product (MVP) - Aardwolf fully runs in a development envrionment, and basic functionality works.
+* Alpha Release - All primary features added. Buggy.
+* Beta Release - Primary features are well tested, fewer bugs.
+* Stable Release - Minimal bugs, able to run without full dev environment.
 
 ## Requirements for Minimum Viable Product
 * Basic user profile
