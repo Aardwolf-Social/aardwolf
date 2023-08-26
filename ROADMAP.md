@@ -18,7 +18,7 @@ Also checkout the [Developer Documentation](/doc/development) for more informati
 - Create a basic set templates for web interface
 
 ## Requirements for Alpha-build
-- ActivityPub implementation, or similar federation.
+- Veilid networking implementation
 
 ## Stretch Goals for Alpha
 - UI Accessibility - [Web Accessibility Evaluation Tool (WAVE)](http://wave.webaim.org/))
@@ -33,4 +33,3 @@ Also checkout the [Developer Documentation](/doc/development) for more informati
 ## Other items under consideration
 - End-to-End Encryption
 - IP FileSystem for file sharing (?)
-- Can Veilid help?
