@@ -12,10 +12,21 @@ Also checkout the [Developer Documentation](/doc/development) for more informati
 - Immediate: Finalize UI-framework decision (Yew vs. Slint vs. Leptos)
 
 ## Requirements for Minimum Viable Product
-- Web-interface that uses language/locales as started in a-i18n-langages branch
-- Basic user profiles
-- Create a useable local timeline
-- Create a basic set templates for web interface
+* Basic user profile
+	* User can provide a:
+		* Name
+		* Avatar (jpg or png)
+        * A short, optional, Bio
+* Useable local timeline
+	* User can create a new post, containing
+		* Text up to 1000 characters
+		* One image (jpg or png)
+	* User can reply to an existing post
+	* User can Favorite/Unfavorite a post
+	* User can boost a post
+		* Boost/Repost
+    * User can Subject Line a topic (SL)
+        * SL's can fold/unfold    
 
 ## Requirements for Alpha-build
 - Veilid networking implementation
