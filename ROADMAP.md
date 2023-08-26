@@ -30,8 +30,10 @@ Also checkout the [Developer Documentation](/doc/development) for more informati
 
 ## Requirements for Alpha-build
 - Veilid networking implementation
+- Improved documentation
+- Basic packging
 
-## Stretch Goals for Alpha
+## Stretch Goals for Alpha (Future stable requirements)
 - UI Accessibility - [Web Accessibility Evaluation Tool (WAVE)](http://wave.webaim.org/))
 - Color scheme (colorblind- and low-vision-friendly). [Contrast Checker](https://webaim.org/resources/contrastchecker/)
 - Clarify and beautify Github documentation. [Github's Markdown Guide](https://guides.github.com/features/mastering-markdown/)
