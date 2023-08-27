@@ -41,6 +41,13 @@ Unlike mainstream social media sites that funnel the world into a single (advert
 * SECURITY.md -- Future info for security updates
 * translations -> aardwolf-templates/translations
 
+## Homepage Screenshot
+This is a screenshot of the static HTML demo.  While not a final version it does showcase the design intentions.
+
+<p align="center">
+  <img alt="Aardwolf Social: Powering connected social communities with open software" src="/doc/images/homepage-demo.png" />
+</p>
+
 ###  Code of Conduct
 As a COMMUNITY it is very important to us that we maintain a positive and supportive environment for everyone who wants to participate. When you join us we ask that you follow our [code of conduct](/CODE_OF_CONDUCT.md) in all interactions both on and offline.
 
