@@ -7,9 +7,8 @@
 # Aardwolf
 
 <p align="center">
-  <img alt="Aardwolf Social: Powering connected social communities with open software" src="/doc/images/aardwolf-banner_solid-bg.png />
+  <img alt="Aardwolf Social: Powering connected social communities with open software" src="/doc/images/aardwolf-banner_solid-bg.png" />
 </p>
-
 
 ### About
 Unlike mainstream social media sites that funnel the world into a single (advertising-filled) shared experience, we recognize that individuals with different identities and interests.  Aardwolf is a free, and open-source alternative to Facebook which respects user privacy.  Aardwolf servers (also called instances) are able to be customized to fit your community's needs, while still being able to communicate to one another.
