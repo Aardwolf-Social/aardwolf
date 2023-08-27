@@ -7,20 +7,35 @@ Please do not hesitate to ask questions, or volunteer for things that you might 
 Also checkout the [Developer Documentation](/doc/development) for more information on specific development targets.
 
 --------
-## Goals
-- Immediate: Update code-base to a working state
-- Immediate: Finalize UI-framework decision (Yew vs. Slint vs. Leptos)
+## Definitions
+* Minimum Viable Product (MVP) - Aardwolf fully runs in a development envrionment, and basic functionality works.
+* Alpha Release - All primary features added. Buggy.
+* Beta Release - Primary features are well tested, fewer bugs.
+* Stable Release - Minimal bugs, able to run without full dev environment.
 
 ## Requirements for Minimum Viable Product
-- Web-interface that uses language/locales as started in a-i18n-langages branch
-- Basic user profiles
-- Create a useable local timeline
-- Create a basic set templates for web interface
+- [ ] Basic user profile
+	- [ ] User can provide a:
+		- [ ] Name
+		- [ ] Avatar (jpg or png)
+        - [ ] A short, optional, Bio
+- [ ] Useable local timeline
+	- [ ] User can create a new post, containing
+		- [ ] Text up to 1000 characters
+		- [ ] One image (jpg or png)
+	- [ ] User can reply to an existing post
+	- [ ] User can Favorite/Unfavorite a post
+	- [ ] User can boost a post
+		- [ ] Boost/Repost
+    - [ ] User can Subject Line a topic (SL)
+        - [ ] SL's can fold/unfold    
 
 ## Requirements for Alpha-build
-- ActivityPub implementation, or similar federation.
+- Veilid networking implementation
+- Improved documentation
+- Basic packging
 
-## Stretch Goals for Alpha
+## Stretch Goals for Alpha (Future stable requirements)
 - UI Accessibility - [Web Accessibility Evaluation Tool (WAVE)](http://wave.webaim.org/))
 - Color scheme (colorblind- and low-vision-friendly). [Contrast Checker](https://webaim.org/resources/contrastchecker/)
 - Clarify and beautify Github documentation. [Github's Markdown Guide](https://guides.github.com/features/mastering-markdown/)
@@ -33,4 +48,3 @@ Also checkout the [Developer Documentation](/doc/development) for more informati
 ## Other items under consideration
 - End-to-End Encryption
 - IP FileSystem for file sharing (?)
-- Can Veilid help?
