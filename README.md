@@ -7,7 +7,7 @@
 # Aardwolf
 
 <p align="center">
-  <img alt="Aardwolf Social: Powering connected social communities with open software" src="/doc/images/aardwolf_banner_small.png/">
+  <img alt="Aardwolf Social: Powering connected social communities with open software" src="/doc/images/aardwolf-banner_solid-bg.png />
 </p>
 
 
@@ -15,6 +15,14 @@
 Aardwolf is a social networking app which aims to provide the features of Facebook while respecting user privacy. Unlike mainstream social media sites that work to funnel the world into a single (advertising-filled) shared experience, we recognize that individuals with different identities and interests.  
 
 Our vision is to create a social-networking platform that is easy to mirrors the functionality of Facebook while also considering the needs of the community.  We hope to be one of many federated applications working towards a better, friendlier, social Internet.
+
+### Homepage Screenshot
+This is a screenshot from the static HTML demonstration/proof-of-concept page.
+
+<p align="center">
+  <img alt="Aardwolf Social: Powering connected social communities with open software" src="/doc/images/homepage-demo.png />
+</p>
+
 
 ###  Contributing
 As a COMMUNITY it is very important to us that we maintain a positive and supportive environment for everyone who wants to participate. When you join us we ask that you follow our [code of conduct](/CODE_OF_CONDUCT.md) in all interactions both on and offline.
