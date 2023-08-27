@@ -38,13 +38,13 @@ git clone https://github.com/aardwolf/aardwolf
 
 # Create the aardwolf database
 echo "Creating the aardwolf database..."
-sudo -u postgres psql -c "CREATE DATABASE aardwolf;"
-sudo -u postgres psql -c "CREATE DATABASE aardwolf_testing;"
+DB_NAME=aardwolf
+DB_USER=aardwolf_user
+DB_PASS=changeme
 
-# Create the aardwolf database user
-echo "Creating the aardwolf database user..."
-sudo -u postgres psql -c "CREATE USER aardwolf_user WITH PASSWORD 'changeme';"
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE aardwolf TO aardwolf_user;"
+sudo -u postgres psql -c "CREATE DATABASE $DB_NAME;"
+sudo -u postgres psql -c "CREATE DATABASE ${DB_NAME}_testing;"
+sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE aardwolf_testing TO aardwolf_user;"
 
 # Set up environment variables for database URLs

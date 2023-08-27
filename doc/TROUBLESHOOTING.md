@@ -39,7 +39,7 @@ error: could not compile `aardwolf` (bin "aardwolf-server" test) due to previous
 **Resolution:**
 The key here after the wall of text --> `note: ld: library not found for -lpq`. The `lpq` package is normally installed as part of PostgreSQL (Lib PQ)
 
-Debian/Ubunutu: `apt install libpq-dev`
+Debian/Ubuntu: `apt install libpq-dev`
 Mac OS (Homebrew):
 - Option 1: Install complete Postgres: `brew install postgres`
 - Option 2: Install the libpq library only, and use `RUSTFLAGS="-L /usr/local/opt/libpq/lib" cargo [command] [package-name]`
