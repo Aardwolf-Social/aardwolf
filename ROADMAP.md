@@ -14,21 +14,21 @@ Also checkout the [Developer Documentation](/doc/development) for more informati
 * Stable Release - Minimal bugs, able to run without full dev environment.
 
 ## Requirements for Minimum Viable Product
-* Basic user profile
-	* User can provide a:
-		* Name
-		* Avatar (jpg or png)
-        * A short, optional, Bio
-* Useable local timeline
-	* User can create a new post, containing
-		* Text up to 1000 characters
-		* One image (jpg or png)
-	* User can reply to an existing post
-	* User can Favorite/Unfavorite a post
-	* User can boost a post
-		* Boost/Repost
-    * User can Subject Line a topic (SL)
-        * SL's can fold/unfold    
+- [ ] Basic user profile
+	- [ ] User can provide a:
+		- [ ] Name
+		- [ ] Avatar (jpg or png)
+        - [ ] A short, optional, Bio
+- [ ] Useable local timeline
+	- [ ] User can create a new post, containing
+		- [ ] Text up to 1000 characters
+		- [ ] One image (jpg or png)
+	- [ ] User can reply to an existing post
+	- [ ] User can Favorite/Unfavorite a post
+	- [ ] User can boost a post
+		- [ ] Boost/Repost
+    - [ ] User can Subject Line a topic (SL)
+        - [ ] SL's can fold/unfold    
 
 ## Requirements for Alpha-build
 - Veilid networking implementation
