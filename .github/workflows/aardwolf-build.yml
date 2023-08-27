@@ -38,34 +38,34 @@ jobs:
         run: |
           sudo systemctl enable postgresql.service
           sudo systemctl start postgresql.service
-          
-      # Create the aardwolf database
+
+# Create the aardwolf database
       - name: Create database
         run: |
           cd ~postgres/
           sudo -u postgres psql -c 'CREATE DATABASE aardwolf_testing;'
-      # Create the aardwolf database user
+# Create the aardwolf database user
       - name: Create database user
-        run: | 
+        run: |
           cd ~postgres/
           sudo sudo netstat -plunt |grep postgres
           sudo -u postgres psql -c "CREATE USER aardwolf_user WITH PASSWORD 'changeme';"
           sudo -u postgres psql -c "grant all privileges on database aardwolf_testing to aardwolf_user;"
-      # Set up environment variables for database URLs
+# Set up environment variables for database URLs
       - name: Set up environment variables
         run: |
           echo "DATABASE_URL=postgresql://aardwolf_user:changeme@127.0.0.1:5432/aardwolf_testing" > "$GITHUB_ENV"
           echo "TEST_DATABASE_URL=postgresql://aardwolf_user:changeme@127.0.0.1:5432/aardwolf_testing" >> "$GITHUB_ENV"
-      # Install diesel CLI if not already installed
+# Install diesel CLI if not already installed
       - name: Check diesel installation
         run: if which diesel; then echo "diesel already installed"; else cargo install diesel_cli --no-default-features --features=postgres; fi
 
-      # Push the aardwolf-models directory, and run migrations
+# Push the aardwolf-models directory, and run migrations
       - run: |
           pushd aardwolf-models
           diesel migration run
           popd
 
-      # Run cargo build
+# Run cargo build
       - name: Cargo build aardwolf
-        run: cargo build --release
+        run: cargo build
