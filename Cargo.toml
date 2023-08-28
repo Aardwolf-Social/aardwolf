@@ -19,6 +19,8 @@ members = [
 [features]
 default = ["simple-logging", "actix"]
 actix = ["aardwolf-actix"]
+log-syslog = []
+log-systemd = []
 
 [dependencies]
 anyhow = "1.0"
