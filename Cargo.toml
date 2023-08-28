@@ -1,18 +1,19 @@
 [package]
 name = "aardwolf"
 version = "0.1.0"
-authors = ["Eric Chadbourne <sillystring@protonmail.com>", "Elijah Mark Anderson <kd0bpv@gmail.com>", "Paul Woolcock <paul@woolcock.us>", "asonix <asonix@asonix.dog>"]
+authors = ["Banjo Fox <drbanjofox@protonmail.com>","Elijah Mark Anderson <kd0bpv@gmail.com>", "Paul Woolcock <paul@woolcock.us>", "asonix <asonix@asonix.dog>"]
 description = "Powering connected social communities with free software."
 edition = "2021"
 
 [workspace]
 members = [
     "aardwolf-actix",
+    "aardwolf-localization",
     "aardwolf-models",
     "aardwolf-templates",
     "aardwolf-test-helpers",
     "aardwolf-types",
-    "aardwolf-yew-frontend",
+    "aardwolf-yew-frontend"
 ]
 
 [features]
@@ -33,6 +34,9 @@ syslog = { version = "6.1.0", optional = true }
 # Integrate with Systemd, includes Journald for logging. Conflicts with log-*
 # features.
 systemd = { version = "0.10.0", optional = true }
+
+# Locale crate - Putting it here fixes "cannot find function `_rust_i18n_translate` in the crate root"
+rust-i18n = "2.1.0" # https://crates.io/crates/rust-i18n
 
 [dependencies.aardwolf-actix]
 version = "0.1"
