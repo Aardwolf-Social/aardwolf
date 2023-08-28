@@ -7,6 +7,7 @@ use config::{Config, Environment, File, FileFormat};
 use log::LevelFilter;
 use std::path::PathBuf;
 
+/// Command line arguments struct
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Args {
@@ -20,6 +21,7 @@ pub struct Args {
     verbose: Verbosity,
 }
 
+/// Configures the application using the parsed command line arguments
 pub fn configure(parsed_args: Args) -> Result<Config> {
     // Set defaults
     let mut builder = Config::builder()
@@ -62,12 +64,14 @@ pub fn configure(parsed_args: Args) -> Result<Config> {
     }
 }
 
+/// Creates an override configuration with the provided config file
 fn create_override_config(config_file: &str) -> Result<Config> {
     let mut overrides = Config::default();
     overrides.set("cfg_file", config_file)?;
     Ok(overrides)
 }
 
+/// Generates a database connection string based on the provided config
 pub fn db_conn_string(config: &Config) -> Result<String> {
     let keys = [
         "Database.type",
@@ -89,29 +93,27 @@ pub fn db_conn_string(config: &Config) -> Result<String> {
         Err(ErrorKind::UnsupportedDbScheme)?;
     }
 
-    Ok(concat!(
-        string_vec[0], "://", string_vec[1], ":", string_vec[2], "@
-        string_vec[0], "://", string_vec[1], ":", string_vec[2], "@", string_vec[3], ":", string_vec[4], "/", string_vec[5],
-    ).to_string())
+    Ok(format!("{}://{}:{}@{}:{}/{}", string_vec[0], string_vec[1], string_vec[2], string_vec[3], string_vec[4], string_vec[5]))
 }
 
 #[cfg(feature = "simple-logging")]
+/// Begins logging based on the provided config and log level
 pub fn begin_log(config: &config::Config, level: LevelFilter) -> Result<(), Box<dyn std::error::Error>> {
-    match config.get_string("Log.file")?.as_ref() {
-        "_CONSOLE_" => Ok(()),
-        l => {
-            simple_logging::log_to_file(l, level)?;
-            Ok(())
-        },
+    let log_file = config.get_string("Log.file")?;
+    if log_file != "_CONSOLE_" {
+    simple_logging::log_to_file(&log_file, level)?;
     }
+    Ok(())
 }
 
 #[cfg(feature = "syslog")]
+/// TODO: Implement log-syslog:begin_log()
 pub fn begin_log(config: &config::Config) {
     // TODO: Implement log-syslog:begin_log()
 }
 
 #[cfg(feature = "systemd")]
+/// TODO: Implement use-systemd:begin_log()
 pub fn begin_log(config: &config::Config) {
     // TODO: Implement use-systemd:begin_log()
 }
