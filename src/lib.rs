@@ -22,46 +22,38 @@ pub struct Args {
 }
 
 /// Configures the application using the parsed command line arguments
-pub fn configure(parsed_args: Args) -> Result<Config> {
-    // Set defaults
-    let mut builder = Config::builder()
-        .set_default("cfg_file", concat!(env!("CARGO_PKG_NAME"), ".toml"))?
-        .set_default("Log.file", "_CONSOLE_")?
-        .set_default("Web.address", "127.0.0.1")?
-        .set_default("Web.port", 7878)?
-        .set_default("Database.type", "postgres")?;
+pub fn configure(parsed_args: Args) -> Result<(Config, String)> {
+    let config_path = match parsed_args.config {
+        Some(path) => path,
+        None => {
+            eprintln!("No config path provided");
+            std::process::exit(1);
+        }
+    };
 
-    // Determine config file
-    let config_path = parsed_args.config.ok_or_else(|| anyhow::anyhow!("No config path provided"))?;
-    let config_file = config_path.to_str().ok_or_else(|| anyhow::anyhow!("Failed to convert config path to string"))?;
+    let config = Config::builder()
+        .add_default(File::with_name("default_config.toml"))?
+        .add_default(Environment::with_prefix("MY_APP"))?
+        .add_default(Environment::with_prefix("MY_APP").separator("__"))?
+        .add_default(Environment::with_prefix("MY_APP").separator("__").ignore_empty(true))?
+        .add_source(File::from(config_path))?
+        .with(|builder| {
+            let config_file = config_path.to_str().unwrap_or_default();
+            set_config_file_override(builder, &config_file)?;
+            builder.add_source(File::new(&config_file, FileFormat::Toml))?;
+            builder.merge(create_override_config(&config_file)?).context(ErrorKind::ConfigImmutable)?;
+            let env_prefix = env!("CARGO_PKG_NAME").to_ascii_uppercase().replace_char('-', '_');
+            let env_vars = Environment::with_prefix(env_prefix).separator("_").ignore_empty(true);
+            builder.add_source(env_vars);
+            let log_path = parsed_args.log.ok_or_else(|| anyhow::anyhow!("No log path provided"))?;
+            let log_file = log_path.to_str().unwrap_or_default();
+            builder.set_override("Log.file", &log_file).context(ErrorKind::ConfigImmutable)?;
+            Ok(())
+        })?
+        .build()?;
 
-    builder = set_config_file_override(builder, config_file)?;
-    builder = builder.add_source(File::new(config_file, FileFormat::Toml));
-    builder = builder
-        .merge(create_override_config(config_file)?)
-        .context(ErrorKind::ConfigImmutable)?;
-
-    // Apply environment variable overrides
-    let env_prefix = env!("CARGO_PKG_NAME").to_ascii_uppercase().replace_char('-', '_');
-    let env_vars = Environment::with_prefix(env_prefix)
-        .separator("_")
-        .ignore_empty(true);
-    builder = builder.add_source(env_vars);
-
-    let log_path = parsed_args.log.ok_or_else(|| anyhow::anyhow!("No log path provided"))?;
-    builder = builder
-        .merge(create_log_override_config(log_path.to_str())?)
-        .context(ErrorKind::ConfigImmutable)?;
-
-    match builder.build() {
-        Ok(config) => {
-            let db_url = db_conn_string(&config)?;
-            // Pass db_url directly to the function that needs it
-            some_function_needs_db_url(db_url)?;
-            Ok(config)
-        },
-        Err(e) => Err(e.into()),
-    }
+    let db_url = db_conn_string(&config)?;
+    Ok((config, db_url))
 }
 
 /// Creates an override configuration with the provided config file
@@ -73,27 +65,31 @@ fn create_override_config(config_file: &str) -> Result<Config> {
 
 /// Generates a database connection string based on the provided config
 pub fn db_conn_string(config: &Config) -> Result<String> {
-    let keys = [
-        "Database.type",
-        "Database.username",
-        "Database.password",
-        "Database.host",
-        "Database.port",
-        "Database.database",
-    ];
+    const SUPPORTED_SCHEMES: [&str; 4] = ["postgres", "postgresql", "mysql", "sqlite"];
 
-    let string_vec: Vec<String> = keys
-        .iter()
-        .map(|key| config.get_string(key))
-        .collect::<Result<_, _>>()
-        .context(ErrorKind::ConfigMissingKeys)?;
+    let db_config = DatabaseConfig {
+        db_type: config.get_string("Database.type")?,
+        username: config.get_string("Database.username")?,
+        password: config.get_string("Database.password")?,
+        host: config.get_string("Database.host")?,
+        port: config.get_string("Database.port")?,
+        database: config.get_string("Database.database")?,
+    };
 
-    let supported_schemes = ["postgres", "postgresql", "mysql", "sqlite"];
-    if !supported_schemes.contains(&string_vec[0].as_str()) {
+    if !SUPPORTED_SCHEMES.contains(&db_config.db_type.as_str()) {
         Err(ErrorKind::UnsupportedDbScheme)?;
     }
 
-    Ok(format!("{}://{}:{}@{}:{}/{}", string_vec[0], string_vec[1], string_vec[2], string_vec[3], string_vec[4], string_vec[5]))
+    Ok(format!("{}://{}:{}@{}:{}/{}", db_config.db_type, db_config.username, db_config.password, db_config.host, db_config.port, db_config.database))
+}
+
+struct DatabaseConfig {
+    db_type: String,
+    username: String,
+    password: String,
+    host: String,
+    port: String,
+    database: String,
 }
 
 #[cfg(feature = "simple-logging")]
@@ -101,19 +97,29 @@ pub fn db_conn_string(config: &Config) -> Result<String> {
 pub fn begin_log(config: &config::Config, level: LevelFilter) -> Result<(), Box<dyn std::error::Error>> {
     let log_file = config.get_string("Log.file")?;
     if log_file != "_CONSOLE_" {
-    simple_logging::log_to_file(&log_file, level)?;
+        simple_logging::log_to_file(&log_file, level)?;
     }
     Ok(())
 }
 
 #[cfg(feature = "syslog")]
-/// TODO: Implement log-syslog:begin_log()
-pub fn begin_log(config: &config::Config) {
+/// Begins logging based on the provided config and log level
+pub fn begin_log(config: &config::Config, level: LevelFilter) -> Result<(), Box<dyn std::error::Error>> {
     // TODO: Implement log-syslog:begin_log()
+    let log_file = config.get_string("Log.file")?;
+    if log_file != "_CONSOLE_" {
+        simple_logging::log_to_file(&log_file, level)?;
+    }
+    Ok(())
 }
 
 #[cfg(feature = "systemd")]
-/// TODO: Implement use-systemd:begin_log()
-pub fn begin_log(config: &config::Config) {
+/// Begins logging based on the provided config and log level
+pub fn begin_log(config: &config::Config, level: LevelFilter) -> Result<(), Box<dyn std::error::Error>> {
     // TODO: Implement use-systemd:begin_log()
+    let log_file = config.get_string("Log.file")?;
+    if log_file != "_CONSOLE_" {
+        simple_logging::log_to_file(&log_file, level)?;
+    }
+    Ok(())
 }
