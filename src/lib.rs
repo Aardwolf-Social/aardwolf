@@ -1,131 +1,143 @@
-use std::io::ErrorKind;
+//-
+// THIS IS THE WORKING VERSION OF ./src/lib.rs
+// It uses old config crate which needs to be updated to use config::Builder
+//
+use std::env;
 use anyhow::{Context, Result};
 use clap::Parser;
 use clap_verbosity_flag::Verbosity;
-use config::{Config, Environment, File, FileFormat};
-use log::LevelFilter;
-use std::path::PathBuf;
-use url::Url;
-use thiserror::Error;
+use config::{Config, ConfigError, Environment};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Args {
     #[arg(short = 'c', long, help = "Sets a custom config file")]
-    config: Option<PathBuf>,
+    config: Option<std::path::PathBuf>,
 
     #[arg(short = 'l', long, help = "Sets logging destination")]
-    log: Option<PathBuf>,
+    log: Option<std::path::PathBuf>,
 
     #[command(flatten)]
     verbose: Verbosity,
 }
 
-#[derive(Debug, Error)]
-enum ConfigError {
-    #[error("No config path provided")]
-    NoConfigPath,
-    #[error("No log path provided")]
-    NoLogPath,
-    #[error("Invalid log path provided")]
-    InvalidLogPath,
-    #[error("Failed to get database connection string")]
-    DbConnStringError,
-    #[error("Failed to build configuration")]
-    ConfigBuildError,
-}
+pub fn configure(parsed_args: Args) -> Result<Config> {
+    // Set defaults
+    let mut config = Config::default();
+    config
+        .set_default::<&str>("cfg_file", concat!(env!("CARGO_PKG_NAME"), ".toml"))
+        .context(ErrorKind::ConfigImmutable)?;
+    config
+        .set_default::<&str>("Log.file", "_CONSOLE_")
+        .context(ErrorKind::ConfigImmutable)?;
+    config
+        .set_default::<&str>("Web.address", "127.0.0.1")
+        .context(ErrorKind::ConfigImmutable)?;
+    config
+        .set_default("Web.port", 7878)
+        .context(ErrorKind::ConfigImmutable)?;
 
-pub fn configure(parsed_args: Args) -> Result<(Config, String), ConfigError> {
-    let config_path = parsed_args.config.ok_or(ConfigError::NoConfigPath)?;
-    let log_path = parsed_args.log.ok_or(ConfigError::NoLogPath)?;
-
-    let config = Config::builder()
-        .add_source(File::with_name("default_config.toml", FileFormat::Toml))
-        .set_default(Environment::with_prefix("AARDWOLF").separator("__").ignore_empty(true))
-        .add_source(File::from(&config_path))
-        .with(|builder| {
-            let config_file = config_path.to_str().ok_or(ConfigError::NoConfigPath)?;
-            builder.add_source(File::new(&config_file, FileFormat::Toml)).map_err(|_| ConfigError::ConfigBuildError)?;
-            builder.merge(create_override_config(&config_file)).map_err(|_| ConfigError::ConfigBuildError)?;
-            let env_prefix = env!("CARGO_PKG_NAME").to_ascii_uppercase().replace('-', '_');
-            let env_vars = Environment::with_prefix(env_prefix).separator("_").ignore_empty(true);
-            builder.add_source(env_vars);
-            let log_file = log_path.to_str().ok_or(ConfigError::InvalidLogPath)?;
-            builder.set_override("Log.file", &log_file).map_err(|_| ConfigError::ConfigBuildError)?;
-            Ok(())
-        })?
-        .build().map_err(|_| ConfigError::ConfigBuildError)?;
-
-    let db_url = db_conn_string(&config)?;
-    Ok((config, db_url))
-}
-
-fn db_conn_string(config: &Config) -> Result<String> {
-    let db_type = config.get_string("Database.type")?;
-    let username = config.get_string("Database.username")?;
-    let password = config.get_string("Database.password")?;
-    let host = config.get_string("Database.host")?;
-    let port = config.get_string("Database.port")?;
-    let database = config.get_string("Database.database")?;
-
-    let db_url = Url::parse(&format!("{}://{}:{}@{}:{}/{}", db_type, username, password, host, port, database))?;
-    Ok(db_url.as_str().to_owned())
-}
-
-fn create_override_config(config_file: &str) -> Result<(), ConfigError> {
-    let mut overrides = Config::default();
-    overrides.set("cfg_file", config_file)?;
-    Ok(())
-}
-
-pub fn begin_log(config: &config::Config, level: LevelFilter) -> Result<(), Box<dyn std::error::Error>> {
-    let log_file = config.get_string("Log.file")?;
-    if log_file != "_CONSOLE_" {
-        simple_logging::log_to_file(&log_file, level)?;
+    // Determine config file
+    if let Ok(config_file) = env::var("AARDWOLF_CONFIG") {
+        config
+            .set("cfg_file", config_file)
+            .context(ErrorKind::ConfigImmutable)?;
     }
-    Ok(())
+
+    if let Some(config_path) = parsed_args.config {
+        config
+            .set("cfg_file", config_path.to_str())
+            .context(ErrorKind::ConfigImmutable)?;
+    }
+
+    // Merge config file and apply overrides
+    let config_file_string = config
+        .get_string("cfg_file")
+        .context(ErrorKind::ConfigMissingKeys)?;
+    let config_file = config::File::with_name(&config_file_string);
+    config.merge(config_file).context(ErrorKind::ConfigImmutable)?;
+
+    // Apply environment variable overrides
+    let env_vars = Environment::with_prefix("AARDWOLF")
+        .separator("_")
+        .ignore_empty(true);
+    config.merge(env_vars).context(ErrorKind::ConfigImmutable)?;
+
+    // Remove the need for a .env file to avoid defining env vars twice.
+    env::set_var("DATABASE_URL", db_conn_string(&config)?);
+
+    if let Some(log_path) = parsed_args.log {
+        config
+            .set("Log.file", log_path.to_str())
+            .context(ErrorKind::ConfigImmutable)?;
+    }
+
+    Ok(config)
+}
+
+pub fn db_conn_string(config: &Config) -> Result<String> {
+    let keys = [
+        "Database.type",
+        "Database.username",
+        "Database.password",
+        "Database.host",
+        "Database.port",
+        "Database.database",
+    ];
+
+    let string_vec: Vec<String> = keys
+        .iter()
+        .map(|key| config.get_string(key))
+        .collect::<Result<_, _>>()
+        .context(ErrorKind::ConfigMissingKeys)?;
+
+    match string_vec[0].as_str()
+        {
+            "postgres" | "postgresql" => (),
+            _ => Err(ErrorKind::UnsupportedDbScheme)?,
+        }
+
+    Ok(format!(
+        "{scheme}://{username}:{password}@{host}:{port}/{database}",
+        scheme = string_vec[0],
+        username = string_vec[1],
+        password = string_vec[2],
+        host = string_vec[3],
+        port = string_vec[4],
+        database = string_vec[5],
+    ))
+}
+
+#[derive(Debug, thiserror::Error)]
+#[error("Configuration was missing expected keys: [{:?}]", _0)]
+pub struct MissingKeys(Vec<String>);
+
+#[derive(Clone, Copy, Debug, Eq, thiserror::Error, Hash, PartialEq)]
+pub enum ErrorKind {
+    #[error("Unsupported database scheme, only 'postgres' and 'postgresql' are allowed.")]
+    UnsupportedDbScheme,
+    #[error("Configuration was missing expected keys")]
+    ConfigMissingKeys,
+    #[error("Config struct cannot be modified")]
+    ConfigImmutable,
 }
 
 #[cfg(feature = "simple-logging")]
-pub fn begin_log_wrapper(config: &config::Config, level: LevelFilter) -> Result<(), Box<dyn std::error::Error>> {
-    begin_log(config, level)
-}
+pub fn begin_log(config: &config::Config) {
+    use log::LevelFilter;
 
-#[cfg(feature = "syslog")]
-pub fn begin_log_wrapper(config: &config::Config, level: LevelFilter) -> Result<(), Box<dyn std::error::Error>> {
-    begin_log(config, level)
-}
-
-#[cfg(feature = "systemd")]
-pub fn begin_log_wrapper(config: &config::Config, level: LevelFilter) -> Result<(), Box<dyn std::error::Error>> {
-    begin_log(config, level)
-}   let host = config.get_string("Database.host")?;
-    let port = config.get_string("Database.port")?;
-    let database = config.get_string("Database.database")?;
-
-    let db_url = Url::parse(&format!("{}://{}:{}@{}:{}/{}", db_type, username, password, host, port, database))?;
-    Ok(db_url.as_str().to_owned())
-}
-
-pub fn begin_log(config: &config::Config, level: LevelFilter) -> Result<(), Box<dyn std::error::Error>> {
-    let log_file = config.get_string("Log.file")?;
-    if log_file != "_CONSOLE_" {
-        simple_logging::log_to_file(&log_file, level)?;
+    match config.get_string("Log.file").unwrap().as_ref() {
+        "_CONSOLE_" => (),
+        l => simple_logging::log_to_file(l, LevelFilter::Debug).unwrap(),
     }
-    Ok(())
-}
-
-#[cfg(feature = "simple-logging")]
-pub fn begin_log_wrapper(config: &config::Config, level: LevelFilter) -> Result<(), Box<dyn std::error::Error>> {
-    begin_log(config, level)
 }
 
 #[cfg(feature = "syslog")]
-pub fn begin_log_wrapper(config: &config::Config, level: LevelFilter) -> Result<(), Box<dyn std::error::Error>> {
-    begin_log(config, level)
+pub fn begin_log(config: &config::Config) {
+    // TODO: Implement log-syslog:begin_log()
 }
 
 #[cfg(feature = "systemd")]
-pub fn begin_log_wrapper(config: &config::Config, level: LevelFilter) -> Result<(), Box<dyn std::error::Error>> {
-    begin_log(config, level)
+pub fn begin_log(config: &config::Config) {
+    // TODO: Implement use-systemd:begin_log()
 }
