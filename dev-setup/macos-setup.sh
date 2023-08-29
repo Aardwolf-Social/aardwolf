@@ -30,12 +30,6 @@ echo "Installing Rust tools..."
 rustup component add rustfmt clippy
 cargo instal diesel_cli --no-default-features --features "postgres"
 
-# Clone Aardwolf:
-echo "Switching to home directory"
-cd ~/
-echo "Cloning Aardwolf..."
-git clone https://github.com/aardwolf/aardwolf
-
 # Create the aardwolf database
 echo "Creating the aardwolf database..."
 DB_NAME=aardwolf

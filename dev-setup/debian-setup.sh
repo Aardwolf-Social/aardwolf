@@ -36,12 +36,6 @@ echo "Installing Rust tools..."
 rustup component add rustfmt clippy cargo-watch
 cargo install diesel_cli --no-default-features --features "postgres"
 
-# Clone Aardwolf:
-echo "Switching to home directory"
-cd ~/
-echo "Cloning Aardwolf..."
-git clone https://github.com/aardwolf/aardwolf
-
 # Setup PostgreSQL
 echo "Setting up PostgreSQL..."
 sudo systemctl enable postgresql.service
