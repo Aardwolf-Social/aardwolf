@@ -201,8 +201,6 @@ impl UnverifiedEmail {
             )
         });
 
-        drop(user);
-
         res
     }
 

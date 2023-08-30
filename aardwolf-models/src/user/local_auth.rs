@@ -68,8 +68,6 @@ impl LocalAuth {
             updated_at: user.updated_at,
         });
 
-        drop(user);
-
         res
     }
 }
