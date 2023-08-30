@@ -28,7 +28,7 @@ where
     DB: Backend,
     str: serialize::ToSql<Text, DB>,
 {
-    fn to_sql<'b>(&self, out: &mut serialize::Output<'b, '_, DB>) -> serialize::Result {
+    fn to_sql(&self, out: &mut serialize::Output<'_, '_, DB>) -> serialize::Result {
         self.0.name().to_sql(out)
     }
 }
