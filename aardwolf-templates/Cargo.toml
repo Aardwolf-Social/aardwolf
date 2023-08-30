@@ -26,9 +26,6 @@ path = "../aardwolf-types"
 version = "0.1"
 path = "../aardwolf-models"
 
-[dev-dependencies]
-ructe = "0.16"
-
 #- 
 # Start of Yew Migration?
 [dependencies.aardwolf-yew-frontend]

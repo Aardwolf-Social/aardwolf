@@ -52,10 +52,16 @@ Then, download the [rustup installer](https://www.rust-lang.org/en-US/install.ht
 
 ### Install Rust Toolchain
 
-Once you have `rustup` installed, make sure you have the `nightly` rust
+Once you have `rustup` installed, make sure you have the `stable` rust
 toolchain installed:
 
-    $ rustup toolchain install nightly
+    $ rustup toolchain install stable
+
+### Install Rust Toolchain Components
+
+(Optional) - These tools are useful for development and testing
+
+    $ rustup component add rustfmt clippy cargo-watch
 
 ### Installing Rust database functionality
 
@@ -65,9 +71,9 @@ among other things.
 
 To install it, run the following command:
 
-    $ cargo +nightly install -f diesel_cli --no-default-features --features "postgres"
+    $ cargo install diesel_cli --no-default-features --features "postgres"
 
-This command will use the `nightly` version of `cargo` (the rust package
+This command will use the `stable` version of `cargo` (the rust package
 manager) to install the newest version of the `diesel_cli` crate. The
 `--no-default-features --features "postgres"` options tell `cargo` to
 skip installing the `mysql` and `sqlite` parts of `diesel`, which

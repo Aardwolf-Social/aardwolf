@@ -1,6 +1,6 @@
 extern crate aardwolf_models;
 extern crate diesel;
-extern crate dotenv;
+extern crate dotenvy;
 extern crate env_logger;
 extern crate serde;
 #[macro_use]
@@ -16,7 +16,7 @@ use aardwolf_models::user::{
     NewUser, UnauthenticatedUser, UserLike,
 };
 use diesel::{pg::PgConnection, prelude::*};
-use dotenv::dotenv;
+use dotenvy::dotenv;
 
 #[derive(Deserialize)]
 struct Payload {
