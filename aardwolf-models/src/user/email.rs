@@ -188,7 +188,9 @@ impl UnverifiedEmail {
         user: UnverifiedUser,
         token: EmailVerificationToken,
     ) -> Result<(AuthenticatedUser, VerifyEmail), VerificationError> {
-        let res = self.verify(token).map(|verify_email| {
+        
+
+        self.verify(token).map(|verify_email| {
             (
                 AuthenticatedUser {
                     id: user.id,
@@ -199,9 +201,7 @@ impl UnverifiedEmail {
                 },
                 verify_email,
             )
-        });
-
-        res
+        })
     }
 
     pub fn verify(self, token: EmailVerificationToken) -> Result<VerifyEmail, VerificationError> {
