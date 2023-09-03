@@ -4,7 +4,7 @@
 
 name: "Combine Dependabot PRs"
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       branches:
         description: 'Comma separate string of PRs to combine'
