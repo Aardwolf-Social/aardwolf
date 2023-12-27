@@ -13,8 +13,8 @@ pub(crate) async fn index(
 ) -> HttpResponse {
     Home::new(
         &i18n.catalog,
-        &actor.1.shortname(),
-        &actor.0.profile_url().0.to_string(),
+        actor.1.shortname(),
+        actor.0.profile_url().0.as_ref(),
         "csrf token",
         &PostCreationFormState {
             source: "".to_owned(),

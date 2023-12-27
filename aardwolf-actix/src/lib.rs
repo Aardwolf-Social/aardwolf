@@ -174,7 +174,7 @@ pub fn run(config: &Config, database_url: &str) -> Result<(), Box<dyn Error>> {
     let secret_key = Key::generate();
 
     #[cfg(debug_assertions)]
-    let assets = assets::Assets::from_config(&config)?;
+    let assets = assets::Assets::from_config(config)?;
 
     let sys = System::new();
 

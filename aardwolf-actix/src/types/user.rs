@@ -34,7 +34,7 @@ fn extract(
             let state = state.clone();
 
             Session::extract(&req)
-                .map_ok(move |session| (state.clone(), session.clone()))
+                .map_ok(move |session| (state, session))
                 .map_err(|_: _| SignedInUserError::Cookie.into())
                 .boxed_local()
         }

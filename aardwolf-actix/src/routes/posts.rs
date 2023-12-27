@@ -101,7 +101,7 @@ impl ResponseError for PostCreateResponseError {
             &self.i18n.catalog,
             &self.csrf_token,
             self.persona.shortname(),
-            &self.base_actor.profile_url().0.to_string(),
+            self.base_actor.profile_url().0.as_ref(),
             &self.form_state,
             validation,
             system,
