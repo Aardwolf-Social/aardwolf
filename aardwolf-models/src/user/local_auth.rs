@@ -60,17 +60,15 @@ impl LocalAuth {
             return Err(VerificationError::Process);
         }
 
-        let res = self.password.verify(password).map(|_| AuthenticatedUser {
+        
+
+        self.password.verify(password).map(|_| AuthenticatedUser {
             id: user.id,
             primary_email: user.primary_email,
             primary_persona: user.primary_persona,
             created_at: user.created_at,
             updated_at: user.updated_at,
-        });
-
-        drop(user);
-
-        res
+        })
     }
 }
 
