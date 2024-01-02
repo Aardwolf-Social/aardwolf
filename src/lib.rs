@@ -1,3 +1,7 @@
+//-
+// THIS IS THE WORKING VERSION OF ./src/lib.rs
+// It uses old config crate which needs to be updated to use config::Builder
+//
 use std::env;
 use anyhow::{Context, Result};
 use clap::Parser;
