@@ -234,7 +234,7 @@ impl fmt::Display for Password {
 
 impl Verify for Password {
     fn verify(&self, given_password: PlaintextPassword) -> Result<(), VerificationError> {
-        verify(&given_password.0, &self.0)
+        verify(given_password.0, &self.0)
             .map_err(|e| {
                 error!("Error verifying password: {}", e);
 
@@ -256,7 +256,7 @@ impl Create for Password {
         warn!("BUILT IN TEST MODE");
 
         #[cfg(not(any(test, feature = "test")))]
-        let h = hash(&password.0, bcrypt::DEFAULT_COST);
+        let h = hash(password.0, bcrypt::DEFAULT_COST);
         #[cfg(any(test, feature = "test"))]
         let h = hash(&password.0, 4);
 
