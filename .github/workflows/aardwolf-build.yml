@@ -23,12 +23,15 @@ jobs:
         uses: actions/checkout@v4 # Marketplace - https://github.com/marketplace/actions/checkout
         # Installs the most recent stable rust toolchain as of the specified time
         # offset, which may be written in years, months, weeks, or days.
+
+        name: Install rust toolchain
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
           components: rustfmt, clippy
+
       - name: Cache dependencies
-        uses: actions/cache@v3.3.1
+        uses: actions/cache@v4
         with:
           path: ~/.cargo
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
