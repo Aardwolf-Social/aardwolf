@@ -121,7 +121,7 @@ impl NewBasePost {
             posted_by: posted_by.id(),
             icon: icon.map(|i| i.id()),
             visibility,
-            activitypub_id: generate_id.post_id(&posted_by, &uuid),
+            activitypub_id: generate_id.post_id(posted_by, &uuid),
             local_uuid: Some(uuid),
         }
     }

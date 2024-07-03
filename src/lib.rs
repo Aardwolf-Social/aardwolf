@@ -6,7 +6,7 @@ use std::env;
 use anyhow::{Context, Result};
 use clap::Parser;
 use clap_verbosity_flag::Verbosity;
-use config::{Config, ConfigError, Environment};
+use config::{Config, Environment};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]

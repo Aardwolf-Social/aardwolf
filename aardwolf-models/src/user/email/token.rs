@@ -101,7 +101,7 @@ impl VerifyEmail for HashedEmailToken {
         &self,
         email_verification_token: EmailVerificationToken,
     ) -> Result<(), VerificationError> {
-        verify(&email_verification_token.0, &self.0)
+        verify(email_verification_token.0, &self.0)
             .map_err(|_| VerificationError::Process)
             .and_then(|verified| {
                 if verified {
