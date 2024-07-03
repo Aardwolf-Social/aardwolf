@@ -7,7 +7,7 @@ build = "build.rs"
 
 [build-dependencies]
 config = "0.14.0"
-ructe = "0.17.2"
+ructe = "0.13"
 
 [dependencies]
 gettext = "0.4"
