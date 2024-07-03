@@ -24,8 +24,8 @@ jobs:
         # Installs the most recent stable rust toolchain as of the specified time
         # offset, which may be written in years, months, weeks, or days.
 
-        name: Install rust toolchain
-      - uses: dtolnay/rust-toolchain@master
+      - name: Install rust toolchain
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
           components: rustfmt, clippy
