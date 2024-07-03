@@ -13,22 +13,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
- 
+
   cargo-build:
     runs-on: ubuntu-latest
 
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4 # Marketplace - https://github.com/marketplace/actions/checkout
         # Installs the most recent stable rust toolchain as of the specified time
         # offset, which may be written in years, months, weeks, or days.
-      - uses: dtolnay/rust-toolchain@master
+
+      - name: Install rust toolchain
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
           components: rustfmt, clippy
+
       - name: Cache dependencies
-        uses: actions/cache@v3.3.1
+        uses: actions/cache@v4
         with:
           path: ~/.cargo
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}

@@ -10,7 +10,7 @@ with-actix = ["actix-web", "futures", "r2d2"]
 
 [dependencies]
 anyhow = "1.0"
-derive_builder = "0.12.0"
+derive_builder = "0.20.0"
 log = "0.4"
 openssl = "0.10"
 mime = "0.3"

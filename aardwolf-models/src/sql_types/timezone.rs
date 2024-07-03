@@ -19,7 +19,7 @@ impl FromStr for Timezone {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         FromStr::from_str(s)
             .map(Timezone)
-            .map_err(TimezoneParseError)
+            .map_err(|err| TimezoneParseError(err.to_string()))
     }
 }
 
