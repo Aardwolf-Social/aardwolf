@@ -29,13 +29,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4 # Marketplace - https://github.com/marketplace/actions/checkout
 
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1 # Marketplace - https://github.com/marketplace/actions/rust-toolchain
+      - name: Install rust toolchain
+        uses: dtolnay/rust-toolchain@master # Marketplace - https://github.com/marketplace/actions/rustup-toolchain-install
         with:
-          profile: minimal
           toolchain: stable
-          components: clippy
-          override: true
+          components: rustfmt, clippy
 
       - name: Install required cargo
         run: cargo install clippy-sarif sarif-fmt

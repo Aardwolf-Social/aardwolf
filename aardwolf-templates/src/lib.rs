@@ -35,7 +35,8 @@ pub trait Renderable {
     fn render(&self, _: &mut dyn std::io::Write) -> std::io::Result<()>;
 }
 
+/// Returns an empty Translations object to disable translations due to issues with the gettext library.
 pub fn managed_state() -> Translations {
-    // `gettext` is not behaving correctly, so we're disabling translations until we can replace it
+    // gettext is not behaving correctly, so translations are disabled until a replacement is found
     Vec::new()
 }

@@ -6,7 +6,7 @@ edition = "2021"
 build = "build.rs"
 
 [build-dependencies]
-config = "0.13"
+config = "0.14.0"
 ructe = "0.13"
 
 [dependencies]
@@ -15,7 +15,7 @@ gettext-macros = "0.6.1"
 gettext-utils = "0.1.0"
 
 [dependencies.rocket_i18n]
-rocket_i18n = "0.4"
+version = "0.4.1"
 default-features = false
 
 [dependencies.aardwolf-types]
