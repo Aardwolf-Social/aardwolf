@@ -12,8 +12,9 @@ impl<'a> Feed<'a> {
     }
 }
 
+
 impl<'a> Renderable for Feed<'a> {
-    fn render(&self, write: &mut dyn std::io::Write) -> std::io::Result<()> {
-        crate::templates::home::feed(write, self)
+    fn render(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()> {
+        crate::templates::home::feed(writer, self)
     }
 }

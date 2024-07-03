@@ -29,8 +29,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4 # Marketplace - https://github.com/marketplace/actions/checkout
 
-        name: Install rust toolchain
-      - uses: dtolnay/rust-toolchain@master # Marketplace - https://github.com/marketplace/actions/rustup-toolchain-install
+      - name: Install rust toolchain
+        uses: dtolnay/rust-toolchain@master # Marketplace - https://github.com/marketplace/actions/rustup-toolchain-install
         with:
           toolchain: stable
           components: rustfmt, clippy
