@@ -1,10 +1,9 @@
 ---
-name: Test
+name: CI Test
 
 on:
   workflow_run:
-    workflows:
-      - Build
+    workflows: ["CI build"]
     types:
       - completed
 
