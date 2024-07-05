@@ -1,5 +1,5 @@
 ---
-name: Build
+name: CI Build
 on:
   push:
     branches:
@@ -19,7 +19,7 @@ jobs:
 
     steps:
 
-      - name: Checkout
+      - name: Checkout Repo
         uses: actions/checkout@v4 # Marketplace - https://github.com/marketplace/actions/checkout
         # Installs the most recent stable rust toolchain as of the specified time
         # offset, which may be written in years, months, weeks, or days.
@@ -60,7 +60,7 @@ jobs:
           echo "DATABASE_URL=postgresql://aardwolf_user:changeme@127.0.0.1:5432/aardwolf_testing" > "$GITHUB_ENV"
           echo "TEST_DATABASE_URL=postgresql://aardwolf_user:changeme@127.0.0.1:5432/aardwolf_testing" >> "$GITHUB_ENV"
 # Install diesel CLI if not already installed
-      - name: Check diesel installation
+      - name: Check Diesel installation
         run: if which diesel; then echo "diesel already installed"; else cargo install diesel_cli --no-default-features --features=postgres; fi
 
 # Push the aardwolf-models directory, and run migrations
@@ -70,5 +70,5 @@ jobs:
           popd
 
 # Run cargo build
-      - name: Cargo build aardwolf
+      - name: Cargo build Aardwolf
         run: cargo build
